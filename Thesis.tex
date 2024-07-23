@@ -1,0 +1,195 @@
+% !TeX spellcheck = <fr_FR>
+%%%% Modèle proposé par colin.avogadri@umontpellier.fr %%%%
+%%%% 3 Février 2022 %%%%
+
+\documentclass[english,12pt,a4paper]{book}
+
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo}
+\usepackage[semibold]{sourcesanspro}
+\usepackage{sectsty}
+\allsectionsfont{\sffamily}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{amssymb}
+\usepackage{color} % où xcolor selon l'installation
+\definecolor{Valentia}{RGB}{233,78,82}
+\definecolor{Titleblue}{RGB}{114, 146, 162}
+\usepackage{mdframed}
+\usepackage{multirow} %% Pour mettre un texte sur plusieurs rangées
+\usepackage{multicol} %% Pour mettre un texte sur plusieurs colonnes
+\usepackage{scrextend} % Forcer la 4eme  de couverture en page pair
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage[absolute]{textpos} 
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{geometry}
+\usepackage{hyperref} 
+\usepackage{minitoc}
+\usepackage{microtype}
+%\usepackage{refcheck}
+\usepackage{easyReview}
+
+\usepackage{framed}
+\usepackage{latexsym}
+\usepackage{url}
+\usepackage{xcolor}
+\definecolor{newcolor}{rgb}{.8,.349,.1}
+\usepackage{subcaption}
+\usepackage{stackengine}
+\usepackage{svg}
+\usepackage{wrapfig}
+\usepackage{pdflscape}
+\usepackage{afterpage}
+\usepackage{capt-of}
+\usepackage{longtable}
+\usepackage{makecell}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{siunitx}
+%\usepackage{breqn}
+\usepackage{bookmark}
+
+\sisetup{product-units=repeat}
+
+\usepackage[backend=bibtex, backref=true, style=numeric]{biblatex} 
+\bibliography{../references_terrain}
+
+
+\setkeys{Gin}{width=\linewidth}
+
+\renewcommand{\cellalign}{cl}
+\newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
+
+
+
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+
+\newcommand{\material}{\mathcal{M}}
+
+\newcommand{\mass}{m}
+\newcommand{\velFactor}{\nu}
+\newcommand{\decay}{k}
+\newcommand{\diffusion}{D}
+\newcommand{\growthRate}{\gamma}
+\newcommand{\fittingFunc}{\Gamma}
+\newcommand{\fittingFuncObj}{\fittingFunc_{obj}}
+
+\newcommand{\Water}{\mathcal{W}}
+\newcommand{\Wuser}{\Water_\text{user}}
+\newcommand{\Wsimu}{\Water_\text{simulation}}
+\newcommand{\Wobj}{\Water_\text{objects}}
+
+\newcommand{\terrain}{\mathcal{T}}
+\newcommand{\height}{\mathcal{H}}
+\newcommand{\depth}{\mathcal{D}}
+\newcommand{\objects}{\mathcal{O}}
+\newcommand{\environment}{\mathcal{E}}
+\newcommand{\Wlevel}{\mathcal{L}}
+
+\newcommand{\availableObjects}{\Tilde{\objects}}
+
+\newcommand{\tEvent}{t_e}
+
+\newcommand{\eps}{\varepsilon}
+
+
+\newcommand{\erosionRate}{ \varepsilon }
+\newcommand{\shearStress}{ \tau }
+\newcommand{\criticalShearStress}{ \shearStress_{c} }
+\newcommand{\velocity}{ \upsilon }
+\newcommand{\capacity}{ C }
+\newcommand{\maxCapacity}{ \capacity_{max} }
+\newcommand{\density}{ \rho }
+\newcommand{\particleDensity}{ \density_{p} }
+\newcommand{\soilDensity}{ \density_{s} }
+\newcommand{\particleMass}{ \mass_{p} }
+\newcommand{\depositionRate}{ \omega } % Not the good notation, but I don't think there is a real notation
+\newcommand{\real}{ \mathbb{R} }
+\newcommand{\shearStressConstant}{ K }
+\newcommand{\erosionStrength}{ K_{\erosionRate} }
+\newcommand{\particleSize}{ R }
+\newcommand{\settlingVelocity}{ w_s }
+\newcommand{\fluid}{ f }
+\newcommand{\fluidDensity}{ \density_\fluid }
+\newcommand{\fluidVelocity}{ \velocity_\fluid }
+\newcommand{\buoyancy}{ B }
+\newcommand{\gravity}{ G }
+\newcommand{\erosionAmount}{ q_{detachment} }
+\newcommand{\depositAmount}{ q_{deposit} }
+\newcommand{\totalErosion}{ Q }
+\newcommand{\extForce}{ F_{ext} }
+\newcommand{\capacityFactor}{ C_{factor} }
+
+\newcommand{\inset}[3][0.2\linewidth]{\noindent\stackinset{r}{0.1cm}{b}{0.1cm}{\colorbox{white}{\includegraphics[width=#1]{#3}}}
+	{\includegraphics[width=\linewidth]{#2}}}
+
+\usepackage[Sonny]{fncychap} %% Pour changer le style de chapitre
+\pagestyle{fancy}
+%\fancyhf{}
+%\fancyhead[RE,RO]{\chaptername \thechapter . \chaptermark}
+\fancyhf{}
+\fancyheadoffset{0.005\textwidth}
+\fancyhead[LE]{\thepage}
+\fancyhead[RE]{\nouppercase\leftmark}
+\fancyhead[RO]{\thepage}
+\fancyhead[LO]{\nouppercase\rightmark}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\dominitoc
+\let\oldminitoc\minitoc
+\def\minitoc{
+	\oldminitoc
+	\noindent\textbf{\hyperlink{tocpage}{Back to summary}} \\
+}
+\makeatletter\@addtoreset{chapter}{part}\makeatother%
+
+\begin{document}
+	
+\pagenumbering{roman}
+
+\input{PageDeGarde.tex}
+\setcounter{tocdepth}{3}
+\tableofcontents
+\addtocontents{toc}{\protect\hypertarget{tocpage}{}}
+%\listoffigures \addcontentsline{toc}{chapter}{List of Figures} \mtcaddchapter                     %new code
+%\listoftables \addcontentsline{toc}{chapter}{List of Tables}   \mtcaddchapter                     %new code
+
+\input{Introduction/Forewords}
+
+\mainmatter
+\pagenumbering{arabic}
+
+\input{Introduction/Introduction}
+
+\input{Chapitre1/chap1}
+
+\input{Chapitre2/chap2}
+
+\input{Chapitre3/chap3}
+
+\backmatter
+\input{Conclusion/Conclusion}
+
+\pagenumbering{Roman}
+
+%\bibliographystyle{eg-alpha-doi}
+%\bibliographystyle{siam}
+%\nocite{*}
+\addcontentsline{toc}{chapter}{References}
+\printbibliography[title=References]
+%\bibliography{../references_terrain}
+
+
+
+% \include{chapitre1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
