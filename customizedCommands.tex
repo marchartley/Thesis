@@ -1,0 +1,36 @@
+\LetLtxMacro{\Oldincludegraphics}{\includegraphics}
+\RenewDocumentCommand{\includegraphics}{O{} m}{%
+	\begin{adjustbox}{max width=\textwidth, max height=\textheight-5\baselineskip}
+	    \Oldincludegraphics[#1]{#2}
+	\end{adjustbox}
+}
+\newcommand{\inset}[3][0.2\linewidth]{
+    \noindent\stackinset{r}{0.1cm}{b}{0.1cm}{
+        \colorbox{white}{
+            \includegraphics[width=#1]{#3}
+        }
+    }
+	{\includegraphics{#2}}
+}
+
+\newcommand{\teaser}[1]{
+    \begin{figure*}
+        #1
+    \end{figure*}
+}
+
+\def\minitoc{
+	\etocsettocstyle{\section*{\contentsname}}{}
+	\localtableofcontents
+	\noindent\textbf{\hyperlink{tocpage}{Back to summary}}
+}
+% \makeatletter\@addtoreset{chapter}{part}\makeatother%
+
+\sisetup{product-units=repeat}
+
+\emergencystretch=1em
+
+% \setkeys{Gin}{width=\linewidth}
+
+\renewcommand{\cellalign}{cl}
+\newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
