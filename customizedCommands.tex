@@ -34,3 +34,20 @@
 
 \renewcommand{\cellalign}{cl}
 \newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
+
+\DeclareCiteCommand{\cite}[\mkbibparens]
+  {\usebibmacro{prenote}\usebibmacro{cite:init}}
+  {\usebibmacro{citeindex}
+   \printtext[bibhyperref]{\usebibmacro{cite}}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+\DeclareCiteCommand{\citep}
+{\usebibmacro{prenote}}
+{\usebibmacro{citeindex}
+ \printtext[bibhyperref]{\usebibmacro{cite}}}
+{\multicitedelim}
+{\usebibmacro{postnote}}
+
+\AtEveryBibitem{\clearfield{url}}
+\AtEveryBibitem{\clearfield{note}} % Notes from Mendeley
