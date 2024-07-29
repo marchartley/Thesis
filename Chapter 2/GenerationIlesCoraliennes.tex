@@ -1,0 +1,177 @@
+\chapter{Automatic Generation of Coral Islands}
+\label{chap:coral-island}
+\minitoc
+
+\section{Introduction}
+\label{sec:coral-island_introduction}
+- Definition of coral islands \\
+** Different types of coral islands \\
+*** Here, volcanic islands \\
+- Presentation of corals \\
+- Difference from regular landscapes \\
+** Concept of corals \\
+*** Long-term evolution (island) and short-term evolution (corals) \\
+**** Geological process of island subsidence \\
+- ...
+
+\subsection{Darwinian Theory}
+- Several theories \\
+- Difficulty in studying environments \\
+** Use of observations \\
+- Theory refuted by \cite{Droxler2021} \\
+** But it's too early to judge \\
+** Practical for our case. \\
+- ...
+
+\subsubsection{Multiple Theories}
+- Clarify other theories: \\
+** "Growth on Submarine Mountains Theory" (John Murray): Reefs start on submarine mountains and guyots, then gradually rise to the surface. \\
+** "Sea Level Change Theory" (Reginald Daly) ["The Coral Reef Problem"] \cite{Daly1915}: [TO BE EXPLORED, I DIDN'T UNDERSTAND IT] \\
+** "Erosion and Sedimentation Theory" (Maurice Ewing and William Donn): [TO BE EXPLORED] \\
+** "Platform Reef Theory" (William Morris Davis): [TO BE EXPLORED] \\
+- The theories are not necessarily contradictory; they can be complementary in explaining cases that others do not. \\
+- ...
+
+\subsubsection{Darwin's Voyage}
+- ...
+
+\subsection{Overview}
+- Proposed tool \\
+** Sketching the island \\
+** Sketching the profile \\
+** Wind simulation \\
+- Automation of examples \\
+** Data augmentation \\
+- ...
+
+\section{Related Works}
+\label{sec:coral-island_related-works}
+- Perlin + falloff \\
+** But lacks control \\
+- Uplift [SCHOTT UPLIFT] \cite{Cordonnier2016,Cordonnier2017a} \\
+** But we propose a method that limits the required interaction \\
+- Sketching [PEYTAVIE SKETCHING, EMILIEN FIRST PERSON] \cite{Gain2009} \\
+** Added radial constraint to simplify interaction \\
+- Geological modeling \cite{Patel2021} \\
+** For us, it's hard to know what’s happening underground (?) \\
+- Unlike the literature, integration of the underwater part \\
+** Integration of observation data into our process \\
+*** -> Typical shape and profile of an island \\
+** Difficult to integrate physical simulations due to uncertainty \\
+- Layer-based generation could improve the realism of examples by considering layer/environment interactions. \\
+- ...
+
+\section{Example generation}
+\label{sec:coral-island_example-generation}
+- We use Darwin’s theory in our case because generation is relatively simple. \\
+- 2 steps: \\
+** Generation of the island \\
+** Generation of the reef \\
+- Numerous assumptions: \\
+** Island has a relatively round shape \\
+** Coral grows to a constant height around the island \\
+** All "features" are radial \\
+** Deformations of islands caused by winds and waves \\
+** Islands are independent of each other \\
+** The profile is relatively identical all around the island \\
+- ...
+
+\subsubsection{Input}
+- Sketching of the island from above + profile view \\
+- Wind strength \\
+- Water level \\
+- Subsidence rate \\
+- ...
+
+\subsubsection{"Simulation"}
+- Subsidence calculated by simple scaling \\
+** Note: No geological consistency \\
+*** Here, using a zero level to scale in Z \\
+*** No consideration of different soil materials \\
+- Reef growth \\
+** Does not consider any weather events \\
+** Considers the "keep up" strategy (as opposed to "give up" and "catch up") [large simplification] \\
+- Wind deformation \\
+** using directly $f(\p) = f(\warp(\p))$. \\
+- ...
+
+\subsubsection{Output}
+- Height map of the island's surface \\
+- Island zones and coral zones \\
+- Possibility to recalculate ground height and coral height \\
+- ...
+
+\subsection{Closed form of coral growth}
+- Proposes a closed-form solution for surface calculation \\
+- Calculation of ground height: \\
+** Calculation of height by revolution around the origin point \\
+** Deformation of the revolution profile using the top-down sketch \\
+** Deformation of the height field by the wind map. \\
+- Calculation of growth: \\
+** On the initial heightmap, \\
+*** Any surface $z_{min} < h(p) < z_{max}$ becomes coral \\
+*** Calculation of the "low" contour $h(p) = z_{min}$ and "high" contour $h(p) = z_{max}$ \\
+*** ... \\
+- Deformation of the map using the wind map: \\
+** ... \\
+- ...
+
+\subsection{Labeling of the map}
+- Using top-down sketch: \\
+** Features "Mountain", "Island borders", "Beach" are radial $(\theta, r)$, so we can label each point of the map as the "next" feature \\
+- Using coral simulation information: \\
+** Provides the labels "Lagoon" and "Reef \{begin, peak, end\}".
+- The height map is directly associated to the feature map \\
+- This is perfect to feed a cGAN. \\
+- ... 
+
+\subsection{Automation}
+- Take advantage of the radial nature of the features \\
+- Some features can be optional (mountains) \\
+- Deformation of the feature lines \\ 
+** Influence on the radius: $\Tilde \radius(\theta) = \radius(\theta) + \noise(\theta)$ with $\noise$ continuous noise function $2\pi$-periodic. \\
+- ...
+
+\section{cGAN}
+\label{sec:coral-island_cGAN}
+- Conditional GAN: A type of Generative Adversarial Network (GAN) where the generation process is conditioned on additional information. \\
+- ...
+
+\subsection{Definition of cGAN}
+- Two Networks: Consists of two neural networks, a Generator and a Discriminator, which compete against each other. \\
+** Generator: Takes both random noise and additional information (like class labels or data) to produce synthetic data. \\
+** Discriminator: Evaluates whether a given data instance is real (from the actual dataset) or fake (produced by the Generator), while also considering the additional information. \\
+** Additional Information: This can be labels, data from other modalities, or any other contextual information that guides the generation process. \\
+- Training Process: The Generator tries to create realistic data to fool the Discriminator, while the Discriminator tries to correctly classify data as real or fake based on both the data and additional information. \\
+- Objective: The goal is to improve the Generator’s ability to produce realistic data that matches the given conditions and to enhance the Discriminator’s ability to distinguish between real and fake data. \\
+- Applications: Used in various domains including image-to-image translation, text-to-image synthesis, and other tasks where generating data based on specific conditions is required. \\
+- ...
+
+\subsection{Why cGAN?}
+- Flexibility of input \\
+- Moving beyond the "radial" input condition \\
+- Output even for "inconsistent" data (e.g., ocean in an island) \\
+- No math, geometry, geology, or complicated things to master (hehe) \\
+- ... 
+
+\subsection{Training}
+- ...
+
+\subsubsection{Use of Synthetic Data}
++ Problem with synthetic data \\
+- ...
+
+\subsubsection{Data Augmentation}
+- ...
+
+\subsection{Model Usage}
+- ...
+
+\subsubsection{Generation from Sketch}
+- ...
+
+\subsubsection{Interactive Times}
+- ...
+
+\subsubsection{Realism}
+- ...

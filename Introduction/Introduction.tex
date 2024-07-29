@@ -4,163 +4,158 @@
 
 - ...
 
-\section{Génération procédurale}
+\section{Procedural Generation}
 \label{sec:introduction_procedural-generation}
 - ...
 
-\subsection{Définition}
+\subsection{Definition}
 - ...
 
-\subsubsection{Définition officielle}
+\subsubsection{Official Definition}
 - ...
 
-\subsubsection{Ma définition}
+\subsubsection{My Definition}
 - ...
 
-\subsection{Historique}
+\subsection{History}
 - ...
 
-\subsection{Modèles représentés}
+\subsection{Models Represented}
 - ...
 
-\subsubsection{Bruit}
+\subsubsection{Noise}
 - ...
 
-\subsubsection{Automates cellulaires}
+\subsubsection{Cellular Automata}
 - ...
 
-\subsubsection{Réseaux de neuronnes}
+\subsubsection{Neural Networks}
 - ...
 
-\subsubsection{Modélisation de phénomènes physiques}
+\subsubsection{Physical Phenomena Modeling}
 - ...
 
-\subsection{Interaction utilisateur}
+\subsection{User Interaction}
 - ...
 
-\subsubsection{Balance réalisme-rapidité-control}
-- Principale problématique de la génération de terrains \\
-- Explication réalisme \\
-** Paysages générés sont proches de ce qui se retrouve dans la réalité \\
-** La génération intègre les processus naturels pour être réaliste \\
-** Demande beaucoup de simulations physiques, de connaissances experts \\
-** Utile dans les applications de simulation de catastrophes naturelles, par exemple \\
-- Explication rapidité \\
-** Génération la plus rapide possible, l'objectif étant la génération en temps-réel \\
-** J. Gain classifie: temps-réel (< 30ms), interactif (< 3s), proche de interactif (< 5min) et long terme. \\
-** Utile dans les jeux vidéos "infinity-scroll", par exemple\\
-- Explication control \\
-** Cherche à satisfaire les demandes de l'utilisateur \\
-** Grosse problématique étant les demandes "impossibles" de l'utilisateur. \\
-** Utile dans la plupart des applications de la gen. proc. : accélerer le travail d'artistes, par exemple \\
+\subsubsection{Realism-Speed-Control Balance}
+- Main issue in terrain generation \\
+- Explanation of realism \\
+** Generated landscapes are close to what is found in reality \\
+** Generation incorporates natural processes to be realistic \\
+** Requires extensive physical simulations, expert knowledge \\
+** Useful in applications such as natural disaster simulations \\
+- Explanation of speed \\
+** Fastest possible generation, aiming for real-time generation \\
+** J. Gain classifies: real-time (< 30ms), interactive (< 3s), near-interactive (< 5min), and long-term. \\
+** Useful in "infinity-scroll" video games, for example \\
+- Explanation of control \\
+** Aims to meet user demands \\
+** Major issue being "impossible" user demands \\
+** Useful in most procedural generation applications: speeding up artists' work, for example \\
 - ...
 
-\subsubsection{Régénération}
-- Actions manuelles \\
-- Problématiques de la régénération \\
-** Quoi regénérer ? \\
-** Comment régénérer ? \\
-** Problèmes des interactions utilisateur ? \\
-- Fichier de stockage d'actions JSON (?)
+\subsubsection{Regeneration}
+- Manual actions \\
+- Issues with regeneration \\
+** What to regenerate? \\
+** How to regenerate? \\
+** Problems with user interactions? \\
+- Action storage file in JSON (?) \\
 - ...
 
-
-
-\section{Representation de terrains}
+\section{Terrain Representation}
 \label{sec:introduction_terrain-representations}
 - ...
 
-\subsection{Terrains 2.5D}
+\subsection{2.5D Terrains}
 - ...
 
-\subsubsection{Cartes de hauteur}
+\subsubsection{Height Maps}
 - ...
 
-\subsubsection{Fonctions de hauteur}
+\subsubsection{Height Functions}
 - ...
 
-\subsection{Terrains 3D}
-- Besoin de notions 3D \\
-** Information geologique \\
-** Données volumiques \\
+\subsection{3D Terrains}
+- Need for 3D concepts \\
+** Geological information \\
+** Volumetric data \\
 - ...
 
-\subsubsection{Problématiques principales}
-- Mémoire \\
-- Visualisation \\
+\subsubsection{Main Issues}
+- Memory \\
+- Visualization \\
 - Modifications \\
-- Conversion entre representations \\
-** Pertes d'informations \\
-*** Propagation d'erreur sur la géométrie (approximations sur les normales, résolution Z, surface, etc...) \\
-*** Perte d'informations sous-terraines \\
+- Conversion between representations \\
+** Information loss \\
+*** Error propagation on geometry (approximations on normals, Z resolution, surface, etc.) \\
+*** Loss of subsurface information \\
 - ...
 
-
-\subsubsection{Types, définitions, avantages, inconvéniants}
-- Grilles de voxels \\
-- Piles de matériaux \\
-- Maillage \\
-- Surfaces implicites \\
+\subsubsection{Types, Definitions, Advantages, Disadvantages}
+- Voxel grids \\
+- Material stacks \\
+- Meshes \\
+- Implicit surfaces \\
 - ...
 
-\subsection{Autres modèles}
-- Notion de sémantique \\
+\subsection{Other Models}
+- Concept of semantics \\
 - ...
 
-\subsection{Paysages sous-marins}
-- Données 3D \\
-** Paysages coralliens remplis de vide \\
-** Beaucoup de cavités (caves, grottes, reseaux karstiques) \\
-- Données interdisciplinaires \\
-** Plutôt commun avec generation de terrains\\
-** => validation géologique avec des experts \\
-** Pour sous-marin, \\
-*** Moins d'experts, \\
-*** Plus d'incertitudes \\
-*** Plutôt basé sur des observations \\
-*** Peu de données (paysages coralliens < 0.1\% des océans), pour gros impact biologique (25\% biodiversité marine) \\
-** Mélange de géologie, biologie, hydrologie et physique (des fluides, notamment) \\
-- Besoin de multi-échelles \\
-** Pas limité au sous-marin \\
-** Intégrer de gros éléments (montagnes) avec des petits éléments (végétation). \\
+\subsection{Underwater Landscapes}
+- 3D Data \\
+** Coral landscapes filled with voids \\
+** Many cavities (caves, grottos, karst networks) \\
+- Interdisciplinary Data \\
+** Rather common with terrain generation \\
+** => Geological validation with experts \\
+** For underwater, \\
+*** Fewer experts, \\
+*** More uncertainties \\
+*** Based more on observations \\
+*** Few data (coral landscapes < 0.1% of oceans), for significant biological impact (25% marine biodiversity) \\
+** Mix of geology, biology, hydrology, and physics (especially fluid dynamics) \\
+- Need for multi-scale \\
+** Not limited to underwater \\
+** Integrate large elements (mountains) with small elements (vegetation) \\
 ** LOD \\
-- ... 
-
-\subsubsection{Simulations de fluides}
-- Très important dans génération procédurale de terrain \\
-- Permet de justifier la géophysique d'une simulation/génération. \\
-- Solutions assez rapide en 2D (PIC, FLIP, Stable Fluids, SPH, etc...) \\
-- Mais devient beaucoup plus lourd et memoire intensif en 3D
 - ...
 
+\subsubsection{Fluid Simulations}
+- Very important in procedural terrain generation \\
+- Allows justifying the geophysics of a simulation/generation \\
+- Quite fast solutions in 2D (PIC, FLIP, Stable Fluids, SPH, etc.) \\
+- But becomes much heavier and memory-intensive in 3D \\
+- ...
 
-
-\section{Paysages coralliens (partie biologique)}
+\section{Coral Reefs (Biological Aspects)}
 \label{sec:introduction_biology}
-- Historique découverte des récifs de corail \\
-- Iles, barrières, atolls \\
-- Théories des atolls \\
-- Utilité dans la biodiversité \\
-- Menaces, protection, importance de les comprendre \\
+- Historical discovery of coral reefs \\
+- Islands, barriers, atolls \\
+- Atoll theories \\
+- Importance in biodiversity \\
+- Threats, protection, importance of understanding them \\
 - ...
 
-\section{Géométrie et structures de données}
+\section{Geometry and Data Structures}
 \label{sec:introduction_geometry-datastructures}
-- Présentation des structures utilisées \\
-- ... 
+- Presentation of used structures \\
+- ...
 
-\subsection{Géométrie}
-- ... 
+\subsection{Geometry}
+- ...
 
 \subsubsection{Points}
-- Definis dans l'espace 3D sous forme $\left( x, y, z \right)^T$. \\
-- Quand projeté en 2D, $z = 0$ implicite. \\
-- Représentés dans le manuscrit comme: $\p \in \R^3$ \\
+- Defined in 3D space as $\left( x, y, z \right)^T$. \\
+- When projected in 2D, $z = 0$ is implicit. \\
+- Represented in the manuscript as: $\p \in \R^3$ \\
 - ...
 
-\subsubsection{Courbes}
-- Fonction paramétrique $\curve: [0, 1] \to \R^3$. \\
-- Sauf mention contraire, utilisation de Centripetal Catmull–Rom spline [CITE CATMULL 1974]: \\
+\subsubsection{Curves}
+- Parametric function $\curve: [0, 1] \to \R^3$. \\
+- Unless otherwise specified, use of Centripetal Catmull–Rom spline [CITE CATMULL 1974]: \\
 ** Let $\p_i$ denote a point. For a curve segment $\curve$ defined by points $\p_0$, $\p_1$, $\p_2$, $\p_3$ and knot sequence $t_0$, $t_1$, $t_2$, $t_3$, the centripetal Catmull-Rom spline can be produced by:
 \begin{align}
     \curve(t) = \frac{t_2 - t}{t_2 - t_1} B_1 + \frac{t - t_1}{t_2 - t_1} B_2
@@ -175,76 +170,75 @@ where
 \end{align}
 and
 \begin{align}
-    t_{i + 1} = \sqrt{ \left(x_{i+1} - x_i \right) + \left(y_{i+1} - y_i \right) +  \left(z_{i+1} - z_i \right)}^\alpha + t_i
+    t_{i + 1} = \sqrt{ \left(x_{i+1} - x_i \right)^2 + \left(y_{i+1} - y_i \right)^2 +  \left(z_{i+1} - z_i \right)^2 }^\alpha + t_i
 \end{align}
-in which $\alpha$ ranges from 0 to 1 for knot parameterization, and $i = 0, 1, 2, 3$ with $t_0 = 0$. For centripetal Catmull-Rom spline, the value of $\alpha$ is 
+where $\alpha$ ranges from 0 to 1 for knot parameterization, and $i = 0, 1, 2, 3$ with $t_0 = 0$. For centripetal Catmull-Rom spline, the value of $\alpha$ is 
 0.5. When $\alpha = 0$, the resulting curve is the standard uniform Catmull-Rom spline; when $\alpha = 1$, the result is a chordal Catmull-Rom spline. \\
 ** We will keep $\alpha = 0.5$ for all the work in this manuscript, as it felt like a good compromise between smoothness and control on the curve. The value of $\alpha$ has not been studied deeply. \\
-- Avantages: Centripetal Catmull-Rom spline has several desirable mathematical properties compared to the original and the other types of Catmull-Rom formulation. First, it will not form loop or self-intersection within a curve segment. Second, cusp will never occur within a curve segment. Third, it follows the control points more tightly. [COPIE COLLE WIKIPEDIA] \\
-- De plus, nous n'utilisons pas de "handles" (invisible control points) like for Bézier curves. At the cost of a little user control, I feel the that the use is simplified. \\
-- Le calcul des derivées premières et secondes (tangeante et normale) sont rapides à calculer. \\
+- Advantages: Centripetal Catmull-Rom spline has several desirable mathematical properties compared to the original and other types of Catmull-Rom formulations. First, it will not form loops or self-intersections within a curve segment. Second, cusps will never occur within a curve segment. Third, it follows the control points more tightly. [COPY PASTE WIKIPEDIA] \\
+- Additionally, we do not use "handles" (invisible control points) like for Bézier curves. At the cost of a little user control, I feel the use is simplified. \\
+- The calculation of first and second derivatives (tangent and normal) is quick. \\
 - ...
 
-\subsection{Structures de données}
+\subsection{Data Structures}
 - ...
 
-\subsubsection{Grilles 3D}
-- Dans ce manuscrit, toutes grilles 3D définies en float32 signé. \\
-- Pas optimial, notamment pour representé voxels binaires (utilisation de 32x plus de mémoire et calcul que nécessaire), mais flexible... \\
-- Grilles de voxels stockées sous forme de listes de sous-grilles 3D ("modifications locales") pour naviguer en undo-redo. Evaluation d'une cellule par somme des sous-grilles. \\
+\subsubsection{3D Grids}
+- In this manuscript, all 3D grids are defined as signed float32. \\
+- Not optimal, especially for representing binary voxels (uses 32x more memory and computation than necessary), but flexible... \\
+- Voxel grids stored as lists of sub-grids ("local modifications") to navigate undo-redo. Cell evaluation by summing sub-grids. \\
 - ...
 
-
-\section{Création du prototype}
+\section{Prototype Creation}
 \label{sec:introduction_prototype}
-- C++23 et Qt5.12 \\
-- OpenGL 4.6 et GLSL \\
-- Marching Cubes sur geometry shader \\
-** Mauvaise idée, mais justifier le pourquoi \\
-- Rendus :\\
-** Avec le prototype : \\
-*** Marching Cubes sur geometry shader \\
+- C++23 and Qt5.12 \\
+- OpenGL 4.6 and GLSL \\
+- Marching Cubes on geometry shader \\
+** Bad idea, but justify why \\
+- Renderings: \\
+** With the prototype: \\
+*** Marching Cubes on geometry shader \\
 *** Triplanar texture \\
-*** Résultats temps-réels \\
-*** Textures selon matériaux \\
-** Avec Unreal Engine 5 : \\
-*** Maillages statiques \\
-*** Ajout de végétation procédurale avec plugin [NOM DU PLUGIN] et océan avec [NOM DU PLUGIN] \\
-** Avec Blender 4.1 \\
-*** Maillages statiques \\
-*** Utilisation de scripts plus facile \\
+*** Real-time results \\
+*** Textures based on materials \\
+** With Unreal Engine 5: \\
+*** Static meshes \\
+*** Added procedural vegetation with plugin [PLUGIN NAME] and ocean with [PLUGIN NAME] \\
+** With Blender 4.1: \\
+*** Static meshes \\
+*** Easier script usage \\
 - ...
 
-\section{Contributions et plan}
+\section{Contributions and Plan}
 \label{sec:introduction_contribution-plan}
-- Ordre chronologique de la génération de terrains \\
-- Propose une representation abstraite à mi-chemin entre informatique et expertise terrain \\
-** Offrant une généralisation du type de paysage souhaité (sous-marin, mais aussi terrestre) \\
-- Proposition de nouveaux types de paysages (karsts et iles coralliennes) \\
-** Conservation de la notion de parcimonie (volumes implicites) \\
-- Propose une méthode de simulation d'érosion par particules \\
-** Agnostique de la représentation de terrain \\
-** Légère, rapide, simple d'implémentation \\
-- Objectif de garder un maximum de controle pour l'utilisateur \\ 
-** Dans le processus de génération, mais aussi pour rectifier en amont des détails
+- Chronological order of terrain generation \\
+- Proposes an abstract representation halfway between computing and terrain expertise \\
+** Offering a generalization of the desired landscape type (underwater, but also terrestrial) \\
+- Proposes new types of landscapes (karsts and coral islands) \\
+** Maintaining the notion of sparseness (implicit volumes) \\
+- Proposes a particle-based erosion simulation method \\
+** Terrain representation agnostic \\
+** Lightweight, fast, easy to implement \\
+- Aims to keep maximum control for the user \\ 
+** In the generation process, but also to correct details upstream
 
-\subsection{Sémantique}
-- Travail orienté sur la génération sous-marine \\
-- Collaboration avec un biologiste marin \\
+\subsection{Semantics}
+- Work oriented towards underwater generation \\
+- Collaboration with a marine biologist \\
 - 
 
-\subsection{Modélisation}
-- Génération de certains éléments de paysages encore nouveaux (karsts à référer à Axel Paris, mais iles coralliennes nouveau) \\
-- Réseaux karstiques représentés de manière hautement user-friendly \\
-** Voir les karsts comme un graphe orienté acyclique => proche de la structure arbre \\
-** Augmentation de la méthode pour génération fractale avec cycles (génération en plusieurs itérations) \\
-- Iles coralliennes en utilisant une interprétation de la théorie de Darwin \\
-** Basée sur des observations \\
-** Basé sur des carnets de voyages
+\subsection{Modeling}
+- Generation of some landscape elements still new (karsts referring to Axel Paris, but coral islands new) \\
+- Karst networks represented in a highly user-friendly manner \\
+** Viewing karsts as a directed acyclic graph => close to tree structure \\
+** Enhanced method for fractal generation with cycles (generation in multiple iterations) \\
+- Coral islands using an interpretation of Darwin's theory \\
+** Based on observations \\
+** Based on travel journals
 
 \subsection{Amplification}
-- Augmenter le réalisme par l'ajout de détails \\
-- Méthode d'érosion basé sur l'utilisation de particules \\
-** Généralisation pour flexibilité \\
-** Rapidité, parallelisation \\
-- Vers une méthode d'érosion continue.
+- Increasing realism by adding details \\
+- Particle-based erosion method \\
+** Generalization for flexibility \\
+** Speed, parallelization \\
+- Towards a continuous erosion method.
