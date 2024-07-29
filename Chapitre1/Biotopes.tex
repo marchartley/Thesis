@@ -1,8 +1,10 @@
 \chapter{Influence sur la génération}
+\label{chap:influence-on-env-objects}
 \minitoc
 
 
 \section{Introduction}
+\label{sec:influence-on-env-objects_introduction}
 This document aims to formalize a terrain generation method developed during my thesis.
 
 The main issue this method seeks to address is the difficulty for a user to describe the environments they want to generate. By proposing a hierarchical structure in the description of elements to define, the environments exhibit adaptive representation granularity, catering both to the user's needs and hardware capabilities.
@@ -14,6 +16,7 @@ In this context, we define the characteristics of a geographical region as well 
 Although this method was conceived with the aim of generating underwater environments, many examples given in this document will use elements present in surface environments, purely for simplification purposes.
 
 \section{Glossary}
+\label{sec:influence-on-env-objects_glossary}
 Initially, this document will present definitions of various terms used in the description of the method. By doing so, we hope to eliminate any ambiguity in the upcoming explanations. Definitions may appear in certain sections of this document if deemed too specific.
 
 \textbf{Biotope}: The main element of the method used. The biotope (or, as I might often write, the biome) is a geographical region defined by topographic and geomorphological characteristics. The notion of biotope used does not distinguish between different scales (the biosphere and the ecosystem of a rock are represented uniformly), nor does it distinguish between living and mineral elements. The biotope is represented in two different ways in the terrain generation process: the model and the instance.
@@ -47,6 +50,7 @@ Initially, this document will present definitions of various terms used in the d
 \textbf{Primitives}: Primitives are simple geometric representations that can be combined to represent more complex structures. Among these, we can notably find: the point, the curve, the sphere, and the 3D model.
 
 \section{Environment description}
+\label{sec:influence-on-env-objects_environment-description}
 In this method, an environment is defined by a biotope model for which characteristics such as the general shape of its region, the biotope's relief, or the representative primitive of the biotope are specified, as well as living conditions such as altitude, temperature, and necessary luminosity for its survival. These characteristics are uniform across the entire biotope region; the only way to vary them is to add sub-biomes in the definition, which will take the form of sub-regions of the parent. Sub-biomes have the same types of characteristics and living conditions, which they can define in their own way, as well as their own sub-biomes.
 
 Thus, the environment description is carried out recursively until the level of detail is sufficient for the modeler.
@@ -88,6 +92,7 @@ Three types of rules express adjacency between two biotopes: prohibition, possib
 \end{itemize}
 
 \section{Generation process}
+\label{sec:influence-on-env-objects_generation-process}
 The terrain generation process involves creating instances from biotope models while respecting their characteristics, living conditions, and adjacency rules. This section details the steps of the process.
 
 \subsection{Instance creation}
@@ -103,6 +108,7 @@ Users can intervene in the generation process by adding, replacing, or deleting 
 The final step involves validating the generated environment by checking for over- or under-adjacencies and making necessary refinements to ensure all instances adhere to their constraints and living conditions.
 
 \section{Conclusion}
+\label{sec:influence-on-env-objects_conclusion}
 This method provides a structured approach to terrain generation by leveraging biotopes and their hierarchical organization. By defining biotopes probabilistically and respecting adjacency rules and living conditions, it is possible to generate diverse and realistic environments with varying levels of detail.
 
 Future work may include refining probabilistic models for characteristics and adjacency rules, as well as exploring the use of probabilistic adjacency possibilities to further enhance the flexibility and realism of generated terrains.

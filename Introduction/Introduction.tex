@@ -1,9 +1,11 @@
 \chapter{Introduction}
+\label{chap:introduction}
 \minitoc
 
 - ...
 
 \section{Génération procédurale}
+\label{sec:introduction_procedural-generation}
 - ...
 
 \subsection{Définition}
@@ -59,11 +61,13 @@
 ** Quoi regénérer ? \\
 ** Comment régénérer ? \\
 ** Problèmes des interactions utilisateur ? \\
+- Fichier de stockage d'actions JSON (?)
 - ...
 
 
 
 \section{Representation de terrains}
+\label{sec:introduction_terrain-representations}
 - ...
 
 \subsection{Terrains 2.5D}
@@ -120,11 +124,19 @@
 ** Pas limité au sous-marin \\
 ** Intégrer de gros éléments (montagnes) avec des petits éléments (végétation). \\
 ** LOD \\
+- ... 
+
+\subsubsection{Simulations de fluides}
+- Très important dans génération procédurale de terrain \\
+- Permet de justifier la géophysique d'une simulation/génération. \\
+- Solutions assez rapide en 2D (PIC, FLIP, Stable Fluids, SPH, etc...) \\
+- Mais devient beaucoup plus lourd et memoire intensif en 3D
 - ...
 
 
 
 \section{Paysages coralliens (partie biologique)}
+\label{sec:introduction_biology}
 - Historique découverte des récifs de corail \\
 - Iles, barrières, atolls \\
 - Théories des atolls \\
@@ -132,14 +144,66 @@
 - Menaces, protection, importance de les comprendre \\
 - ...
 
+\section{Géométrie et structures de données}
+\label{sec:introduction_geometry-datastructures}
+- Présentation des structures utilisées \\
+- ... 
+
+\subsection{Géométrie}
+- ... 
+
+\subsubsection{Points}
+- Definis dans l'espace 3D sous forme $\left( x, y, z \right)^T$. \\
+- Quand projeté en 2D, $z = 0$ implicite. \\
+- Représentés dans le manuscrit comme: $\p \in \R^3$ \\
+- ...
+
+\subsubsection{Courbes}
+- Fonction paramétrique $\curve: [0, 1] \to \R^3$. \\
+- Sauf mention contraire, utilisation de Centripetal Catmull–Rom spline [CITE CATMULL 1974]: \\
+** Let $\p_i$ denote a point. For a curve segment $\curve$ defined by points $\p_0$, $\p_1$, $\p_2$, $\p_3$ and knot sequence $t_0$, $t_1$, $t_2$, $t_3$, the centripetal Catmull-Rom spline can be produced by:
+\begin{align}
+    \curve(t) = \frac{t_2 - t}{t_2 - t_1} B_1 + \frac{t - t_1}{t_2 - t_1} B_2
+\end{align}
+where
+\begin{align}
+    B_1(t) &= \frac {t_2 - t}{t_2 - t_0} A_1(t) + \frac{t - t_0}{t_2 - t_0} A_2(t) \\
+    B_2(t) &= \frac{t_3 - t}{t_3 - t_1} A_2(t) + \frac{t - t_1}{t_3 - t_1} A_3(t) \\
+    A_1(t) &= \frac{t_1 - t}{t_1 - t_0} \p_0 + \frac{t - t_0}{t_1 - t_0} \p_1 \\
+    A_2(t) &= \frac{t_2 - t}{t_2 - t_1} \p_1 + \frac{t - t_1}{t_2 - t_1} \p_2 \\
+    A_3(t) &= \frac{t_3 - t}{t_3 - t_2} \p_2 + \frac{t - t_2}{t_3 - t_2} \p_3
+\end{align}
+and
+\begin{align}
+    t_{i + 1} = \sqrt{ \left(x_{i+1} - x_i \right) + \left(y_{i+1} - y_i \right) +  \left(z_{i+1} - z_i \right)}^\alpha + t_i
+\end{align}
+in which $\alpha$ ranges from 0 to 1 for knot parameterization, and $i = 0, 1, 2, 3$ with $t_0 = 0$. For centripetal Catmull-Rom spline, the value of $\alpha$ is 
+0.5. When $\alpha = 0$, the resulting curve is the standard uniform Catmull-Rom spline; when $\alpha = 1$, the result is a chordal Catmull-Rom spline. \\
+** We will keep $\alpha = 0.5$ for all the work in this manuscript, as it felt like a good compromise between smoothness and control on the curve. The value of $\alpha$ has not been studied deeply. \\
+- Avantages: Centripetal Catmull-Rom spline has several desirable mathematical properties compared to the original and the other types of Catmull-Rom formulation. First, it will not form loop or self-intersection within a curve segment. Second, cusp will never occur within a curve segment. Third, it follows the control points more tightly. [COPIE COLLE WIKIPEDIA] \\
+- De plus, nous n'utilisons pas de "handles" (invisible control points) like for Bézier curves. At the cost of a little user control, I feel the that the use is simplified. \\
+- Le calcul des derivées premières et secondes (tangeante et normale) sont rapides à calculer. \\
+- ...
+
+\subsection{Structures de données}
+- ...
+
+\subsubsection{Grilles 3D}
+- Dans ce manuscrit, toutes grilles 3D définies en float32 signé. \\
+- Pas optimial, notamment pour representé voxels binaires (utilisation de 32x plus de mémoire et calcul que nécessaire), mais flexible... \\
+- Grilles de voxels stockées sous forme de listes de sous-grilles 3D ("modifications locales") pour naviguer en undo-redo. Evaluation d'une cellule par somme des sous-grilles. \\
+- ...
+
 
 \section{Création du prototype}
+\label{sec:introduction_prototype}
 - C++23 et Qt5.12 \\
 - OpenGL 4.6 et GLSL \\
 - Marching Cubes sur geometry shader \\
 ** Mauvaise idée, mais justifier le pourquoi \\
 - Rendus :\\
 ** Avec le prototype : \\
+*** Marching Cubes sur geometry shader \\
 *** Triplanar texture \\
 *** Résultats temps-réels \\
 *** Textures selon matériaux \\
@@ -152,6 +216,7 @@
 - ...
 
 \section{Contributions et plan}
+\label{sec:introduction_contribution-plan}
 - Ordre chronologique de la génération de terrains \\
 - Propose une representation abstraite à mi-chemin entre informatique et expertise terrain \\
 ** Offrant une généralisation du type de paysage souhaité (sous-marin, mais aussi terrestre) \\
