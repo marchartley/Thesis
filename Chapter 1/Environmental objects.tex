@@ -5,7 +5,7 @@
 \minitoc
 \teaser{
 	 \includegraphics[width=0.9\linewidth]{Figures/Render/figureTeaser.png}
-	 \centering
+	%  % \centering
 	  \caption{Our method can produce different scenes including coral islands and canyons at multi-scale using environmental objects to represent terrain features.}
 	\label{fig:semantic-representation_teaser}
 	}
@@ -213,7 +213,7 @@ Translating an environmental object is trivial, we simply requires to evaluate t
 By modifying an environmental object, the environment values may change, which can result in the destruction of the now incompatible environment objects in the scene (Figure~\ref{fig:semantic-representation_user-interaction}).
 
 \begin{figure}
-    \centering
+    % \centering
     \includegraphics[width = 0.3 \linewidth]{Figures/Interactions/InteractionEdition1.png}
     \includegraphics[width = 0.3 \linewidth]{Figures/Interactions/InteractionEdition2.png}
     \includegraphics[width = 0.3 \linewidth]{Figures/Interactions/InteractionEdition3.png}
@@ -229,7 +229,7 @@ Figure~\ref{fig:semantic-representation_coral-colonization-scene} shows an examp
 % Figure~\ref{fig:semantic-representation_focus-area-example} shows an example of colonization of the coral polyps that we limited manually.
 
 % \begin{figure}
-%     \centering
+%     % \centering
 %     \includegraphics{Figures/UserControl/guidedGeneration1.png}
 %     \caption{Controlling the generation area can produce a user-defined focused shape.}
 %     \label{fig:semantic-representation_focus-area-example}
@@ -251,7 +251,7 @@ Water level changes are important events that shape the underwater landscapes. A
 with $\Delta \depth_e$ the amount of water rising or lowering during an event. We assumed a linear evolution of the water level during an event. This allows to evaluate the depth at any point in space and in time.
 
 \begin{figure}
-    \centering
+    % \centering
     \includegraphics[width = 0.45 \linewidth]{Figures/Interactions/InteractionWater1.png}
     \includegraphics[width = 0.45 \linewidth]{Figures/Interactions/InteractionWater3.png}
     \caption{Lowering the water level by a few meters caused most of the coral objects to satisfy $\fittingFuncObj \leq 0$, causing their death. Since the water level (blue) decrease slowly, new coral objects spawn progressively at a lower altitude.}
@@ -268,7 +268,7 @@ with $G(x)$ the Gaussian function
 \end{align*}
 
 \begin{figure}
-    \centering
+    % \centering
     \includegraphics[width = 0.45 \linewidth]{Figures/Interactions/InteractionSubsidence1.png}
     \includegraphics[width = 0.45 \linewidth]{Figures/Interactions/InteractionSubsidence2.png}
     \caption{Simulating subsidence on a part of the terrain (brown area) cause the depth value to change locally, resulting in the death of coral objects that find themselves too deep to survive. Here two subsidence events are triggered in parallel. }
@@ -282,7 +282,7 @@ Storms are factors of the geomorphology of coral reefs \cite{VilaConcejo2016, Or
 In this case, we did not include the linear factor $\tEvent$ as storms are usually conserving a constant force for the time of the few weeks or months of their occurrence. 
 
 \begin{figure}
-    \centering
+    % \centering
     \includegraphics[width = 0.45 \linewidth]{Figures/Interactions/interactionStorm1.png}
     \includegraphics[width = 0.45 \linewidth]{Figures/Interactions/interactionStorm2.png}
     \caption{The result of a storm localized on one side of the island (red area) modifies the result of the evaluation of environmental objects around its epicenter for a short period of time. Most of the coral objects died from the event, except few environmental objects less sensible to water currents strength. }
@@ -328,7 +328,7 @@ In this example we defined three different types of corals, coralA, coralB and c
 Figure~\ref{fig:semantic-representation_coral-colonization-scene} shows the result of this simulation at three different interations. At the border between two colonies, none of the colonies make progression due to the amount of coral polyp specific from the other colony.
 
 \begin{figure*}
-    \centering
+    % \centering
     \includegraphics[width=0.245 \linewidth]{Figures/Colonization/col0.png}
     \includegraphics[width=0.245 \linewidth]{Figures/Colonization/col1.png}
     \includegraphics[width=0.245 \linewidth]{Figures/Colonization/col2.png}
@@ -338,7 +338,7 @@ Figure~\ref{fig:semantic-representation_coral-colonization-scene} shows the resu
 \end{figure*}
 
 \begin{figure*}
-    \centering
+    % \centering
     \includegraphics[width = 0.24 \linewidth]{Figures/Canyon/Canyon2.png}
     \includegraphics[width = 0.24 \linewidth]{Figures/Canyon/Canyon3.png}
     \includegraphics[width = 0.24 \linewidth]{Figures/Canyon/Canyon4.png}
@@ -364,21 +364,9 @@ Integrating environmental properties in the fitting function of environmental ob
 We limited our work to the use of 2D scalar fields as they are more easily differentiable, interpretable and lighter than volumetric representations. However, future works include using 3D representations of the terrain and the environment to generate 3D terrains, including cavities, sub-terrestrial areas and the interior of coral structures. 
 % The different possibilities to explore for this would be: the use of 3D particles to represent the state of the materials in the environment, or voxel grids or flatten representation of the terrain's surface (but would not allow a different morphological shape than the height field...).
 
-\def\url#1{} % This line actually remove the "URL" link from the references
-
-
 \begin{figure*}
-    \centering
+    % \centering
     \includegraphics{Figures/CoralIsland/multiScene1 v2 final 1.png}
     \caption{A simple coral island is generated using an island, a lagoon, reefs coral polyps, beaches, trees and algae environmental objects. Trees appear on beaches and algae grow in the lagoon's sand. }
     \label{fig:semantic-representation_coral-island-scene}
 \end{figure*}
-
-% bibtex
-%\bibliographystyle{eg-alpha-doi}
-%\bibliography{references_terrain}
-
-% biblatex with biber
-% \printbibliography
-
-%\end{document}

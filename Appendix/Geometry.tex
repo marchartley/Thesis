@@ -1,0 +1,35 @@
+\chapter{Geometry}
+- ...
+
+\section{Points}
+- Defined in 3D space as $\left( x, y, z \right)^T$. \\
+- When projected in 2D, $z = 0$ is implicit. \\
+- Represented in the manuscript as: $\p \in \R^3$ \\
+- ...
+
+\section{Curves}
+- Parametric function $\curve: [0, 1] \to \R^3$. \\
+- Unless otherwise specified, use of Centripetal Catmull–Rom spline [CITE CATMULL 1974]: \\
+** Let $\p_i$ denote a point. For a curve segment $\curve$ defined by points $\p_0$, $\p_1$, $\p_2$, $\p_3$ and knot sequence $t_0$, $t_1$, $t_2$, $t_3$, the centripetal Catmull-Rom spline can be produced by:
+\begin{align}
+    \curve(t) = \frac{t_2 - t}{t_2 - t_1} B_1 + \frac{t - t_1}{t_2 - t_1} B_2
+\end{align}
+where
+\begin{align}
+    B_1(t) &= \frac {t_2 - t}{t_2 - t_0} A_1(t) + \frac{t - t_0}{t_2 - t_0} A_2(t) \\
+    B_2(t) &= \frac{t_3 - t}{t_3 - t_1} A_2(t) + \frac{t - t_1}{t_3 - t_1} A_3(t) \\
+    A_1(t) &= \frac{t_1 - t}{t_1 - t_0} \p_0 + \frac{t - t_0}{t_1 - t_0} \p_1 \\
+    A_2(t) &= \frac{t_2 - t}{t_2 - t_1} \p_1 + \frac{t - t_1}{t_2 - t_1} \p_2 \\
+    A_3(t) &= \frac{t_3 - t}{t_3 - t_2} \p_2 + \frac{t - t_2}{t_3 - t_2} \p_3
+\end{align}
+and
+\begin{align}
+    t_{i + 1} = \sqrt{ \left(x_{i+1} - x_i \right)^2 + \left(y_{i+1} - y_i \right)^2 +  \left(z_{i+1} - z_i \right)^2 }^\alpha + t_i
+\end{align}
+where $\alpha$ ranges from 0 to 1 for knot parameterization, and $i = 0, 1, 2, 3$ with $t_0 = 0$. For centripetal Catmull-Rom spline, the value of $\alpha$ is 
+0.5. When $\alpha = 0$, the resulting curve is the standard uniform Catmull-Rom spline; when $\alpha = 1$, the result is a chordal Catmull-Rom spline. \\
+** We will keep $\alpha = 0.5$ for all the work in this manuscript, as it felt like a good compromise between smoothness and control on the curve. The value of $\alpha$ has not been studied deeply. \\
+- Advantages: Centripetal Catmull-Rom spline has several desirable mathematical properties compared to the original and other types of Catmull-Rom formulations. First, it will not form loops or self-intersections within a curve segment. Second, cusps will never occur within a curve segment. Third, it follows the control points more tightly. [COPY PASTE WIKIPEDIA] \\
+- Additionally, we do not use "handles" (invisible control points) like for Bézier curves. At the cost of a little user control, I feel the use is simplified. \\
+- The calculation of first and second derivatives (tangent and normal) is quick. \\
+- ...

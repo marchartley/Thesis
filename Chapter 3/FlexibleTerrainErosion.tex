@@ -237,7 +237,7 @@ Our particle system can model intricate scenarios, like the erosion caused by wa
 \section{Our erosion method}
 \label{sec:erosion_application_on_representations}
 \begin{figure}[t]
-    \centering
+    % \centering
     \includegraphics{figures/figure_pipeline.pdf}
     \caption{Our overall pipeline: our erosion process compute matter displacement of a terrain using an arbitrary representation as long as intersections between particles and the ground can be detected. An optional velocity field, provided by the user, guides the particles trajectories. We propose surface alteration methods to apply the erosion to the terrain in a coherent way between possible representations. }
     \label{fig:erosion_figure_pipeline}
@@ -366,7 +366,7 @@ Environment density $\fluidDensity$ is set to \SI{1}{\kilogram\per\cubic\meter} 
 Velocity field's refinement is done by using the presented diffusion strategy.
 
 \begin{table*}
-    \centering
+    % \centering
         \begin{tabular}{|lHlllllllllllll|}
             \hline
             \thead{Name} & \thead{Results} & \thead{Rep.} & \thead{Dimensions} & \thead{Res} & \thead{$\#P$} & \thead{$\#N$} & \thead{$\particleSize$} & \thead{$COR$} & \thead{$\particleDensity$} & \thead{$\capacityFactor$} & \thead{$\erosionRate$} & \thead{$\depositionRate$} & \thead{Vel field} & \thead{$t$} \\
@@ -423,7 +423,7 @@ The generation of the different sand structures depends on the velocity field pr
 \referenceExemple{Wind} gives an example of wind erosion on a flat surface with rock columns being eroded. Given a strong 2D velocity field computed by the high wind simulation proposed in \cite{Paris2020} is used on light particles, the simulation is fast thanks to the low number of collisions each particle has with the ground. 
 
 \begin{figure}[b]
-    \centering
+    % \centering
     \includegraphics[width=0.49\linewidth]{Results/MultiEffects_base.png}
     \includegraphics[width=0.49\linewidth]{Results/MultiEffects.png}
     \caption{Multiple erosion types can be combined. On an initial synthetic 500x500x50 density voxel grid, the a wind erosion is applied on the surface of the terrain while hydraulic erosion shapes the rills and the base of the mountains. A water current digs its borders and spreads sediments at the bottom. }
@@ -439,7 +439,7 @@ In the example presented in \referenceExemple{Underwater}, the velocity field is
 A complex water flow simulation is computed using SIMPLE \cite{Caretto1973} fluid simulation with OpenFOAM. The resulting erosion can then follow complex water movement and erode the terrain at the most affected parts of the 3D terrain as the trajectories of the particles (green) is highly affected by the fluid velocity (blue). The density of the particles and the environment being close, the buoyancy cancels most of the gravity force, leaving the velocity of the particles computed by the fluid velocity $\fluidVelocity$ and settling velocity $\settlingVelocity$ from \eqref{eq:velocity-computation-final} (Figure~\ref{fig:erosion_underwater_result}).
 \begin{figure}[t]
     
-    \centering
+    % \centering
     \includegraphics{Results/flowfield.pdf}
     \caption{A complex water flow simulation is computed using OpenFOAM. Particle trajectories (green) are highly affected by the fluid velocity (blue). Most the terrain exposed surfaces is eroded (bottom). }
     \label{fig:erosion_underwater_result}

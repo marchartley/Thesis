@@ -1,0 +1,49 @@
+\newcommand{\Esnake}{E_{\text{snake}}}
+\newcommand{\Eintern}{E_{\text{internal}}}
+\newcommand{\Eextern}{E_{\text{external}}}
+\newcommand{\Econt}{E_{\text{cont}}}
+\newcommand{\Eimage}{E_{\text{image}}}
+\newcommand{\Ecurv}{E_{\text{curv}}}
+
+\chapter{Snake - Modèle de contour actif}
+
+Nous souhaitons symboliser une zone de corail mort comme étant un objet environemental "récif".Pour cela, les objets corail déposent continuellement une quantité de materiau "corail mort". Ce materiau, stocké dans un champ scalaire discret, contient alors de fortes intensités là où un récif devrait, semblerait-il, exister.
+Il faut alors tracer une courbe pour représenter ce nouvel objet. Les contraintes de cette courbe est qu'elle doit traverser les points de plus haute intensité, tout en conservant une longueur donnée.
+L'algorithme de Snake, ou Active Contour Model (Modèle de Contour Actif en français) s'approche de cette application. L'algorithme propose de donner une énergie à la courbe, qui essaie alors de la minimiser par descente de gradients.
+L'énergie, dans le papier initial est défini  par 
+$$
+\Esnake^{*} = \int \limits _{0}^{1} \Esnake(\mathbf {v} (s))\,ds = \int \limits _{0}^{1} \left( \alpha + \beta \right) \Eintern (\mathbf {v} (s)) + \gamma \Eimage (\mathbf {v} (s)) + \Econt (\mathbf {v} (s)))\,ds
+$$
+L'énergie interne représente les propriétés de la courbe : 
+$$
+\Eintern = \alpha \Econt + \beta \Ecurv
+$$
+Le coût de continuité $\Econt$, originellement definit comme la minimisation de l'espacement entre les points $\left\|{\frac {d{\bar {v}}}{ds}}(s)\right\| ^{2}$, n'a pas beaucoup de sens dans la forme discrète de l'algorithme. Dans sa forme discrète on cherche à conserver un interval régulier entre les points en appliquant $\Econt = \left(\tilde{d} - \left\|p_i - p_{i-1} \right\| \right)^2$ avec $\tilde{d}$ la distance moyenne entre chaque point.
+
+Le coût de courbure $\Ecurv$ cherche à minimiser les oscillations de la courbe et peut alors se définir comme la derivée seconde au carré $\left\|{\frac {d^{2}{\bar {v}}}{ds^{2}}}(s)\right\| ^{2}$.
+La forme discrète $\Ecurv^{*} = \left\| p_{i-1} - 2 p_i + p_{i+1} \right\| ^2$ n'est pas nécessaire avec des splines, dû à leur forme close.
+
+Le coût d'image $\Eimage$ essaie d'attirer les points de la courbe vers un maximum local du gradient de l'image. On le définit par $\Eimage = - \left\| \nabla I \right\| $
+
+Nous souhaitons voir notre courbe garder une longueur donnée $L$. On modifie alors la formulation du cout de continuité pour devenir $\Econt = \left(\tilde{l} - \left\|p_i - p_{p-1} \right\| \right)^2$ avec $l = \frac{L}{n - 1}$ sachant $n$ le nombre de sommets de la courbe. De plus, on souhaite une courbe qui suit les points de haute intensité plutôt que le gradient, ce qui revient à modifier le coût d'image $\Eimage = -I$.
+
+Le calcul du gradient $\nabla \Esnake$ reste trivial par parties :
+\begin{align*}
+	\frac{\partial \Eimage}{\partial p_i} &= - \nabla I(p_i) \\
+	\frac{\partial \Ecurv^{*}}{\partial p_i} &= -\frac{2 \left( p_{i-1} - 2 p_i + p_{i+1} \right) }{ \left\| p_{i-1} - 2 p_i + p_{i+1} \right\| } \\
+	\frac{\partial \Econt^{*}}{\partial p_i} &= 2 \left(l - \left\|p_i - p_{i-1} \right\| \right) \cdot \frac{p_i - p_{i-1}}{ \left\| p_i - p_{i-1} \right\| }
+\end{align*}
+
+Nous avons alors
+\begin{align}
+	\Esnake &= \alpha \left(l - \left\|p_i - p_{i-1} \right\| \right)^2 + \beta \left\| p_{i-1} - 2 p_i + p_{i+1} \right\| ^2 - \gamma I \\
+	\nabla \Esnake &= 2 \alpha \left(l - \left\|p_i - p_{i-1} \right\| \right) \cdot \frac{p_i - p_{i-1}}{ \left\| p_i - p_{i-1} \right\| } - \beta \frac{2 \left( p_{i-1} - 2 p_i + p_{i+1} \right) }{ \left\| p_{i-1} - 2 p_i + p_{i+1} \right\| } - \gamma \nabla I(p_i)
+\end{align}
+
+Il est à noter que le calcul de $\Econt^{*}$ utilise la distance $\left\|p_i - p_{i - 1} \right\|$. Pour $i = 0$, on utilise la distance $\left\| p_i - p_{i + 1} \right\|$.
+Si tous les points de la courbe sont à une distance supérieure à $l$, l'optimisation poussera chacun de ces points à se rapprocher son point prédécesseur. Le point $p_0$, lui, ne se déplacera très peu, donc l'ensemble de la courbe se cale vers le point $p_0$. En utilisant la distance vers le successeur $\left\| p_i - p_{i+1} \right\|$, la courbe se déplace en direction du point $p_N$.
+Il est alors possible de converger vers le point médian en alternant l'utilisation de distance avec le prédécesseur et avec le successeur, au coût d'une convergence plus lente.
+
+L'algorithme de modèle de contour actif est fortement sensible à l'emplacement de la courbe de départ. Dans le cas où une portion de la courbe se situe dans un endroit à très faible gradient sur $\Eimage$, les sommets de la courbe vont simplement optimiser $\Eintern$, résultant en un segment droit, dans une zone à faible intensité, tandis que le reste de la courbe s'optimise correctement.
+Afin de limiter ce problème, on propose d'adapter l'algorithme Snake en Catapillar: tout au long de la descente de gradient, on réduit puis agrandit artificiellement la longueur cible $L$. De cette manière, une portion de courbe bloqué dans une région sans optimisation possible sur l'energie externe sera attirée par la courbe optimisée jusqu'à retomber sur un gradient fort. La portion morte peut prendre la place des sommets optimisés. En ramenant la longueur cible $L$ à la valeur initiale, l'optimisation est continuée avec des sommets en moins dans la zone morte. La répétition de ce procédé permet de ramener, petit à petit, tous les points en zone optimisable. Néanmoins, un changement trop rapide de la longueur cible peut empêcher les sommets d'optimiser $\Eextern$ en amplifiant trop $\Eintern$. De plus, cet algorithme peut amener à des erreur numeriques et une convergence ralentie.
+
