@@ -57,3 +57,20 @@
     backgroundcolor=\color{black!5}, % set backgroundcolor
     basicstyle=\footnotesize,% basic font setting
 }
+
+\makeglossaries
+\DeclareDocumentCommand{\newdualentry}{ O{} O{} m m m m g } {
+  \newglossaryentry{gls-#3}{
+    name={#5},
+    text={#5\glsadd{#3}},
+    plural={\IfValueTF{#7}{#7}{#5s}},
+    longplural={\IfValueTF{#7}{#7}{#5s}},
+    description={#6},#1
+  }
+  \makeglossaries
+  \newacronym[longplural={\IfValueTF{#7}{#7}{#5s}}, see={[Glossary:]{gls-#3}},#2]{#3}{#4}{#5\glsadd{gls-#3}}
+}
+\newcommand{\gloss}[1]{\gls{#1}\glsadd{gls-#1}}
+\newcommand{\glosses}[1]{\glspl{#1}\glsadd{gls-#1}}
+\newcommand{\Gloss}[1]{\Gls{#1}\glsadd{gls-#1}}
+\newcommand{\Glosses}[1]{\Glspl{#1}\glsadd{gls-#1}}
