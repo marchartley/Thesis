@@ -1,3 +1,5 @@
+\def\zzcommand#1{\let#1\undefined\newcommand#1}
+
 \LetLtxMacro{\Oldincludegraphics}{\includegraphics}
 \RenewDocumentCommand{\includegraphics}{O{} m}{%
 	\begin{adjustbox}{max width=\textwidth, max height=\textheight-5\baselineskip}
@@ -60,17 +62,26 @@
 
 \makeglossaries
 \DeclareDocumentCommand{\newdualentry}{ O{} O{} m m m m g } {
-  \newglossaryentry{gls-#3}{
-    name={#5},
-    text={#5\glsadd{#3}},
-    plural={\IfValueTF{#7}{#7}{#5s}},
-    longplural={\IfValueTF{#7}{#7}{#5s}},
-    description={#6},#1
-  }
-  \makeglossaries
-  \newacronym[longplural={\IfValueTF{#7}{#7}{#5s}}, see={[Glossary:]{gls-#3}},#2]{#3}{#4}{#5\glsadd{gls-#3}}
+    \newglossaryentry{gls-#3}{
+        name={#5},
+        text={#5\if\relax\detokenize{#4}\relax\else\glsadd{#3}\fi},
+        plural={\IfValueTF{#7}{#7}{#5s}},
+        longplural={\IfValueTF{#7}{#7}{#5s}},
+        description={#6},
+        #1
+    }
+    \if\relax\detokenize{#4}\relax
+    % nothing
+  \else
+    \newacronym[longplural={\IfValueTF{#7}{#7}{#5s}}, 
+        see={[Glossary:]{gls-#3}},
+        #2]{#3}{#4}{#5\glsadd{gls-#3}}
+  \fi
+    \makeglossaries
 }
-\newcommand{\gloss}[1]{\gls{#1}\glsadd{gls-#1}}
-\newcommand{\glosses}[1]{\glspl{#1}\glsadd{gls-#1}}
-\newcommand{\Gloss}[1]{\Gls{#1}\glsadd{gls-#1}}
-\newcommand{\Glosses}[1]{\Glspl{#1}\glsadd{gls-#1}}
+
+\zzcommand{\gloss}[1]{\ifglsentryexists{#1}{\gls{#1}\glsadd{gls-#1}}{\gls{gls-#1}}}
+\zzcommand{\glosses}[1]{\ifglsentryexists{#1}{\glspl{#1}\glsadd{gls-#1}}{\glspl{gls-#1}}}
+\zzcommand{\Gloss}[1]{\ifglsentryexists{#1}{\Gls{#1}\glsadd{gls-#1}}{\Gls{gls-#1}}}
+\zzcommand{\Glosses}[1]{\ifglsentryexists{#1}{\Glspl{#1}\glsadd{gls-#1}}{\Glspl{gls-#1}}}
+\zzcommand{\glsnamefont}[1]{\makefirstuc{#1}}
