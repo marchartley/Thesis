@@ -33,8 +33,9 @@
 
 \pagenumbering{roman}
 \input{PageDeGarde.tex}
-\setcounter{tocdepth}{3}
+\setcounter{tocdepth}{2}
 \tableofcontents
+\addcontentsline{toc}{chapter}{Table of Contents}
 \addtocontents{toc}{\protect\hypertarget{tocpage}{}}
 %\listoffigures \addcontentsline{toc}{chapter}{List of Figures} \mtcaddchapter
 %\listoftables \addcontentsline{toc}{chapter}{List of Tables}   \mtcaddchapter
@@ -42,7 +43,7 @@
 \input{Introduction/Forewords}
 
 \mainmatter
-\pagenumbering{arabic}
+% \pagenumbering{arabic}
 
 \input{Introduction/Introduction}
 
@@ -54,10 +55,15 @@
 
 \input{Chapter 3/chap3}
 
-\input{Conclusion/Conclusion}
-% \backmatter
+\backmatter
 
+\renewcommand\thechapter{\Roman{chapter}}
 % \pagenumbering{Roman}
+\part{}
+% \addcontentsline{toc}{part}{}
+
+\input{Conclusion/Conclusion}
+
 
 %\bibliographystyle{eg-alpha-doi}
 %\bibliographystyle{siam}
@@ -68,10 +74,11 @@
 \printglossaries
 %\bibliography{../references_terrain}
 
-
+\renewcommand\thechapter{\Roman{chapter}}
+\setcounter{chapter}{0}
 \input{Appendix/Appendix}
 
-\backmatter
+% \backmatter
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
