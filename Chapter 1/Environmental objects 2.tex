@@ -10,52 +10,72 @@
 	\label{fig:semantic-representation_teaser}
 	}
 
-topography
-Representing an environment as a topographic map
-A method that uses new objects, EnvObjs, to represent the landmarks of a terrain
-Our method represents the different landmarks of a terrain using a geometric (as "without 3D repr") representation. To avoid cycles in the interactions between objects, we use the environment as a proxy. EnvObjs are independant, like cellular automata. Each object affects locally the environment by modifying EnvVals. This modifications are applied by the EnvObjs spreading EnvMat around them. They also absorb EnvMat from the other EnvObjs. We can consider that the diffusion is bounded thanks to a decay rate, meaning the system becomes stable after some time. Because it is stable, it is plausible. We break the stability by adding new EnvObjs following \glosses{GenRule}. New EnvObjs are placed in the environment where they may be the most probable, following a fitness function using the EnvVals. Then the shape of the skeleton is defined following a skeleton \gloss{FitnessFunc}. We wait for the environment to stabilize. It can take some time, and some EnvObjs might die (if fitness function fall below 0), but it will converge. The user can guide this process by defining EnvObjs that can spawn. Also, because it is simple skeleton, he can modifie shapes. The diffusion process is deterministic so no abrupt changes in the landscape. Also, the stability of the system can be broken by influencing EnvVals. So user can affect them through \Glosses{GeoEvent}. \Glosses{GeoEvent} affect one or more EnvVal over time, but we reduce the number of evaluation to the begining and end of the \glosses{GeoEvent}. Each EnvObj has a probability of chance to spawn each day, which can be computed as an amount per month, years, etc... (Probability Distribution Function of $p(X) = p^t$).  
+% topography
+% Representing an environment as a topographic map
+% A method that uses new objects, EnvObjs, to represent the landmarks of a terrain
+% Our method represents the different landmarks of a terrain using a geometric (as "without 3D repr") representation. To avoid cycles in the interactions between objects, we use the environment as a proxy. EnvObjs are independant, like cellular automata. Each object affects locally the environment by modifying EnvVals. This modifications are applied by the EnvObjs spreading EnvMat around them. They also absorb EnvMat from the other EnvObjs. We can consider that the diffusion is bounded thanks to a decay rate, meaning the system becomes stable after some time. Because it is stable, it is plausible. We break the stability by adding new EnvObjs following \glosses{GenRule}. New EnvObjs are placed in the environment where they may be the most probable, following a fitness function using the EnvVals. Then the shape of the skeleton is defined following a skeleton \gloss{FitnessFunc}. We wait for the environment to stabilize. It can take some time, and some EnvObjs might die (if fitness function fall below 0), but it will converge. The user can guide this process by defining EnvObjs that can spawn. Also, because it is simple skeleton, he can modifie shapes. The diffusion process is deterministic so no abrupt changes in the landscape. Also, the stability of the system can be broken by influencing EnvVals. So user can affect them through \Glosses{GeoEvent}. \Glosses{GeoEvent} affect one or more EnvVal over time, but we reduce the number of evaluation to the begining and end of the \glosses{GeoEvent}. Each EnvObj has a probability of chance to spawn each day, which can be computed as an amount per month, years, etc... (Probability Distribution Function of $p(X) = p^t$).  
 
 \section{Introduction}
+% Slight introduction
 Topographic maps are very useful tools for biologists, geologists or even oceanologists (which would call them "bathymetric charts"). These maps are displayed in 2D but provide 3D information about the altitude (or depth), but can also use symbology to represent the important elements that need to be visible. Map symbols are important in order to extract as much information as possible from a 2D object. In cartography, map symbols are defined as geometric primitives such as points, polylines, polygons, and (rarely) polyhedrons. These symbols are a simplification of the content of an environment, or an abstraction of the 3D shape of the terrain features. This is useful to understand the relationship between the different features, which enables to deduce rules in the evolution of a terrain. 
 
+% WHo would want it, and why?
 In such way, geologists can study the distribution of peaks in a mountain range, the location of soil types in an area, which in turn allow to deduce possible locations of karst networks, for example. Using the same tools, a biologist may interpret the effect of natural or artificaial reefs on coastal erosion, or understand better the interactions inside an ecosystem. Oceanologists may deduce the formation of canyons and fans from old river systems.
 
 The abstraction of the details on the surface allows to focus on the undepth understanding of a process, which may be generalized to different terrain configurations. 
 
-Parallelly, terrain modelers for cinema or video games 
+Parallelly, terrain artists most of the time sketch the global shape of the terrain they will model beforehand, such that they can check before the modeling part that the consistency and plausibility of the terrain will be valid. Looking at a simplified map before starting the modeling step allows the designer to modify the overall shape of the terrain, at a large scale, before the 3D geometry comes in play, generating too much control points or vertices to be able to deal with.
+
+Starting from an initial configuration or providing conditions on the desired output terrain, the algorithm we propose will let the different terrain features evolve as a multi-agent system, allowing for a simulation of evolution on multiple years, while, at any time, the user can apply modifications or new constraints on the state of the environment. The resulting configuration is an environment conform to the constraints shared by the user, which can be about the number of years of simulation and/or the distribution of features present in the scene.
+
+% Why it does not already exists?
+As described in the previous chapter, most terrain generation algorithm use the geometry of an initial terrain surface to iteratively apply changes such as erosion simulation. While information about some environment variables or properties of the ground may influence the result of an algorithm, the control of the global shape of the terrain is lost as it treat locally the surface, without knowing which feature a certain point on the surface lies on.
+
+% Personal motivation
+The question which led to our solution is the multi-scale user interaction: "Is it possible to provide an interaction mean for terrain generation allowing the user to interact with a small structure like a rock in the same manner as with a large structure like a mountain?". 
+In this work, we want the user to be able to have a large scale representation of the terrain in order to generate a landscape that satisfies his needs while keeping the possibility to apply large modifications.
+In discussion with robotician users, we realise that we want to create a large landscape that can contain interesting , select a smaller region that have features in a disposition that.
+In the optic of generating a large scale terrain in which we could focus the generation effort in a certain region, we wished to be able to see a coarse representation that can be computed quickly.
+
+We want this method to be adapted for terrains above and under the water level.
+
+Because many geographical terms would become ambiguous in computer science terms, in which this thesis lie in, we will translate some vocabulary in a way that may be disapproved by geologists, but we are doing our best to keep it as acceptable for each field as possible.
 
 
+% \subsection{Nomenclature}
+% % Geographical feature/entity -> Semantic Terrain Entity
+% A geographical feature, also known as a feature, object, or entity, is a discrete phenomenon located at or near the Earth's surface, relevant in geography and geographic information science. It represents geographic information that can be depicted in maps, geographic information systems (GIS), and other forms of geographic discourse. The term "feature" includes both natural and human-made objects, ranging from tangible items like buildings to intangible concepts like neighborhoods. Features are distinct entities with defined boundaries, differentiating them from continuous geographic masses or processes occurring over time. They can be categorized as natural features, such as ecosystems, biomes, water bodies, and landforms, or artificial features, such as settlements, administrative regions, and engineered constructs. Geographic features are described by characteristics including identity, existence, classification, relationships with other features, location, attributes, and temporal aspects. Information about these features is stored in geographic databases using models like GIS datasets, which organize and represent these features in structured formats.
+% % A geographical feature, also referred to as a feature, object, or entity, is a discrete phenomenon located at or near the Earth's surface, relevant in geography and geographic information science. It is an item of geographic information that can be represented in maps, geographic information systems (GIS), remote sensing imagery, statistics, and other forms of geographic discourse. The term "feature" is broad and inclusive, encompassing both natural and human-made objects. It includes tangible items like buildings as well as intangible concepts like neighborhoods. Features are discrete entities with distinct identities and locations, characterized by defined boundaries that differentiate them from other objects, distinguishing them from geographic processes, which occur over time, and geographic masses or fields, which are continuous. In geographic information science, "feature," "object," and "entity" are often used interchangeably, although some formal distinctions exist, such as seeing a feature as an abstraction of a real-world phenomenon. Geographical features can be categorized into natural and artificial types. Natural features include ecosystems, which are communities of organisms interacting with their environments; biomes, which are large areas with ecologically similar communities defined by plant structures, climate, and ecological patterns; water bodies, which are significant accumulations of water like oceans and lakes, either distinct or conceptual in nature; and landforms, which are physical structures such as mountains and valleys defined by surface form, location, and topography. Artificial features encompass settlements, which are human communities ranging from small villages to large cities, including infrastructure like roads and buildings; administrative regions, which are social constructs like states and neighborhoods used for organizational purposes; engineered constructs, which are man-made structures such as highways and airports; and cartographic features, which are abstract map representations, such as grid lines and boundaries, that do not physically exist. Geographic features are represented by descriptors of their characteristics, including identity, existence, kind, relationships, location, attributes, and time. Each feature is unique, often identified by names or codes, and its existence refers to its presence in the real world, including features that are proposed or planned. The kind refers to its classification, such as a building or river, while relationships describe spatial, meronomic (part-whole), and genealogical (parent-child) connections with other features. The location provides a description of where a feature is, including its shape and extent, and attributes describe other characteristics, such as population or size, often expressed as text or numbers. Time relates to the temporal aspects of a feature's characteristics, describing changes over time. Information about features is stored in geographic databases, often using vector data models, including GIS datasets, which help represent these features and their various descriptors in a structured format.
 
-\subsection{Nomenclature}
-% Geographical feature/entity
-A geographical feature, also known as a feature, object, or entity, is a discrete phenomenon located at or near the Earth's surface, relevant in geography and geographic information science. It represents geographic information that can be depicted in maps, geographic information systems (GIS), and other forms of geographic discourse. The term "feature" includes both natural and human-made objects, ranging from tangible items like buildings to intangible concepts like neighborhoods. Features are distinct entities with defined boundaries, differentiating them from continuous geographic masses or processes occurring over time. They can be categorized as natural features, such as ecosystems, biomes, water bodies, and landforms, or artificial features, such as settlements, administrative regions, and engineered constructs. Geographic features are described by characteristics including identity, existence, classification, relationships with other features, location, attributes, and temporal aspects. Information about these features is stored in geographic databases using models like GIS datasets, which organize and represent these features in structured formats.
-% A geographical feature, also referred to as a feature, object, or entity, is a discrete phenomenon located at or near the Earth's surface, relevant in geography and geographic information science. It is an item of geographic information that can be represented in maps, geographic information systems (GIS), remote sensing imagery, statistics, and other forms of geographic discourse. The term "feature" is broad and inclusive, encompassing both natural and human-made objects. It includes tangible items like buildings as well as intangible concepts like neighborhoods. Features are discrete entities with distinct identities and locations, characterized by defined boundaries that differentiate them from other objects, distinguishing them from geographic processes, which occur over time, and geographic masses or fields, which are continuous. In geographic information science, "feature," "object," and "entity" are often used interchangeably, although some formal distinctions exist, such as seeing a feature as an abstraction of a real-world phenomenon. Geographical features can be categorized into natural and artificial types. Natural features include ecosystems, which are communities of organisms interacting with their environments; biomes, which are large areas with ecologically similar communities defined by plant structures, climate, and ecological patterns; water bodies, which are significant accumulations of water like oceans and lakes, either distinct or conceptual in nature; and landforms, which are physical structures such as mountains and valleys defined by surface form, location, and topography. Artificial features encompass settlements, which are human communities ranging from small villages to large cities, including infrastructure like roads and buildings; administrative regions, which are social constructs like states and neighborhoods used for organizational purposes; engineered constructs, which are man-made structures such as highways and airports; and cartographic features, which are abstract map representations, such as grid lines and boundaries, that do not physically exist. Geographic features are represented by descriptors of their characteristics, including identity, existence, kind, relationships, location, attributes, and time. Each feature is unique, often identified by names or codes, and its existence refers to its presence in the real world, including features that are proposed or planned. The kind refers to its classification, such as a building or river, while relationships describe spatial, meronomic (part-whole), and genealogical (parent-child) connections with other features. The location provides a description of where a feature is, including its shape and extent, and attributes describe other characteristics, such as population or size, often expressed as text or numbers. Time relates to the temporal aspects of a feature's characteristics, describing changes over time. Information about features is stored in geographic databases, often using vector data models, including GIS datasets, which help represent these features and their various descriptors in a structured format.
+% % Field -> Environmental Attribute
+% In geography, the term "field" refers to a continuous spatial phenomenon defined across a region, where each point in that region has a specific value of some variable. Unlike discrete objects, which have distinct boundaries and identities, fields represent variations of phenomena occurring over a continuous space, such as temperature, elevation, or precipitation. Fields can be either scalar or vector quantities: scalar fields represent a single value at every point, like temperature, humidity, or elevation, while vector fields represent quantities with both magnitude and direction, such as wind velocity or ocean currents. Examples of fields in geography include topographic fields, where elevation values are distributed across a landscape; climatic fields, where temperature or precipitation values are mapped over a geographic area; and magnetic fields, which capture the intensity and direction of magnetic forces at various points on the Earth's surface. Fields are often represented mathematically using functions or equations that define how the field's value varies over space, including interpolation or modeling techniques to estimate field values at unsampled locations. In Geographic Information Systems (GIS), fields are typically represented as raster data, where a grid of cells captures the continuous variation of a field across a landscape, with each cell holding a value representing the field's magnitude at that location. Fields are crucial for spatial analysis and modeling, allowing geographers to study patterns and processes that vary continuously across space, such as climate change, land surface modeling, and resource distribution. Thus, in geography, a field is a method of representing continuous spatial phenomena, enabling the analysis of patterns and trends across geographic spaces.
 
-% Field
-In geography, the term "field" refers to a continuous spatial phenomenon defined across a region, where each point in that region has a specific value of some variable. Unlike discrete objects, which have distinct boundaries and identities, fields represent variations of phenomena occurring over a continuous space, such as temperature, elevation, or precipitation. Fields can be either scalar or vector quantities: scalar fields represent a single value at every point, like temperature, humidity, or elevation, while vector fields represent quantities with both magnitude and direction, such as wind velocity or ocean currents. Examples of fields in geography include topographic fields, where elevation values are distributed across a landscape; climatic fields, where temperature or precipitation values are mapped over a geographic area; and magnetic fields, which capture the intensity and direction of magnetic forces at various points on the Earth's surface. Fields are often represented mathematically using functions or equations that define how the field's value varies over space, including interpolation or modeling techniques to estimate field values at unsampled locations. In Geographic Information Systems (GIS), fields are typically represented as raster data, where a grid of cells captures the continuous variation of a field across a landscape, with each cell holding a value representing the field's magnitude at that location. Fields are crucial for spatial analysis and modeling, allowing geographers to study patterns and processes that vary continuously across space, such as climate change, land surface modeling, and resource distribution. Thus, in geography, a field is a method of representing continuous spatial phenomena, enabling the analysis of patterns and trends across geographic spaces.
+% % Event -> Geological Event
+% In philosophy, an "event" is defined as an occurrence or happening that takes place at a specific time and location, characterized by its temporal nature and involvement in change or transition. Unlike static objects, events are dynamic and are often considered fundamental constituents of reality. They typically involve transformations from one state to another, such as a tree falling, and are central to discussions about causality, as they can serve as causes or effects within causal chains. Philosophers debate whether events are basic entities or reducible to other kinds of entities, like properties of objects or states of affairs. They also explore how events are individuated and identified, what distinguishes one event from another, and how events relate to objects. Linguistic and logical analyses focus on how events are described in language, often through verbs and predicates, and how they relate to entities involved. Various philosophical theories, such as process philosophy, emphasize events over static entities, offering different frameworks for understanding the nature of events and their role in the structure of reality. Overall, events are crucial for understanding change, causality, and our perception of the world.
 
-% Event
-In philosophy, an "event" is defined as an occurrence or happening that takes place at a specific time and location, characterized by its temporal nature and involvement in change or transition. Unlike static objects, events are dynamic and are often considered fundamental constituents of reality. They typically involve transformations from one state to another, such as a tree falling, and are central to discussions about causality, as they can serve as causes or effects within causal chains. Philosophers debate whether events are basic entities or reducible to other kinds of entities, like properties of objects or states of affairs. They also explore how events are individuated and identified, what distinguishes one event from another, and how events relate to objects. Linguistic and logical analyses focus on how events are described in language, often through verbs and predicates, and how they relate to entities involved. Various philosophical theories, such as process philosophy, emphasize events over static entities, offering different frameworks for understanding the nature of events and their role in the structure of reality. Overall, events are crucial for understanding change, causality, and our perception of the world.
+% % Visualization
 
-% Visualization
+% \subsection{Features on field experts maps}
+% - ... 
+% \subsection{Topographic/Planimetric maps}
+% - ... 
 
-\subsection{Features on field experts maps}
-- ... 
-\subsection{Topographic/Planimetric maps}
-- ... 
-
-\subsection{Analogy}
-- Compare our nomenclature with introduction \\
-- ... 
+% \subsection{Analogy}
+% - Compare our nomenclature with introduction \\
+% - ... 
 
 \section{Related works}
 \label{sec:semantic-representation_related-works}
-Procedural terrain generation has been heavily studied for the last 40 years \cite{Galin2019}. Researches in this topic try to find new solutions to compromise between realism, user control and efficiency \cite{Gain2009}. Using fractal noise parametrized to resemble real landscape has been an important first step \cite{Musgrave1989} as it's a fast and light solution to generate procedurally the appearance of mountains. The lack of user control pushed newer works toward the use of controlled noise by including real DEM in the process through learning \cite{Kapp2020, Brosz2007}, while the rise of deep learning technologies gave higher control to the user through sketches \cite{Guerin2017, Talgorn2018}. \\
-By including expert knowledge of tectonic process and subsurface geology, some algorithms tend to get more realistic \cite{Patel2021, Cortial2019, Michel2016}. \\
+Procedural terrain generation has been heavily studied for the last 40 years \cite{Galin2019}. Researches in this topic try to find new solutions to compromise between realism, user control and efficiency \cite{Gain2009}. Using fractal noise parametrized to resemble real landscape has been an important first step \cite{Musgrave1989} as it's a fast and light solution to generate procedurally the appearance of mountains. The lack of user control pushed newer works toward the use of controlled noise by including real DEM in the process through learning \cite{Kapp2020, Brosz2007}, while the rise of deep learning technologies gave higher control to the user through sketches \cite{Guerin2017, Talgorn2018}.
+
+By including expert knowledge of tectonic process and subsurface geology, some algorithms tend to get more realistic \cite{Patel2021, Cortial2019, Michel2016}. 
+
 While these algorithms are able to generate large-scale landscapes, the finer details of the terrain is often computed by the use of erosion simulation \cite{Cordonnier2023, Schott2023, Paris2019}. This process can be expensive in time but results in more plausible surfaces.
 
-All the algorithms aim to reproduce plausible relief in terrestrial landscapes, mostly limited to alpine landscapes, but a lack of research can be found in almost all other biomes. Underwater landscapes generation, for example, has been almost completely absent from literature for many reasons: the difficulty of accessing the area, the lack of visibility under water and the complex physics of underwater geology and biology make the algorithms adapted for this environment scarce. \\
-The majority of the ocean floor can be represented as a fractal terrain \cite{Mareschal1989}. While stochastic noise can be sufficient to model the ocean floor, this process won't cover areas with the biggest biomass, near shallower waters such as near coasts and islands. \\
+All the algorithms aim to reproduce plausible relief in terrestrial landscapes, mostly limited to alpine landscapes, but a lack of research can be found in almost all other biomes. Underwater landscapes generation, for example, has been almost completely absent from literature for many reasons: the difficulty of accessing the area, the lack of visibility under water and the complex physics of underwater geology and biology make the algorithms adapted for this environment scarce. 
+
+The majority of the ocean floor can be represented as a fractal terrain \cite{Mareschal1989}. While stochastic noise can be sufficient to model the ocean floor, this process won't cover areas with the biggest biomass, near shallower waters such as near coasts and islands.
+
 Due to the impossibility to observe the large-scale and the small-scale of underwater environments, some works related to geology model large structures like the profile shape of the coral reef \cite{Bosscher1992}, simulate its surface growth \cite{Li2021}, or use procedural algorithms for single polyp \cite{Abela2015}. We however don't have a mix of the different scales, and neither methods take into account the environment such as the topography or the interaction of different terrain features. This is mainly due to the fact that the evolution time for each scale varies from a span of weeks to thousands of years.
 
 In an ecosystem, any element of the system has an impact on their surrounding. Simulating each physical properties such as shading, heat, humidity may require enormous computation power. By considering these properties as scalar fields surrounding the whole scene, and that features of the terrain affect locally the scalar fields, we can simplify the computation of the physical properties of the environment \cite{Grosbellet2016, Guerin2016a}. This process provides a scalable system from which scene details are rendered in a plausible way. In a similar way, other works represent the wind flow as a composition of local vector fields \cite{Wejchert1991}, avoiding complex fluid simulation while providing user control in a lightweight model. We extend these works by incorporating a time-evolution system such that the scene can be dynamic.
@@ -70,69 +90,80 @@ In an ecosystem, any element of the system has an impact on their surrounding. S
     \label{fig:semantic-representation_pipeline}
 \end{figure*}
 
-The generation of the terrain is initialized using an initial height field $\height$ and a water level $\Wlevel$. The height field provides variation on the depth $\depth$, which can influence the generation process of the scene. We set $\depth = \height - \Wlevel$. \\
-The list of available \glosses{EnvObj} $\availableObjects$, representing the different features that can be present in the scene, are provided with their properties: type, size, \glosses{GenRule}, growing conditions and effects on the \glosses{EnvVal} (Section~\ref{sec:semantic-representation_environmental-objects}). \\
-Finally, different \glosses{EnvMat} can be defined with their properties such as diffusion speed, mass, damping factor and influence from the water currents. \Glosses{EnvMat} distributions are represented as a scalar field $\material: \R^2 \to \R$ and water currents as a vector field $\Water: \R^2 \to \R^2$ that can be evaluated by the \glosses{EnvObj} of the scene to simulate their growth and spawn at the most probable position. The environmental properties $\environment = (\depth, \Water, \Wlevel, \material)$ is composed of depth, water currents, water level and \glosses{EnvMat} distribution information at any point of the terrain (Section~\ref{sec:semantic-representation_communication}). \\
-The definition of \glosses{EnvObj}' properties and environment properties is done with field experts, providing the pertinent parameters required to model the evolution of the terrain features using expert knowledge (Section~\ref{sec:semantic-representation_biology}). Additional properties can easily be added to the environment properties $\environment$ in order to fit to the experts needs, such as atmospheric pressure, humidity, temperature, ... \\
+The generation of the terrain is initialized using an initial height field $\height$ and a water level $\Wlevel$. The height field provides variation on the depth $\depth$, which can influence the generation process of the scene. We set $\depth = \height - \Wlevel$.
+
+The list of available \glosses{EnvObj} $\availableObjects$, representing the different features that can be present in the scene, are provided with their properties: type, size, \glosses{GenRule}, growing conditions and effects on the \glosses{EnvVal} (Section~\ref{sec:semantic-representation_environmental-objects}).
+
+Finally, different \glosses{EnvMat} can be defined with their properties such as diffusion speed, mass, damping factor and influence from the water currents. \Glosses{EnvMat} distributions are represented as a scalar field $\material: \R^2 \to \R$ and water currents as a vector field $\Water: \R^2 \to \R^2$ that can be evaluated by the \glosses{EnvObj} of the scene to simulate their growth and spawn at the most probable position. The environmental properties $\environment = (\depth, \Water, \Wlevel, \material)$ is composed of depth, water currents, water level and \glosses{EnvMat} distribution information at any point of the terrain (Section~\ref{sec:semantic-representation_communication}).
+
+The definition of \glosses{EnvObj}' properties and environment properties is done with field experts, providing the pertinent parameters required to model the evolution of the terrain features using expert knowledge (Section~\ref{sec:semantic-representation_biology}). Additional properties can easily be added to the environment properties $\environment$ in order to fit to the experts needs, such as atmospheric pressure, humidity, temperature, ... 
+
 The generation phase can optionally be started with an initial set of \glosses{EnvObj} present in the scene. 
 
-%- Main loop \\
+%- Main loop
 Once the initialization phase is done, the generation begins. The generation process is incremental and its main loop is composed of two different steps: the instantiation of new \glosses{EnvObj} then the update of the environment.
-% - Object instantiation \\
+
+% - Object instantiation
 At each iteration, new \glosses{EnvObj} can be created at their most fitting locations if possible. The \glosses{GenRule} provided in the initialization phase are used to find the optimal position from stochastic sampling (Section~\ref{sec:semantic-representation_generation-rules}). 
 All \glosses{EnvObj} are evaluating their state analytically using the \gloss{FitnessFunc} provided as input (Section~\ref{sec:semantic-representation_obj-evaluation}).
+
 % Once the new objects are instantiated, the process can continue.
-% - Environment update \\
+% - Environment update
 Once the instantiation step is done, the environment's values are updated by each \gloss{EnvObj} by deposing and absorbing some of the available \glosses{EnvMat} (Section~\ref{sec:semantic-representation_materials}) while modifying the water currents (Section~\ref{sec:semantic-representation_water-currents}) around them. Finally, water currents and height field's gradient displace \glosses{EnvMat} of the terrain at each iteration.
 % We consider the water currents to be a steady-state flow, allowing us to remove the variation from time in the flow equations.
 % The water currents are updated locally by each \gloss{EnvObj} using an analytical form $W^*(\p) = W(\p) + \omega(\p)$.
 During the generation process, the user can alter directly the distribution and shapes of the \glosses{EnvObj} (Section~\ref{sec:semantic-representation_manual-interaction}) and perturb the generation process by planning \glosses{GeoEvent} that have impacts on the \glosses{EnvVal} (Section~\ref{sec:semantic-representation_events}).
 
-% - Output result \\
+% - Output result
 The output of our system is a set of \glosses{EnvObj} disposed in the plane. We do not provide the 3D representation of the \glosses{EnvObj}, letting the user define the rendering method. The figures used in the paper use a mix of implicit surfaces and triangular meshes.
-
-\subsection{\Gloss{EnvObj}}
-\label{sec:semantic-representation_environmental-objects}
-
-\Glosses{EnvObj} are rule-based objects following rules depending on their local environment for evaluation their state in their life cycle. We can see them as a life form in the way that they are created and eroded with time. During their lifetime, they influence their local environment by depositing and absorbing \glosses{EnvMat} around them and influencing the water currents. The environment objects are described spatially as a single point, a parametric curve or a region.
 
 \subsection{\Glosses{EnvVal}}
 \label{sec:semantic-representation_communication}
-All \glosses{EnvObj} of an ecosystem has an impact on all the other \glosses{EnvObj}, which would result in an exponentially growing computation effort as the number of \glosses{EnvObj} of the terrain increase. We avoid this problem by considering the \glosses{EnvVal} as a proxy to allow any \gloss{EnvObj} to interact with any other one. Each of the \gloss{EnvObj} have a local impact on the \glosses{EnvVal} without knowledge of neighboring \glosses{EnvObj}. This modification of the \glosses{EnvVal} can be due to an absorption and deposition of some material $\material$ or an influence on the water currents.
+
+In geography, a "field" refers to a continuous spatial phenomenon across a region where each point has a specific value of a variable, unlike discrete objects with distinct boundaries. Fields can be scalar, representing a single value at every point (like temperature or elevation), or vector, representing quantities with magnitude and direction (like wind velocity). Examples include topographic fields for elevation, climatic fields for temperature or precipitation, and magnetic fields for magnetic forces. Fields are mathematically modeled using functions and represented in Geographic Information Systems (GIS) as raster data, where a grid of cells captures continuous variations. This representation is essential for studying spatial patterns and processes such as climate change and resource distribution. Because of the ambiguous nature of the term "field" in mathematics and computer science, we will define the geographic fields as \gloss{EnvVal}.
+
+In an ecosystem simulation, each actor of the ecosystem has an impact on all other actors, which results in an exponentially growing computation effort as the number of elements of the terrain increase. We avoid this problem by considering the \glosses{EnvVal} as a proxy to allow any \gloss{EnvObj} to interact with any other one. Each of the \gloss{EnvObj} have a local impact on the \glosses{EnvVal} without knowledge of neighboring \glosses{EnvObj}. This modification of the \glosses{EnvVal} are presented as the effect of \glosses{EnvMat} defined for each \gloss{EnvObj}. % can be due to an absorption and deposition of some material $\material$ or an influence on the water currents.
+
+In this work, we integrated vector \glosses{EnvVal} (water currents $\Water$) and scalar \glosses{EnvVal} (depth $\depth$, water level $\Wlevel$, \glosses{EnvMat} $\material$) into the umbrella "environment" $\environment = \left( \depth, \Water, \Wlevel, \material \right)$. \Glosses{EnvMat} describe a change of \gloss{EnvVal} at one point like an abundance of sand, salt, wetness, rocks, etc... As we do not consider the surface geometry in this work, the reader must restrict himself from seeing it as stacks of materials.
+
+
+\subsection{\gloss{EnvObj}}
+\label{sec:semantic-representation_environmental-objects}
+A geographical feature, also called object or entity, is a discrete phenomenon located at or near the Earth's surface, relevant in geography and geographic information science (GIScience). It represents geographic information that can be depicted in maps, geographic information systems (GIS), and other forms of geographic discourse. This term includes both natural and human-made objects, ranging from tangible items like buildings or trees to intangible concepts like neighborhoods or savana. Features are distinct entities with defined boundaries, differentiating them from continuous geographic masses or processes occurring over time. They can be categorized as natural features, such as ecosystems, biomes, water bodies, and landforms, or artificial features, such as settlements, administrative regions, and engineered constructs. Geographic features are described by characteristics including identity, existence, classification, relationships with other features, location, attributes, and temporal aspects. Information about these features is stored in geographic databases using models like GIS datasets, which organize and represent these features in structured formats. As the term "feature" is overused in computer science, we will use the term \gloss{EnvObj} in this work.
+
+Each \gloss{EnvObj} has a simple geometric shape called a "skeleton" that defines where it is located and how it fits into the environment.
+These \glosses{EnvObj} interact with the environment $\environment$ by changing local conditions using the \gloss{EnvMat}. For example, a river might increase the moisture in the surrounding area, while a mountain might add rockiness. They can also absorb changes from the environment, such as a forest taking in humidity from the air.
+The placement of \gloss{EnvObj} is determined by a \gloss{FitnessFunc}, which evaluates how suitable a location is based on the \glosses{EnvVal}. Once a suitable location is found, the \gloss{FittingFunc} optimizes the shape and position of the entity to fit as best as possible into the environment.
+
+
+% \Glosses{EnvObj} are rule-based objects following rules depending on their local environment for evaluation their state in their life cycle. We can see them as a life form in the way that they are created and eroded with time. During their lifetime, they influence their local environment by depositing and absorbing \glosses{EnvMat} around them and influencing the water currents. The environment objects are described spatially as a single point, a parametric curve or a region.
 
 \subsection{\Glosses{EnvMat}}
-- ... 
+The environment determine if a \gloss{EnvObj} does belong in a position. When a \gloss{EnvObj} is placed, its surrounding \glosses{EnvVal} can be affected though \glosses{EnvMat}. Each \gloss{EnvObj} has intrinsic \glosses{EnvMat} that can be seen as "spreading" and "absorbed" around its skeleton over time. A coral reef may produce coral polyps and at the same time reduce the water currents. It grows thanks to the deposition of [RESIDUS CALCAIRES] from coral colonies. In our model, the colonies affect the \glosses{EnvVal} through the deposition of \gloss{EnvMat} $\material_\text{limestone}$, which in turn, is absorbed by the coral reef, without a direct exchange between the two \glosses{EnvObj}.
 
-\section{Placing features in an environment}
-- ... 
-\subsection{Continuous placement (as "not discrete")}
-- ... 
-\subsubsection{Skeletons}
-- ... 
-\subsubsection{Hard constraints vs. soft constraints}
-- ... 
+The alteration of a scalar \gloss{EnvVal} is done by adding or removing some amount on the skeleton of the \gloss{EnvObj} and diffusing it in the space, influenced by the water currents. We consider the system to be steady-state, garantied by the introduction of a decay rate in the computation of the diffusion.
 
-\section{Communication between \gloss{EnvObj}}
-- ... 
-\subsection{Problem of direct communication}
-- ... 
-\subsection{Natural process (or cellular automata)}
-- ... 
+Altering the vector field of the water currents $\Water$ is done by the addition of the effect of each object at a position $\p$ as introduced in \citep{Wejchert1991}, while we use the formulation of Kelvinlets \cite{DeGoes2017} in the computation of effect of each \gloss{EnvObj}.
 
-\section{Environment stability}
-- ... 
-\subsection{Dynamic system vs. stable system}
-- ... 
-
-\section{\Glosses{GenRule}}
+\section{Placing \glosses{EnvObj} in an environment}
 \label{sec:semantic-representation_generation-rules}
+At each iteration of our algorithm, we want our objects to be at plausible positions. We do not guaranty a temporal continuity between iterations as in \citep{Ecormier-Nocca2021}, so the objective is to add new \gloss{EnvObj} in order to satisfy the users wishes, while conserving the plausibility of the scene. For this task, we place a new element required at the most plausible position using the analysis of the \gloss{FitnessFunc} of each \gloss{EnvObj}. We know that each \gloss{EnvObj} will modify the environment surrounding, which may make previously instantiated \glosses{EnvObj} unfitted. Knowing this,the goal is to add the new element at the position that will change the least the stability of the system. 
+
+Genetic algorithms or Depth First Search algorithms could be used to try many possibilities until a local or global minimum could be found, but this would require a large processing power. Basic genetic algorithms would place a \gloss{EnvObj} at a certain position at each iteration and evaluate the stability of the environment, repreating this operation while varying slightly the position of the \glosses{EnvObj} or the type of \gloss{EnvObj} instantiated at each iteration, resulting in way too much computation to be interactive. The Depth First Seach algorithms requires to compute all the possible combinations of objects and positions which, given the fact that we want a continuous position in order to work multi-scale, would require to compute an incredibly high amount of possible configurations in order to find a plausible situation, on average. We will work with an evolutionary algorithm to find a compromise between fast computation and a satisfying result.
+
+Our placing algorithm is done in two steps: first we estimate at which global location the \gloss{EnvObj} fits the most given an environment using its \gloss{FitnessFunc}, secondly we estimate the shape of the skeleton of this \gloss{EnvObj} should take given a \gloss{FittingFunc}.
+
 \Glosses{GenRule} provides, for each \gloss{EnvObj}, a \gloss{FitnessFunc} $\fittingFuncObj$ defining the most probable location for an \gloss{EnvObj} to spawn. \Glosses{FitnessFunc}' parameters contains, for every point $\p$, the \glosses{EnvVal} $\environment_p$ (the amount of each material available $\material(\p)$ and the velocity and direction of the water currents $\Water(\p)$) and information about surrounding \glosses{EnvObj} $\objects$ (signed distance from the closest punctual \gloss{EnvObj} or curve defining curve- and region-based \glosses{EnvObj}, curvature of the curve, and start and end points of the curve-based \glosses{EnvObj}).
 
-\subsection{Fitness function}
+\subsection{\Gloss{FitnessFunc}}
+Whenever a new \gloss{EnvObj} is added to the scene, we desire to position it at the position that would be the most logical to find it. Following the idea of [INSERT FIELD HERE, GEOLOGY? BIOLOGY?], we observe the environment and estimate that a certain element have a probability to be present at this position. For example in hydraulogy, if we find a river coming nowhere, we can expect that a kastic river is present uphill. Or in urbanism, if many roads cross at a certain point, expectations are that a city is located here.
+
+We will follow the same intuition using a \gloss{FitnessFunc} for each of the \gloss{EnvObj} that may be spawn in the terrain. The \gloss{FitnessFunc} defined $\fittingFunc: \environment \to \R$ provides a score (sometimes called "energy") providing information on how well the \gloss{EnvObj} may fit in this position. Evaluating this function at multiple position results in an approximation of the fitting map of the object. Once the most probable position is found, we can find the most plausible shape of the \gloss{EnvObj}.
+
 Environment objects are evaluated at every iteration in order to determine the current state of the life cycle of the \gloss{EnvObj}. For punctual \glosses{EnvObj}, this evaluation is applied at its position $\fittingFuncObj = f(\environment_{p})$. Curve \glosses{EnvObj} are evaluated along the parametric curve $\curve$ such that $\fittingFuncObj = \int_{\curve} f(\environment_{\curve(t)}) \,dt$. In practice, we compute the evaluation as the average of all control points of the curve $\frac{1}{n} \sum_{i}^{n}{f(\environment_{C_i})}$.
 Region \glosses{EnvObj} are evaluated inside their region $\domain$ as such $\fittingFuncObj = \int_{\domain} f(\environment_p) \,dp$. In practice, we compute the average of random points in the region $\frac{1}{n} \sum_{i}^{n}{f(\environment_{p_i})}$. When deformations on the \gloss{EnvObj}'s shape is applied, we apply cage deformation using Green's coordinates in order to keep consistent evaluation points during the whole life cycle of an \gloss{EnvObj}.
 
-\subsection{Skeleton \gloss{FitnessFunc}}
+\subsection{\Gloss{FittingFunc}}
 The seed point of a spawning \gloss{EnvObj} is defined by a stochastic sampling of the plane. We propose different optimization means to find the optimal fitting position, depending on the \gloss{EnvObj} shape.
 
 The spawning position of a punctual \gloss{EnvObj} is found at the local maxima of the \gloss{FitnessFunc} from a seed point. The optimisation process simply follows the field's gradient $\nabla \fittingFuncObj$ until the local maxima is reached.
@@ -163,8 +194,24 @@ We consider that all \glosses{EnvObj} follow a life cycle of spawning, growing a
 Once the \gloss{EnvObj} is present in the scene, it will continuously evaluate its \gloss{FitnessFunc} to determine its state in the life cycle. If the evaluation results as less than zero, the \gloss{EnvObj} dies and it is removed from the list of \glosses{EnvObj} present in the scene. While the \gloss{EnvObj} remains, it will continue influencing its environment, by absorbing and depositing material around it and by influencing the water currents. 
 
 
+\subsection{Hard constraints vs. soft constraints}
+- ... 
+
+\section{Communication between \gloss{EnvObj}}
+- ... 
+\subsection{Problem of direct communication}
+- ... 
+\subsection{Natural process (or cellular automata)}
+- ... 
+
+\section{Environment stability}
+- ... 
+\subsection{Dynamic system vs. stable system}
+- ... 
+
 \subsection{Dying}
-An object spawn has a chance of disappearing if living conditions are unmet. At death, the \gloss{EnvObj} will deposits its remains in the environment properties. \\
+An object spawn has a chance of disappearing if living conditions are unmet. At death, the \gloss{EnvObj} will deposits its remains in the environment properties.
+
 We consider an object as dead when the fitting score drops to zero.
 At this point, the object is removed from the scene and \glosses{EnvMat} can be deposited in the environment following the same rule as the normal step rule.
 
@@ -223,7 +270,7 @@ $\Wobj$ is a deformation field defined as the accumulation of flow primitives \c
 \frac{a \eps^2}{2 r_\eps^3} \identity \right] \force
 \end{align*}
 with $a = \frac{1}{4 \pi \mu}$ and $b = \frac{a}{4 (1 - \upsilon)}$ provided $\mu$ a shear modulus and $\upsilon$ a Poisson ratio provided for each Kelvinlet, $r = \p - \q$ for $\p$ the evaluation position and $\q$ the center point of the Kelvinlet, $r_\eps = \sqrt{\norm{r}^2 + \eps^2}$ the regularized distance, $\eps$ a radial scale for the deformation field, $s$ a scaling factor and $\force$ the force vector of the grab operation.
-Deformations defined on curves use $\q = C(\p)$ with $C(\p)$ the closest point on the curve from the point $\p$ and $f = C'(\p)$. We can then define $u_o(\p) = s_\eps(\q - \p) + g_\eps(\p - \q)$. \\
+Deformations defined on curves use $\q = C(\p)$ with $C(\p)$ the closest point on the curve from the point $\p$ and $f = C'(\p)$. We can then define $u_o(\p) = s_\eps(\q - \p) + g_\eps(\p - \q)$.
 Finally, we can retrieve the velocity field from the objects:
 \begin{align*}
     \Wobj(\p) = \sum_{o \in \objects}^{}{\lambda_o u_o(\p)}
@@ -270,7 +317,8 @@ Figure~\ref{fig:semantic-representation_coral-colonization-scene} shows an examp
 %     \label{fig:semantic-representation_focus-area-example}
 % \end{figure}
 
-% - Changing the water currents \\
+% - Changing the water currents
+
 Our water current simulation is modeled as a simple vector field. As such, the user is able to interact with it at any moment of the simulation, allowing for the death of sensible \glosses{EnvObj} while it will guide the simulation into a new landscape. By modifying the water currents, the user also modifies the transport rate of \glosses{EnvMat} at this position. The modification of currents is given as a stroke, a parametric curve $\curve$ for which we evaluate $\Delta \Wuser(\p)$ just as for curved environment objects (Section~\ref{sec:semantic-representation_water-currents}).
 
 \subsection{Indirect interaction of \glosses{EnvObj}}
@@ -375,7 +423,7 @@ Most simulation algorithm's quality depends on the size of the time step used, b
 
 \section{Conclusion}
 \label{sec:semantic-representation_conclusion}
-We have proposed a method to generate terrains procedurally using sparse representations. This representation, the \glosses{EnvObj}, enables to introduce expert knowledge by the mean of the \glosses{FitnessFunc} that rule the \glosses{EnvObj} life cycle, but also to integrate the user in the loop during the generation process. We reduced the terrain resolution limitations by defining the environment objects as parametric features. Thanks to the sparse representation based on single points, curves and regions, we allow for direct manipulation of the \glosses{EnvObj} of the scene by the user which, thanks to the environment steady state consideration, also enables to include these interactions in the automatic simulation process. \\
+We have proposed a method to generate terrains procedurally using sparse representations. This representation, the \glosses{EnvObj}, enables to introduce expert knowledge by the mean of the \glosses{FitnessFunc} that rule the \glosses{EnvObj} life cycle, but also to integrate the user in the loop during the generation process. We reduced the terrain resolution limitations by defining the environment objects as parametric features. Thanks to the sparse representation based on single points, curves and regions, we allow for direct manipulation of the \glosses{EnvObj} of the scene by the user which, thanks to the environment steady state consideration, also enables to include these interactions in the automatic simulation process.
 Integrating environmental properties in the \gloss{FitnessFunc} of \glosses{EnvObj} allows the user to guide the generation through \glosses{GeoEvent}. Our method enables each \gloss{EnvObj} of the scene to influence the environment locally, reducing the need of computations while also retrieving \glosses{EnvVal} locally, which result in a parallelizable life-like simulation process. The genericity of the environment properties definitions should be sufficient for plausible generation of other landscape types as long as expert knowledge can be translated to \gloss{EnvObj}'s formalism.
 
 
