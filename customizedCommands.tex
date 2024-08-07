@@ -117,7 +117,7 @@
   {\usebibmacro{postnote}}
 
 \DeclareCiteCommand{\citep}
-{\usebibmacro{prenote}}
+{\usebibmacro{prenote}\usebibmacro{cite:init}}
 {\usebibmacro{citeindex}
  \printtext[bibhyperref]{\usebibmacro{cite}}}
 {\multicitedelim}
@@ -152,11 +152,22 @@
     \makeglossaries
 }
 
-\zzcommand{\gloss}[1]{\glsentryname{gls-#1}} % \ifcsdef{inheading}{\glsentryname{gls-#1}}{\ifglsentryexists{#1}{\gls{#1}\glsadd{gls-#1}}{\gls{gls-#1}}}}
-\zzcommand{\glosses}[1]{\glsentrylongpl{gls-#1}} % \ifcsdef{inheading}{\glsentrylongpl{gls-#1}}{\ifglsentryexists{#1}{\glspl{#1}\glsadd{gls-#1}}{\glspl{gls-#1}}}}
-\zzcommand{\Gloss}[1]{\Glsentryname{gls-#1}} % \ifcsdef{inheading}{\Glsentryname{gls-#1}}{\ifglsentryexists{#1}{\Gls{#1}\glsadd{gls-#1}}{\Gls{gls-#1}}}}
-\zzcommand{\Glosses}[1]{\Glsentrylongpl{gls-#1}} % \ifcsdef{inheading}{\Glsentrylongpl{gls-#1}}{\ifglsentryexists{#1}{\Glspl{#1}\glsadd{gls-#1}}{\Glspl{gls-#1}}}}
+
+
+
+\zzcommand{\gloss}[1]{\ifglsentryexists{gls-#1}{\glsentryname{gls-#1}\glsadd{gls-#1}}{[XXXX]}}
+\zzcommand{\glosses}[1]{\ifglsentryexists{gls-#1}{\glsentrylongpl{gls-#1}\glsadd{gls-#1}}{[XXXX]}}
+\zzcommand{\Gloss}[1]{\ifglsentryexists{gls-#1}{\Glsentryname{gls-#1}\glsadd{gls-#1}}{[XXXX]}}
+\zzcommand{\Glosses}[1]{\ifglsentryexists{gls-#1}{\Glsentrylongpl{gls-#1}\glsadd{gls-#1}}{[XXXX]}}
 \zzcommand{\glsnamefont}[1]{\makefirstuc{#1}}
+
+
+
+% \zzcommand{\gloss}[1]{\glsentryname{gls-#1}} % \ifcsdef{inheading}{\glsentryname{gls-#1}}{\ifglsentryexists{#1}{\gls{#1}\glsadd{gls-#1}}{\gls{gls-#1}}}}
+% \zzcommand{\glosses}[1]{\glsentrylongpl{gls-#1}} % \ifcsdef{inheading}{\glsentrylongpl{gls-#1}}{\ifglsentryexists{#1}{\glspl{#1}\glsadd{gls-#1}}{\glspl{gls-#1}}}}
+% \zzcommand{\Gloss}[1]{\Glsentryname{gls-#1}} % \ifcsdef{inheading}{\Glsentryname{gls-#1}}{\ifglsentryexists{#1}{\Gls{#1}\glsadd{gls-#1}}{\Gls{gls-#1}}}}
+% \zzcommand{\Glosses}[1]{\Glsentrylongpl{gls-#1}} % \ifcsdef{inheading}{\Glsentrylongpl{gls-#1}}{\ifglsentryexists{#1}{\Glspl{#1}\glsadd{gls-#1}}{\Glspl{gls-#1}}}}
+% \zzcommand{\glsnamefont}[1]{\makefirstuc{#1}}
 
 % \let\oldchapter\chapter
 % \renewcommand{\chapter}[1]{
@@ -165,3 +176,8 @@
 %   \oldchapter{#1}
 %   \endgroup
 % }
+
+% \zzcommand{\ref}{\cref}
+% \zzcommand{\eqref}{\cref}
+
+\zzcommand{\to}{\mapsto}
