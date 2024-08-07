@@ -5,7 +5,7 @@
 \minitoc
 
 
-\newcommand{\referenceExemple}[1] {\textit{Figure~\ref{tab:result_figures}: #1}}
+\newcommand{\referenceExemple}[1] {\textit{Figure~\ref{tab:erosion_result_figures}: #1}}
 
 
 
@@ -156,26 +156,26 @@ As a particle approaches the surface of the terrain, its motion applies friction
 
 The shear rate $\shearRate$ is approximated by the relative velocity of the fluid to the solid boundary $\velocity_{rel}$ over a short distance $l$.
 We approximate the shear stress $\shearStress$ at the solid boundary by a power-law:
-\begin{align}\label{eq:shearStress}
+\begin{align}\label{eq:erosion_shearStress}
 \shearStress = \shearStressConstant \shearRate^n
 \end{align}
 where $\shearRate = \velocity_{rel}/l$, $\shearStressConstant$ is the shear stress constant (often set to $1$) and $n \in [0,1]$ is the flow behaviour index. Shear-thinning models typically assume $n$ close to $\frac{1}{2}$, which is why we used this value as a constant.  
 
-We can then compute the erosion rate $\erosionRate$ at any contact point between a fluid and a solid boundary using \eqref{eq:shearStress} by 
-\begin{align}\label{eq:erosionRate}
+We can then compute the erosion rate $\erosionRate$ at any contact point between a fluid and a solid boundary using \eqref{eq:erosion_shearStress} by 
+\begin{align}\label{eq:erosion_erosionRate}
 \erosionRate = \erosionStrength (\shearStress - \criticalShearStress)^a
 \end{align}
 with $\erosionStrength \in [0,1]$ a user-defined erosion constant, $\criticalShearStress$ the critical shear stress value for which the matter starts to behave like a fluid and $a$ a power-law constant, typically considered as $a = 1$. 
 
-In our method, the eroded quantity is approximated as the material contained in the half sphere, of radius $\particleSize$, in the normal opposite direction at the particle impact point (Figure~\ref{fig:erosion_erosion_heightfield}). We then use \eqref{eq:erosionRate}: 
-\begin{align}\label{eq:erosionAmount} 
+In our method, the eroded quantity is approximated as the material contained in the half sphere, of radius $\particleSize$, in the normal opposite direction at the particle impact point (Figure~\ref{fig:erosion_erosion_heightfield}). We then use \eqref{eq:erosion_erosionRate}: 
+\begin{align}\label{eq:erosion_erosionAmount} 
 \erosionAmount = \erosionRate \frac{ 2 \pi \particleSize^3 }{ 3 }
 \end{align}
-to get the final eroded amount $\erosionAmount$. The particle is also defined by a maximal amount of sediments that can be contained in its volume before being saturated noted $\maxCapacity$. Note that this constant will be used for the settling velocity computation \eqref{eq:initialSettlingVelocity}.
+to get the final eroded amount $\erosionAmount$. The particle is also defined by a maximal amount of sediments that can be contained in its volume before being saturated noted $\maxCapacity$. Note that this constant will be used for the settling velocity computation \eqref{eq:erosion_initialSettlingVelocity}.
 
 \textbf{Deposition.}
-The eroded sediments are considered in suspension in a fluid and are affected by its velocity. A fluid particle then transports the sediments in its flow until gravity settles it onto the ground again. The effect of gravity is modeled by a settling velocity $\settlingVelocity$ defined in Eq~\eqref{eq:initialSettlingVelocity}. We consider that the amount of sediment settled is proportional to the norm of the settling velocity as proposed in \cite{Wojtan2007} with $\depositionRate \in [0,1]$: 
-\begin{align}\label{eq:deltaDepositon}
+The eroded sediments are considered in suspension in a fluid and are affected by its velocity. A fluid particle then transports the sediments in its flow until gravity settles it onto the ground again. The effect of gravity is modeled by a settling velocity $\settlingVelocity$ defined in Eq~\eqref{eq:erosion_initialSettlingVelocity}. We consider that the amount of sediment settled is proportional to the norm of the settling velocity as proposed in \cite{Wojtan2007} with $\depositionRate \in [0,1]$: 
+\begin{align}\label{eq:erosion_deltaDepositon}
 \depositAmount = \depositionRate ||\settlingVelocity||.
 \end{align}
 % The corrosion simulation can be performed by setting $\lambda_{deposit} = 0$.
@@ -191,15 +191,15 @@ We first present how to compute the particle speed using particle's physics then
 From its independence with other particles: we consider each particle following Newton's laws of motion.\\
 First, we define the external forces $\extForce$ applied on each particle, we consider gravity and buoyancy.
 We calculate the buoyancy force $\buoyancyForce = -\fluidDensity \volume \gravity$ with $\fluidDensity$ the density of the fluid, $\volume$ the volume of the particle and $\gravity$ the gravitational acceleration, but we can also calculate the force of gravity $\gravityForce = \particleMass \gravity$ with $\particleMass$ the mass of the particle. We then have the final external force $\extForce = \gravityForce + \buoyancyForce = \particleMass \gravity - \fluidVelocity \volume \gravity$ knowing the density of an object $\particleDensity = \frac{\particleMass}{\volume}$, we have:
-\begin{align} \label{eq:gravity}
+\begin{align} \label{eq:erosion_gravity}
 \extForce = \volume \gravity (\particleDensity - \fluidDensity ).
 \end{align}
-The particle velocity $\velocity$ can be integrated from \eqref{eq:gravity} by: 
-\begin{align} \label{eq:velocity-computation}
+The particle velocity $\velocity$ can be integrated from \eqref{eq:erosion_gravity} by: 
+\begin{align} \label{eq:erosion_velocity-computation}
 \velocity = \int{ \extForce \, dt} + \settlingVelocity + \velocity_0,
 \end{align}
 with $\settlingVelocity$ the settling speed of sediments in a fluid with a viscosity $\viscosity$ given by Stoke's Law \cite{Stokes1850}: 
-\begin{align} \label{eq:initialSettlingVelocity}
+\begin{align} \label{eq:erosion_initialSettlingVelocity}
 \settlingVelocity = \frac{ 2 }{ 9 }  \gravity \particleSize^2 \frac{(\particleDensity - \fluidDensity)}{\viscosity } f(\capacity).
 \end{align} 
 We use the Richardson-Zaki relation as the hindered settling coefficient: \\
@@ -222,8 +222,8 @@ When the particle hits the ground, a coefficient of restitution affects its beha
 \textbf{Velocity field.}
 \label{sec:erosion_velocity_field_refinement}
 In our model, we allow the user to add a velocity field to the environment that influences particles motion. This velocity field can be the result of a complex fluid simulation, a uniform vector field, or an artistic motion field.
-We modify Equation \eqref{eq:velocity-computation} such that the particle's speed will be influenced by the velocity field as follows:
-\begin{align} \label{eq:velocity-computation-final}
+We modify Equation \eqref{eq:erosion_velocity-computation} such that the particle's speed will be influenced by the velocity field as follows:
+\begin{align} \label{eq:erosion_velocity-computation-final}
 \velocity = \int{ \extForce \, dt} + \settlingVelocity + \alpha \fluidVelocity + \velocity_0,
 \end{align}
 with $\fluidVelocity$ medium velocity field modulated by $\alpha \in [0,1]$. 
@@ -245,7 +245,7 @@ Our particle system can model intricate scenarios, like the erosion caused by wa
 In this section, we describe how to apply detachment and deposition to different terrain representations with our method (Figure~\ref{fig:erosion_figure_pipeline}). We cover the most commonly used representations namely height fields, layered terrains, voxel grid and implicit surfaces, note that our work could be extended to additional representations. Two conditions need to be satisfied for a representation to be eligible for our erosion method: being able to evaluate the intersection of a particle with the ground and compute the normal of the terrain at this point. To the best of our knowledge, all representation do. \\
 We use Verlet integration for the particle's physics  \cite{Verlet1967}, with low error rate and stability even for high $dt$, reducing computation time for negligible imprecision \cite{Baraff1998, Swope1982}.
 
-For all the representations, the amount of material absorbed by the particle, i.e. the erosion value $\erosionAmount$ from \eqref{eq:erosionAmount}, is taken around the particle at a radius $\particleSize$, meaning that the modification of the terrain by a particle at position $c$ will only occur for the positions $\p$ satisfying $||\p - c|| < \particleSize$. At the same time, the amount $\depositAmount$ from \eqref{eq:deltaDepositon} is deposited, resulting in a change $\totalErosion = \depositAmount - \erosionAmount$\\ 
+For all the representations, the amount of material absorbed by the particle, i.e. the erosion value $\erosionAmount$ from \eqref{eq:erosion_erosionAmount}, is taken around the particle at a radius $\particleSize$, meaning that the modification of the terrain by a particle at position $c$ will only occur for the positions $\p$ satisfying $||\p - c|| < \particleSize$. At the same time, the amount $\depositAmount$ from \eqref{eq:erosion_deltaDepositon} is deposited, resulting in a change $\totalErosion = \depositAmount - \erosionAmount$\\ 
 In our simulation, while the dynamics are informed by physical principles, the particle size is conceptualized within a dimensionless framework. This provides the flexibility to adapt our results to various real-world scales, ensuring the applicability of our model across diverse scenarios.
 Note that, for a 2.5D terrain, we can consider that half of the sphere surrounding the particle is affected which has a volume of $V_{2.5D} = \frac{2 \pi \particleSize^3}{3}$ while a 3D terrain is affected by the full sphere $V_{3D} = \frac{4 \pi \particleSize^3}{3}$ (as illustrated  Figure~\ref{fig:erosion_erosion_heightfield}). In the following sections, we will describe the strategies used to modify the amount of matter for different representations. 
 \begin{figure}
@@ -263,7 +263,7 @@ For this representation, the half sphere is scaled in the $z$ direction to fit $
 
 This change of height can be sampled at all points of the 2D grid by reducing the height by 
 \begin{align} 
-\label{eq:erosionHeightfield}
+\label{eq:erosion_erosionHeightfield}
 \Delta h(\p) &= \frac{\sqrt{\particleSize^2 - d^2}}{\alpha} = \frac{\totalErosion}{\frac{2}{3} \pi \particleSize^3} \sqrt{\particleSize^2 - d^2}
 \end{align}
 The height at each point after an erosion is then computed as $\Tilde{h}(\p) = h(\p) + \Delta h(\p)$.
@@ -271,9 +271,9 @@ The height at each point after an erosion is then computed as $\Tilde{h}(\p) = h
 \subsection{Application on layered terrains}
 \label{sec:erosion_application_on_layers}
 Layered terrains are defined as $\mu: \R^3 \to \N$ assigning a discrete material index $\mu$ for any point in space \cite{Benes2001, Peytavie2009}. In the original work, outer borders stack elements of the terrain are transformed into density-voxels to enable global erosion through height changes. We enable the erosion/deposition process directly on the layers hence removing the need for representation changes. \\ 
-When intersecting the terrain, the amount eroded for each material stack should be the integration of the volume of the intersection between the sphere surrounding the particle and the cubicle represented by the stack. Since there is no easy solution \cite{Jones2017}, we approximate the volume of the stack we need to alter using the previously defined height field equation \eqref{eq:erosionHeightfield}. 
+When intersecting the terrain, the amount eroded for each material stack should be the integration of the volume of the intersection between the sphere surrounding the particle and the cubicle represented by the stack. Since there is no easy solution \cite{Jones2017}, we approximate the volume of the stack we need to alter using the previously defined height field equation \eqref{eq:erosion_erosionHeightfield}. 
 At a distance $d$ from the particle, the height is defined as:
-\begin{align} \label{eq:erosionLayers}
+\begin{align} \label{eq:erosion_erosionLayers}
 H(d) = \frac{|\totalErosion|}{\frac{2}{3} \pi \particleSize^3} \sqrt{\particleSize^2 - d^2}.
 \end{align}
 If $\totalErosion > 0$ (more deposition is applied that detachment) then we transform the materials in the stack contained in the sphere to become ground material. For $\totalErosion < 0$ the materials are transformed in background material.
@@ -282,7 +282,7 @@ If $\totalErosion > 0$ (more deposition is applied that detachment) then we tran
 \label{sec:erosion_application_on_implicit}
 Implicit terrain are defined using a function $f(\p)$ and its variation resulting from the erosion process using $\Delta f(\p)$.
 We propose a strategy to compute $\Delta f(\p)$ at any point of the sphere surrounding the erosion point based on metaball primitives. At each contact point a metaball is added to create a hole or a bump in the terrain. A metaball is defined as: 
-\begin{align}\label{eq:erosionMetaball}
+\begin{align}\label{eq:erosion_erosionMetaball}
 \Delta f(\p) = \frac{3 \totalErosion}{\pi} \frac{(1 - d)}{\particleSize}
 \end{align}
 with $d$ the distance of the point $\p$ to the sphere center. For all point $\p$ for which $d \geq \particleSize$, $\Delta f(\p) = 0$ (see \ref{sec:erosion_appendix_metaball}).
@@ -292,9 +292,9 @@ As they are the most commonly used representations, we propose a formulation to 
 \textbf{Signed Distance Functions}
 \label{sec:erosion_application_on_sdf}
 Considering SDF, the terrain is defined as the 0-set of the signed distance function $f: \R^3 \to \R$, hence, for $f(\p) = 0$, the inside as $f(\p) < 0$ and outer-part (i.e. air or water) as $f(\p) > 0$. \\ 
-The particle erosion applies at impact points at discrete positions, so we propose to add or subtract metaballs defined using equation~\eqref{eq:erosionMetaball} to respectively deposit or erode material using a composition tree:\\ $metaball(\p) = -\Delta f(\p)$.\\
+The particle erosion applies at impact points at discrete positions, so we propose to add or subtract metaballs defined using equation~\eqref{eq:erosion_erosionMetaball} to respectively deposit or erode material using a composition tree:\\ $metaball(\p) = -\Delta f(\p)$.\\
 Now the eroded terrain function $\Tilde{f}(\p)$ will be evaluated at each point $\p$ from the initial terrain value $f(\p)$, the erosion function $metaball(\p)$ and the composition function $g(f_1, f_2)$:
-\begin{align} \label{eq:finalMetaball}
+\begin{align} \label{eq:erosion_finalMetaball}
 \Tilde{f}(\p) = g(f(\p), metaball(\p)).  \nonumber
 \end{align}
 As a metaball is added for each particle bounce on the terrain space partitioning optimization algorithms such as k-d trees, BSP trees or BVH can easily be used to improve performances.
@@ -302,8 +302,8 @@ As a metaball is added for each particle bounce on the terrain space partitionin
 \textbf{Other implicit terrains}
 \label{sec:erosion_application_on_other_implicit}
 are present in the literature, notably a 2.5D representation based on the surface gradient \cite{Guerin2022} and a 3D representation based on curves \cite{Becher2017} for which the trajectory of each particle projected to the closest surface could be used to define the alteration of the terrain.\\
-In the case of gradient-based representation, we propose to use the partial derivative from the equation of the 2D scalar fields \eqref{eq:erosionHeightfield} that gives:
-\begin{align} %\label{eq:erosion_gradients}
+In the case of gradient-based representation, we propose to use the partial derivative from the equation of the 2D scalar fields \eqref{eq:erosion_erosionHeightfield} that gives:
+\begin{align} %\label{eq:erosion_erosion_gradients}
 \nabla h' = - \frac{\totalErosion}{\frac{2}{3}\particleSize^3} \frac{1}{\sqrt{\particleSize^2 - d^2} } \vec{CP}
 \end{align}
 with $\vec{CP}$ the vector from the position $\p$ to evaluate to the center of the erosion point $c$.
@@ -328,10 +328,10 @@ We consider two of the voxel grids representations: density-voxel grids and bina
 \label{sec:erosion_application_on_density_voxels}
 We consider "density-voxel" grids defined on $f: \Z^3 \to [-1, 1]$ for which a voxel is be full for $f(\p) = 1$, partially full for $-1 < f(\p) < 1$ or empty for $f(\p) \leq -1$. 
 This definition allows us to erode them smoothly. 
-Since this kind of grid is a discretizaion of a scalar function, We could directly use \eqref{eq:erosionMetaball}, as described previously, but we take advantage of the discrete nature of the representation to avoid expensive computation. \\
+Since this kind of grid is a discretizaion of a scalar function, We could directly use \eqref{eq:erosion_erosionMetaball}, as described previously, but we take advantage of the discrete nature of the representation to avoid expensive computation. \\
 We apply the erosion from a particle at position $c$ on all points $\p$ in the volume proportionally to the distance from the center of the sphere $d = ||\p - c||$ to find an approximation to the real erosion value per voxel $\totalErosion_{approx} = \totalErosion \frac{1 - d}{\particleSize}$.
 Using their discrete nature, we rectify this value to sum up the total erosion value to $\totalErosion$ by dividing each value by the sum of the distances. We now consider eroding the "empty" voxels since their density can drop until $-1$. We then have for all surrounding voxels: 
-\begin{align} \label{eq:erosionVoxels}
+\begin{align} \label{eq:erosion_erosionVoxels}
 \Delta f(\p) = \totalErosion \frac{ (1 - \frac{d}{\particleSize} )}{ \sum {(1 - \frac{d}{\particleSize})}}.
 \end{align}
 Resulting voxel value is computed as $\Tilde{f}(\p) = f(\p) + \Delta f(\p)$.
@@ -342,15 +342,15 @@ In our implementation, when $f(\p) > 1$, we simply transport the density excess 
 The terrain can be represented using an occupancy function as $f: \Z^3 \to \{0, 1\}$ where a voxel $f = 1$ defines the ground and $f = 0$ the background. \\ 
 We propose to apply particle erosion by assigning voxels a number of hits, and transform them as air or as ground when this number reaches a critical value $C$ that is proportional to the particle's strength parameter $\erosionStrength$ \cite{Jones2010}. \\ 
 On a hit, all voxels in a radius $\particleSize$ receive a hit number: 
-\begin{align} \label{eq:erosionDiscreteVoxels}
+\begin{align} \label{eq:erosion_erosionDiscreteVoxels}
 \Delta hits = \lfloor \alpha \Delta f \rfloor
 \end{align}
-with $\Delta f$ the erosion per voxel computed using \eqref{eq:erosionVoxels} and $\alpha$ a coefficient high enough to obtain values above 1. \\ 
+with $\Delta f$ the erosion per voxel computed using \eqref{eq:erosion_erosionVoxels} and $\alpha$ a coefficient high enough to obtain values above 1. \\ 
 All voxels with $\# hits > C$ are transformed to background and voxels with $\# hits < -C$ are transformed to ground.\\
 Note that, a binary voxel grid can also be transformed into a density-voxel grid to be eroded smoothly.
 
-Our formulation for height fields \eqref{eq:erosionHeightfield}, can be used to erode 2D scalar field-based representations. Similarly, 
-our proposition for SDF \eqref{eq:erosionMetaball} enables erosion for continuous 3D scalar fields and voxels \eqref{eq:erosionVoxels} for discrete 3D scalar fields respectively.
+Our formulation for height fields \eqref{eq:erosion_erosionHeightfield}, can be used to erode 2D scalar field-based representations. Similarly, 
+our proposition for SDF \eqref{eq:erosion_erosionMetaball} enables erosion for continuous 3D scalar fields and voxels \eqref{eq:erosion_erosionVoxels} for discrete 3D scalar fields respectively.
 % -----------------------------------------------------------
 \section{Results}
 \label{sec:erosion_erosion_examples}
@@ -359,7 +359,7 @@ our proposition for SDF \eqref{eq:erosionMetaball} enables erosion for continuou
 % \includegraphics{figures/multi_representations.pdf}
 % \label{fig:erosion_comparison-representations}
 % \end{wrapfigure}
-Our erosion process enables the simulation of a wide range of erosion effects on the major terrain representations alike. In this section, we present applications that demonstrate the versatility of our method by changing the particle's effect size, quantity, density, maximum capacity, deposition factor and the velocity fields. The results of each process are presented in Figure~\ref{tab:result_figures}, parameters used are available at Table~\ref{tab:result_parameters}. 
+Our erosion process enables the simulation of a wide range of erosion effects on the major terrain representations alike. In this section, we present applications that demonstrate the versatility of our method by changing the particle's effect size, quantity, density, maximum capacity, deposition factor and the velocity fields. The results of each process are presented in Figure~\ref{tab:erosion_result_figures}, parameters used are available at Table~\ref{tab:erosion_result_parameters}. 
 It is important to note that all erosion examples presented in this section are available for any 3D terrain representation. However, we cannot create volumetric structure, such as overhangs, using 2.5D representations (height fields).
 
 Environment density $\fluidDensity$ is set to \SI{1}{\kilogram\per\cubic\meter} above water level (terrain blue part) and to \SI{1000}{\kilogram\per\cubic\meter} below it.
@@ -383,8 +383,8 @@ Velocity field's refinement is done by using the presented diffusion strategy.
             \exampleWaterCurrents \\
             \hline
         \end{tabular}
-        \caption{Parameters used for the generation of the terrains presented in Figure~\ref{tab:result_figures}, with "Rep" the representation  (\heightmap: Heightmap, \densityVox: Density-voxels, \binaryVox: Binary voxels, \implicit: Implicit) "Res" the resolution in meter per voxel or cell, $\#P$ the number of particles per iteration, $\#N$ the number of iterations, $\particleSize$ the particles radius (in voxel or cell unit), $COR$ the coefficient of restitution, $\particleDensity$ the particle density in \SI{}{\kilogram\per\cubic\meter}, $\capacityFactor$, $\erosionRate$ and $\depositionRate$ respectively the capacity, erosion and deposition factors, "Vel field" the type of velocity field used and $t$ the computation time of the simulation in seconds on CPU. \\ $^{(1)}$ The velocity field is a vector field defined as $\fluidVelocity(\p) = [0 ~ sin(\p_x) ~ 0]^T$.}
-        \label{tab:result_parameters}
+        \caption{Parameters used for the generation of the terrains presented in Figure~\ref{tab:erosion_result_figures}, with "Rep" the representation  (\heightmap: Heightmap, \densityVox: Density-voxels, \binaryVox: Binary voxels, \implicit: Implicit) "Res" the resolution in meter per voxel or cell, $\#P$ the number of particles per iteration, $\#N$ the number of iterations, $\particleSize$ the particles radius (in voxel or cell unit), $COR$ the coefficient of restitution, $\particleDensity$ the particle density in \SI{}{\kilogram\per\cubic\meter}, $\capacityFactor$, $\erosionRate$ and $\depositionRate$ respectively the capacity, erosion and deposition factors, "Vel field" the type of velocity field used and $t$ the computation time of the simulation in seconds on CPU. \\ $^{(1)}$ The velocity field is a vector field defined as $\fluidVelocity(\p) = [0 ~ sin(\p_x) ~ 0]^T$.}
+        \label{tab:erosion_result_parameters}
         
 \end{table*}
 
@@ -436,7 +436,7 @@ Procedural generation of underwater 3D terrains has received little attention. T
 Our method works in a water environment by giving at least water density to particles. Given a velocity field describing underwater currents from a complex simulation or from a sketch, the particle system erodes the terrain. \\ 
 In the example presented in \referenceExemple{Underwater}, the velocity field is given by a simple 3D fluid simulation \cite{Stam1999} applied on the terrain.
 
-A complex water flow simulation is computed using SIMPLE \cite{Caretto1973} fluid simulation with OpenFOAM. The resulting erosion can then follow complex water movement and erode the terrain at the most affected parts of the 3D terrain as the trajectories of the particles (green) is highly affected by the fluid velocity (blue). The density of the particles and the environment being close, the buoyancy cancels most of the gravity force, leaving the velocity of the particles computed by the fluid velocity $\fluidVelocity$ and settling velocity $\settlingVelocity$ from \eqref{eq:velocity-computation-final} (Figure~\ref{fig:erosion_underwater_result}).
+A complex water flow simulation is computed using SIMPLE \cite{Caretto1973} fluid simulation with OpenFOAM. The resulting erosion can then follow complex water movement and erode the terrain at the most affected parts of the 3D terrain as the trajectories of the particles (green) is highly affected by the fluid velocity (blue). The density of the particles and the environment being close, the buoyancy cancels most of the gravity force, leaving the velocity of the particles computed by the fluid velocity $\fluidVelocity$ and settling velocity $\settlingVelocity$ from \eqref{eq:erosion_velocity-computation-final} (Figure~\ref{fig:erosion_underwater_result}).
 \begin{figure}[t]
     
     % \centering
@@ -521,52 +521,52 @@ Our method can also be applied to underwater environments with identical physics
 Erosion algorithms are often limited to the use of height fields, but by finding more generalized methods, we can go toward a global use of 3D terrains, which can offer richer and more diverse landscapes.
 
 %
-\section{Computation of a metaball}
-\label{sec:erosion_appendix_metaball}
-We use the following formula to evaluate a metaball in space with a center $c$ and of radius $\Radius$:
-$$ g(\p) = 1 - \frac{||\p - c||}{\Radius} $$
-using the euclidean distance.
+% \section{Computation of a metaball}
+% \label{sec:erosion_appendix_metaball}
+% We use the following formula to evaluate a metaball in space with a center $c$ and of radius $\Radius$:
+% $$ g(\p) = 1 - \frac{||\p - c||}{\Radius} $$
+% using the euclidean distance.
 
-We have a total amount $\totalErosion$ to define in this space, so the final metaball function $f$ needs to satisfy the equations \eqref{eq:function_f_is_metaball} and \eqref{eq:int_function_f_is_erosion}:
-\begin{align}
-\label{eq:function_f_is_metaball}
-f(\p) &= \lambda g(\p) \\
-\label{eq:int_function_f_is_erosion}
-\int_{\p \in V_{3D}}{f \, dp} &= \totalErosion
-\end{align}
+% We have a total amount $\totalErosion$ to define in this space, so the final metaball function $f$ needs to satisfy the equations \eqref{eq:erosion_function_f_is_metaball} and \eqref{eq:erosion_int_function_f_is_erosion}:
+% \begin{align}
+% \label{eq:erosion_function_f_is_metaball}
+% f(\p) &= \lambda g(\p) \\
+% \label{eq:erosion_int_function_f_is_erosion}
+% \int_{\p \in V_{3D}}{f \, dp} &= \totalErosion
+% \end{align}
 
-First, let's exploit the radial symmetry of the metaball and rewrite $g(\p) = 1 - r$ by using the polar coordinates of the point $\p - c$.
+% First, let's exploit the radial symmetry of the metaball and rewrite $g(\p) = 1 - r$ by using the polar coordinates of the point $\p - c$.
 
-We can then integrate $g$ over the volume $V_{3D}$ as 
-\begin{align}
-&\int_{0}^{1}{ \int_{0}^{\pi}{ \int_{0}^{2\pi}{ g(r) r^2 \sin(\theta)\, dr} \, d\theta} \, d\phi} \nonumber \\
-= &\int_{0}^{1}{ \int_{0}^{\pi}{ \int_{0}^{2\pi}{ (1 - r) r^2 \sin(\theta)\, dr} \, d\theta} \, d\phi} \nonumber \\
-&= \int_{0}^{1}{ (1 - r)r^2 \, dr} \times \int_{0}^{\pi}{ \sin{\theta} \, d\theta } \times \int_{0}^{2\pi}{ 1 \, d\phi} \nonumber
-\end{align}
+% We can then integrate $g$ over the volume $V_{3D}$ as 
+% \begin{align}
+% &\int_{0}^{1}{ \int_{0}^{\pi}{ \int_{0}^{2\pi}{ g(r) r^2 \sin(\theta)\, dr} \, d\theta} \, d\phi} \nonumber \\
+% = &\int_{0}^{1}{ \int_{0}^{\pi}{ \int_{0}^{2\pi}{ (1 - r) r^2 \sin(\theta)\, dr} \, d\theta} \, d\phi} \nonumber \\
+% &= \int_{0}^{1}{ (1 - r)r^2 \, dr} \times \int_{0}^{\pi}{ \sin{\theta} \, d\theta } \times \int_{0}^{2\pi}{ 1 \, d\phi} \nonumber
+% \end{align}
 
-We then break down the integrals one by one such as 
-$$ \int_{0}^{1}{ (1 - r)r^2 \, dr} = \frac{1}{12} \nonumber$$ 
-$$ \int_{0}^{\pi}{ \sin{\theta} \, d\theta } = 2 \nonumber$$ 
-$$ \int_{0}^{2\pi}{ 1 \, d\phi} = 2 \pi \nonumber$$
+% We then break down the integrals one by one such as 
+% $$ \int_{0}^{1}{ (1 - r)r^2 \, dr} = \frac{1}{12} \nonumber$$ 
+% $$ \int_{0}^{\pi}{ \sin{\theta} \, d\theta } = 2 \nonumber$$ 
+% $$ \int_{0}^{2\pi}{ 1 \, d\phi} = 2 \pi \nonumber$$
 
-By combining all these integrals, we get $\int{g} = \frac{1}{12} \times 2 \times 2\pi = \frac{\pi}{3}$.
+% By combining all these integrals, we get $\int{g} = \frac{1}{12} \times 2 \times 2\pi = \frac{\pi}{3}$.
 
-So given $\int{f} = \erosionAmount$ and $\int{f} = \lambda \int{g}$, we can deduce that $\lambda = \frac{\totalErosion}{\int{g}} = \frac{3}{\pi}\totalErosion$.
+% So given $\int{f} = \erosionAmount$ and $\int{f} = \lambda \int{g}$, we can deduce that $\lambda = \frac{\totalErosion}{\int{g}} = \frac{3}{\pi}\totalErosion$.
 
-From \eqref{eq:function_f_is_metaball} we finally get 
-\begin{align} 
-\label{eq:proofErosionMetaball}
-f(\p) = \frac{3 \totalErosion}{\pi} \left(1 - \frac{||\p - c||}{\Radius} \right)
-\end{align}
-, representing the rate of change on the evaluation function of the terrain surface.
+% From \eqref{eq:erosion_function_f_is_metaball} we finally get 
+% \begin{align} 
+% \label{eq:erosion_proofErosionMetaball}
+% f(\p) = \frac{3 \totalErosion}{\pi} \left(1 - \frac{||\p - c||}{\Radius} \right)
+% \end{align}
+% , representing the rate of change on the evaluation function of the terrain surface.
 
-The integration in the voxel space is out of the scope of this paper and a numerical solution is instead proposed in Section~\ref{sec:erosion_application_on_voxels}.
+% The integration in the voxel space is out of the scope of this paper and a numerical solution is instead proposed in Section~\ref{sec:erosion_application_on_voxels}.
 
 
 \clearpage
 \begin{figure*}
 	\centering
     \includegraphics{Results/results.pdf}
-	\caption{Erosion processes results on various representations presented in section \ref{sec:erosion_erosion_examples}. Used parameters used are detailed in  Table~\ref{tab:result_parameters}.}
-	\label{tab:result_figures}
+	\caption{Erosion processes results on various representations presented in section \ref{sec:erosion_erosion_examples}. Used parameters used are detailed in  Table~\ref{tab:erosion_result_parameters}.}
+	\label{tab:erosion_result_figures}
 \end{figure*}
