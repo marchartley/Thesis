@@ -116,10 +116,19 @@
   {\multicitedelim}
   {\usebibmacro{postnote}}
 
+\newbibmacro*{citefullbody}{
+  \printnames{labelname}
+  \setunit{\addcomma\space}
+  \textit{\printfield[]{title}} % remove quotes
+  % \textit{\printfield[citetitle]{title}}
+  % \setunit{\nameyeardelim}
+  (\printfield{year})
+}
+
 \DeclareCiteCommand{\citep}
 {\usebibmacro{prenote}\usebibmacro{cite:init}}
 {\usebibmacro{citeindex}
- \printtext[bibhyperref]{\usebibmacro{cite}}}
+ \printtext[bibhyperref]{\usebibmacro{citefullbody}}}
 {\multicitedelim}
 {\usebibmacro{postnote}}
 
@@ -154,11 +163,10 @@
 
 
 
-
-\zzcommand{\gloss}[1]{\ifglsentryexists{gls-#1}{\glsentryname{gls-#1}\glsadd{gls-#1}}{[XXXX]}}
-\zzcommand{\glosses}[1]{\ifglsentryexists{gls-#1}{\glsentrylongpl{gls-#1}\glsadd{gls-#1}}{[XXXX]}}
-\zzcommand{\Gloss}[1]{\ifglsentryexists{gls-#1}{\Glsentryname{gls-#1}\glsadd{gls-#1}}{[XXXX]}}
-\zzcommand{\Glosses}[1]{\ifglsentryexists{gls-#1}{\Glsentrylongpl{gls-#1}\glsadd{gls-#1}}{[XXXX]}}
+\zzcommand{\gloss}[1]{\ifglsentryexists{gls-#1}{\glsentryname{gls-#1}\ifcsdef{inheading}{}{{\glsadd{gls-#1}}}}{[XXXX]}}
+\zzcommand{\glosses}[1]{\ifglsentryexists{gls-#1}{\glsentrylongpl{gls-#1}\ifcsdef{inheading}{}{{\glsadd{gls-#1}}}}{[XXXX]}}
+\zzcommand{\Gloss}[1]{\ifglsentryexists{gls-#1}{\Glsentryname{gls-#1}\ifcsdef{inheading}{}{{\glsadd{gls-#1}}}}{[XXXX]}}
+\zzcommand{\Glosses}[1]{\ifglsentryexists{gls-#1}{\Glsentrylongpl{gls-#1}\ifcsdef{inheading}{}{{\glsadd{gls-#1}}}}{[XXXX]}}
 \zzcommand{\glsnamefont}[1]{\makefirstuc{#1}}
 
 
@@ -177,7 +185,7 @@
 %   \endgroup
 % }
 
-% \zzcommand{\ref}{\cref}
-% \zzcommand{\eqref}{\cref}
+\let\ref=\cref
+\let\eqref=\cref
 
 \zzcommand{\to}{\mapsto}

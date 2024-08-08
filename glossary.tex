@@ -104,15 +104,27 @@
 
 \zzcommand{\noise}{\eta}
 
+\zzcommand{\Esnake}{E_{\text{snake}}}
+\zzcommand{\Eintern}{E_{\text{internal}}}
+\zzcommand{\Eextern}{E_{\text{external}}}
+\zzcommand{\Econt}{E_{\text{continuity}}}
+\zzcommand{\Eimage}{E_{\text{image}}}
+\zzcommand{\Ecurv}{E_{\text{curvature}}}
+
 
 
 
 % \newdualentry[glossary-options][abbrev. options]{key}{abbr}{Full name}{Description}{Plural (opt)}
-\newdualentry[][]{EnvObj}{STE}{Semantic Terrain Entity}{Meh...}{Semantic Terrain Entities}
-\newdualentry[][]{EnvVal}{}{environmental attribute}{Meh...}
-\newdualentry[][]{EnvMat}{}{environmental modifier}{Meh...}
-\newdualentry[][]{GeoEvent}{}{geomorphic event}{Meh... }
-\newdualentry[][]{Skeleton}{}{skeleton}{Meh... }
-\newdualentry[][]{GenRule}{}{generation rule}{Meh... }
-\newdualentry[][]{FitnessFunc}{}{fitness function}{Meh... }
-\newdualentry[][]{FittingFunc}{}{skeleton fitting function}{Meh... }
+\newdualentry[][]{EnvObj}{STE}{Semantic Terrain Entity}{Geographic feature represented sparsly which describe a landscape. We represent it with a \gloss{Skeleton}, \glosses{GenRule} and \glosses{EnvMat}. }{Semantic Terrain Entities}
+\newdualentry[][]{EnvVal}{}{environmental attribute}{Value of a geographic field at one point in space and time. }
+\newdualentry[][]{EnvMat}{}{environmental modifier}{Description of a modification of a \gloss{EnvVal} around a \gloss{EnvObj}. It can represent the spread or the absorption of material around it, or the deformation of water currents. }
+\newdualentry[][]{GeoEvent}{}{geomorphic event}{Modification of a \gloss{EnvVal} in an interval of time with or without spatial bounds. }
+\newdualentry[][]{Skeleton}{}{skeleton}{Simplified shape of a \gloss{EnvObj}, as it could be symbolized in a map: as a point, a curve or a region. }
+\newdualentry[][]{GenRule}{}{generation rule}{Composed of a \gloss{FitnessFunc} and \gloss{FittingFunc}, the optimisation of the \gloss{GenRule} of an \gloss{EnvObj} through the maximization of its components describe where and how new elements can be added to a semantic terrain. }
+\newdualentry[][]{FitnessFunc}{}{fitness function}{Function affected to a \gloss{EnvObj} that, given the \gloss{EnvVal} at a $(x, y)$ position in the space, returns a score describing how well this \gloss{EnvObj} may survive. }
+\newdualentry[][]{FittingFunc}{}{skeleton fitting function}{Function affected to a \gloss{EnvObj} that, given the local \gloss{EnvVal} and the shape of the skeleton of the \gloss{EnvObj}, returns a score describing how well this \gloss{EnvObj} fits. It may be seen as a refinement of the \gloss{FitnessFunc}. }
+\newdualentry[][]{SteadyState}{}{steady state}{A system is at steady state when internal properties do not change overtime once a dynamic equilibrium has been reached. The \glosses{EnvMat} emission from \glosses{EnvObj} can be seen as a thermodynamic system which achieve thermodynamic equilibrium over time. }
+
+%Intro
+\newdualentry[][]{ParamSpace}{}{parameter space}{Set of adjustable parameters that can be modified to control and influence the generation process of content or assets. These parameters can include properties like size, shape, density, or other relevant factors, depending on the specific procedural algorithm being used. By adjusting these parameters, creators can achieve a wide variety of outcomes and patterns, enabling the generation of diverse and customizable content such as textures, levels, or 3D models.}
+\newdualentry[][]{LOD}{LoD}{level of detail}{Amount of graphical data or information displayed in a scene or image. Higher LOD means more detail, while lower LOD means less detail. This concept helps manage computational resources, where less important or distant objects have lower LOD to improve performance.}

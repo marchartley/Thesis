@@ -1,240 +1,142 @@
-\chapter{State of the art}
-\label{chap:state-of-the-art}
-\minitoc
+% \chapter{State of the art}
+% \label{chap:state-of-the-art}
+% \minitoc
 
-- ...
+% - ...
 
 \section{Procedural generation}
 \label{sec:state-of-the-art_procedural-generation}
-- ...
+Procedural generation is a method used in computer science to create data algorithmically rather than manually, enabling the automatic generation of large amounts of content with minimal human input. This approach is crucial in fields such as game development, where it helps create expansive, varied worlds, and in simulations or data generation where diverse scenarios or datasets are needed. The process typically involves defining rules and algorithms that dictate how content is generated, ensuring it meets specific criteria and patterns, often incorporating randomness through noise functions to produce unique results each time. Incorporating adjustable parameters and customizable rules in the algorithms allows users to influence the characteristics and outcomes of the generated content. This method enhances efficiency, creativity, and scalability in digital content creation, but the main challenges are ensuring the generated content is both diverse and coherent and achieving a balance between speed, realism and control to meet desired design and quality.
 
 \subsection{Definition}
-- Algorithmic Content Creation: Procedural generation refers to the process of creating data algorithmically rather than manually. This technique is widely used in fields such as computer graphics, simulations, and game development. \\
-- Generative Models: Utilizes predefined rules or algorithms to generate complex structures or systems. Examples include generating landscapes, textures, or entire worlds. \\
-- Data Independence: The generated content is not explicitly stored but created in real-time or on-the-fly, allowing for more extensive and dynamic content creation. \\
-- Applications: Commonly applied in video games for creating vast, varied, and detailed environments without requiring large amounts of storage space. \\
-- Automated Data Creation: Procedural generation is a technique used to automatically create complex and diverse content through algorithmic processes. This involves defining a set of rules or procedures that can produce varied outputs. \\
-- Dynamic and Flexible: Allows for the generation of content that can adapt and change in response to different inputs or conditions, making it highly suitable for applications requiring variability and adaptability. \\
-- Integration of Algorithms and Data: Combines mathematical models, noise functions, and other algorithms to create realistic or abstract content. This can include generating landscapes, textures, or entire ecosystems. \\
-- Real-World Relevance: Involves incorporating aspects of real-world phenomena or simulations (e.g., erosion patterns in terrain generation) to produce more believable and interactive environments. \\
-- User-Driven Customization: Provides mechanisms for users to influence or guide the content generation process, allowing for customized or user-specific outcomes. \\
-- Scalability and Efficiency: Offers scalability in content generation by producing large amounts of data with relatively low computational and storage costs compared to manually crafted content. \\
-- Deterministic vs. Stochastic: \\
-** Deterministic: The output is predictable and repeatable given the same input parameters. \\
-** Stochastic: Incorporates randomness, leading to varied outputs even with the same initial conditions. \\
-- Rule-Based Systems: Utilizes predefined rules or systems to generate content, allowing for controlled and structured outputs. \\
-- Iteration and Refinement: Often involves iterative processes where initial results are refined or adjusted based on additional rules or parameters. \\
-- Advantages \\
-** Efficiency: Reduces the need for extensive manual creation, saving time and resources. \\
-** Variability: Capable of generating a wide range of unique outputs from the same set of rules. \\
-** Adaptability: Can easily adapt to changes in requirements or user input, allowing for dynamic content creation. \\
-** Storage: Minimizes storage needs by generating content on-the-fly rather than storing large datasets. \\
-- Challenges \\
-** Complexity: Developing and fine-tuning procedural generation algorithms can be complex and require careful balancing of parameters. \\
-** Realism vs. Performance: Achieving a balance between realistic content and computational performance can be challenging. \\
-** User Expectations: Meeting user expectations for content quality and variety can be difficult, especially in interactive applications.
+Procedural generation is a powerful technique for creating data algorithmically, rather than manually. This method is extensively used in areas such as computer graphics, simulations, and game development. Essentially, it involves using predefined rules or algorithms to generate complex structures or systems. For example, it can be employed to create landscapes, textures, or even entire worlds.
+
+One of the main benefits of procedural generation is its data independence. The content generated is created in real-time or on-the-fly, rather than being stored explicitly. This allows for the creation of extensive and dynamic content without the need for large amounts of storage space.
+
+In practical applications, procedural generation is commonly used in video games. It enables the creation of vast, varied, and detailed environments efficiently, without requiring extensive storage. This automated approach involves defining a set of rules or procedures that produce diverse outputs, making the content creation process both dynamic and flexible. The generated content can adapt and change in response to different inputs or conditions, which is particularly valuable for applications needing variability and adaptability.
+
+The integration of algorithms and data is a key aspect of procedural generation. It combines mathematical models, noise functions, and other algorithms to produce both realistic and abstract content. This might involve generating natural features like landscapes or textures, or even entire ecosystems. Incorporating elements of real-world phenomena, such as erosion patterns in terrain generation, can make the environments more believable and interactive.
+
+Moreover, procedural generation allows for user-driven customization. Users can influence or guide the content generation process, leading to customized or user-specific outcomes. This feature, combined with the scalability and efficiency of procedural methods, means that large amounts of data can be produced with relatively low computational and storage costs compared to manually crafted content.
+
+Procedural generation can be categorized into deterministic and stochastic systems. Deterministic systems produce predictable and repeatable outputs given the same input parameters, while stochastic systems introduce randomness, leading to varied outputs even with identical initial conditions.
+
+Rule-based systems are another aspect of procedural generation, using predefined rules to generate content. This approach allows for controlled and structured outputs. Typically, procedural generation involves iterative processes, where initial results are refined or adjusted based on additional rules or parameters.
+
+The advantages of procedural generation include efficiency, as it reduces the need for extensive manual creation, and variability, as it can produce a wide range of unique outputs from the same set of rules. Additionally, it is adaptable, easily responding to changes in requirements or user input, and it minimizes storage needs by generating content on-the-fly.
+
+However, there are challenges associated with procedural generation. The complexity of developing and fine-tuning algorithms can be significant, requiring careful balancing of parameters. Striking a balance between realistic content and computational performance can also be difficult. Furthermore, meeting user expectations for content quality and variety, especially in interactive applications, can be a challenge.
 
 \subsection{History}
-- Early Developments \\
-** Mathematical Foundations: \\
-*** Algorithmic Foundations: Early uses of procedural generation can be traced back to mathematical and algorithmic theories in the mid-20th century. Key concepts included randomness and noise functions. \\
-*** Noise Functions: The introduction of noise functions, such as Perlin noise (1983), provided a method for generating smooth, natural-looking randomness in computer graphics. \\
-** Early Computer Graphics: \\
-*** Simplex Noise: Developed by Ken Perlin in 1985, Simplex noise was a significant advancement, providing a more computationally efficient and visually pleasing alternative to Perlin noise. \\
-*** Fractals: In the 1980s, fractal geometry was introduced as a method for generating self-similar structures, influencing terrain generation and procedural modeling. \\
-- Video Games and Interactive Media \\
-** Early Video Games: \\
-*** Space Invaders (1978): The concept of procedural generation was used to create varied enemy formations and gameplay experiences. \\
-*** Rogue (1980): The early example of procedural generation in game level design, with randomly generated dungeons and item placement. \\
-** Procedural Content Generation (PCG): \\
-*** Dwarf Fortress (2006): A significant milestone in procedural generation for games, known for its deep and complex world generation that includes civilizations, histories, and intricate ecosystems. \\
-*** Minecraft (2011): Revolutionized procedural generation in gaming by generating vast, open worlds with diverse biomes and features. \\
-- Applications in Simulation and Graphics \\
-** Scientific Simulations: \\
-*** Terrain Generation: Used in geological simulations and virtual landscapes for scientific research and training. \\
-*** Fluid Dynamics: Procedural methods were applied to simulate realistic fluid behavior in various scientific and engineering contexts. \\
-** Computer Graphics and Animation: \\
-*** Film and Visual Effects: Procedural generation techniques have been used in films for creating complex visual effects, landscapes, and textures that would be time-consuming to model manually. \\
-*** Real-Time Rendering: The advent of real-time graphics and game engines (e.g., Unreal Engine, Unity) leveraged procedural generation for dynamic content creation and environmental diversity. \\
-- Technological Advancements \\
-** Algorithmic Improvements: \\
-*** Advanced Noise Functions: Developments in noise functions, such as Worley noise and new variations of Perlin noise, improved the quality and efficiency of procedural generation. \\
-*** Machine Learning and AI: Recent advances in machine learning and artificial intelligence are being integrated with procedural generation to create more complex and adaptive content. \\
-** Computing Power: \\
-*** Increased Processing Power: As computing power has increased, so has the capability to generate more complex and detailed procedural content in real time. \\
-*** Parallel Computing: Use of parallel processing and GPUs to accelerate procedural generation processes, enabling real-time applications and high-resolution simulations. \\
-- Current Trends and Future Directions \\
-** Hybrid Approaches: Combining procedural generation with manual design to achieve a balance between complexity and artistic control. \\
-** User-Driven Content: Integration of user input and customization options to allow players or users to influence procedural content generation. \\
-** Advanced Simulations: Use of procedural generation in advanced simulations for training, virtual reality, and scientific research, including climate modeling and urban planning. 
+Early developments in procedural generation can be traced back to the mid-20th century, grounded in mathematical and algorithmic theories. This period saw the introduction of key concepts like randomness and noise functions, which laid the foundation for procedural techniques. One notable advancement was the introduction of noise functions, such as Perlin noise in 1983. This method allowed for the generation of smooth, natural-looking randomness in computer graphics.
+
+Building on this, Ken Perlin developed Simplex noise in 1985. Simplex noise represented a significant improvement over Perlin noise by offering a more computationally efficient and visually pleasing alternative. During the same era, fractal geometry emerged, introducing the concept of generating self-similar structures. This had a substantial impact on terrain generation and procedural modeling, providing a new way to create intricate and repeating patterns.
+
+As procedural generation began to find applications in video games and interactive media, its impact became more pronounced. In 1980, the game "Rogue" showcased procedural generation in its level design, featuring randomly generated dungeons and item placements. This was followed by "Elite" in 1984, which utilized procedural generation to create unique characteristics for each planet, such as names, positions in space, economic models, and resource availability. This approach contributed to a diverse and expansive game universe, enhancing replayability and exploration.
+
+The evolution continued with significant milestones in procedural content generation (PCG). "Dwarf Fortress," released in 2006, became renowned for its deep and complex world generation, which included detailed civilizations, histories, and ecosystems. "Spore," released in 2008, pushed the boundaries further by using procedural generation extensively, as the game did not store textures, music, or animations. "Minecraft," released in 2011, revolutionized procedural generation in gaming by creating vast, open worlds with a variety of biomes and features.
+
+In addition to video games, procedural generation found applications in simulations and computer graphics. For scientific simulations, it was used in terrain generation for geological studies and virtual landscapes, as well as in fluid dynamics to simulate realistic fluid behaviors. In the realm of computer graphics and animation, procedural techniques became essential for creating complex visual effects, landscapes, and textures in films, which would be labor-intensive to model manually. The advent of real-time graphics and game engines like Unreal Engine and Unity further leveraged procedural generation to create dynamic content and diverse environments.
+
+Technological advancements have played a crucial role in the evolution of procedural generation. Improvements in noise functions, such as Worley noise and new variations of Perlin noise, enhanced both the quality and efficiency of procedural methods. Recent developments in machine learning and artificial intelligence have been integrated with procedural generation to produce more complex and adaptive content. The increase in computing power has also been pivotal, allowing for the generation of more detailed and complex procedural content in real time. Additionally, the use of parallel processing and GPUs has accelerated these processes, enabling real-time applications and high-resolution simulations.
+
+Looking to the future, current trends in procedural generation include hybrid approaches that combine procedural techniques with manual design to balance complexity and artistic control. User-driven content is becoming more prevalent, allowing players and users to influence procedural content generation. Moreover, procedural generation is increasingly being applied in advanced simulations for areas such as training, virtual reality, and scientific research, including climate modeling and urban planning.
 
 \subsection{Models represented}
-Noise: Techniques like Perlin noise and Simplex noise for creating natural variations. \\
-Cellular Automata: Models like Conway's Game of Life for generating patterns and structures. \\
-Neural Networks: Use of deep learning to generate and refine procedural content. \\
-Physical Phenomena Modeling: Simulating natural processes like erosion and sedimentation for realistic terrain features. 
+Procedural generation encompasses various models and techniques that create complex and natural-looking content. These models range from mathematical functions to advanced neural networks and physical simulations, each contributing uniquely to the generation of diverse and realistic environments.
 
-- Noise \\
-** Perlin Noise: \\
-*** Overview: Developed by Ken Perlin in 1983, Perlin noise is a gradient noise function used to generate smooth, coherent patterns that resemble natural phenomena. \\
-*** Applications: Commonly used in texture generation, terrain modeling, and procedural landscapes to create realistic, natural-looking variations. \\
-*** Characteristics: Provides continuous and smooth randomness, making it ideal for creating natural-looking terrains and textures. \\
-** Simplex Noise: \\
-*** Overview: Introduced by Ken Perlin in 2001 as an improvement over Perlin noise. It is more computationally efficient and produces fewer directional artifacts. \\
-*** Applications: Used in procedural texture generation, terrain creation, and simulations where higher performance and quality are needed. \\
-*** Characteristics: Offers a higher degree of visual coherence and efficiency in high-dimensional space compared to Perlin noise. \\
-** Worley Noise: \\
-*** Overview: Also known as Voronoi noise, Worley noise generates patterns based on the distance between points in a space, producing cellular structures. \\
-*** Applications: Suitable for creating textures such as stone or marble, and for modeling natural phenomena like cloud patterns and cellular structures. \\
-*** Characteristics: Produces a pattern of cells with distinct boundaries, useful for generating irregular, organic textures. \\
-- Cellular Automata \\
-** Basic Concepts: \\
-*** Definition: Cellular automata are discrete, grid-based models where each cell evolves based on a set of rules applied to its neighbors. \\
-*** History: Originating in the 1940s with John von Neumann and Stanislaw Ulam, cellular automata have been used to model complex systems and processes. \\
-** Applications in Procedural Generation: \\
-*** Terrain Generation: Used to simulate natural processes like erosion, sediment deposition, and landform evolution. Examples include generating cave systems and cave-like features. \\
-*** Pattern Formation: Employed to create various patterns and textures, such as forests, vegetation, and city layouts. \\
-** Notable Models: \\
-*** Game of Life: A famous example of cellular automata, used to demonstrate how simple rules can lead to complex, self-organizing patterns. \\
-*** Langton's Ant: A simpler automaton that produces interesting and complex behavior from basic rules, demonstrating the potential of cellular automata for generating diverse patterns. \\
-- Neural Networks \\
-** Overview: \\
-*** Artificial Neural Networks (ANNs): Computational models inspired by the human brain, used to learn patterns and generate data. \\
-*** Generative Models: Types of neural networks, such as Generative Adversarial Networks (GANs) and Variational Autoencoders (VAEs), are specifically designed for content generation. \\
-** Applications: \\
-*** Texture and Terrain Generation: Neural networks can be trained to generate realistic textures and terrains based on training data, producing highly detailed and varied results. \\
-*** Image Synthesis: Used to generate photorealistic images, including landscapes, environments, and even character models in video games and simulations. \\
-** Key Techniques: \\
-*** GANs (Generative Adversarial Networks): Consist of two neural networks, a generator and a discriminator, that work against each other to create realistic outputs. \\
-*** VAEs (Variational Autoencoders): Learn to encode and decode data in a way that allows for the generation of new, similar data instances. \\
-- Physical Phenomena Modeling \\
-** Overview: \\
-*** Definition: Models that simulate real-world physical processes to generate natural features and behaviors in procedural content. \\
-*** Types: Includes models for fluid dynamics, erosion, sediment transport, and other geological and environmental processes. \\
-** Applications: \\
-*** Terrain Generation: Simulating erosion, sediment deposition, and other geological processes to create realistic terrain features such as mountains, valleys, and riverbeds. \\
-*** Environmental Simulations: Used in simulations for weather patterns, climate modeling, and natural disaster scenarios. \\
-** Key Models: \\
-*** Erosion Models: Simulate the effects of weathering and erosion on terrain, often using algorithms that mimic natural processes like water flow and wind. \\
-*** Sediment Transport: Models that simulate the movement and deposition of sediment, contributing to realistic terrain formation and changes.
+One foundational technique in procedural generation is noise. Perlin noise, developed by Ken Perlin in 1983, is a gradient noise function designed to produce smooth, coherent patterns that mimic natural phenomena. Its continuous and smooth randomness makes it particularly suitable for generating textures, terrains, and procedural landscapes that appear natural. Building on this, Simplex noise, introduced by Perlin in 2001, offers a more computationally efficient alternative with fewer directional artifacts. It is favored for its improved visual coherence and efficiency in higher-dimensional spaces, making it ideal for procedural texture generation and terrain creation.
+
+Another variant of noise, Worley noise—also known as Voronoi noise—creates patterns based on the distance between points in a space. This technique produces cellular structures with distinct boundaries, making it useful for generating textures like stone or marble, and for modeling natural patterns such as cloud formations and cellular structures.
+
+In addition to noise functions, cellular automata provide another approach to procedural generation. These are discrete, grid-based models where each cell evolves according to a set of rules applied to its neighbors. Originating in the 1940s with John von Neumann and Stanislaw Ulam, cellular automata have been used to model complex systems and processes. They are particularly effective for simulating natural processes such as erosion and sediment deposition, which can be employed to generate cave systems and other landforms. Cellular automata are also used to create various patterns and textures, including forests, vegetation, and city layouts. Notable examples include Conway's Game of Life, which demonstrates how simple rules can lead to complex, self-organizing patterns, and Langton's Ant, which showcases how basic rules can produce diverse and intricate behaviors.
+
+Neural networks represent a more recent advancement in procedural generation. Artificial Neural Networks (ANNs), inspired by the human brain, learn patterns and generate data. Generative models, including Generative Adversarial Networks (GANs) and Variational Autoencoders (VAEs), are designed specifically for content generation. GANs use two neural networks—a generator and a discriminator—that compete with each other to produce realistic outputs. VAEs, on the other hand, encode and decode data to generate new, similar instances. These models are applied to generate realistic textures, terrains, and photorealistic images, enhancing the detail and variety of content in video games and simulations.
+
+Finally, physical phenomena modeling uses simulations of real-world processes to generate natural features and behaviors. This includes models for fluid dynamics, erosion, sediment transport, and other geological and environmental processes. These models are crucial for creating realistic terrain features such as mountains, valleys, and riverbeds, as well as for environmental simulations that include weather patterns, climate modeling, and natural disaster scenarios. Erosion models, for instance, simulate the effects of weathering and erosion on terrain, using algorithms that mimic natural processes like water flow and wind. Sediment transport models simulate the movement and deposition of sediment, contributing to the realistic formation and evolution of terrain.
+
+Together, these models and techniques form a comprehensive toolkit for procedural generation, enabling the creation of diverse, realistic, and dynamic content across various applications.
 
 \subsection{User interaction}
 \subsubsection{Realism-Speed-Control Balance}
-Realism: Achieving accurate representation of real-world features, useful in simulations and visualizations. \\
-Speed: Real-time generation needs, classified by J. Gain’s metrics (real-time, interactive, near-interactive, long-term). \\
-Control: Meeting user demands and customization, addressing the challenge of “impossible” requests.
+User interaction is a crucial aspect of procedural generation, affecting how users balance realism, speed, and control over generated content.
 
-- Realism: \\
-** Definition: The degree to which generated content mimics real-world characteristics, including visual accuracy, physical processes, and natural patterns. \\
-** Applications: Critical in scenarios where realistic simulations are required, such as natural disaster simulations, scientific visualizations, and training environments. \\
-** Techniques: \\
-*** Physical Simulations: Implementing realistic physical processes (e.g., erosion, sediment transport) to enhance authenticity. \\
-*** Expert Knowledge: Integrating domain-specific expertise (e.g., geology, ecology) to ensure accuracy in generated content. \\
-** Challenges: \\
-*** Complexity: Balancing detail and realism can lead to complex simulations requiring substantial computational resources. \\
-*** Expertise: Ensuring realism may necessitate expert input, which can be resource-intensive. \\
-- Speed: \\
-** Definition: The efficiency of generating content within acceptable time constraints, categorized into different levels based on response time. \\
-** Categories: \\
-*** Real-Time: Generation occurring in less than 30 milliseconds, essential for interactive applications and gaming (e.g., procedural environments in VR). \\
-*** Interactive: Generation in less than 3 seconds, suitable for user-driven customization in games and simulations. \\
-*** Near-Interactive: Generation in less than 5 minutes, applicable for applications where some delay is acceptable (e.g., large-scale simulations). \\
-*** Long-Term: Generation that takes longer, often used for precomputed content or less time-sensitive applications (e.g., offline rendering). \\
-** Techniques: \\
-*** Optimization: Using efficient algorithms and parallel processing to speed up generation processes. \\
-*** Level of Detail (LOD): Adjusting detail based on the user's distance or focus to balance performance and visual quality. \\
-- Control: \\
-** Definition: The extent to which users can influence or direct the procedural generation process to meet their specific needs or preferences. \\
-** Applications: \\
-*** Customization: Allowing users to modify parameters or settings to tailor generated content to their preferences (e.g., terrain features, game worlds). \\
-*** Artistic Control: Providing tools for artists and designers to guide the procedural generation process and integrate artistic elements. \\
-** Challenges: \\
-*** User Demands: Addressing the challenge of fulfilling diverse and sometimes contradictory user expectations. \\
-*** Complexity: Balancing user control with the complexity of procedural systems to avoid overwhelming users or producing unrealistic results. 
+Realism refers to the extent to which generated content accurately represents real-world characteristics, such as visual details, physical processes, and natural patterns. This is especially important in simulations, visualizations, and training environments where authenticity is critical. Techniques to enhance realism include physical simulations, which model processes like erosion and sediment transport, and the integration of expert knowledge from fields such as geology and ecology. However, achieving realism can be challenging due to the complexity of detailed simulations and the need for specialized expertise, which can demand substantial computational resources and inputs.
+
+Speed is about the efficiency of content generation within acceptable time constraints. While no official categorisation has been set, James Gain proposed to describe levels of speed based on response time: \\
+Real-Time: Generation in less than 30 milliseconds, essential for interactive applications like VR environments. \\
+Interactive: Generation in under 3 seconds, suitable for user-driven customization in games and simulations. \\
+Near-Interactive: Generation in less than 5 minutes, applicable for larger-scale simulations where some delay is acceptable. \\
+Long-Term: Generation that takes longer, often used for precomputed content or offline rendering.
+
+Optimizing speed involves using efficient algorithms and parallel processing. Almost all recent works achieve fast execution time thanks to high parallelisation on GPU. Other types of algorithm may rely on a refinement paradigm, generating a coarse result at first and then iteratively adding finer details, such that the global output shape is available long time before the real final result.
+
+Control refers to how much users can influence or direct the procedural generation process to meet their specific needs or preferences. This includes:
+
+Customization: Allowing users to modify parameters like terrain features or game worlds.
+Artistic Control: Providing tools for artists and designers to guide the generation process and incorporate artistic elements.
+Challenges in control involve managing diverse and sometimes conflicting user expectations, and balancing the complexity of procedural systems to avoid overwhelming users or producing unrealistic results.
 
 \subsubsection{Interaction Mechanisms}
-- Parameter Adjustment: \\
-** Sliders and Controls: User interfaces that allow adjustment of parameters such as terrain height, texture type, or weather conditions. \\
-** Real-Time Feedback: Immediate visual or functional feedback based on user input, enhancing the interactive experience. \\
-- Guided Creation: \\
-** Templates and Presets: Offering predefined templates or presets that users can modify to fit their needs while ensuring a coherent base for the generated content. \\
-** Assistive Tools: Providing tools or wizards that guide users through the generation process, helping them understand and control the outcome. \\
-- Direct Manipulation: \\
-** Interactive Tools: Tools that allow users to directly manipulate the generated content, such as sculpting terrain or painting textures. \\
-** Live Updates: Changes made by the user are reflected in real-time, enabling immediate validation and adjustment. \\
-\subsubsection{Challenges and Considerations}
-- Balancing Complexity and Usability: Ensuring that complex procedural generation systems remain user-friendly and accessible, even when offering deep customization options. \\
-- Performance Impact: Managing the performance implications of user interactions, especially in real-time applications where frequent updates are needed. \\
-- Feedback and Iteration: Providing adequate feedback to users to help them understand the impact of their interactions and iterate on their designs effectively.
-% - ...
+Interaction Mechanisms are the tools and methods used to facilitate user interaction with procedural generation:
 
-% \subsubsection{Realism-speed-control balance}
-% - Main issue in terrain generation \\
-% - Explanation of realism \\
-% ** Generated landscapes are close to what is found in reality \\
-% ** Generation incorporates natural processes to be realistic \\
-% ** Requires extensive physical simulations, expert knowledge \\
-% ** Useful in applications such as natural disaster simulations \\
-% - Explanation of speed \\
-% ** Fastest possible generation, aiming for real-time generation \\
-% ** J. Gain classifies: real-time (< 30ms), interactive (< 3s), near-interactive (< 5min), and long-term. \\
-% ** Useful in "infinity-scroll" video games, for example \\
-% - Explanation of control \\
-% ** Aims to meet user demands \\
-% ** Major issue being "impossible" user demands \\
-% ** Useful in most procedural generation applications: speeding up artists' work, for example \\
-% - ...
+Parameter Adjustment: User interfaces like sliders and controls enable adjustments to parameters such as terrain height or texture type. Real-time feedback ensures users see the immediate impact of their adjustments.
+Guided Creation: Templates and presets offer predefined starting points that users can modify. Assistive tools or wizards help guide users through the generation process, making it easier to understand and control the outcome.
+Direct Manipulation: Interactive tools allow users to directly manipulate generated content, such as sculpting terrain or painting textures. Live updates reflect changes in real-time, facilitating immediate validation and adjustment.
+
+\subsubsection{Challenges and Considerations}
+Challenges and Considerations include balancing complexity and usability to ensure that sophisticated procedural systems remain user-friendly. Performance impact is another concern, especially in real-time applications where frequent updates are required. Effective feedback and iteration mechanisms are crucial for helping users understand the impact of their interactions and refine their designs.
 
 \subsubsection{Regeneration}
-- Manual Actions: How users can influence or direct the regeneration process. \\
-- Issues with Regeneration: \\
-** What to regenerate: Criteria for selecting parts of the terrain to refresh. \\
-** How to regenerate: Techniques and algorithms used for regeneration. \\
-- Problems with User Interactions: Handling user inputs and maintaining consistency. \\
-- Action Storage: Possible use of formats like JSON to store and manage regeneration actions.
+The regeneration of procedurally generated models is an issue often overlooked. As the user is almost satisfied with its generation, he may decide to adjust slightly the parameters used. The challenges of the regeneration are multiple: How to let the user explore the \gloss{ParamSpace} of the model freely? How to ensure that a small change in a variable induce a small change in the result? How to handle the edition from direct manipulations after regeneration? Those question arise directly from the realism-speed-control balance of our procedural model.
 
-- Manual Actions \\
-** User-Initiated Regeneration: \\
-*** Triggering Regeneration: Users can manually trigger regeneration processes, such as refreshing a terrain or updating a landscape to reflect new parameters or conditions. \\
-*** Interface Controls: Tools and options within user interfaces that allow users to initiate regeneration, such as buttons or commands for reloading or updating generated content. \\
-** Customizable Parameters: \\
-*** Adjustment of Variables: Users can adjust parameters or settings before triggering regeneration to influence the outcome. This includes changing terrain features, texture types, or simulation conditions. \\
-*** Preview and Validation: Offering preview modes or validation checks to help users understand potential outcomes before finalizing regeneration. \\
-- Issues with Regeneration \\
-** What to Regenerate: \\
-*** Selective Regeneration: Deciding whether to regenerate the entire model or specific parts. For example, only regenerating terrain features while keeping other elements intact. \\
-*** Scope and Scale: Determining the extent of regeneration, whether it involves minor updates or complete overhauls of generated content. \\
-** How to Regenerate: \\
-*** Algorithmic Approaches: Different methods for regenerating content, such as reapplying algorithms or using new procedural rules to alter or update the existing content. \\
-*** Incremental vs. Complete Regeneration: \\
-*** Incremental: Applying changes gradually or updating only parts of the generated content to minimize disruption. \\
-*** Complete: Full regeneration from scratch, which may be necessary for substantial changes or when previous results are no longer valid. \\
-- Problems with User Interactions: \\
-** Consistency: Ensuring that regeneration maintains or improves the consistency and quality of generated content, avoiding artifacts or inconsistencies. \\
-** Feedback Handling: Managing user feedback and requests for regeneration, which can vary in scope and detail. \\
-** Performance: Addressing the impact on performance and resource usage when regenerating content, especially in real-time or interactive applications. \\
-- Action Storage \\
-** Storage Formats: \\
-*** JSON: Using JSON (JavaScript Object Notation) files to store regeneration actions and parameters. JSON provides a flexible, readable format for saving and retrieving procedural settings. \\
-*** Other Formats: Potential use of alternative formats such as XML, binary files, or custom formats tailored to specific needs or systems. \\
-** Tracking Changes: \\
-*** Action History: Maintaining a history of user actions and regeneration events, allowing users to revert to previous states or track changes over time. \\
-*** Versioning: Implementing version control for procedural generation settings, ensuring that different versions of generated content can be managed and compared. \\
-** Restoration and Undo: \\
-*** Undo Mechanisms: Providing options for users to undo recent regeneration actions or revert to previous states, enhancing flexibility and user control. \\
-*** Restoration of Defaults: Allowing users to restore default settings or regeneration conditions if custom changes lead to unsatisfactory results. \\
-- Implementation Considerations \\
-** Efficiency: Designing algorithms and systems to handle regeneration efficiently, minimizing computational overhead and ensuring responsive updates. \\
-** User Experience: Creating intuitive interfaces and feedback mechanisms to facilitate smooth user interactions with regeneration processes. \\
-** Error Handling: Implementing robust error handling and recovery mechanisms to address issues that may arise during regeneration, such as unexpected results or system failures.
-% \subsubsection{Regeneration}
-% - Manual actions \\
-% - Issues with regeneration \\
-% ** What to regenerate? \\
-% ** How to regenerate? \\
-% ** Problems with user interactions? \\
-% - Action storage file in JSON (?) \\
-% - ...
+Users can manually start the regeneration process to refresh or update a model, such as a terrain or landscape. This allows the content to reflect new parameters or conditions as specified by the user. The generation speed has a strong influence on the possibility for the user to fine tune parameters as algorithms that can be executed in real-time or interactive-time keep the user active in his work. Long execution times force him to find optimal parameters beforehand in order to create a satisfying model faster than if it was hand-made, which, when not completely explicit, may feel impossible. 
+The speed can be improved by different strategies:  \\
+- Modifications that have a local incidence on the resulting model requires only a local regeneration of the output. Limiting the spatial scope of an interaction is an efficient mean to keep in the same time a way to explore the \gloss{ParamSpace} of the algorithm while keeping the predictability of the outcome by avoiding global changes from a local edition. \\
+- Live preview of the outcome can be displayed in a coarse computation, 
+
+Interface Controls: Various tools and options in the user interface enable users to initiate regeneration. This may include buttons or commands designed to reload or update the generated content based on user inputs.
+Customizable Parameters:
+
+Adjustment of Variables: Before initiating regeneration, users can adjust parameters or settings to influence the outcome. This might involve changing terrain features, texture types, or simulation conditions to achieve the desired results.
+Preview and Validation: Offering preview modes or validation checks helps users understand potential outcomes before finalizing the regeneration. This feature ensures that users can visualize changes and make adjustments as needed.
+Issues with Regeneration
+What to Regenerate:
+
+Selective Regeneration: Deciding whether to regenerate the entire model or only specific parts is crucial. For example, users may choose to regenerate just the terrain features while leaving other elements intact to preserve consistency.
+Scope and Scale: Determining how extensive the regeneration should be is essential. This could involve minor updates or a complete overhaul of the generated content, depending on the changes required.
+How to Regenerate:
+
+Algorithmic Approaches: Various methods can be used for regeneration, including reapplying existing algorithms or introducing new procedural rules. These methods alter or update the existing content based on user inputs or new conditions.
+Incremental vs. Complete Regeneration:
+Incremental: Gradual updates or changes applied to only parts of the generated content to minimize disruption and maintain consistency.
+Complete: Full regeneration from scratch may be necessary for significant changes or when previous results are no longer valid, ensuring a fresh start if needed.
+Problems with User Interactions
+Consistency: Ensuring that regeneration maintains or enhances the consistency and quality of generated content is vital. This involves avoiding artifacts or inconsistencies that could impact the user experience or the realism of the content.
+
+Feedback Handling: Effectively managing user feedback and requests for regeneration, which can vary in scope and detail, is important. Providing clear feedback mechanisms helps users understand how their inputs affect the generation process.
+
+Performance: Addressing performance implications is crucial, particularly in real-time or interactive applications where frequent updates are necessary. Efficiently handling resource usage and computational demands during regeneration is key to maintaining a smooth experience.
+
+Action Storage
+Storage Formats:
+
+JSON: JavaScript Object Notation (JSON) files can be used to store regeneration actions and parameters. JSON is flexible and readable, making it a suitable format for saving and retrieving procedural settings.
+Other Formats: Alternatives such as XML, binary files, or custom formats may be used depending on specific needs or systems.
+Tracking Changes:
+
+Action History: Maintaining a history of user actions and regeneration events allows users to revert to previous states or track changes over time. This feature supports iterative development and refinement of generated content.
+Versioning: Implementing version control for procedural generation settings helps manage different versions of generated content, allowing users to compare and manage variations effectively.
+Restoration and Undo:
+
+Undo Mechanisms: Providing options for users to undo recent regeneration actions or revert to previous states enhances flexibility and control. This allows users to correct mistakes or adjust their approach as needed.
+Restoration of Defaults: Allowing users to restore default settings or regeneration conditions if custom changes lead to unsatisfactory results ensures that users can revert to a baseline if needed.
+Implementation Considerations
+Efficiency: Designing algorithms and systems to handle regeneration efficiently is crucial. This involves minimizing computational overhead and ensuring that updates are responsive and timely.
+
+User Experience: Creating intuitive interfaces and feedback mechanisms facilitates smooth user interactions with the regeneration process. Ensuring that users can easily understand and control the regeneration helps improve their overall experience.
+
+Error Handling: Implementing robust error handling and recovery mechanisms addresses potential issues that may arise during regeneration, such as unexpected results or system failures. Effective error management ensures that users can continue working without significant disruptions.
 
 \section{Terrain representation}
 \label{sec:state-of-the-art_terrain-representations}
@@ -494,41 +396,3 @@ Control: Meeting user demands and customization, addressing the challenge of “
 \subsubsection{Education and Awareness}
 - Public Outreach: Raising awareness about the importance of coral reefs and the actions individuals can take to support conservation efforts. \\
 - Training Programs: Providing training for scientists, managers, and local stakeholders to enhance reef management and restoration practices.
-
-
-
-\section{Implicit terrains with materials}
-\label{sec:state-of-the-art_implicit-terrain-with-materials}
-- Volumetric modeling is important for representing 3D structures \\
-- Allows for the representation of cavities, arches, overlays, etc. \\
-- The concept of materials allows for including much more information for the following parts: amplification and rendering \\
-** Amplification (e.g., erosion) needs to know the type of soil at the surface and subsurface to be realistic \\
-** Rendering needs to know the material at the surface to correctly display textures \\
-- ...
-
-\subsection{Material density}
-- ...
-
-\subsubsection{Material granularity}
-- ...
-
-\subsubsection{Soil triangle}
-- ...
-
-\subsection{Scalar functions}
-- ...
-
-\subsection{Blending functions}
-- ...
-
-\subsection{Placement functions}
-- ...
-
-\subsection{Material usage}
-- ...
-
-\subsubsection{Defining the final material}
-- ...
-
-\subsubsection{Post-processing: material transformation}
-- ...
