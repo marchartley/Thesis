@@ -97,14 +97,14 @@ Once the environmental object is present in the scene, it will continuously eval
 
 \subsubsection{Generation rules}
 \label{sec:semantic-representation_generation-rules}
-Generation rules provides, for each environmental object, a fitting function $\fittingFuncObj$ defining the most probable location for an environmental object to spawn. Fitting functions' parameters contains, for every point $\p$, the environmental values $\environment_p$ (the amount of each material available $\material(\p)$ and the velocity and direction of the water currents $\Water(\p)$) and information about surrounding environmental objects $\objects$ (signed distance from the closest punctual environmental object or curve defining curve- and region-based environmental objects, curvature of the curve, and start and end points of the curve-based environmental objects).
+Generation rules provides, for each environmental object, a fitting function $\fitnessFuncObj$ defining the most probable location for an environmental object to spawn. Fitting functions' parameters contains, for every point $\p$, the environmental values $\environment_p$ (the amount of each material available $\material(\p)$ and the velocity and direction of the water currents $\Water(\p)$) and information about surrounding environmental objects $\objects$ (signed distance from the closest punctual environmental object or curve defining curve- and region-based environmental objects, curvature of the curve, and start and end points of the curve-based environmental objects).
 
 % \subsubsection{Point, curve and region generation}
 The seed point of a spawning environmental object is defined by a stochastic sampling of the plane. We propose different optimization means to find the optimal fitting position, depending on the environmental object shape.
 
-The spawning position of a punctual environmental object is found at the local maxima of the fitting function from a seed point. The optimisation process simply follows the field's gradient $\nabla \fittingFuncObj$ until the local maxima is reached.
+The spawning position of a punctual environmental object is found at the local maxima of the fitting function from a seed point. The optimisation process simply follows the field's gradient $\nabla \fitnessFuncObj$ until the local maxima is reached.
 
-A region is defined as an isocontour of the field for which the target area $\Area$ is found. From the seed point, we follow the isolevel of the fitting function $\nabla \fittingFuncObj^\perp$ until a loop is created to define the initial condition of the shape. Using the Active Contours algorithm, we can optimize the region's energy defined as $\energy = \Einternal + \Eshape$ with  
+A region is defined as an isocontour of the field for which the target area $\Area$ is found. From the seed point, we follow the isolevel of the fitting function $\nabla \fitnessFuncObj^\perp$ until a loop is created to define the initial condition of the shape. Using the Active Contours algorithm, we can optimize the region's energy defined as $\energy = \Einternal + \Eshape$ with  
 \begin{align}
     \label{eq:internal-energy-equation}
     \Einternal = \frac{1}{2} \left( \alpha(t) \norm{\frac{d v}{d t}(t)}^2 + \beta(t) \norm{\frac{d^2 v}{d t^2}(t)}^2  \right).
@@ -116,7 +116,7 @@ The internal energy $\Einternal$ force the shape compact while the shape energy 
 \end{align}
 with $a$ the current area of the shape and $\Area$ the target area, provided by the user for each shape, with some randomness.
 
-A curve have different generation rules. It can either follow the gradient of the fitting function $\nabla \fittingFuncObj$, follow the isocontour $\nabla \fittingFuncObj^\perp$, or follow the heat points.
+A curve have different generation rules. It can either follow the gradient of the fitting function $\nabla \fitnessFuncObj$, follow the isocontour $\nabla \fitnessFuncObj^\perp$, or follow the heat points.
 While the first two possibilities are trivial, the later can also be optimized using the Active Contours algorithm by optimizing the energy $\energy = \Einternal + \Eshape$ with Equation~\eqref{eq:internal-energy-equation}. We applied a length constraint on the curves : 
 \begin{align*}
     \Eshape = \left( \Length - \length \right)^2
@@ -125,8 +125,8 @@ with $\length$ the curve's length and $\Length$ the target length. This algorith
 
 \subsubsection{Environment object's evaluation}
 \label{sec:semantic-representation_obj-evaluation}
-Environment objects are evaluated at every iteration in order to determine the current state of the life cycle of the environmental object. For punctual environmental objects, this evaluation is applied at its position $\fittingFuncObj = f(\environment_{p})$. Curve environmental objects are evaluated along the parametric curve $\curve$ such that $\fittingFuncObj = \int_{\curve} f(\environment_{\curve(t)}) \,dt$. In practice, we compute the evaluation as the average of all control points of the curve $\frac{1}{n} \sum_{i}^{n}{f(\environment_{C_i})}$.
-Region environmental objects are evaluated inside their region $\domain$ as such $\fittingFuncObj = \int_{\domain} f(\environment_p) \,dp$. In practice, we compute the average of random points in the region $\frac{1}{n} \sum_{i}^{n}{f(\environment_{p_i})}$. When deformations on the environmental object's shape is applied, we apply cage deformation using Green's coordinates in order to keep consistent evaluation points during the whole life cycle of an environmental object.
+Environment objects are evaluated at every iteration in order to determine the current state of the life cycle of the environmental object. For punctual environmental objects, this evaluation is applied at its position $\fitnessFuncObj = f(\environment_{p})$. Curve environmental objects are evaluated along the parametric curve $\curve$ such that $\fitnessFuncObj = \int_{\curve} f(\environment_{\curve(t)}) \,dt$. In practice, we compute the evaluation as the average of all control points of the curve $\frac{1}{n} \sum_{i}^{n}{f(\environment_{C_i})}$.
+Region environmental objects are evaluated inside their region $\domain$ as such $\fitnessFuncObj = \int_{\domain} f(\environment_p) \,dp$. In practice, we compute the average of random points in the region $\frac{1}{n} \sum_{i}^{n}{f(\environment_{p_i})}$. When deformations on the environmental object's shape is applied, we apply cage deformation using Green's coordinates in order to keep consistent evaluation points during the whole life cycle of an environmental object.
 
 % \subsubsection{Dying}
 % An object spawn has a chance of disappearing if living conditions are unmet. At death, the environmental object will deposits its remains in the environment properties. \\
@@ -224,7 +224,7 @@ By modifying an environmental object, the environment values may change, which c
 As long as a non-zero fitting function is defined in the terrain, new environmental objects can be forced by the user at any point of the simulation. 
 
 % \subsubsection{Guiding the simulation}
-Control over the region of the terrain that should be updated can be given by adjusting all fitting functions through a scalar field $\influence: \R^2 \to \R $ such that the fitting function $\fittingFuncObj(\p)$ of any new environmental object is evaluated as $\fittingFuncObj^*(\p) = \influence{\p} \fittingFuncObj(\p)$. This is especially useful in the planning of robotic simulations as we can first generate the overall shape of our terrain and secondly focus the generation process around the areas that may be visited by the robot, avoiding useless simulations and computer power. 
+Control over the region of the terrain that should be updated can be given by adjusting all fitting functions through a scalar field $\influence: \R^2 \to \R $ such that the fitting function $\fitnessFuncObj(\p)$ of any new environmental object is evaluated as $\fitnessFuncObj^*(\p) = \influence{\p} \fitnessFuncObj(\p)$. This is especially useful in the planning of robotic simulations as we can first generate the overall shape of our terrain and secondly focus the generation process around the areas that may be visited by the robot, avoiding useless simulations and computer power. 
 Figure~\ref{fig:semantic-representation_coral-colonization-scene} shows an example of colonization of the coral polyps that we limited manually into an annulus.
 % Figure~\ref{fig:semantic-representation_focus-area-example} shows an example of colonization of the coral polyps that we limited manually.
 
@@ -254,7 +254,7 @@ with $\Delta \depth_e$ the amount of water rising or lowering during an event. W
     % \centering
     \includegraphics[width = 0.45 \linewidth]{Figures/Interactions/InteractionWater1.png}
     \includegraphics[width = 0.45 \linewidth]{Figures/Interactions/InteractionWater3.png}
-    \caption{Lowering the water level by a few meters caused most of the coral objects to satisfy $\fittingFuncObj \leq 0$, causing their death. Since the water level (blue) decrease slowly, new coral objects spawn progressively at a lower altitude.}
+    \caption{Lowering the water level by a few meters caused most of the coral objects to satisfy $\fitnessFuncObj \leq 0$, causing their death. Since the water level (blue) decrease slowly, new coral objects spawn progressively at a lower altitude.}
     \label{fig:semantic-representation_water-event}
 \end{figure}
 
@@ -319,7 +319,7 @@ In the examples, we rendered the environmental objects as a implicit tree or as 
 % \subsection{Mid-scale}
 % \label{sec:semantic-representation_mid-scale}
 A canyon scene can be generated using our method. The water flow is affected by the curve of the canyon such that the currents are oriented in the direction of the curve's tangent.In this example, we force the position of arches to be inside the canyon. The arches deposits a material "rock deposit", which is the main element of the fitting function of the Rock object. The "rock deposit" is slightly affected by water currents, but its mass make it highly affected by gravity. As such, rocks will spawn underneath arches. In reality, an arch is often created as part of a large coral boulder that sees the calcareous bottom part detached by the water currents, often resulting in an arch surrounded by big rocks and smaller rocks from the erosion of the first rocks.
-As such, we define an environmental object "Arch" with a fitting function $\fittingFunc_{arch}(\p) = 5 - d(canyon - \p) * \norm{\Water(\p)}$, an environmental object "Rock" using $\fittingFunc_{rock}(\p) = \material_{rock\_deposit}(\p)$ and Pebble using $\fittingFunc_{pebble}(\p) = \material_{smaller\_rock\_deposit}(\p)$. Finally, sand ripples are simply described as curves appearing where there is a lot of sand available: $\fittingFunc_{ripple}(\p) = \material_{sand}(\p)$.
+As such, we define an environmental object "Arch" with a fitting function $\fitnessFunc_{arch}(\p) = 5 - d(canyon - \p) * \norm{\Water(\p)}$, an environmental object "Rock" using $\fitnessFunc_{rock}(\p) = \material_{rock\_deposit}(\p)$ and Pebble using $\fitnessFunc_{pebble}(\p) = \material_{smaller\_rock\_deposit}(\p)$. Finally, sand ripples are simply described as curves appearing where there is a lot of sand available: $\fitnessFunc_{ripple}(\p) = \material_{sand}(\p)$.
 Following these simple rules, Figure~\ref{fig:semantic-representation_canyon-scene} shows the emergence of details in the scene. 
 
 % \subsection{Small-scale}

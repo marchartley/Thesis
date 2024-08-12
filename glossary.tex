@@ -4,6 +4,8 @@
 \zzcommand{\Z}{\mathbb{Z}}
 \zzcommand{\norm}[1]{\left\lVert #1 \right\rVert}
 
+\zzcommand{\obj}{\text{STE}}
+
 \zzcommand{\material}{\mathcal{M}}
 
 \zzcommand{\mass}{m}
@@ -11,18 +13,18 @@
 \zzcommand{\decay}{k}
 \zzcommand{\diffusion}{D}
 \zzcommand{\growthRate}{\gamma}
-\zzcommand{\fittingFunc}{\Gamma}
-\zzcommand{\fittingFuncObj}{\fittingFunc_{obj}}
+\zzcommand{\fitnessFunc}{\omega}
+\zzcommand{\fitnessFuncObj}{\fitnessFunc_\obj}
 
 \zzcommand{\Water}{\mathcal{W}}
 \zzcommand{\Wuser}{\Water_\text{user}}
 \zzcommand{\Wsimu}{\Water_\text{simulation}}
-\zzcommand{\Wobj}{\Water_\text{objects}}
+\zzcommand{\Wobj}{\Water_\text{entities}}
 
 \zzcommand{\terrain}{\mathcal{T}}
 \zzcommand{\height}{\mathcal{H}}
 \zzcommand{\depth}{\mathcal{D}}
-\zzcommand{\objects}{\mathcal{O}}
+\zzcommand{\objects}{\mathcal{S}}
 \zzcommand{\environment}{\mathcal{E}}
 \zzcommand{\Wlevel}{\mathcal{L}}
 \zzcommand{\events}{\text{events}}
@@ -46,7 +48,6 @@
 \zzcommand{\soilDensity}{ \density_\text{sediment} }
 \zzcommand{\particleMass}{ \mass_\text{particle} }
 \zzcommand{\depositionRate}{ \omega } % Not the good notation, but I don't think there is a real notation
-% \zzcommand{\real}{ \mathbb{R} }
 \zzcommand{\shearStressConstant}{ K }
 \zzcommand{\erosionStrength}{ K_{\erosionRate} }
 \zzcommand{\particleSize}{ R }
@@ -54,8 +55,6 @@
 \zzcommand{\fluid}{ \text{fluid} }
 \zzcommand{\fluidDensity}{ \density_\fluid }
 \zzcommand{\fluidVelocity}{ \velocity_\fluid }
-% \zzcommand{\buoyancy}{ B }
-% \zzcommand{\gravity}{ G }
 \zzcommand{\erosionAmount}{ q_\text{detachment} }
 \zzcommand{\depositAmount}{ q_\text{deposit} }
 \zzcommand{\totalErosion}{ Q }
@@ -71,6 +70,10 @@
 \zzcommand{\Einternal}{\energy_{\text{internal}}}
 \zzcommand{\Eexternal}{\energy_{\text{external}}}
 \zzcommand{\Eshape}{\energy_{\text{shape}}}
+\zzcommand{\Esnake}{\energy_{\text{snake}}}
+\zzcommand{\Econt}{\energy_{\text{continuity}}}
+\zzcommand{\Eimage}{\energy_{\text{image}}}
+\zzcommand{\Ecurv}{\energy_{\text{curvature}}}
 % \zzcommand{\time}{t}
 \zzcommand{\curve}{C}
 \zzcommand{\absorption}{A}
@@ -78,7 +81,7 @@
 \zzcommand{\p}{\textbf{p}}
 \zzcommand{\q}{\textbf{q}}
 \zzcommand{\domain}{\Omega}
-\zzcommand{\warp}{\omega}
+\zzcommand{\warp}{\Phi}
 \zzcommand{\force}{\textbf{F}}
 \zzcommand{\influence}{\lambda}
 \zzcommand{\windVelocity}{\velocity_{\text{wind}}}
@@ -104,17 +107,18 @@
 
 \zzcommand{\noise}{\eta}
 
-\zzcommand{\Esnake}{E_{\text{snake}}}
-\zzcommand{\Eintern}{E_{\text{internal}}}
-\zzcommand{\Eextern}{E_{\text{external}}}
-\zzcommand{\Econt}{E_{\text{continuity}}}
-\zzcommand{\Eimage}{E_{\text{image}}}
-\zzcommand{\Ecurv}{E_{\text{curvature}}}
 
 
 
 
 % \newdualentry[glossary-options][abbrev. options]{key}{abbr}{Full name}{Description}{Plural (opt)}
+
+
+%Intro
+\newdualentry[][]{ParamSpace}{}{parameter space}{Set of adjustable parameters that can be modified to control and influence the generation process of content or assets. These parameters can include properties like size, shape, density, or other relevant factors, depending on the specific procedural algorithm being used. By adjusting these parameters, creators can achieve a wide variety of outcomes and patterns, enabling the generation of diverse and customizable content such as textures, levels, or 3D models.}
+\newdualentry[][]{LOD}{LoD}{level of detail}{Amount of graphical data or information displayed in a scene or image. Higher LOD means more detail, while lower LOD means less detail. This concept helps manage computational resources, where less important or distant objects have lower LOD to improve performance.}
+
+% Semantic
 \newdualentry[][]{EnvObj}{STE}{Semantic Terrain Entity}{Geographic feature represented sparsly which describe a landscape. We represent it with a \gloss{Skeleton}, \glosses{GenRule} and \glosses{EnvMat}. }{Semantic Terrain Entities}
 \newdualentry[][]{EnvVal}{}{environmental attribute}{Value of a geographic field at one point in space and time. }
 \newdualentry[][]{EnvMat}{}{environmental modifier}{Description of a modification of a \gloss{EnvVal} around a \gloss{EnvObj}. It can represent the spread or the absorption of material around it, or the deformation of water currents. }
@@ -124,7 +128,4 @@
 \newdualentry[][]{FitnessFunc}{}{fitness function}{Function affected to a \gloss{EnvObj} that, given the \gloss{EnvVal} at a $(x, y)$ position in the space, returns a score describing how well this \gloss{EnvObj} may survive. }
 \newdualentry[][]{FittingFunc}{}{skeleton fitting function}{Function affected to a \gloss{EnvObj} that, given the local \gloss{EnvVal} and the shape of the skeleton of the \gloss{EnvObj}, returns a score describing how well this \gloss{EnvObj} fits. It may be seen as a refinement of the \gloss{FitnessFunc}. }
 \newdualentry[][]{SteadyState}{}{steady state}{A system is at steady state when internal properties do not change overtime once a dynamic equilibrium has been reached. The \glosses{EnvMat} emission from \glosses{EnvObj} can be seen as a thermodynamic system which achieve thermodynamic equilibrium over time. }
-
-%Intro
-\newdualentry[][]{ParamSpace}{}{parameter space}{Set of adjustable parameters that can be modified to control and influence the generation process of content or assets. These parameters can include properties like size, shape, density, or other relevant factors, depending on the specific procedural algorithm being used. By adjusting these parameters, creators can achieve a wide variety of outcomes and patterns, enabling the generation of diverse and customizable content such as textures, levels, or 3D models.}
-\newdualentry[][]{LOD}{LoD}{level of detail}{Amount of graphical data or information displayed in a scene or image. Higher LOD means more detail, while lower LOD means less detail. This concept helps manage computational resources, where less important or distant objects have lower LOD to improve performance.}
+\newdualentry[][]{CoarseHeight}{}{coarse height function}{Simplified function representing the height of a \gloss{EnvObj} in the 2D plane, useful to estimate the altitude of a point $\p$ of the terrain $\height(\p)$ as a combination of the \gloss{CoarseHeight} of all \glosses{EnvObj} close to $\p$. }

@@ -105,7 +105,7 @@ Once the initialization phase is done, the generation begins. The generation pro
 
 % - Object instantiation
 At each iteration, new \glosses{EnvObj} can be created at their most fitting locations if possible. The \glosses{GenRule} provided in the initialization phase are used to find the optimal position from stochastic sampling (Section~\ref{sec:semantic-representation_generation-rules}). 
-All \glosses{EnvObj} are evaluating their state analytically using the \gloss{FitnessFunc} provided as input (Section~\ref{sec:semantic-representation_obj-evaluation}).
+All \glosses{EnvObj} are evaluating their state analytically using the \gloss{FitnessFunc} provided as input (Section~\ref{sec:semantic-representation_generation-rules}).
 
 % Once the new objects are instantiated, the process can continue.
 % - Environment update
@@ -135,13 +135,16 @@ Each \gloss{EnvObj} has a simple geometric shape called a "skeleton" that define
 These \glosses{EnvObj} interact with the environment $\environment$ by changing local conditions using the \gloss{EnvMat}. For example, a river might increase the moisture in the surrounding area, while a mountain might add rockiness. They can also absorb changes from the environment, such as a forest taking in humidity from the air.
 The placement of \gloss{EnvObj} is determined by a \gloss{FitnessFunc}, which evaluates how suitable a location is based on the \glosses{EnvVal}. Once a suitable location is found, the \gloss{FittingFunc} optimizes the shape and position of the entity to fit as best as possible into the environment.
 
+\Glosses{EnvObj} are subject to altitude conditions. However, to maintain a clear distinction between semantic modeling and 3D modeling, we do not compute the exact physical shape or detailed height map of each \gloss{EnvObj}. Instead, we define a \gloss{CoarseHeight}, a parametric representation derived from the \gloss{skeleton} to provide a rough estimate of the changes in elevation around it. This simplified model of how the \gloss{EnvObj} influences the surrounding terrain's altitude allows us to efficiently evaluate the potential presence of new entities that have altitude-dependent conditions without the need to perform expensive computations to generate a detailed height map of the entire terrain. 
+%This approach allows us to "spawn" new entities based on rough altitude estimates, ensuring that their placement is contextually appropriate while deferring the detailed computation of their final shape to a later stage, if required by the user.
+% The coarse height function thus acts as a middle between the semantic modeling of terrain and the precise 3D modeling. It provides enough information to make informed decisions about \glosses{EnvObj} placement and \glosses{EnvMat} while preserving the flexibility to integrate more detailed modeling techniques. This method ensures that the terrain generation remains interactive and scalable, allowing for the dynamic and realistic placement of entities in complex landscapes without being tied to the immediate computation of detailed topography.
 
 % \Glosses{EnvObj} are rule-based objects following rules depending on their local environment for evaluation their state in their life cycle. We can see them as a life form in the way that they are created and eroded with time. During their lifetime, they influence their local environment by depositing and absorbing \glosses{EnvMat} around them and influencing the water currents. The environment objects are described spatially as a single point, a parametric curve or a region.
 
 \subsection{\Glosses{EnvMat}}
 The environment determine if a \gloss{EnvObj} does belong in a position. When a \gloss{EnvObj} is placed, its surrounding \glosses{EnvVal} can be affected though \glosses{EnvMat}. Each \gloss{EnvObj} has intrinsic \glosses{EnvMat} that can be seen as "spreading" and "absorbed" around its skeleton over time. A coral reef may produce coral polyps and at the same time reduce the water currents. It grows thanks to the deposition of [RESIDUS CALCAIRES] from coral colonies. In our model, the colonies affect the \glosses{EnvVal} through the deposition of \gloss{EnvMat} $\material_\text{limestone}$, which in turn, is absorbed by the coral reef, without a direct exchange between the two \glosses{EnvObj}.
 
-The alteration of a scalar \gloss{EnvVal} is done by adding or removing some amount on the skeleton of the \gloss{EnvObj} and diffusing it in the space, influenced by the water currents. We consider the system to be steady-state, garantied by the introduction of a decay rate in the computation of the diffusion.
+The alteration of a scalar \gloss{EnvVal} is done by adding or removing some amount on the skeleton of the \gloss{EnvObj} and diffusing it in the space, influenced by the water currents. We consider the system to be steady-state, garantied by the introduction of a decay rate $\decay$ in the computation of the diffusion.
 
 Altering the vector field of the water currents $\Water$ is done by the addition of the effect of each object at a position $\p$ as introduced in \citep{Wejchert1991}, while we use the formulation of Kelvinlets \cite{DeGoes2017} in the computation of effect of each \gloss{EnvObj}.
 
@@ -153,22 +156,24 @@ Genetic algorithms or Depth First Search algorithms could be used to try many po
 
 Our placing algorithm is done in two steps: first we estimate at which global location the \gloss{EnvObj} fits the most given an environment using its \gloss{FitnessFunc}, secondly we estimate the shape of the skeleton of this \gloss{EnvObj} should take given a \gloss{FittingFunc}.
 
-\Glosses{GenRule} provides, for each \gloss{EnvObj}, a \gloss{FitnessFunc} $\fittingFuncObj$ defining the most probable location for an \gloss{EnvObj} to spawn. \Glosses{FitnessFunc}' parameters contains, for every point $\p$, the \glosses{EnvVal} $\environment_p$ (the amount of each material available $\material(\p)$ and the velocity and direction of the water currents $\Water(\p)$) and information about surrounding \glosses{EnvObj} $\objects$ (signed distance from the closest punctual \gloss{EnvObj} or curve defining curve- and region-based \glosses{EnvObj}, curvature of the curve, and start and end points of the curve-based \glosses{EnvObj}).
+\Glosses{GenRule} provides, for each \gloss{EnvObj}, a \gloss{FitnessFunc} $\fitnessFuncObj$ defining the most probable location for an \gloss{EnvObj} to spawn. \Glosses{FitnessFunc}' parameters contains, for every point $\p$, the \glosses{EnvVal} $\environment_p$ (the amount of each material available $\material(\p)$ and the velocity and direction of the water currents $\Water(\p)$) and information about surrounding \glosses{EnvObj} $\objects$ (signed distance from the closest punctual \gloss{EnvObj} or curve defining curve- and region-based \glosses{EnvObj}, curvature of the curve, and start and end points of the curve-based \glosses{EnvObj}).
 
 \subsection{\Gloss{FitnessFunc}}
-Whenever a new \gloss{EnvObj} is added to the scene, we desire to position it at the position that would be the most logical to find it. Following the idea of [INSERT FIELD HERE, ASTRONOMY? GEOLOGY? BIOLOGY?], we observe the environment and estimate that a certain element have a probability to be present at this position. For example in hydraulogy, if we find a river coming nowhere, we can expect that a kastic river is present uphill. Or in urbanism, if many roads cross at a certain point, expectations are that a city is located here.
+Darwinian fitness refers to an organism's ability to survive and reproduce in its environment. It is a measure of how well-suited an organism is to its surroundings, and those with higher fitness are more likely to pass on their genes to the next generation. In a similar vein, the \gloss{FitnessFunc} of a \gloss{EnvObj} evaluates its suitability at a location in the terrain, extending the meaning to living features like forests and non-living elements such as rivers, mountains, or sand dunes.
 
-We will follow the same intuition using a \gloss{FitnessFunc} for each of the \gloss{EnvObj} that may be spawn in the terrain. The \gloss{FitnessFunc} defined $\fittingFunc: \environment \to \R$ provides a score (sometimes called "energy") providing information on how well the \gloss{EnvObj} may fit in this position. Evaluating this function at multiple position results in an approximation of the fitting map of the object. Once the most probable position is found, we can find the most plausible shape of the \gloss{EnvObj}.
+Whenever a new \gloss{EnvObj} is added to the scene, we desire to position it at the position that would be the most coherent to find it. Rather than "forming" these \glosses{EnvObj}, our method "reveals" them, much like a paleontologist uncovers fossils during an excavation. A paleontologist does not dig randomly across the Earth to find fossils; instead, they analyze the geological context to identify the most likely locations. Similarly, our method observes the environment and estimates where certain elements are likely to exist. For example, in hydrology, if a river appears to originate from nowhere, it might suggest the presence of a karstic river system upstream. In urban planning, if many roads converge at a certain point, it is reasonable to expect that a city is located there. This approach ensures that Semantic Terrain Entities are revealed in positions that are contextually appropriate and coherent within the landscape.
 
-Environment objects are evaluated at every iteration in order to determine the current state of the life cycle of the \gloss{EnvObj}. For punctual \glosses{EnvObj}, this evaluation is applied at its position $\fittingFuncObj = f(\environment_{p})$. Curve \glosses{EnvObj} are evaluated along the parametric curve $\curve$ such that $\fittingFuncObj = \int_{\curve} f(\environment_{\curve(t)}) \,dt$. In practice, we compute the evaluation as the average of all control points of the curve $\frac{1}{n} \sum_{i}^{n}{f(\environment_{C_i})}$.
-Region \glosses{EnvObj} are evaluated inside their region $\domain$ as such $\fittingFuncObj = \int_{\domain} f(\environment_p) \,dp$. In practice, we compute the average of random points in the region $\frac{1}{n} \sum_{i}^{n}{f(\environment_{p_i})}$. When deformations on the \gloss{EnvObj}'s shape is applied, we apply cage deformation using Green's coordinates in order to keep consistent evaluation points during the whole life cycle of an \gloss{EnvObj}.
+We will follow the same intuition using a \gloss{FitnessFunc} for each of the \gloss{EnvObj} that may be spawn in the terrain. The \gloss{FitnessFunc} defined $\fitnessFunc: \environment \to \R$ provides a score providing information on how well the \gloss{EnvObj} may fit in this position. Evaluating this function at multiple position results in an approximation of the fitness map of the entity. Once the most probable position is found, we can find the most plausible shape of the \gloss{EnvObj} using the \gloss{FittingFunc}.
+
+\Glosses{EnvObj} are evaluated at every iteration in order to determine if they are still fitted to belong at the same position as the previous iteration. For punctual \glosses{EnvObj}, this evaluation is applied at its position $\fitnessFuncObj = f(\environment_{p})$. Curve \glosses{EnvObj} are evaluated along the parametric curve $\curve$ such that $\fitnessFuncObj = \int_{\curve} f(\environment_{\curve(t)}) \,dt$. In practice, we compute the evaluation as the average of all control points of the curve $\frac{1}{n} \sum_{i}^{n}{f(\environment_{C_i})}$.
+Region \glosses{EnvObj} are evaluated inside their region $\domain$ as such $\fitnessFuncObj = \int_{\domain} f(\environment_p) \,dp$. In practice, we compute the average of random points in the region $\frac{1}{n} \sum_{i}^{n}{f(\environment_{p_i})}$. When deformations on the \gloss{EnvObj}'s shape is applied, we apply cage deformation using Green's coordinates in order to keep consistent evaluation points during the whole life cycle of an \gloss{EnvObj}.
 
 \subsection{\Gloss{FittingFunc}}
 The seed point of a spawning \gloss{EnvObj} is defined by a stochastic sampling of the plane. We propose different optimization means to find the optimal fitting position, depending on the \gloss{EnvObj} shape.
 
-The spawning position of a punctual \gloss{EnvObj} is found at the local maxima of the \gloss{FitnessFunc} from a seed point. The optimisation process simply follows the field's gradient $\nabla \fittingFuncObj$ until the local maxima is reached.
+The spawning position of a punctual \gloss{EnvObj} is found at the local maxima of the \gloss{FitnessFunc} from a seed point. The optimisation process simply follows the field's gradient $\nabla \fitnessFuncObj$ until the local maxima is reached.
 
-A region is defined as an isocontour of the field for which the target area $\Area$ is found. From the seed point, we follow the isolevel of the \gloss{FitnessFunc} $\nabla \fittingFuncObj^\perp$ until a loop is created to define the initial condition of the shape. Using the Active Contours algorithm, we can optimize the region's energy defined as $\energy = \Einternal + \Eshape$ with  
+A region is defined as an isocontour of the field for which the target area $\Area$ is found. From the seed point, we follow the isolevel of the \gloss{FitnessFunc} $\nabla \fitnessFuncObj^\perp$ until a loop is created to define the initial condition of the shape. Using the Active Contours algorithm, we can optimize the region's energy defined as $\energy = \Einternal + \Eshape$ with  
 \begin{align}
     \label{eq:internal-energy-equation}
     \Einternal = \frac{1}{2} \left( \alpha(t) \norm{\frac{d v}{d t}(t)}^2 + \beta(t) \norm{\frac{d^2 v}{d t^2}(t)}^2  \right).
@@ -180,40 +185,22 @@ The internal energy $\Einternal$ force the shape compact while the shape energy 
 \end{align}
 with $a$ the current area of the shape and $\Area$ the target area, provided by the user for each shape, with some randomness.
 
-A curve have different \glosses{GenRule}. It can either follow the gradient of the \gloss{FitnessFunc} $\nabla \fittingFuncObj$, follow the isocontour $\nabla \fittingFuncObj^\perp$, or follow the heat points.
+A curve have different \glosses{GenRule}. It can either follow the gradient of the \gloss{FitnessFunc} $\nabla \fitnessFuncObj$, follow the isocontour $\nabla \fitnessFuncObj^\perp$, or follow the heat points.
 While the first two possibilities are trivial, the later can also be optimized using the Active Contours algorithm by optimizing the energy $\energy = \Einternal + \Eshape$ with Equation~\eqref{eq:internal-energy-equation}. We applied a length constraint on the curves : 
 \begin{align*}
     \Eshape = \left( \Length - \length \right)^2
 \end{align*}
 with $\length$ the curve's length and $\Length$ the target length. This algorithm is sensible to the initial shape of the curve, so we start with a straight line following the isolevel at the seed point.
 
-\section{Life cycle of \gloss{EnvObj}}
-We consider that all \glosses{EnvObj} follow a life cycle of spawning, growing and dying. While many \glosses{EnvObj} of a terrain is not a living being, we assume that evolution of relief, for example, starts at one point in time, grow as the geological factors force it to and is eroded until a point where this \gloss{EnvObj} can not be distinguished from the rest of the environment. 
+% \section{Life cycle of \gloss{EnvObj}}
+% We consider that all \glosses{EnvObj} follow a life cycle of spawning, growing and dying. While many \glosses{EnvObj} of a terrain is not a living being, we assume that evolution of relief, for example, starts at one point in time, grow as the geological factors force it to and is eroded until a point where this \gloss{EnvObj} can not be distinguished from the rest of the environment. 
 
-\Glosses{EnvObj} are spawn stochastically in the terrain at the optimal fitting position. This position is determined from a \gloss{GenRule} given by the user for each of the \glosses{EnvObj}, which is dependant on the environment state.
-Once the \gloss{EnvObj} is present in the scene, it will continuously evaluate its \gloss{FitnessFunc} to determine its state in the life cycle. If the evaluation results as less than zero, the \gloss{EnvObj} dies and it is removed from the list of \glosses{EnvObj} present in the scene. While the \gloss{EnvObj} remains, it will continue influencing its environment, by absorbing and depositing material around it and by influencing the water currents. 
+% \Glosses{EnvObj} are spawn stochastically in the terrain at the optimal fitting position. This position is determined from a \gloss{GenRule} given by the user for each of the \glosses{EnvObj}, which is dependant on the environment state.
+% Once the \gloss{EnvObj} is present in the scene, it will continuously evaluate its \gloss{FitnessFunc} to determine its state in the life cycle. If the evaluation results as less than zero, the \gloss{EnvObj} dies and it is removed from the list of \glosses{EnvObj} present in the scene. While the \gloss{EnvObj} remains, it will continue influencing its environment, by absorbing and depositing material around it and by influencing the water currents. 
 
 
-\subsection{Hard constraints vs. soft constraints}
-- ... 
-
-\section{Communication between \gloss{EnvObj}}
-- ... 
-\subsection{Problem of direct communication}
-- ... 
-\subsection{Natural process (or cellular automata)}
-- ... 
-
-\section{Environment stability}
-- ... 
-\subsection{Dynamic system vs. stable system}
-- ... 
-
-\subsection{Dying}
-An object spawn has a chance of disappearing if living conditions are unmet. At death, the \gloss{EnvObj} will deposits its remains in the environment properties.
-
-We consider an object as dead when the fitting score drops to zero.
-At this point, the object is removed from the scene and \glosses{EnvMat} can be deposited in the environment following the same rule as the normal step rule.
+% \subsection{Hard constraints vs. soft constraints}
+% - ... 
 
 
 \section{\Glosses{EnvVal} and \glosses{EnvMat}}
@@ -244,7 +231,9 @@ We solve \eqref{eq:material-displacement-equation} numerically using Euler integ
 \end{align}
 
 The introduction of the decay rate $\decay$ in the equation allows for the reach of a steady-state, where we can consider the simulation stable. As the user updates the state of the simulation manually, we observe the reach of this steady state before continuing the iterative steps.
-% Todo: explain better this steady-state phase
+
+The computation of the height $\height(\p)$ is done using the \gloss{CoarseHeight} of each \gloss{EnvObj} affecting a point $\p$.
+[CONTINUE WITH THE COMPOSITION OF HEIGHTS]
 
 \subsection{Influence on water currents}
 \label{sec:semantic-representation_water-currents}
@@ -276,12 +265,14 @@ Finally, we can retrieve the velocity field from the objects:
     \Wobj(\p) = \sum_{o \in \objects}^{}{\lambda_o u_o(\p)}
 \end{align*}
 
-\section{Physics simulation}
-- ... 
-\subsection{Heights of \gloss{EnvObj}}
-- ... 
-\subsection{Combining heights}
-- ... 
+
+\subsection{Environment stability}
+\Glosses{EnvObj} and \glosses{EnvMat} are inspired by the ecological concept of biogeocoenosis, which describes the relationship between living organisms (biotic) and their non-living environment (abiotic). These interactions closely mirror the processes observed in natural ecosystems, where biotic and abiotic components continuously influence each other, leading to a balanced and stable environment. Gubanov and Degermendzhy [CITATION] describe biogeocoenosis as almost-closed systems, with many parallels possible with thermodynamics such as the concept of dynamic equilibrium. In a biogeocoenosis, the various processes, such as the spread of nutrients, the growth of vegetation, or the erosion of soil, tend toward a state of balance. 
+
+Similarly, in our method, the interaction between \glosses{EnvObj} and \glosses{EnvMat} is modeled using a reaction-diffusion-advection framework. This model captures how \glosses{EnvMat} are spread and absorbed within the terrain. Thanks to the decay rate of the \glosses{EnvMat}, the system progresses toward a dynamic equilibrium, where the distribution of \glosses{EnvMat} stabilizes. This stabilization reflects a state of balance where the rates of spreading and absorption and decay are equal, and the \glosses{EnvVal} become coherent across the landscape. For example, a river might spread sediments downstream, which are gradually absorbed by the surrounding terrain, leading to a stable sediment distribution over time. Similarly, moisture emitted by a forest will eventually reach a balance with the surrounding soil and atmosphere, creating a stable, humid environment.
+
+The only factor that can disrupt this equilibrium is a change in the \glosses{EnvVal}. Changes such as an increase in temperature, a shift in wind patterns, or the introduction of a new \gloss{EnvObj} can alter the balance, leading to a new phase of interaction and stabilization.
+
 
 \section{User interaction}
 \label{sec:semantic-representation_interaction}
@@ -306,7 +297,7 @@ By modifying an \gloss{EnvObj}, the \glosses{EnvVal} may change, which can resul
 As long as a non-zero \gloss{FitnessFunc} is defined in the terrain, new \glosses{EnvObj} can be forced by the user at any point of the simulation. 
 
 % \subsection{Guiding the simulation}
-Control over the region of the terrain that should be updated can be given by adjusting all \glosses{FitnessFunc} through a scalar field $\influence: \R^2 \to \R $ such that the \gloss{FitnessFunc} $\fittingFuncObj(\p)$ of any new \gloss{EnvObj} is evaluated as $\fittingFuncObj^*(\p) = \influence{\p} \fittingFuncObj(\p)$. This is especially useful in the planning of robotic simulations as we can first generate the overall shape of our terrain and secondly focus the generation process around the areas that may be visited by the robot, avoiding useless simulations and computer power. 
+Control over the region of the terrain that should be updated can be given by adjusting all \glosses{FitnessFunc} through a scalar field $\influence: \R^2 \to \R $ such that the \gloss{FitnessFunc} $\fitnessFuncObj(\p)$ of any new \gloss{EnvObj} is evaluated as $\fitnessFuncObj^*(\p) = \influence{\p} \fitnessFuncObj(\p)$. This is especially useful in the planning of robotic simulations as we can first generate the overall shape of our terrain and secondly focus the generation process around the areas that may be visited by the robot, avoiding useless simulations and computer power. 
 Figure~\ref{fig:semantic-representation_coral-colonization-scene} shows an example of colonization of the coral polyps that we limited manually into an annulus.
 % Figure~\ref{fig:semantic-representation_focus-area-example} shows an example of colonization of the coral polyps that we limited manually.
 
@@ -337,7 +328,7 @@ with $\Delta \depth_e$ the amount of water rising or lowering during an \gloss{G
     % \centering
     \includegraphics[width = 0.45 \linewidth]{Figures/Interactions/InteractionWater1.png}
     \includegraphics[width = 0.45 \linewidth]{Figures/Interactions/InteractionWater3.png}
-    \caption{Lowering the water level by a few meters caused most of the coral objects to satisfy $\fittingFuncObj \leq 0$, causing their death. Since the water level (blue) decrease slowly, new coral objects spawn progressively at a lower altitude.}
+    \caption{Lowering the water level by a few meters caused most of the coral objects to satisfy $\fitnessFuncObj \leq 0$, causing their death. Since the water level (blue) decrease slowly, new coral objects spawn progressively at a lower altitude.}
     \label{fig:semantic-representation_water-event}
 \end{figure}
 
@@ -388,7 +379,7 @@ In the examples, we rendered the \glosses{EnvObj} as a implicit tree or as indiv
 % \subsection{Mid-scale}
 % \label{sec:semantic-representation_mid-scale}
 A canyon scene can be generated using our method. The water flow is affected by the curve of the canyon such that the currents are oriented in the direction of the curve's tangent.In this example, we force the position of arches to be inside the canyon. The arches deposits a material "rock deposit", which is the main element of the \gloss{FitnessFunc} of the Rock object. The "rock deposit" is slightly affected by water currents, but its mass make it highly affected by gravity. As such, rocks will spawn underneath arches. In reality, an arch is often created as part of a large coral boulder that sees the calcareous bottom part detached by the water currents, often resulting in an arch surrounded by big rocks and smaller rocks from the erosion of the first rocks.
-As such, we define an \gloss{EnvObj} "Arch" with a \gloss{FitnessFunc} $\fittingFunc_{arch}(\p) = 5 - d(canyon - \p) * \norm{\Water(\p)}$, an \gloss{EnvObj} "Rock" using $\fittingFunc_{rock}(\p) = \material_{rock\_deposit}(\p)$ and Pebble using $\fittingFunc_{pebble}(\p) = \material_{smaller\_rock\_deposit}(\p)$. Finally, sand ripples are simply described as curves appearing where there is a lot of sand available: $\fittingFunc_{ripple}(\p) = \material_{sand}(\p)$.
+As such, we define an \gloss{EnvObj} "Arch" with a \gloss{FitnessFunc} $\fitnessFunc_{arch}(\p) = 5 - d(canyon - \p) * \norm{\Water(\p)}$, an \gloss{EnvObj} "Rock" using $\fitnessFunc_{rock}(\p) = \material_{rock\_deposit}(\p)$ and Pebble using $\fitnessFunc_{pebble}(\p) = \material_{smaller\_rock\_deposit}(\p)$. Finally, sand ripples are simply described as curves appearing where there is a lot of sand available: $\fitnessFunc_{ripple}(\p) = \material_{sand}(\p)$.
 Following these simple rules, Figure~\ref{fig:semantic-representation_canyon-scene} shows the emergence of details in the scene. 
 
 % \subsection{Small-scale}

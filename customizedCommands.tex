@@ -1,75 +1,90 @@
+\LetLtxMacro\OldChapter\chapter
+\LetLtxMacro\OldSection\section
+\LetLtxMacro\OldSubsection\subsection
+\LetLtxMacro\OldSubsubsection\subsubsection
+
+% Define \zzcommand for conditional commands
 \def\zzcommand#1{\let#1\undefined\newcommand#1}
 
 \makeatletter
-\LetLtxMacro\OldSection\section
-\DeclareRobustCommand{\section}{%
-  \@ifstar{\sectionstar}{\sectionnostar}%
-}
-\zzcommand{\sectionnostar}[1]{%
-  \begingroup
-  \zzcommand{\inheading}{}%
-  \OldSection{#1}
-  \endgroup
-}
-\zzcommand{\sectionstar}[1]{%
-    \begingroup
-    \zzcommand{\inheading}{}%
-    \OldSection*{#1}
-    \endgroup
-}
-\makeatother
 
-\makeatletter
-\LetLtxMacro\OldSubsection\subsection
-\DeclareRobustCommand{\subsection}{%
-  \@ifstar{\Subsectionstar}{\Subsectionnostar}%
-}
-\zzcommand{\Subsectionnostar}[1]{%
-  \begingroup
-  \zzcommand{\inheading}{}%
-  \OldSubsection{#1}
-  \endgroup
-}
-\zzcommand{\Subsectionstar}[1]{%
-    \begingroup
-    \zzcommand{\inheading}{}%
-    \OldSubsection*{#1}
-    \endgroup
-}
-\makeatother
-
-\makeatletter
-\LetLtxMacro\OldSubsubsection\subsubsection
-\DeclareRobustCommand{\subsubsection}{%
-  \@ifstar{\Subsubsectionstar}{\Subsubsectionnostar}%
-}
-\zzcommand{\Subsubsectionnostar}[1]{%
-  \begingroup
-  \zzcommand{\inheading}{}%
-  \OldSubsubsection{#1}
-  \endgroup
-}
-\zzcommand{\Subsubsectionstar}[1]{%
-    \begingroup
-    \zzcommand{\inheading}{}%
-    \OldSubsubsection*{#1}
-    \endgroup
-}
-\makeatother
-
-% \let\oldsection\section
-% \renewcommand{\section}[1]{%
+% % Redefine \chapter
+% \def\chapter{%
+%   \@ifstar{\Chapterstar}{\Chapternostar}%
+% }
+% \def\Chapternostar#1{%
 %   \begingroup
-%   \newcommand{\inheadingcontext}{}%
-%   \oldsection{TEST2}%
+%   \zzcommand{\inheading}{}%
+%   \edef\savedtitle{#1}% Save the title before ending the group
+%   \OldChapter{\savedtitle}% Apply the saved title and ensure proper labeling
 %   \endgroup
 % }
-% \renewcommand{\section*}[1]{%
+% \def\Chapterstar#1{%
 %   \begingroup
-%   \newcommand{\inheadingcontext}{}%
-%   \oldsectionstar{TEST}%
+%   \zzcommand{\inheading}{}%
+%   \edef\savedtitle{#1}% Save the title before ending the group
+%   \OldChapter*{\savedtitle}% Apply the saved title and ensure proper labeling
 %   \endgroup
 % }
+
+% Redefine \section
+% \def\section{%
+%   \@ifstar{\Sectionstar}{\Sectionnostar}%
+% }
+% \def\Sectionnostar#1{
+%   \begingroup
+%   \zzcommand{\inheading}{}
+%   \edef\savedtitle{#1}% Save the title before ending the group
+%   \OldSection{\savedtitle}% Apply the saved title and ensure proper labeling
+%   \endgroup
+% }
+% \def\Sectionstar#1{
+%   \begingroup
+%   \zzcommand{\inheading}{}
+%   \edef\savedtitle{#1}% Save the title before ending the group
+%   \OldSection*{\savedtitle}% Apply the saved title and ensure proper labeling
+%   \endgroup
+% }
+
+% % Redefine \subsection
+% \def\subsection{%
+%   \@ifstar{\Subsectionstar}{\Subsectionnostar}%
+% }
+% \def\Subsectionnostar#1{
+%   \begingroup
+%   \zzcommand{\inheading}{}
+%   \edef\savedtitle{#1}% Save the title before ending the group
+%   \OldSubsection{\savedtitle}% Apply the saved title and ensure proper labeling
+%   \endgroup
+% }
+% \def\Subsectionstar#1{
+%   \begingroup
+%   \zzcommand{\inheading}{}
+%   \edef\savedtitle{#1}% Save the title before ending the group
+%   \OldSubsection*{\savedtitle}% Apply the saved title and ensure proper labeling
+%   \endgroup
+% }
+
+% % Redefine \subsubsection
+% \def\subsubsection{%
+%   \@ifstar{\Subsubsectionstar}{\Subsubsectionnostar}%
+% }
+% \def\Subsubsectionnostar#1{
+%   \begingroup
+%   \zzcommand{\inheading}{}
+%   \edef\savedtitle{#1}% Save the title before ending the group
+%   \OldSubsubsection{\savedtitle}% Apply the saved title and ensure proper labeling
+%   \endgroup
+% }
+% \def\Subsubsectionstar#1{
+%   \begingroup
+%   \zzcommand{\inheading}{}
+%   \edef\savedtitle{#1}% Save the title before ending the group
+%   \OldSubsubsection*{\savedtitle}% Apply the saved title and ensure proper labeling
+%   \endgroup
+% }
+
+\makeatother
 
 
 \LetLtxMacro{\Oldincludegraphics}{\includegraphics}
@@ -185,7 +200,7 @@
 %   \endgroup
 % }
 
-\let\ref=\cref
-\let\eqref=\cref
+\renewcommand{\ref}[1]{\cref{#1}}
+\renewcommand{\eqref}[1]{\cref{#1}}
 
 \zzcommand{\to}{\mapsto}

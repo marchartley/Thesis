@@ -4,22 +4,31 @@
 
 % - ...
 
-\section{Procedural generation}
+\section{Procedural generation and terrain generation}
 \label{sec:state-of-the-art_procedural-generation}
-Procedural generation is a method used in computer science to create data algorithmically rather than manually, enabling the automatic generation of large amounts of content with minimal human input. This approach is crucial in fields such as game development, where it helps create expansive, varied worlds, and in simulations or data generation where diverse scenarios or datasets are needed. The process typically involves defining rules and algorithms that dictate how content is generated, ensuring it meets specific criteria and patterns, often incorporating randomness through noise functions to produce unique results each time. Incorporating adjustable parameters and customizable rules in the algorithms allows users to influence the characteristics and outcomes of the generated content. This method enhances efficiency, creativity, and scalability in digital content creation, but the main challenges are ensuring the generated content is both diverse and coherent and achieving a balance between speed, realism and control to meet desired design and quality.
+Procedural generation is a method used in computer science to create data algorithmically rather than manually, enabling the automatic generation of large amounts of content with minimal human input. This approach is crucial in fields such as game development, where it helps create expansive, varied worlds, and in simulations or data generation where diverse scenarios or datasets are needed. The process typically involves defining rules and algorithms that dictate how content is generated, ensuring it meets specific criteria and patterns, often incorporating randomness through noise functions to produce unique results each time. Incorporating adjustable parameters and customizable rules in the algorithms allows users to influence the characteristics and outcomes of the generated content. This method enhances efficiency, creativity, and scalability in digital content creation, but the main challenges are ensuring the generated content from a single algorithm is both diverse and coherent and achieving a balance between speed, realism and control to satisfy the desired design and quality.
 
 \subsection{Definition}
 Procedural generation is a powerful technique for creating data algorithmically, rather than manually. This method is extensively used in areas such as computer graphics, simulations, and game development. Essentially, it involves using predefined rules or algorithms to generate complex structures or systems. For example, it can be employed to create landscapes, textures, or even entire worlds.
 
-One of the main benefits of procedural generation is its data independence. The content generated is created in real-time or on-the-fly, rather than being stored explicitly. This allows for the creation of extensive and dynamic content without the need for large amounts of storage space.
+One of the main benefits of procedural generation is its data independence. The content generated is mainly created in real-time or on-the-fly, rather than being stored explicitly. This allows for the creation of extensive and dynamic content without the need for large amounts of storage space. Another use case of procedural generation take advantage of the diversity of resulting content, allowing to create quickly a large amount of data from which only small improvement has to be made.
 
-In practical applications, procedural generation is commonly used in video games. It enables the creation of vast, varied, and detailed environments efficiently, without requiring extensive storage. This automated approach involves defining a set of rules or procedures that produce diverse outputs, making the content creation process both dynamic and flexible. The generated content can adapt and change in response to different inputs or conditions, which is particularly valuable for applications needing variability and adaptability.
+In practical applications, procedural generation is commonly used in video games. It enables the creation of vast, varied, and detailed environments efficiently, without requiring extensive storage. This automated approach involves defining a set of rules or procedures that produce diverse outputs, making the content creation process both dynamic and flexible. The generated content can adapt and change in response to different inputs or conditions, which is particularly valuable for applications needing variability and adaptability. 
+
+- INCLUDE OTHER USE CASE THAN TERRAIN GENERATION: \\
+** Character animation, level generation, character texturing, ... \\
+** Add examples from games \\
+- INCLUDE CINEMA USE CASES \\
+** Large realistic terrains gen, facial animation, crowd simulation, ... (find other use cases) \\
+- INCLUDE SIMULATION:  \\
+** Real-world scenes, environment variable isolation, ... 
 
 The integration of algorithms and data is a key aspect of procedural generation. It combines mathematical models, noise functions, and other algorithms to produce both realistic and abstract content. This might involve generating natural features like landscapes or textures, or even entire ecosystems. Incorporating elements of real-world phenomena, such as erosion patterns in terrain generation, can make the environments more believable and interactive.
 
-Moreover, procedural generation allows for user-driven customization. Users can influence or guide the content generation process, leading to customized or user-specific outcomes. This feature, combined with the scalability and efficiency of procedural methods, means that large amounts of data can be produced with relatively low computational and storage costs compared to manually crafted content.
+Moreover, procedural generation allows for user-driven customization. Users can influence or guide the content generation process, leading to user-specific outcomes. This feature, combined with the scalability and efficiency of procedural methods, means that large amounts of data can be produced with relatively low computational and storage costs compared to manually crafted content.
 
-Procedural generation can be categorized into deterministic and stochastic systems. Deterministic systems produce predictable and repeatable outputs given the same input parameters, while stochastic systems introduce randomness, leading to varied outputs even with identical initial conditions.
+[STOCHASTIC v. DETERMINIST ALGORITHMS]
+% Procedural generation can be categorized into deterministic and stochastic systems. Deterministic systems produce predictable and repeatable outputs given the same input parameters, while stochastic systems introduce randomness, leading to varied outputs even with identical initial conditions. 
 
 Rule-based systems are another aspect of procedural generation, using predefined rules to generate content. This approach allows for controlled and structured outputs. Typically, procedural generation involves iterative processes, where initial results are refined or adjusted based on additional rules or parameters.
 
@@ -28,202 +37,327 @@ The advantages of procedural generation include efficiency, as it reduces the ne
 However, there are challenges associated with procedural generation. The complexity of developing and fine-tuning algorithms can be significant, requiring careful balancing of parameters. Striking a balance between realistic content and computational performance can also be difficult. Furthermore, meeting user expectations for content quality and variety, especially in interactive applications, can be a challenge.
 
 \subsection{History}
-Early developments in procedural generation can be traced back to the mid-20th century, grounded in mathematical and algorithmic theories. This period saw the introduction of key concepts like randomness and noise functions, which laid the foundation for procedural techniques. One notable advancement was the introduction of noise functions, such as Perlin noise in 1983. This method allowed for the generation of smooth, natural-looking randomness in computer graphics.
+Early developments in procedural generation can be traced back to the mid-20th century, grounded in mathematical and algorithmic theories. This period saw the introduction of key concepts like randomness and noise functions, which laid the foundation for procedural techniques. One notable advancement was the introduction of noise functions, such as Perlin noise in 1983. This method allowed for the generation of smooth, natural-looking randomness in computer graphics. [ORIGINAL USE CASE OF PERLIN NOISE + DESCRIPTION OF NOISE FUNCTION]
 
-Building on this, Ken Perlin developed Simplex noise in 1985. Simplex noise represented a significant improvement over Perlin noise by offering a more computationally efficient and visually pleasing alternative. During the same era, fractal geometry emerged, introducing the concept of generating self-similar structures. This had a substantial impact on terrain generation and procedural modeling, providing a new way to create intricate and repeating patterns.
+Building on this, Ken Perlin developed Simplex noise in 1985. Simplex noise represented a significant improvement over Perlin noise by offering a more computationally efficient and visually pleasing alternative. During the same era, fractal geometry emerged, introducing the concept of generating self-similar structures. This had a substantial impact on terrain generation and procedural modeling, providing a new way to create intricate and repeating patterns. [DESCRIPTION OF NOISE FUNCTION]
 
-As procedural generation began to find applications in video games and interactive media, its impact became more pronounced. In 1980, the game "Rogue" showcased procedural generation in its level design, featuring randomly generated dungeons and item placements. This was followed by "Elite" in 1984, which utilized procedural generation to create unique characteristics for each planet, such as names, positions in space, economic models, and resource availability. This approach contributed to a diverse and expansive game universe, enhancing replayability and exploration.
+As procedural generation began to find applications in video games and interactive media, its impact became more pronounced. In 1980, the game "Rogue" showcased procedural generation in its level design, featuring randomly generated dungeons and item placements. This was followed by "Elite" in 1984, which utilized procedural generation to create unique characteristics for each planet of an entire solar system of 2048 planets, such as names, positions in space, economic models, and resource availability, for about 20Ko. This approach contributed to a diverse and expansive game universe, enhancing replayability and exploration.
 
-The evolution continued with significant milestones in procedural content generation (PCG). "Dwarf Fortress," released in 2006, became renowned for its deep and complex world generation, which included detailed civilizations, histories, and ecosystems. "Spore," released in 2008, pushed the boundaries further by using procedural generation extensively, as the game did not store textures, music, or animations. "Minecraft," released in 2011, revolutionized procedural generation in gaming by creating vast, open worlds with a variety of biomes and features.
+The evolution continued with significant milestones in procedural content generation (PCG). "Dwarf Fortress," released in 2006, became renowned for its deep and complex world generation, which included detailed civilizations, histories, and ecosystems. "Spore," released in 2008, pushed the boundaries further by using procedural generation extensively, as the game did not store textures, music, or animations. "Minecraft," released in 2011, revolutionized procedural generation in gaming by creating vast, open worlds with a variety of biomes and features. [CITATIONS]
 
-In addition to video games, procedural generation found applications in simulations and computer graphics. For scientific simulations, it was used in terrain generation for geological studies and virtual landscapes, as well as in fluid dynamics to simulate realistic fluid behaviors. In the realm of computer graphics and animation, procedural techniques became essential for creating complex visual effects, landscapes, and textures in films, which would be labor-intensive to model manually. The advent of real-time graphics and game engines like Unreal Engine and Unity further leveraged procedural generation to create dynamic content and diverse environments.
+In addition to video games, procedural generation found applications in simulations and computer graphics. For scientific simulations, it was used in terrain generation for geological studies and virtual landscapes, as well as in fluid dynamics to simulate realistic fluid behaviors. In the realm of computer graphics and animation, procedural techniques became essential for creating complex visual effects, landscapes, and textures in films, which would be labor-intensive to model manually. The emergence of real-time graphics and game engines like Unreal Engine and Unity further leveraged procedural generation to create dynamic content and diverse environments.
 
-Technological advancements have played a crucial role in the evolution of procedural generation. Improvements in noise functions, such as Worley noise and new variations of Perlin noise, enhanced both the quality and efficiency of procedural methods. Recent developments in machine learning and artificial intelligence have been integrated with procedural generation to produce more complex and adaptive content. The increase in computing power has also been pivotal, allowing for the generation of more detailed and complex procedural content in real time. Additionally, the use of parallel processing and GPUs has accelerated these processes, enabling real-time applications and high-resolution simulations.
+Computer technology improvements have played a crucial role in the evolution of procedural generation. Improvements in noise functions, such as Worley noise and new variations of Perlin noise, enhanced both the quality and efficiency of procedural methods. Recent developments in machine learning and artificial intelligence have been integrated with procedural generation to produce more complex and adaptive content. The increase in computing power has also been pivotal, allowing for the generation of more detailed and complex procedural content in real time. Additionally, the use of parallel processing and GPUs has accelerated these processes, enabling real-time applications and high-resolution simulations.
 
-Looking to the future, current trends in procedural generation include hybrid approaches that combine procedural techniques with manual design to balance complexity and artistic control. User-driven content is becoming more prevalent, allowing players and users to influence procedural content generation. Moreover, procedural generation is increasingly being applied in advanced simulations for areas such as training, virtual reality, and scientific research, including climate modeling and urban planning.
+% Looking to the future, current trends in procedural generation include hybrid approaches that combine procedural techniques with manual design to balance complexity and artistic control. User-driven content is becoming more prevalent, allowing players and users to influence procedural content generation. Moreover, procedural generation is increasingly being applied in advanced simulations for areas such as training, virtual reality, and scientific research, including climate modeling and urban planning.
 
 \subsection{Models represented}
-Procedural generation encompasses various models and techniques that create complex and natural-looking content. These models range from mathematical functions to advanced neural networks and physical simulations, each contributing uniquely to the generation of diverse and realistic environments.
+Procedural generation encompasses various models and techniques that create complex and natural-looking content. These models range from mathematical functions to advanced neural networks and physical simulations, each resulting on the generation of diverse and realistic environments.
 
-One foundational technique in procedural generation is noise. Perlin noise, developed by Ken Perlin in 1983, is a gradient noise function designed to produce smooth, coherent patterns that mimic natural phenomena. Its continuous and smooth randomness makes it particularly suitable for generating textures, terrains, and procedural landscapes that appear natural. Building on this, Simplex noise, introduced by Perlin in 2001, offers a more computationally efficient alternative with fewer directional artifacts. It is favored for its improved visual coherence and efficiency in higher-dimensional spaces, making it ideal for procedural texture generation and terrain creation.
+One foundational technique in procedural generation is noise. Perlin noise, developed by Ken Perlin in 1983, is a gradient noise function designed to produce smooth, coherent patterns that mimic natural phenomena. Its continuous and smooth randomness makes it particularly suitable for generating textures, terrains, and procedural landscapes that appear natural. Building on this, Simplex noise, introduced by Perlin in 2001, offers a more computationally efficient alternative with fewer directional artifacts. It is favored for its improved visual coherence and efficiency in higher-dimensional spaces, making it ideal for procedural texture generation and terrain creation. Another variant of noise, Worley noise creates patterns based on the distance between points in a space. This technique produces cellular structures with distinct boundaries, making it useful for generating textures like stone or marble, and for modeling natural patterns such as cloud formations and cellular structures.
 
-Another variant of noise, Worley noise—also known as Voronoi noise—creates patterns based on the distance between points in a space. This technique produces cellular structures with distinct boundaries, making it useful for generating textures like stone or marble, and for modeling natural patterns such as cloud formations and cellular structures.
+In addition to noise functions, cellular automata provide another approach to procedural generation. These are discrete, grid-based models where each cell evolves according to a set of rules applied to its neighbors. Originating in the 1940s with John von Neumann and Stanislaw Ulam, cellular automata have been used to model complex systems and processes using only few simple rules. They are particularly employed to generate cave systems in video games, but are also used to create various patterns and textures, including forests, vegetation, and city layouts. Notable examples include Conway's Game of Life, which demonstrates how simple rules can lead to complex, self-organizing patterns, and Langton's Ant, which showcases how basic rules can produce diverse and intricate behaviors. The mathematical formalism of cellular automata made it possible to represent real-world phenomena like avalanches, fluids, ...  in rules [CITATIONS]. Cellular automata got generalized to continuous time fields, and continuous space fields. [CITATIONS LENIA] 
 
-In addition to noise functions, cellular automata provide another approach to procedural generation. These are discrete, grid-based models where each cell evolves according to a set of rules applied to its neighbors. Originating in the 1940s with John von Neumann and Stanislaw Ulam, cellular automata have been used to model complex systems and processes. They are particularly effective for simulating natural processes such as erosion and sediment deposition, which can be employed to generate cave systems and other landforms. Cellular automata are also used to create various patterns and textures, including forests, vegetation, and city layouts. Notable examples include Conway's Game of Life, which demonstrates how simple rules can lead to complex, self-organizing patterns, and Langton's Ant, which showcases how basic rules can produce diverse and intricate behaviors.
+Neural networks represent a more recent advancement in procedural generation. Artificial Neural Networks (ANNs), inspired by the human brain, learn patterns and generate data. Generative models, including Generative Adversarial Networks (GANs) and Variational Autoencoders (VAEs), are designed specifically for content generation. GANs use two neural networks—a generator and a discriminator—that compete with each other to produce realistic outputs. VAEs, on the other hand, encode and decode data to and from a latent space to generate new, similar instances. These models are applied to generate realistic textures, terrains, and photorealistic images, enhancing the detail and variety of content in video games and simulations.
 
-Neural networks represent a more recent advancement in procedural generation. Artificial Neural Networks (ANNs), inspired by the human brain, learn patterns and generate data. Generative models, including Generative Adversarial Networks (GANs) and Variational Autoencoders (VAEs), are designed specifically for content generation. GANs use two neural networks—a generator and a discriminator—that compete with each other to produce realistic outputs. VAEs, on the other hand, encode and decode data to generate new, similar instances. These models are applied to generate realistic textures, terrains, and photorealistic images, enhancing the detail and variety of content in video games and simulations.
-
-Finally, physical phenomena modeling uses simulations of real-world processes to generate natural features and behaviors. This includes models for fluid dynamics, erosion, sediment transport, and other geological and environmental processes. These models are crucial for creating realistic terrain features such as mountains, valleys, and riverbeds, as well as for environmental simulations that include weather patterns, climate modeling, and natural disaster scenarios. Erosion models, for instance, simulate the effects of weathering and erosion on terrain, using algorithms that mimic natural processes like water flow and wind. Sediment transport models simulate the movement and deposition of sediment, contributing to the realistic formation and evolution of terrain.
-
-Together, these models and techniques form a comprehensive toolkit for procedural generation, enabling the creation of diverse, realistic, and dynamic content across various applications.
+Finally, physical phenomena modeling uses simulations of real-world processes to generate natural features and behaviors. This includes models for fluid dynamics, erosion, sediment transport, and other geological and environmental processes. These models are most often used for improve the realistism of terrains than creating them. Terrain features such as mountains, valleys, and riverbeds, as well as environmental simulations that include weather patterns, climate, and natural disaster scenarios can be modeled through simulations. Erosion models, for instance, simulate the effects of weathering and erosion on terrain, using algorithms that mimic natural processes like water flow and wind. Sediment transport models simulate the movement and deposition of sediment, contributing to the realistic formation and evolution of terrain.
 
 \subsection{User interaction}
-\subsubsection{Realism-Speed-Control Balance}
-User interaction is a crucial aspect of procedural generation, affecting how users balance realism, speed, and control over generated content.
+\subsubsection{Realism-speed-control balance}
+User interaction affects how users balance realism, speed, and control over generated content.
 
-Realism refers to the extent to which generated content accurately represents real-world characteristics, such as visual details, physical processes, and natural patterns. This is especially important in simulations, visualizations, and training environments where authenticity is critical. Techniques to enhance realism include physical simulations, which model processes like erosion and sediment transport, and the integration of expert knowledge from fields such as geology and ecology. However, achieving realism can be challenging due to the complexity of detailed simulations and the need for specialized expertise, which can demand substantial computational resources and inputs.
+Realism refers to the extent to which generated content accurately represents real-world characteristics, such as visual details, physical processes, and natural patterns. This is especially important in simulations, visualizations, and training environments where plausibility [FIND BETTER TERM] is critical. Techniques to enhance realism include physical simulations, which model processes like erosion and sediment transport, and the integration of expert knowledge from fields such as geology and ecology. However, achieving realism can be challenging due to the complexity of detailed simulations and the need for specialized expertise, which can demand substantial computational resources and inputs.
 
-Speed is about the efficiency of content generation within acceptable time constraints. While no official categorisation has been set, James Gain proposed to describe levels of speed based on response time: \\
-Real-Time: Generation in less than 30 milliseconds, essential for interactive applications like VR environments. \\
-Interactive: Generation in under 3 seconds, suitable for user-driven customization in games and simulations. \\
-Near-Interactive: Generation in less than 5 minutes, applicable for larger-scale simulations where some delay is acceptable. \\
-Long-Term: Generation that takes longer, often used for precomputed content or offline rendering.
+Speed is about the efficiency of content generation within acceptable time constraints. While no official categorisation has been set, James Gain proposed to describe levels of speed based on response time:
+\begin{itemize}
+    \item Real-time: generation in less than 30 milliseconds, essential for interactive applications like VR environments. 
+    \item Interactive: generation in under 3 seconds, suitable for user-driven customization in games and simulations. 
+    \item Near-interactive: generation in less than 5 minutes, applicable for larger-scale simulations where some delay is acceptable. 
+    \item Long-term: generation that takes longer, often used for precomputed content or offline rendering.
+\end{itemize}
 
 Optimizing speed involves using efficient algorithms and parallel processing. Almost all recent works achieve fast execution time thanks to high parallelisation on GPU. Other types of algorithm may rely on a refinement paradigm, generating a coarse result at first and then iteratively adding finer details, such that the global output shape is available long time before the real final result.
 
-Control refers to how much users can influence or direct the procedural generation process to meet their specific needs or preferences. This includes:
+Control refers to how much users can influence or direct the procedural generation process to meet their specific needs or preferences. This includes parameters fine-tuning, allowing users to modify parameters like the noise functions parameters of the simulation variables, and artistic control tools, made for artists and designers to guide the generation process with the use of masks, allowing for combination and mixing of different algorithms.
 
-Customization: Allowing users to modify parameters like terrain features or game worlds.
-Artistic Control: Providing tools for artists and designers to guide the generation process and incorporate artistic elements.
 Challenges in control involve managing diverse and sometimes conflicting user expectations, and balancing the complexity of procedural systems to avoid overwhelming users or producing unrealistic results.
 
-\subsubsection{Interaction Mechanisms}
-Interaction Mechanisms are the tools and methods used to facilitate user interaction with procedural generation:
-
-Parameter Adjustment: User interfaces like sliders and controls enable adjustments to parameters such as terrain height or texture type. Real-time feedback ensures users see the immediate impact of their adjustments.
-Guided Creation: Templates and presets offer predefined starting points that users can modify. Assistive tools or wizards help guide users through the generation process, making it easier to understand and control the outcome.
-Direct Manipulation: Interactive tools allow users to directly manipulate generated content, such as sculpting terrain or painting textures. Live updates reflect changes in real-time, facilitating immediate validation and adjustment.
-
-\subsubsection{Challenges and Considerations}
-Challenges and Considerations include balancing complexity and usability to ensure that sophisticated procedural systems remain user-friendly. Performance impact is another concern, especially in real-time applications where frequent updates are required. Effective feedback and iteration mechanisms are crucial for helping users understand the impact of their interactions and refine their designs.
 
 \subsubsection{Regeneration}
-The regeneration of procedurally generated models is an issue often overlooked. As the user is almost satisfied with its generation, he may decide to adjust slightly the parameters used. The challenges of the regeneration are multiple: How to let the user explore the \gloss{ParamSpace} of the model freely? How to ensure that a small change in a variable induce a small change in the result? How to handle the edition from direct manipulations after regeneration? Those question arise directly from the realism-speed-control balance of our procedural model.
+The regeneration of procedurally generated models is an issue often overlooked. As the user is almost satisfied with its generation, he may decide to adjust slightly the parameters used. The challenges of the regeneration are multiple: How to let the user explore the \gloss{ParamSpace} of the model freely? How to ensure that a small change in a variable induce a small change in the result? How to handle the edition from direct manipulations after regeneration? Those question arise directly from the realism-speed-control balance of our procedural models.
 
-Users can manually start the regeneration process to refresh or update a model, such as a terrain or landscape. This allows the content to reflect new parameters or conditions as specified by the user. The generation speed has a strong influence on the possibility for the user to fine tune parameters as algorithms that can be executed in real-time or interactive-time keep the user active in his work. Long execution times force him to find optimal parameters beforehand in order to create a satisfying model faster than if it was hand-made, which, when not completely explicit, may feel impossible. 
-The speed can be improved by different strategies:  \\
-- Modifications that have a local incidence on the resulting model requires only a local regeneration of the output. Limiting the spatial scope of an interaction is an efficient mean to keep in the same time a way to explore the \gloss{ParamSpace} of the algorithm while keeping the predictability of the outcome by avoiding global changes from a local edition. \\
-- Live preview of the outcome can be displayed in a coarse computation, 
+Users can manually start the regeneration process to refresh or update a model. This allows the content to reflect new parameters or conditions as specified by the user. The generation speed has a strong influence on the possibility for the user to fine tune parameters as algorithms that can be executed in real-time or interactive-time keep the user active in his work. Long execution times force him to find optimal parameters beforehand in order to create a satisfying model faster than if it was hand-made, which, when not completely explicit, may feel impossible. 
 
-Interface Controls: Various tools and options in the user interface enable users to initiate regeneration. This may include buttons or commands designed to reload or update the generated content based on user inputs.
-Customizable Parameters:
+The fine-tuning speed can be improved by different strategies:
+\begin{itemize}
+    \item Modifications that have a local incidence on the resulting model requires only a local regeneration of the output. Limiting the spatial scope of an interaction is an efficient mean to keep in the same time a way to explore the \gloss{ParamSpace} of the algorithm while keeping the predictability of the outcome by avoiding global changes from a local edition.
+    \item Live preview of the outcome can be displayed in a coarse computation, allowing to have a rough idea of the result without the full computation.
+\end{itemize}
 
-Adjustment of Variables: Before initiating regeneration, users can adjust parameters or settings to influence the outcome. This might involve changing terrain features, texture types, or simulation conditions to achieve the desired results.
-Preview and Validation: Offering preview modes or validation checks helps users understand potential outcomes before finalizing the regeneration. This feature ensures that users can visualize changes and make adjustments as needed.
-Issues with Regeneration
-What to Regenerate:
+[TODO]
+% Interface controls: various tools and options in the user interface enable users to initiate regeneration. 
+% This may include buttons or commands designed to reload or update the generated content based on user inputs.
 
-Selective Regeneration: Deciding whether to regenerate the entire model or only specific parts is crucial. For example, users may choose to regenerate just the terrain features while leaving other elements intact to preserve consistency.
-Scope and Scale: Determining how extensive the regeneration should be is essential. This could involve minor updates or a complete overhaul of the generated content, depending on the changes required.
-How to Regenerate:
+% Customizable parameters: \\
+% Adjustment of variables: before initiating regeneration, users can adjust parameters or settings to influence the outcome. 
+% This might involve changing terrain features, texture types, or simulation conditions to achieve the desired results. \\
+% Preview and validation: offering preview modes or validation checks helps users understand potential outcomes before finalizing the regeneration. 
+% This feature ensures that users can visualize changes and make adjustments as needed.
 
-Algorithmic Approaches: Various methods can be used for regeneration, including reapplying existing algorithms or introducing new procedural rules. These methods alter or update the existing content based on user inputs or new conditions.
-Incremental vs. Complete Regeneration:
-Incremental: Gradual updates or changes applied to only parts of the generated content to minimize disruption and maintain consistency.
-Complete: Full regeneration from scratch may be necessary for significant changes or when previous results are no longer valid, ensuring a fresh start if needed.
-Problems with User Interactions
-Consistency: Ensuring that regeneration maintains or enhances the consistency and quality of generated content is vital. This involves avoiding artifacts or inconsistencies that could impact the user experience or the realism of the content.
+% Issues with regeneration \\
+% What to regenerate: \\
+% Selective regeneration: deciding whether to regenerate the entire model or only specific parts is crucial. 
+% For example, users may choose to regenerate just the terrain features while leaving other elements intact to preserve consistency. \\
+% Scope and scale: determining how extensive the regeneration should be is essential. 
+% This could involve minor updates or a complete overhaul of the generated content, depending on the changes required.
 
-Feedback Handling: Effectively managing user feedback and requests for regeneration, which can vary in scope and detail, is important. Providing clear feedback mechanisms helps users understand how their inputs affect the generation process.
+% How to regenerate: \\
+% Algorithmic approaches: various methods can be used for regeneration, including reapplying existing algorithms or introducing new procedural rules. 
+% These methods alter or update the existing content based on user inputs or new conditions. \\
 
-Performance: Addressing performance implications is crucial, particularly in real-time or interactive applications where frequent updates are necessary. Efficiently handling resource usage and computational demands during regeneration is key to maintaining a smooth experience.
+% Incremental vs. complete regeneration: \\
+% Incremental: gradual updates or changes applied to only parts of the generated content to minimize disruption and maintain consistency. \\
+% Complete: full regeneration from scratch may be necessary for significant changes or when previous results are no longer valid, ensuring a fresh start if needed.
 
-Action Storage
-Storage Formats:
+% \subsubsection{Interaction mechanisms}
+% Interaction mechanisms are tools and methods used to facilitate user interaction with procedural generation: \\
+% Parameter adjustment: user interfaces like sliders and controls enable adjustments to parameters such as terrain height or texture type. 
+% Real-time feedback ensures users see the immediate impact of their adjustments. \\
+% Guided creation: templates and presets offer predefined starting points that users can modify. 
+% Assistive tools or wizards help guide users through the generation process, making it easier to understand and control the outcome. \\
+% Direct manipulation: interactive tools allow users to directly manipulate generated content, such as sculpting terrain or painting textures. 
+% Live updates reflect changes in real-time, facilitating immediate validation and adjustment.
 
-JSON: JavaScript Object Notation (JSON) files can be used to store regeneration actions and parameters. JSON is flexible and readable, making it a suitable format for saving and retrieving procedural settings.
-Other Formats: Alternatives such as XML, binary files, or custom formats may be used depending on specific needs or systems.
-Tracking Changes:
+% \subsubsection{Challenges and considerations}
+% Challenges and considerations include balancing complexity and usability to ensure that sophisticated procedural systems remain user-friendly. \\
+% Performance impact is another concern, especially in real-time applications where frequent updates are required. 
+% Effective feedback and iteration mechanisms are crucial for helping users understand the impact of their interactions and refine their designs.
 
-Action History: Maintaining a history of user actions and regeneration events allows users to revert to previous states or track changes over time. This feature supports iterative development and refinement of generated content.
-Versioning: Implementing version control for procedural generation settings helps manage different versions of generated content, allowing users to compare and manage variations effectively.
-Restoration and Undo:
+% Problems with user interactions \\
+% Consistency: ensuring that regeneration maintains or enhances the consistency and quality of generated content is vital. 
+% This involves avoiding artifacts or inconsistencies that could impact the user experience or the realism of the content. \\
+% Feedback handling: effectively managing user feedback and requests for regeneration, which can vary in scope and detail, is important.
+% Providing clear feedback mechanisms helps users understand how their inputs affect the generation process. \\
+% Performance: addressing performance implications is crucial, particularly in real-time or interactive applications where frequent updates are necessary.
+% Efficiently handling resource usage and computational demands during regeneration is key to maintaining a smooth experience.
 
-Undo Mechanisms: Providing options for users to undo recent regeneration actions or revert to previous states enhances flexibility and control. This allows users to correct mistakes or adjust their approach as needed.
-Restoration of Defaults: Allowing users to restore default settings or regeneration conditions if custom changes lead to unsatisfactory results ensures that users can revert to a baseline if needed.
-Implementation Considerations
-Efficiency: Designing algorithms and systems to handle regeneration efficiently is crucial. This involves minimizing computational overhead and ensuring that updates are responsive and timely.
+% Action Storage
+% Storage Formats:
 
-User Experience: Creating intuitive interfaces and feedback mechanisms facilitates smooth user interactions with the regeneration process. Ensuring that users can easily understand and control the regeneration helps improve their overall experience.
+% JSON: JavaScript Object Notation (JSON) files can be used to store regeneration actions and parameters. JSON is flexible and readable, making it a suitable format for saving and retrieving procedural settings.
+% Other Formats: Alternatives such as XML, binary files, or custom formats may be used depending on specific needs or systems.
+% Tracking Changes:
 
-Error Handling: Implementing robust error handling and recovery mechanisms addresses potential issues that may arise during regeneration, such as unexpected results or system failures. Effective error management ensures that users can continue working without significant disruptions.
+% Action History: Maintaining a history of user actions and regeneration events allows users to revert to previous states or track changes over time. This feature supports iterative development and refinement of generated content.
+% Versioning: Implementing version control for procedural generation settings helps manage different versions of generated content, allowing users to compare and manage variations effectively.
+% Restoration and Undo:
 
-\section{Terrain representation}
+% Undo Mechanisms: Providing options for users to undo recent regeneration actions or revert to previous states enhances flexibility and control. This allows users to correct mistakes or adjust their approach as needed.
+% Restoration of Defaults: Allowing users to restore default settings or regeneration conditions if custom changes lead to unsatisfactory results ensures that users can revert to a baseline if needed.
+% Implementation Considerations
+% Efficiency: Designing algorithms and systems to handle regeneration efficiently is crucial. This involves minimizing computational overhead and ensuring that updates are responsive and timely.
+
+% User Experience: Creating intuitive interfaces and feedback mechanisms facilitates smooth user interactions with the regeneration process. Ensuring that users can easily understand and control the regeneration helps improve their overall experience.
+
+% Error Handling: Implementing robust error handling and recovery mechanisms addresses potential issues that may arise during regeneration, such as unexpected results or system failures. Effective error management ensures that users can continue working without significant disruptions.
+
+\section{Terrain representations}
 \label{sec:state-of-the-art_terrain-representations}
-- ...
+A terrain can be represented in various ways, each of them suited for a given application of which we give an brief overview, more details can be found in \cite{Galin2019}.
 
-\subsection{2.5D terrains}
-- ...
+\subsection{Elevation models}
 
-\subsubsection{Height maps}
-- ...
+Elevation models are a fundamental approach in terrain representation, widely used in procedural generation due to their simplicity and efficiency. These models define the terrain as a function $h : \R^2 \to \R$, where each point in a 2D plane is mapped to an elevation value. This approach is particularly effective for representing terrains where the elevation is the only varying factor, such as hills, valleys, and plateaus, and it is best suited for terrains without complex 3D features like overhangs or caves. While we visualize elevation models in three dimensions, they are mathematically considered two-dimensional functions. In the domain of terrain generation, we will name them 2.5D models.
 
-\subsubsection{Height functions}
-- ...
+Elevation models are widely used in industries where large-scale terrain representation is crucial. In video games, they provide the foundation for creating expansive open-world environments. In geographic information systems (GIS) and remote sensing, height fields are used to represent real-world terrain data, offering a practical means of visualizing and analyzing geographical features. The ability to manipulate and control terrain features procedurally makes elevation models a common choice for applications that require efficient terrain generation and rendering.
 
-\subsection{3D terrains}
-- Need for 3D concepts \\
-** Geological information \\
-** Volumetric data \\
-- ...
+They offer a powerful method for representing terrains in procedural generation, combining simplicity with flexibility. While they have limitations in representing complex 3D structures, their efficiency and compatibility with existing algorithms make them indispensable in a variety of applications.
 
-\subsubsection{Main issues}
-- Memory \\
-- Visualization \\
-- Modifications \\
-- Conversion between representations \\
-** Information loss \\
-*** Error propagation on geometry (approximations on normals, Z resolution, surface, etc.) \\
-*** Loss of subsurface information \\
-- ...
+\subsubsection{Implicit height fields}
+Implicit height fields represent the terrain as a mathematical function that provides a height value at any given point in the domain. These functions can be procedural or closed-form expressions, allowing for compact storage and infinite precision in theory. The elevation function allows for easy manipulation of terrain features, making it ideal for generating terrains that require smooth, continuous surfaces. However, the primary disadvantage is the computational complexity involved in evaluating the function, especially for large or highly detailed terrains. The challenge lies in constructing functions that can realistically represent large-scale terrains with complex landforms.
 
-\subsubsection{Types, definitions, advantages, disadvantages}
-- Voxel grids \\
-- Material stacks \\
-- Meshes \\
-- Implicit surfaces \\
-- Implicit materials \\
-- ...
+\subsubsection{Discrete height fields}
+Discrete height fields, or explicit height fields, are one of the most prevalent methods for terrain representation. These models consist of a 2D grid where each cell contains a height value, representing the elevation at that point. Height fields are particularly advantageous because they are simple to implement and are directly compatible with many rendering techniques and hardware, but also due to their closeness with image processing, a domain studied for many decades now.
 
-\subsection{Other models}
-- Concept of semantics \\
-- ...
+The main advantage of height fields is their ability to handle large datasets efficiently, providing a balance between memory usage and detail. However, they are limited by their inability to represent terrains with overhangs or caves, as each point on the grid can only hold a single elevation value. Additionally, height fields often require interpolation methods, such as bi-linear or bi-cubic interpolation, to reconstruct a continuous surface from the discrete grid points. 
+% While this allows for smooth terrain surfaces, it can introduce artifacts at grid boundaries and requires careful handling to maintain realism.
+
+\subsection{Volumetric models}
+Volumetric models represent a more complex approach to terrain modeling, allowing for the depiction of 3D features that go beyond the simple surface-based representation provided by elevation models. These models capture not only the surface of the terrain but also its internal structure, making them ideal for representing terrains with overhangs, caves, and other subsurface features. Volumetric models are defined by a function $\mu : \R^3 \to M$, where $M$ denotes the material type at any given point in 3D space. This allows for a detailed representation of the terrain's internal composition, which can be crucial for applications requiring realistic geological simulations.
+
+Volumetric models, including layered materials, voxel grids, and implicit models, are essential in applications where terrain complexity and detail are primordial. In geological simulations, these models allow for accurate representation of subsurface structures and processes. Voxel models are widely used in games that require dynamic terrain deformation, providing a rich interactive environment for players. Implicit models are favored in situations where smooth, continuous surfaces are needed [FIND OTHER USE CASES].
+
+\subsubsection{Function volumetric models}
+Implicit models represent the terrain using an implicit surface, which is defined as the zero-level set of a continuous field function $f : \R^3 \to \R$. The terrain surface is the set of points where this field function equals zero. This approach allows for the smooth representation of complex 3D shapes and is particularly well-suited for modeling continuous, organic structures like rolling hills, caves, and natural arches. Implicit models are flexible and can represent terrains with overhangs and tunnels, which are challenging for height field-based models.
+
+One of the key advantages of implicit models is their ability to produce smooth surfaces without the need for discrete polygonal meshes, which can result in realistic and natural-looking terrains. However, the computational complexity of evaluating the implicit function, especially for large terrains, can be a significant drawback. Additionally, converting an implicit surface into a mesh for rendering can be challenging and resource-intensive.
+
+\subsubsection{Layered models}
+Layered models are a type of volumetric representation that encode different material layers within the terrain. Each layer is defined by its thickness or elevation, and multiple layers can be stacked to represent complex geological formations. These layers might include materials like bedrock, sand, soil, or water, each contributing to the overall structure of the terrain. Layered models are particularly useful in simulations that involve processes like erosion or sedimentation, where the interaction between different material layers are affect the physical process.
+
+The primary advantage of layered models is their ability to represent a stratified terrain with distinct material properties, which can be manipulated individually. This makes them well-suited for simulations that require detailed geological accuracy. However, they are more complex to implement than simple elevation models and require additional computational resources to manage the interactions between layers. 
+
+
+\subsubsection{Voxel grid models}
+Voxel grids are a common method for representing 3D terrains in procedural generation, offering the ability to capture complex internal structures and features that are difficult or impossible to represent with surface-based models. In a voxel grid, the 3D space is divided into a regular grid of small, cube-shaped elements called voxels (volumetric pixels). Each voxel holds information about the material or properties of the terrain at that specific point in space. This approach allows for detailed modeling of features such as caves, tunnels, overhangs, and intricate underground networks. The regular grid structure allows for the use of image processing-oriented algorithms.
+
+There are two primary types of voxel grids used in terrain representation: binary voxel grids and density voxel grids. Each has distinct characteristics, advantages, and limitations, making them suitable for different applications. Binary voxel grids are the simplest form of voxel representation. In these grids, each voxel is either "filled" or "empty," representing the presence or absence of material. This binary state is typically represented by a 1 (filled) or 0 (empty). Binary voxel grids are straightforward to implement and require much less memory compared to more complex voxel representations, making them ideal for applications where the primary concern is whether a space is occupied or not.
+
+The simplicity of binary voxel grids is one of their main advantages. They are easy to understand and visualize, with each voxel requiring only a single bit of information to represent its state. Additionally, because only a binary state is stored, these grids can be memory-efficient when combined with compression techniques like Sparse Voxel Octrees (SVOs). The simplicity of the data structure also allows for quick processing, making binary voxel grids suitable for real-time applications where performance is required. However, the binary nature of these grids limits their ability to represent variations in material density or properties, or even smoothness, resulting in less detailed terrain models. This can lead to hard, blocky edges in the terrain, which may appear unnatural without additional smoothing or processing.
+
+Binary voxel grids are commonly used in applications where simple occupancy information is sufficient. For example, voxel-based games like Minecraft utilize binary grids to create terrains composed of solid blocks with clear boundaries. These grids are also employed in scientific simulations where the primary concern is the presence or absence of materials, rather than detailed material properties. [TRANSFORM TO MATERIAL-VOXELS]
+
+On the other hand, density voxel grids allow each voxel to store a range of values, representing varying degrees of material presence. Instead of a simple binary state, a density voxel grid assigns a scalar value to each voxel, which can represent material density, opacity, or other properties. This added complexity enables density voxel grids to represent subtle variations in terrain, such as gradual changes in material density or smooth transitions between solid and empty spaces, allowing for more realistic and natural-looking terrain models.
+
+% The use of density voxel grids results in soft transitions and smooth surfaces, reducing the blockiness typically associated with binary voxel grids. They are versatile and can represent not only solid terrain but also phenomena like fog, fluid densities, or temperature gradients. However, the increased detail and realism come at the cost of greater complexity. Density voxel grids require more memory and computational power, making them more challenging to implement and manage. The additional data and processing required can also lead to slower performance, particularly in real-time applications.
+
+Density voxel grids are often used in high-fidelity simulations where detail and realism are essential. They are found in applications such as medical imaging, scientific visualizations, and advanced terrain modeling for films and visual effects. These grids are also employed in procedural terrain generation systems that require smooth and natural transitions between different terrain features, such as caves, cliffs, and eroded landscapes.
+
+
+% - ...
+
+% \subsection{2.5D terrains}
+% - ...
+
+% \subsubsection{Height maps}
+% - ...
+
+% \subsubsection{Height functions}
+% - ...
+
+% \subsection{3D terrains}
+% - Need for 3D concepts \\
+% ** Geological information \\
+% ** Volumetric data \\
+% - ...
+
+% \subsubsection{Main issues}
+% - Memory \\
+% - Visualization \\
+% - Modifications \\
+% - Conversion between representations \\
+% ** Information loss \\
+% *** Error propagation on geometry (approximations on normals, Z resolution, surface, etc.) \\
+% *** Loss of subsurface information \\
+% - ...
+
+% \subsubsection{Types, definitions, advantages, disadvantages}
+% - Voxel grids \\
+% - Material stacks \\
+% - Meshes \\
+% - Implicit surfaces \\
+% - Implicit materials \\
+% - ...
+
+% \subsection{Other models}
+% - Concept of semantics \\
+% - ...
+
+\subsection{Existing terrain generation techniques}
+Procedural generation techniques in terrain generation involve creating terrains using algorithms that do not directly simulate physical processes but instead rely on mathematical models to produce realistic landscapes. These techniques are often phenomenological, focusing on reproducing the observable effects of natural phenomena like erosion, tectonic activity, and sediment deposition. The primary advantage of procedural generation is its ability to create detailed, expansive terrains with relatively little data, often without relying on real-world exemplars. 
+
+Procedural terrain generation methods can be broadly classified into two categories: large-scale terrain generation and procedural landform generation. Large-scale terrain generation techniques focus on creating entire terrains over extensive areas, emphasizing fractal and self-similar properties to ensure that details appear consistent at various scales. These methods often offer limited direct control over the specific features of the terrain, as they are primarily concerned with creating natural-looking landscapes across large domains. Examples of such methods include subdivision schemes, faulting, and noise-based techniques, each of which brings a different approach to refining and detailing the terrain.
+
+[CITATIONS]
+
+Subdivision schemes iteratively refine an initial coarse terrain by subdividing it and adding detail, often guided by fractal principles. A well-known method is the diamond-square algorithm, which can produce terrains with fractal characteristics but may introduce unwanted artifacts such as local extrema. To mitigate these issues, alternative schemes like the square-square method, which uses a mix of triangle and square subdivisions, have been developed to maintain geometric consistency and reduce artifacts. However, these methods are still prone to producing directional artifacts, requiring further refinement through modified algorithms.
+
+Faulting is another procedural technique that begins with a flat terrain and adds random vertical faults, displacing points on either side of the fault line based on their distance from it. This method is effective in simulating the effects of tectonic activity on terrain formation. The terrain's elevation is determined by summing the contributions of multiple faults, with random coefficients controlling the magnitude of displacement. The use of smooth step functions ensures that the transition between displaced and non-displaced areas is gradual, creating realistic fault lines. However, this technique requires careful selection of faults to maintain terrain consistency and avoid excessive or unnatural elevation changes.
+
+Noise functions, particularly fractional Brownian motion (fBm), are foundational in procedural terrain generation, used to introduce turbulence and multi-scale effects that mimic the appearance of natural landscapes. By summing noise at different scales and amplitudes, these functions create terrains with a variety of features, from gentle rolling hills to rugged mountains. Specific noise functions, such as ridge noise, are designed to generate sharp features like crests and ridges, while multi-fractal noise allows for non-uniform fractal properties, enhancing the realism of the terrain. Warping techniques, such as domain warping, are applied to avoid grid artifacts and simulate erosion effects without resorting to full physical simulations, further refining the terrain's appearance.
+
+Procedural landform generation techniques, in contrast, focus on the creation of specific terrain features like rivers, cliffs, and canyons. These methods operate on a smaller scale and provide more direct control over the resulting shapes, allowing for targeted synthesis of particular landforms. Controlled subdivision [CITATION], for example, enhances traditional fractal methods by incorporating user-defined features like river networks into the terrain generation process. This approach can be extended to simulate planetary-scale watersheds, ensuring that the generated terrain adheres to the desired topological and hydrological characteristics.
+
+Feature-based construction techniques allow users to define terrain features through interactive sketch-based interfaces, where control curves determine the shape and extent of the landforms. These curves guide the multi-resolution deformation process, ensuring that the terrain conforms to the sketched profiles. By blending different types of curves, such as elevation and cross-sectional profiles, detailed and complex landforms can be created. Procedural generation is used to add fine details like layered terraces and isolated mesas, while shortest-path algorithms help define natural river trajectories.
+
+[TODO]
+% In volumetric procedural terrains, implicit modeling is employed to define terrains using a continuous field function. This allows for the creation of complex 3D features such as overhangs, caves, and cliffs, which are challenging to represent with surface-based models. The field function is warped to simulate overhangs and cliffs, while the terrain's surface is smoothed to achieve a realistic appearance. 
+% Layer stack models represent different material layers within the terrain, and smoothing techniques ensure that transitions between layers are natural and continuous.
+
+Procedural generation techniques offer a powerful and flexible approach to terrain generation, allowing for the creation of vast, detailed landscapes with minimal input data. However, these techniques also present challenges, particularly in balancing realism with computational efficiency. While large-scale methods excel at creating expansive terrains with fractal properties, they often lack the direct control needed to generate specific landforms. Conversely, landform generation techniques provide greater control but may require more computational resources to achieve the desired level of detail. The complexity and realism of a process is then defined by the mix of the different algorithms possible in order to create large terrains with realistic landforms.
+
+% - Almost all rely on elevation models \\
+% ** More precisely on discrete height fields \\
+% *** Because of the closeness with image processing \\
+% - Most algorithms are focused on alpine landscapes \\
+% ** Because easier to observe, much more research on the topic, historically first geo features simulated
 
 \subsection{Underwater landscapes}
-- 3D Data: \\
-** Coral Landscapes: Addressing challenges in modeling coral reefs and underwater features. \\
-** Cavities: Representing underwater caves and karst formations. \\
-- Interdisciplinary Data: \\
-** Geological Validation: Integrating expert knowledge for accurate modeling. \\
-** Challenges: Fewer experts and more uncertainties in underwater environments. \\
-** Data Scarcity: Limited data availability for detailed underwater landscapes. \\
-- Need for Multi-Scale: \\
-** Integration of large and small elements. \\
-** Level of Detail (LOD): Techniques for managing detail across different scales.
+In the field of terrain generation, particularly when it comes to modeling underwater landscapes, the challenge is to accurately represent complex environments that include both geological and biological features. The underwater world is filled with diverse structures, ranging from vast coral reefs to intricate cave systems, each requiring specialized techniques to model their unique characteristics.
 
-\subsubsection{3D Data}
-- Coral Landscapes: \\
-** Complex Structures: Coral reefs feature complex 3D structures with intricate patterns including branching corals, coral mounds, and encrusting forms. These structures often have a high degree of variability and detail. \\
-** Void Spaces: Coral reefs contain many voids and cavities such as caves, grottos, and karst networks, adding to the complexity of modeling these environments. \\
-** Challenges: Modeling coral reefs requires accurately representing the porous and irregular nature of coral formations, which can be challenging due to the high level of detail and variability. \\
-- Geological Features: \\
-** Sedimentary Layers: Representing sedimentary layers and underwater geological formations such as seamounts and underwater ridges. \\
-** Volcanic Activity: Incorporating features such as underwater volcanoes and hydrothermal vents, which affect the landscape and ecosystem. \\
-- Measurement and Data Collection: \\
-** Sonar and LIDAR: Using sonar (e.g., multi-beam echo sounders) and LIDAR (Light Detection and Ranging) to collect detailed 3D data of underwater terrain. \\
-** Remote Sensing: Utilizing remote sensing technologies to map and model underwater landscapes, especially in areas that are difficult to access.
+\subsubsection{3D Data for underwater landscapes}
 
-\subsubsection{Interdisciplinary Data}
-- Geological Validation: \\
-** Expert Consultation: Collaborating with geologists and marine scientists to validate and refine models based on real-world observations and data. \\
-** Data Accuracy: Ensuring that the generated models accurately reflect real underwater geological and biological features. \\
-- Biological Data: \\
-** Coral and Marine Life: Integrating data on coral species, marine biodiversity, and ecosystem dynamics to create realistic and biologically accurate representations. \\
-** Ecological Impact: Considering the impact of various biological factors on the terrain, such as coral growth patterns and marine erosion. \\
-- Challenges: \\
-** Data Scarcity: Limited availability of high-resolution data for some underwater environments, especially in less studied or remote areas. \\
-** Integration: Combining geological, biological, and hydrological data effectively to create comprehensive and accurate models. 
+One of the most challenging aspects of underwater landscape modeling is capturing the complexity of coral reefs. These environments feature highly intricate 3D structures, including branching corals, coral mounds, and encrusting forms. These formations are not just surface-level features; they extend into the terrain with voids and cavities, such as caves, grottos, and karst networks, which add layers of complexity to their representation. Accurate modeling of coral reefs demands that the porous and irregular nature of these formations is represented in high detail, which is a significant challenge due to the variability of their structures.
 
-\subsubsection{Multi-Scale Modeling}
-- Large vs. Small Scale Elements: \\
-** Macro Features: Incorporating large-scale features such as underwater mountains, ridges, and large coral formations. \\
-** Micro Features: Modeling small-scale elements such as individual coral polyps, marine vegetation, and detailed sedimentary textures. \\
-- Level of Detail (LOD): \\
-** Adaptive LOD: Using techniques to adjust the level of detail based on user interaction or view distance to balance performance and visual fidelity. \\
-** Detail Preservation: Ensuring that both macro and micro-scale features are accurately represented without losing important details during scaling or zooming. \\
-- Visualization Techniques: \\
-** Hydrographic Mapping: Employing specialized visualization techniques to represent underwater features clearly and accurately. \\
-** Texture and Lighting: Using textures and lighting models that simulate underwater conditions, such as light absorption and scattering in water.
+In addition to biological features, underwater landscapes are shaped by geological processes that must also be accurately represented. For example, sedimentary layers and underwater geological formations like seamounts and ridges are important components of the terrain. Furthermore, volcanic activity, including underwater volcanoes and hydrothermal vents, significantly impacts the landscape and ecosystem, necessitating their inclusion in any comprehensive model of underwater environments.
+
+To gather the data needed for such detailed modeling, advanced measurement techniques are employed. Sonar, including multi-beam echo sounders, and LIDAR (Light Detection and Ranging) are commonly used to capture detailed 3D data of underwater terrains. These technologies allow for the mapping of areas that are otherwise difficult to access, providing the foundational data necessary for accurate terrain generation. Remote sensing technologies also play a major role, enabling the collection of data over large and remote areas, further enhancing the model's accuracy.
+
+\subsubsection{Interdisciplinary data integration}
+
+Accurately modeling underwater landscapes requires more than just geological data; it necessitates an interdisciplinary approach that integrates biological and ecological data. Geological validation is an important step in this process, involving collaboration with geologists and marine scientists to ensure that the models are not only scientifically accurate but also reflective of real-world conditions. This validation process ensures that the generated models accurately depict the geological and biological features present in underwater environments.
+
+Biological data is also essential, particularly when modeling coral reefs and other marine ecosystems. Incorporating data on coral species, marine biodiversity, and ecosystem dynamics allows for the creation of realistic and biologically accurate representations. Additionally, the impact of biological processes, such as coral growth patterns and marine erosion, must be considered, as these factors significantly influence the terrain shape over time.
+
+However, one of the major challenges in modeling underwater landscapes is the scarcity of high-resolution data, especially in remote, protected or less studied areas. This data scarcity makes it difficult to create detailed and accurate models. Another challenge lies in the integration of diverse data types, geological, biological, hydrological, etc, into a cohesive and comprehensive model. Effective integration requires complex techniques to ensure that all aspects of the underwater environment are accurately represented.
+
+\subsubsection{Multi-scale modeling}
+
+Underwater landscapes are characterized by features that vary greatly in scale, from vast underwater mountains and ridges to small-scale elements like individual coral polyps and marine vegetation. This diversity in scale necessitates multi-scale modeling techniques that can accommodate both large and small features within the same model.
+
+Large-scale features, such as underwater mountains and ridges, define the macrostructure of the landscape. These must be integrated seamlessly with micro-scale features, such as detailed sedimentary textures and small coral formations, to ensure that the terrain is represented accurately across different scales.
+
+One of the key techniques used in multi-scale modeling is \gloss{LOD}, which involves adjusting the level of detail in the model based on factors like user interaction or viewing distance. Adaptive LOD techniques help balance the need for visual fidelity with the performance demands of rendering complex terrains. The goal is to preserve detail across scales, ensuring that both macro and micro features are represented without losing important details when the model is scaled or zoomed.
+
+Visualization techniques also play a crucial role in representing underwater landscapes accurately. Hydrographic mapping is one such technique, providing specialized methods to visualize underwater features clearly. Additionally, the use of textures and lighting that simulate underwater conditions, such as light absorption and scattering, enhances the realism of the model. These techniques help create visually accurate and scientifically meaningful representations of underwater environments.
+
+The procedural generation of underwater landscapes involves the integration of advanced 3D data collection techniques, interdisciplinary collaboration, and multi-scale modeling approaches. The unique challenges of modeling underwater environments, ranging from the complex structures of coral reefs to the accurate representation of geological and biological features, require new solutions that combine geological plausibility with visual realism. 
+
+
+% - 3D data: \\
+% ** Coral landscapes: addressing challenges in modeling coral reefs and underwater features. \\
+% ** Cavities: representing underwater caves and karst formations. \\
+% - Interdisciplinary data: \\
+% ** Geological validation: integrating expert knowledge for accurate modeling. \\
+% ** Challenges: fewer experts and more uncertainties in underwater environments. \\
+% ** Data scarcity: limited data availability for detailed underwater landscapes. \\
+% - Need for multi-scale: \\
+% ** Integration of large and small elements. \\
+% ** Level of Detail (LOD): Techniques for managing detail across different scales.
+
+% \subsubsection{3D data}
+% - Coral landscapes: \\
+% ** Complex structures: coral reefs feature complex 3D structures with intricate patterns including branching corals, coral mounds, and encrusting forms. These structures often have a high degree of variability and detail. \\
+% ** Void spaces: coral reefs contain many voids and cavities such as caves, grottos, and karst networks, adding to the complexity of modeling these environments. \\
+% ** Challenges: modeling coral reefs requires accurately representing the porous and irregular nature of coral formations, which can be challenging due to the high level of detail and variability. \\
+% - Geological features: \\
+% ** Sedimentary layers: representing sedimentary layers and underwater geological formations such as seamounts and underwater ridges. \\
+% ** Volcanic activity: incorporating features such as underwater volcanoes and hydrothermal vents, which affect the landscape and ecosystem. \\
+% - Measurement and data collection: \\
+% ** Sonar and LIDAR: using sonar (e.g., multi-beam echo sounders) and LIDAR (Light Detection and Ranging) to collect detailed 3D data of underwater terrain. \\
+% ** Remote sensing: utilizing remote sensing technologies to map and model underwater landscapes, especially in areas that are difficult to access.
+
+% \subsubsection{Interdisciplinary data}
+% - Geological validation: \\
+% ** Expert consultation: collaborating with geologists and marine scientists to validate and refine models based on real-world observations and data. \\
+% ** Data accuracy: ensuring that the generated models accurately reflect real underwater geological and biological features. \\
+% - Biological data: \\
+% ** Coral and marine life: integrating data on coral species, marine biodiversity, and ecosystem dynamics to create realistic and biologically accurate representations. \\
+% ** Ecological impact: considering the impact of various biological factors on the terrain, such as coral growth patterns and marine erosion. \\
+% - Challenges: \\
+% ** Data scarcity: limited availability of high-resolution data for some underwater environments, especially in less studied or remote areas. \\
+% ** Integration: combining geological, biological, and hydrological data effectively to create comprehensive and accurate models. 
+
+% \subsubsection{Multi-scale modeling}
+% - Large vs. small scale elements: \\
+% ** Macro features: incorporating large-scale features such as underwater mountains, ridges, and large coral formations. \\
+% ** Micro features: modeling small-scale elements such as individual coral polyps, marine vegetation, and detailed sedimentary textures. \\
+% - \Gloss{LOD} (LOD): \\
+% ** Adaptive LOD: using techniques to adjust the level of detail based on user interaction or view distance to balance performance and visual fidelity. \\
+% ** Detail preservation: ensuring that both macro and micro-scale features are accurately represented without losing important details during scaling or zooming. \\
+% - Visualization techniques: \\
+% ** Hydrographic mapping: employing specialized visualization techniques to represent underwater features clearly and accurately. \\
+% ** Texture and lighting: using textures and lighting models that simulate underwater conditions, such as light absorption and scattering in water.
 
 % - 3D Data \\
 % ** Coral landscapes filled with voids \\
@@ -243,62 +377,220 @@ Error Handling: Implementing robust error handling and recovery mechanisms addre
 % ** LOD \\
 % - ...
 
-\subsection{Fluid simulations}
-- ... 
-\subsubsection{Introduction to Fluid Simulations}
-- Definition and Purpose: \\
-** Overview: Explanation of fluid simulations and their role in representing natural phenomena in terrains, including water flow, erosion, and sediment transport. \\
-** Importance: Impact of accurate fluid simulations on creating realistic terrain and environmental models.\\
-\subsubsection{Types of Fluid Simulations}
-- 2D Fluid Simulations: \\
-** Particle-In-Cell (PIC): \\
-*** Concept: Combines particles with a grid to simulate fluid dynamics. \\
-*** Applications: Used for simpler simulations and visualizations. \\
-** Fluid-Implicit Particle (FLIP): \\
-*** Concept: A hybrid method that combines particle and grid approaches for better accuracy and efficiency. \\
-*** Applications: Suitable for capturing complex fluid behaviors in 2D environments. \\
-** Stable Fluids: \\
-*** Concept: A grid-based method for simulating stable, incompressible fluids with less computational complexity. \\
-*** Applications: Often used in interactive applications where real-time performance is crucial.\\
-- 3D Fluid Simulations: \\
-** Smoothed Particle Hydrodynamics (SPH): \\
-*** Concept: A particle-based method where fluid properties are represented by particles that interact based on smoothing kernels. \\
-*** Applications: Useful for highly detailed simulations of fluids, including interactions with terrain. \\
-** Grid-Based Methods: \\
-*** Concept: Methods like Marker-And-Cell (MAC) and Navier-Stokes equations applied on a grid to simulate fluid behavior. \\
-*** Applications: Used for detailed and accurate 3D simulations, including large-scale environments. \\
-** Hybrid Methods: \\
-*** Concept: Combining grid and particle approaches to leverage the strengths of both methods.\\
-*** Applications: Balancing detail and performance in complex simulations. 
+\section{Coral reefs (biological aspects)}
+\label{sec:state-of-the-art_biology}
+[BLA BLA BLA TODO]
 
-\subsubsection{Applications in Terrain Representation}
-- Erosion and Sediment Transport: \\
-** Simulation of Erosion: How fluid simulations model erosion processes affecting terrain features such as riverbeds and coastlines. \\
-** Sediment Movement: Modeling the transport and deposition of sediment, contributing to realistic terrain evolution. \\
-- Water Flow and Hydrology: \\
-** Surface Water Dynamics: Representing the flow of water across terrain surfaces, including rivers, lakes, and wetlands. \\
-** Subsurface Flow: Simulating groundwater movement and interactions with terrain features. \\
-- Interactive Environments: \\
-** Real-Time Simulations: Implementing fluid simulations in interactive applications, such as video games and virtual environments, where dynamic water interactions are crucial. 
+% Coral reefs are among the most vibrant and biologically diverse ecosystems on Earth. Understanding their formation, structure, and the critical roles they play in marine environments requires an interdisciplinary approach that spans historical, biological, and geological perspectives. This article delves into the biological aspects of coral reefs, exploring their historical discovery, structural formation, importance in biodiversity, the threats they face, and ongoing conservation efforts.
 
-\subsubsection{Challenges and Considerations}
-- Computational Resources: \\
-** Performance Trade-Offs: Balancing simulation accuracy with computational efficiency, especially for real-time applications. \\
-** Hardware Requirements: The need for powerful processors and memory to handle complex 3D fluid simulations. \\
-- Accuracy vs. Realism: \\
-** Detail vs. Performance: Finding the right balance between detailed fluid dynamics and the practical limitations of simulation resources. \\
-** Simulation Artifacts: Addressing potential artifacts or inaccuracies in simulations that can impact realism. \\
-- Integration with Terrain Models: \\
-** Interaction with Terrain: Ensuring fluid simulations integrate seamlessly with terrain models, including handling interactions such as fluid erosion or deposition. \\
-** Data Consistency: Maintaining consistency between simulated fluid behaviors and terrain features for accurate representations. 
+% \subsection{Historical discovery of coral reefs}
 
-\subsubsection{Recent Developments and Future Trends}
-- Advancements in Algorithms: \\
-** New Techniques: Emerging algorithms and methods that enhance the accuracy and efficiency of fluid simulations. \\
-** Real-Time Improvements: Innovations aimed at improving real-time performance and interactivity in fluid simulations. \\
-- Integration with AI and Machine Learning: \\
-** AI-Enhanced Simulations: Using machine learning to improve fluid simulation accuracy and adaptivity. \\
-** Predictive Models: Leveraging AI to predict and simulate complex fluid behaviors based on historical data. 
+% The knowledge of coral reefs has evolved significantly over centuries, beginning with early observations by ancient civilizations such as the Greeks and Romans, who were among the first to document coral structures. During the Age of Exploration, figures like Captain James Cook and naturalist Alexander von Humboldt contributed to the early documentation of coral reefs, highlighting their biodiversity and unique structures. The scientific understanding of coral reefs took a major leap forward in the 19th century, particularly with the work of Charles Darwin, who developed influential theories on the formation of coral reefs, including the concept of atoll formation. The 20th century saw further advances in marine biology and oceanography, deepening our understanding of coral reef ecosystems and their role in the marine environment.
+
+% \subsection{Coral reef structure and formation}
+
+% Coral reefs are formed by the accumulation of calcium carbonate, primarily secreted by coral polyps, which are tiny, soft-bodied organisms. These polyps live in colonies and work together to build the massive structures we recognize as coral reefs. There are several types of coral reefs, each with distinct characteristics. Fringing reefs are directly attached to coastlines and extend outward into shallow waters, often featuring a narrow reef crest and slope. Barrier reefs run parallel to the coastline but are separated from it by a lagoon or deep channel, typically forming in deeper waters and with more pronounced lagoons. Atolls are circular or oval reefs that encircle a lagoon, often forming around a submerged volcanic island, creating a ring-like structure with no central landmass.
+
+% The process of reef building is complex and involves both the deposition of calcium carbonate by living organisms and bioerosion, where marine creatures such as parrotfish and sea urchins erode the reef structure. This natural balance between construction and erosion is essential for the maintenance and growth of coral reefs over time.
+
+% \subsection{Importance in biodiversity}
+
+% Coral reefs are critical hotspots of marine biodiversity, supporting thousands of species, including fish, invertebrates, and algae. The structural complexity of coral reefs provides numerous niches and habitats, fostering high levels of species diversity and endemism—many species found in coral reefs exist nowhere else in the world. Beyond their ecological significance, coral reefs play crucial roles in ecosystem services. They provide essential habitats for a wide range of marine species, including those that are commercially important. Coral reefs also play a vital role in nutrient cycling, which is crucial for the productivity and health of the broader marine ecosystem.
+
+% Economically, coral reefs are invaluable. They support fisheries that millions of people depend on for food and livelihood, and they are major attractions for tourism, generating significant revenue. Moreover, coral reefs hold cultural and spiritual significance for many coastal communities, forming an integral part of their traditions and practices.
+
+% \subsection{Threats to coral reefs}
+
+% Despite their importance, coral reefs are under severe threat from a variety of factors. Climate change is one of the most significant threats, with rising sea temperatures leading to coral bleaching, where corals expel the symbiotic algae that provide them with energy, often resulting in widespread coral mortality. Ocean acidification, driven by increased levels of carbon dioxide, further impacts coral growth by reducing calcification rates, weakening reef structures.
+
+% Pollution also poses a grave danger to coral reefs. Nutrient runoff from agriculture and urban areas can lead to algal blooms that smother corals, while marine debris, particularly plastics, can cause physical damage and harm marine life. Overfishing exacerbates the problem by depleting fish stocks that are crucial for maintaining the ecological balance of reef ecosystems. Destructive fishing practices, such as blast fishing and cyanide fishing, cause direct physical damage to coral reefs, further threatening their survival.
+
+% Coastal development contributes to the degradation of coral reefs through habitat destruction and increased sedimentation. Activities such as dredging, land reclamation, and construction can destroy or degrade coral habitats, while sediment runoff from deforestation and construction reduces light availability, which is essential for coral health and growth.
+
+% \subsection{Conservation efforts}
+
+% In response to these threats, numerous conservation efforts are underway to protect and restore coral reefs. Marine Protected Areas (MPAs) are designated zones where human activities are regulated or restricted to protect coral reefs and promote their recovery. There are several success stories where the implementation of MPAs has led to significant improvements in reef health and biodiversity.
+
+% Restoration projects are also playing a vital role in coral reef conservation. Techniques such as coral gardening, where corals are grown in nurseries and then transplanted to damaged reefs, have shown promise in restoring reef structures. Artificial reefs, created by sinking ships, placing concrete structures, or using other materials, provide new habitats for marine life and can help jumpstart reef recovery.
+
+% Community involvement is crucial for the success of these conservation efforts. Engaging local communities through education, stewardship, and sustainable practices helps ensure that conservation measures are culturally appropriate and effective. Citizen science initiatives, where members of the public participate in monitoring and research, have also been instrumental in gathering data and raising awareness about the importance of coral reefs.
+
+% At the policy level, international agreements like the Convention on Biological Diversity and national regulations play a critical role in safeguarding coral reefs. These policies aim to address global issues such as climate change and marine pollution, which are central to the long-term survival of coral reefs.
+
+% \subsection{Future research and monitoring}
+
+% Looking ahead, ongoing research and monitoring are essential for understanding and mitigating the impacts of environmental changes on coral reefs. Innovative technologies, such as remote sensing using satellite imagery and drones, are increasingly being used to monitor reef health and track changes over time. Genomics is another promising area, offering insights into coral resilience and adaptation to environmental stressors, which could inform future conservation strategies.
+
+% Adaptive management strategies are needed to respond dynamically to changing conditions and emerging threats. This requires collaboration among scientists, policymakers, and local communities to develop and implement effective conservation measures. Public education and awareness are also key components of this effort, as they help foster a broader understanding of the importance of coral reefs and the actions individuals can take to support their preservation.
+
+% Coral reefs are vital ecosystems that require a multifaceted approach to conservation. By integrating historical knowledge, scientific research, and community engagement, we can work towards safeguarding these critical environments for future generations.
+
+% - Historical discovery: evolution of knowledge about coral reefs. \\
+% - Types of coral reefs: \\
+% ** Islands, barriers, atolls: different forms and structures of coral reefs. \\
+% - Atoll theories: historical and scientific theories explaining the formation of atolls. \\
+% - Importance in biodiversity: coral reefs as critical ecosystems with high marine biodiversity. \\
+% - Threats and protection: current threats to coral reefs and conservation efforts.
+
+% \subsection{Historical discovery of coral reefs}
+% - ... 
+% \subsubsection{Early observations}
+% - Ancient knowledge: initial observations by ancient civilizations (e.g., Greeks, Romans) and their interpretations of coral structures. \\
+% - Exploration era: the role of early explorers and naturalists (e.g., Captain James Cook, Alexander von Humboldt) in documenting coral reefs and their biodiversity.
+% \subsubsection{Scientific discovery}
+% - 19th century advances: key contributions from scientists such as Charles Darwin, who developed theories on coral reef formation. \\
+% - 20th century developments: advances in marine biology and oceanography that improved understanding of coral reef ecosystems.
+
+% \subsection{Coral reef structure and formation}
+% - ... 
+% \subsubsection{Coral anatomy}
+% - Coral polyps: basic building blocks of coral reefs, their structure, and function. Each polyp is a tiny, soft-bodied organism that secretes calcium carbonate to form the reef structure. \\
+% - Coral colonies: how individual polyps form colonies and contribute to the growth of the reef structure. 
+% \subsubsection{Types of coral reefs}
+% - Fringing reefs: \\
+% ** Definition: reefs that are directly attached to a coastline, extending out from the shore. \\
+% ** Characteristics: shallow waters, often with a narrow reef crest and slope. \\
+% - Barrier reefs: \\
+% ** Definition: reefs that run parallel to the coastline but are separated by a lagoon or deep channel. \\
+% ** Characteristics: typically found farther from the shore, with a more pronounced lagoon and deeper water. \\
+% - Atolls: \\
+% ** Definition: circular or oval reefs that encircle a lagoon, often formed around a submerged volcanic island. \\
+% ** Characteristics: reefs form a ring around a central lagoon, with no land in the center. 
+% \subsubsection{Reef building processes}
+% - Calcium carbonate deposition: the process by which corals and other organisms secrete calcium carbonate to build the reef structure. \\
+% - Bioerosion: the natural process by which reef structures are eroded by marine organisms such as parrotfish and sea urchins.
+
+% \subsection{Importance in biodiversity}
+% - ... 
+% \subsubsection{Species diversity}
+% - Marine life: coral reefs are among the most diverse ecosystems in the world, supporting thousands of marine species including fish, invertebrates, and algae. \\
+% - Endemism: many species are found exclusively in coral reef environments, contributing to global biodiversity.
+% \subsubsection{Ecosystem services}
+% - Habitat provision: coral reefs provide essential habitats for a wide range of marine species, including commercially important fish and invertebrates. \\
+% - Nutrient cycling: reefs play a critical role in nutrient cycling, supporting the productivity of marine ecosystems. 
+% \subsubsection{Economic and cultural value}
+% - Fishing and tourism: coral reefs support important fisheries and generate significant revenue through tourism and recreational activities. \\
+% - Cultural significance: many coastal communities have cultural and spiritual connections to coral reefs, incorporating them into traditions and practices.
+
+% \subsection{Threats to coral reefs}
+% - ... 
+% \subsubsection{Climate change}
+% - Coral bleaching: caused by elevated sea temperatures, leading to the expulsion of symbiotic algae (zooxanthellae) and subsequent coral bleaching. \\
+% - Ocean acidification: reduced calcification rates due to increased \ch{CO2} levels, impacting coral growth and reef structure.
+% \subsubsection{Pollution}
+% - Nutrient runoff: increased nutrient levels from agricultural and urban runoff can lead to algal blooms that smother corals and disrupt reef balance. \\
+% - Marine debris: pollution from plastics and other debris that can damage coral reefs and harm marine life.
+% \subsubsection{Overfishing}
+% - Depletion of fish stocks: overfishing can lead to the loss of key reef species and disrupt ecological balance. \\
+% - Destructive fishing practices: practices such as blast fishing and cyanide fishing cause direct physical damage to reefs and harm marine biodiversity. 
+% \subsubsection{Coastal development}
+% - Habitat destruction: development activities such as dredging, land reclamation, and construction can destroy or degrade coral reef habitats. \\
+% - Sedimentation: increased sedimentation from coastal construction and deforestation can smother corals and reduce light availability.
+
+% \subsection{Conservation efforts}
+% - ... 
+% \subsubsection{Marine Protected Areas (MPAs)}
+% - Designated zones: areas where human activities are regulated or restricted to protect coral reefs and promote recovery. \\
+% - Success stories: examples of successful MPA implementations and their positive impacts on reef health and biodiversity.
+% \subsubsection{Restoration projects}
+% - Coral gardening: techniques for growing and replanting corals to restore damaged reef areas. \\
+% - Artificial reefs: creation of artificial structures to provide new habitats for marine life and promote reef recovery.
+% \subsubsection{Community involvement}
+% - Local engagement: involving local communities in reef conservation through education, stewardship, and sustainable practices. \\
+% - Citizen science: encouraging public participation in monitoring and research efforts to support reef conservation. 
+% \subsubsection{Policy and legislation}
+% - International agreements: global and regional agreements aimed at protecting coral reefs and addressing climate change impacts (e.g., the Convention on Biological Diversity). \\
+% - National policies: policies and regulations at the national level to safeguard coral reefs and manage marine resources sustainably. 
+
+% \subsection{Future research and monitoring}
+% - ... 
+% \subsubsection{Innovative technologies}
+% - Remote sensing: use of satellite imagery and drones to monitor reef health and track changes over time. \\
+% - Genomics: applying genetic research to understand coral resilience and adaptation to environmental stressors. 
+% \subsubsection{Adaptive management}
+% - Dynamic strategies: developing flexible management approaches that can adapt to changing conditions and emerging threats. \\
+% - Collaboration: promoting collaboration among scientists, policymakers, and local communities to address complex challenges facing coral reefs.
+% \subsubsection{Education and awareness}
+% - Public outreach: raising awareness about the importance of coral reefs and the actions individuals can take to support conservation efforts. \\
+% - Training programs: providing training for scientists, managers, and local stakeholders to enhance reef management and restoration practices.
+
+
+\section{Fluid simulations}
+
+Fluid simulations are inevitable in representing natural phenomena in terrain generation, particularly in modeling water flow, erosion, and sediment transport. These simulations are used for creating realistic and dynamic environmental models that accurately reflect the interactions between fluids and terrain. The ability to simulate fluid behaviors such as river currents, coastal erosion, and sediment deposition is fundamental to producing realistic terrains.
+
+Fluid simulations can be categorized into various methods, each with its unique applications. Techniques like Particle-In-Cell (PIC), Fluid-Implicit Particle (FLIP), and Stable Fluids are commonly used to simulate fluid dynamics. PIC combines particles with a grid to offer a straightforward approach for basic fluid simulations and visualizations. FLIP builds on the PIC method by enhancing accuracy and efficiency through a hybrid approach that merges particle and grid techniques, making it suitable for complex fluid behaviors. Stable Fluids, a grid-based method, is designed for simulating stable, incompressible fluids with minimal computational complexity, often used in interactive applications where real-time rendering is required.
+
+More sophisticated methods include Smoothed Particle Hydrodynamics (SPH) and Marker-And-Cell (MAC). SPH is a particle-based method where fluid properties are represented by particles that interact based on smoothing kernels, useful for detailed simulations, including interactions between fluids and terrain. MAC and other grid-based approaches use a grid to simulate fluid behavior, providing detailed and accurate representations suitable for various scales of environments. Hybrid methods combine the strengths of grid and particle approaches, balancing the need for detail with performance requirements in complex simulations.
+
+Fluid simulations are integral to terrain representation, particularly in modeling erosion and sediment transport. These simulations allow for the realistic modeling of erosion processes, which affect terrain features like riverbeds and valleys over time. By simulating how fluids interact with the terrain, these models can show how sediment is moved and deposited, contributing to the natural evolution of the landscape. Water flow and hydrology are other applications of fluid simulations in terrain generation. Simulating surface water dynamics, such as the flow of rivers, lakes, and wetlands, helps create realistic environments where water interacts dynamically with the terrain. 
+% Additionally, subsurface flow simulations model groundwater movement and its interactions with surface features, adding another layer of realism to the terrain.
+
+% In interactive environments, such as video games and virtual simulations, real-time fluid simulations are crucial for creating dynamic water interactions. These simulations enable the depiction of responsive and changing environments, where water flow can be influenced by user actions or environmental conditions, enhancing the immersive experience.
+
+Despite their importance, fluid simulations come with significant challenges and considerations. One of the primary concerns is the computational resources required to run accurate and detailed simulations. Performance trade-offs are often necessary, especially in real-time applications where the simulation must balance accuracy with computational efficiency. Complex 3D fluid simulations require powerful hardware, including advanced processors and substantial memory, to handle the intensive calculations involved.
+
+Another challenge lies in balancing accuracy with realism. While detailed fluid dynamics can produce highly realistic simulations, they often come at the cost of performance. Simulation artifacts, or inaccuracies, can also impact the perceived realism of the terrain, requiring careful attention to detail in the modeling process. Integrating fluid simulations with terrain models presents its own set of challenges. Ensuring that fluids interact seamlessly with the terrain, such as through fluid erosion or sediment deposition, requires sophisticated techniques to maintain consistency between the simulated fluid behaviors and the terrain features.
+
+Recent developments in fluid simulation technology have focused on enhancing both the accuracy and efficiency of these simulations. Advancements in algorithms have led to new techniques that improve the realism and computational performance of fluid models. There has also been significant progress in real-time fluid simulation, with innovations aimed at improving interactivity.
+
+The integration of Deep Learning and Machine Learning into fluid simulations represents a recent trend in this field. AI-enhanced simulations use machine learning to refine fluid simulation accuracy and adaptivity, enabling more realistic and responsive environments. Predictive models, powered by AI, can simulate complex fluid behaviors based on historical data, offering new possibilities for dynamic and evolving terrain representations.
+
+
+
+% - Definition and purpose: \\
+% ** Overview: explanation of fluid simulations and their role in representing natural phenomena in terrains, including water flow, erosion, and sediment transport. \\
+% ** Importance: impact of accurate fluid simulations on creating realistic terrain and environmental models.\\
+% \subsection{Types of fluid simulations}
+% - 2D fluid simulations: \\
+% ** Particle-In-Cell (PIC): \\
+% *** Concept: combines particles with a grid to simulate fluid dynamics. \\
+% *** Applications: used for simpler simulations and visualizations. \\
+% ** Fluid-Implicit Particle (FLIP): \\
+% *** Concept: a hybrid method that combines particle and grid approaches for better accuracy and efficiency. \\
+% *** Applications: suitable for capturing complex fluid behaviors in 2D environments. \\
+% ** Stable Fluids: \\
+% *** Concept: a grid-based method for simulating stable, incompressible fluids with less computational complexity. \\
+% *** Applications: often used in interactive applications where real-time performance is crucial.\\
+% - 3D fluid simulations: \\
+% ** Smoothed Particle Hydrodynamics (SPH): \\
+% *** Concept: a particle-based method where fluid properties are represented by particles that interact based on smoothing kernels. \\
+% *** Applications: useful for highly detailed simulations of fluids, including interactions with terrain. \\
+% ** Grid-based methods: \\
+% *** Concept: methods like Marker-And-Cell (MAC) and Navier-Stokes equations applied on a grid to simulate fluid behavior. \\
+% *** Applications: used for detailed and accurate 3D simulations, including large-scale environments. \\
+% ** Hybrid methods: \\
+% *** Concept: combining grid and particle approaches to leverage the strengths of both methods.\\
+% *** Applications: balancing detail and performance in complex simulations. 
+
+% \subsection{Applications in terrain representation}
+% - Erosion and sediment transport: \\
+% ** Simulation of erosion: how fluid simulations model erosion processes affecting terrain features such as riverbeds and coastlines. \\
+% ** Sediment movement: modeling the transport and deposition of sediment, contributing to realistic terrain evolution. \\
+% - Water flow and hydrology: \\
+% ** Surface water dynamics: representing the flow of water across terrain surfaces, including rivers, lakes, and wetlands. \\
+% ** Subsurface flow: simulating groundwater movement and interactions with terrain features. \\
+% - Interactive environments: \\
+% ** Real-time simulations: implementing fluid simulations in interactive applications, such as video games and virtual environments, where dynamic water interactions are crucial. 
+
+% \subsection{Challenges and considerations}
+% - Computational resources: \\
+% ** Performance trade-offs: balancing simulation accuracy with computational efficiency, especially for real-time applications. \\
+% ** Hardware requirements: the need for powerful processors and memory to handle complex 3D fluid simulations. \\
+% - Accuracy vs. realism: \\
+% ** Detail vs. performance: finding the right balance between detailed fluid dynamics and the practical limitations of simulation resources. \\
+% ** Simulation artifacts: addressing potential artifacts or inaccuracies in simulations that can impact realism. \\
+% - Integration with terrain models: \\
+% ** Interaction with terrain: ensuring fluid simulations integrate seamlessly with terrain models, including handling interactions such as fluid erosion or deposition. \\
+% ** Data consistency: maintaining consistency between simulated fluid behaviors and terrain features for accurate representations. 
+
+% \subsection{Recent developments and future trends}
+% - Advancements in algorithms: \\
+% ** New techniques: emerging algorithms and methods that enhance the accuracy and efficiency of fluid simulations. \\
+% ** Real-time improvements: innovations aimed at improving real-time performance and interactivity in fluid simulations. \\
+% - Integration with Deep Learning and Machine Learning: \\
+% ** AI-enhanced simulations: using machine learning to improve fluid simulation accuracy and adaptivity. \\
+% ** Predictive models: leveraging AI to predict and simulate complex fluid behaviors based on historical data. 
 
 % - Very important in procedural terrain generation \\
 % - Allows justifying the geophysics of a simulation/generation \\
@@ -306,93 +598,24 @@ Error Handling: Implementing robust error handling and recovery mechanisms addre
 % - But becomes much heavier and memory-intensive in 3D \\
 % - ...
 
-\section{Coral reefs (biological aspects)}
-\label{sec:state-of-the-art_biology}
-- Historical Discovery: Evolution of knowledge about coral reefs. \\
-- Types of Coral Reefs: \\
-** Islands, Barriers, Atolls: Different forms and structures of coral reefs. \\
-- Atoll Theories: Historical and scientific theories explaining the formation of atolls. \\
-- Importance in Biodiversity: Coral reefs as critical ecosystems with high marine biodiversity. \\
-- Threats and Protection: Current threats to coral reefs and conservation efforts.
 
-\subsection{Historical Discovery of Coral Reefs}
-- ... 
-\subsubsection{Early Observations}
-- Ancient Knowledge: Initial observations by ancient civilizations (e.g., Greeks, Romans) and their interpretations of coral structures. \\
-- Exploration Era: The role of early explorers and naturalists (e.g., Captain James Cook, Alexander von Humboldt) in documenting coral reefs and their biodiversity.
-\subsubsection{Scientific Discovery}
-- 19th Century Advances: Key contributions from scientists such as Charles Darwin, who developed theories on coral reef formation. \\
-- 20th Century Developments: Advances in marine biology and oceanography that improved understanding of coral reef ecosystems.
 
-\subsection{Coral Reef Structure and Formation}
-- ... 
-\subsubsection{Coral Anatomy}
-- Coral Polyps: Basic building blocks of coral reefs, their structure, and function. Each polyp is a tiny, soft-bodied organism that secretes calcium carbonate to form the reef structure. \\
-- Coral Colonies: How individual polyps form colonies and contribute to the growth of the reef structure. 
-\subsubsection{Types of Coral Reefs}
-- Fringing Reefs: \\
-** Definition: Reefs that are directly attached to a coastline, extending out from the shore. \\
-** Characteristics: Shallow waters, often with a narrow reef crest and slope. \\
-- Barrier Reefs: \\
-** Definition: Reefs that run parallel to the coastline but are separated by a lagoon or deep channel. \\
-** Characteristics: Typically found farther from the shore, with a more pronounced lagoon and deeper water. \\
-- Atolls: \\
-** Definition: Circular or oval reefs that encircle a lagoon, often formed around a submerged volcanic island. \\
-** Characteristics: Reefs form a ring around a central lagoon, with no land in the center. 
-\subsubsection{Reef Building Processes}
-- Calcium Carbonate Deposition: The process by which corals and other organisms secrete calcium carbonate to build the reef structure. \\
-- Bioerosion: The natural process by which reef structures are eroded by marine organisms such as parrotfish and sea urchins.
-
-\subsection{Importance in Biodiversity}
-- ... 
-\subsubsection{Species Diversity}
-- Marine Life: Coral reefs are among the most diverse ecosystems in the world, supporting thousands of marine species including fish, invertebrates, and algae. \\
-- Endemism: Many species are found exclusively in coral reef environments, contributing to global biodiversity.
-\subsubsection{Ecosystem Services}
-- Habitat Provision: Coral reefs provide essential habitats for a wide range of marine species, including commercially important fish and invertebrates. \\
-- Nutrient Cycling: Reefs play a critical role in nutrient cycling, supporting the productivity of marine ecosystems. 
-\subsubsection{Economic and Cultural Value}
-- Fishing and Tourism: Coral reefs support important fisheries and generate significant revenue through tourism and recreational activities. \\
-- Cultural Significance: Many coastal communities have cultural and spiritual connections to coral reefs, incorporating them into traditions and practices.
-
-\subsection{Threats to coral reefs}
-- ... 
-\subsubsection{Climate Change}
-- Coral Bleaching: Caused by elevated sea temperatures, leading to the expulsion of symbiotic algae (zooxanthellae) and subsequent coral bleaching. \\
-- Ocean Acidification: Reduced calcification rates due to increased \ch{CO2} levels, impacting coral growth and reef structure.
-\subsubsection{Pollution}
-- Nutrient Runoff: Increased nutrient levels from agricultural and urban runoff can lead to algal blooms that smother corals and disrupt reef balance. \\
-- Marine Debris: Pollution from plastics and other debris that can damage coral reefs and harm marine life.
-\subsubsection{Overfishing}
-- Depletion of Fish Stocks: Overfishing can lead to the loss of key reef species and disrupt ecological balance. \\
-- Destructive Fishing Practices: Practices such as blast fishing and cyanide fishing cause direct physical damage to reefs and harm marine biodiversity. 
-\subsubsection{Coastal Development}
-- Habitat Destruction: Development activities such as dredging, land reclamation, and construction can destroy or degrade coral reef habitats. \\
-- Sedimentation: Increased sedimentation from coastal construction and deforestation can smother corals and reduce light availability.
-
-\subsection{Conservation efforts}
-- ... 
-\subsubsection{Marine Protected Areas (MPAs)}
-- Designated Zones: Areas where human activities are regulated or restricted to protect coral reefs and promote recovery. \\
-- Success Stories: Examples of successful MPA implementations and their positive impacts on reef health and biodiversity.
-\subsubsection{Restoration Projects}
-- Coral Gardening: Techniques for growing and replanting corals to restore damaged reef areas. \\
-- Artificial Reefs: Creation of artificial structures to provide new habitats for marine life and promote reef recovery.
-\subsubsection{Community Involvement}
-- Local Engagement: Involving local communities in reef conservation through education, stewardship, and sustainable practices. \\
-- Citizen Science: Encouraging public participation in monitoring and research efforts to support reef conservation. 
-\subsubsection{Policy and Legislation}
-- International Agreements: Global and regional agreements aimed at protecting coral reefs and addressing climate change impacts (e.g., the Convention on Biological Diversity). \\
-- National Policies: Policies and regulations at the national level to safeguard coral reefs and manage marine resources sustainably. 
-
-\subsection{Future Research and Monitoring}
-- ... 
-\subsubsection{Innovative Technologies}
-- Remote Sensing: Use of satellite imagery and drones to monitor reef health and track changes over time. \\
-- Genomics: Applying genetic research to understand coral resilience and adaptation to environmental stressors. 
-\subsubsection{Adaptive Management}
-- Dynamic Strategies: Developing flexible management approaches that can adapt to changing conditions and emerging threats. \\
-- Collaboration: Promoting collaboration among scientists, policymakers, and local communities to address complex challenges facing coral reefs.
-\subsubsection{Education and Awareness}
-- Public Outreach: Raising awareness about the importance of coral reefs and the actions individuals can take to support conservation efforts. \\
-- Training Programs: Providing training for scientists, managers, and local stakeholders to enhance reef management and restoration practices.
+\section{Prototype creation}
+\label{sec:introduction_prototype}
+- C++23 and Qt5.12 \\
+- OpenGL 4.6 and GLSL \\
+- Marching Cubes on geometry shader \\
+** Bad idea, but justify why \\
+- Renderings: \\
+** With the prototype: \\
+*** Marching Cubes on geometry shader \\
+*** Triplanar texture \\
+*** Real-time results \\
+*** Textures based on materials \\
+** With Unreal Engine 5: \\
+*** Static meshes \\
+*** Added procedural vegetation with plugin [PLUGIN NAME] and ocean with [PLUGIN NAME] \\
+** With Blender 4.1: \\
+*** Static meshes \\
+*** Easier script usage \\
+- ...
