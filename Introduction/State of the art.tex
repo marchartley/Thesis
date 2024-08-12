@@ -4,7 +4,107 @@
 
 % - ...
 
-\section{Procedural generation and terrain generation}
+\section{Terrain representations}
+\label{sec:state-of-the-art_terrain-representations}
+
+\subsection{What are we calling "terrain"?}
+- ... 
+
+\subsection{Virtual terrain representations}
+A terrain can be represented in various ways, each of them suited for a given application of which we give an brief overview, more details can be found in \cite{Galin2019}.
+
+\subsubsection{Elevation models}
+
+Elevation models are a fundamental approach in terrain representation, widely used in procedural generation due to their simplicity and efficiency. These models define the terrain as a function $h : \R^2 \to \R$, where each point in a 2D plane is mapped to an elevation value. This approach is particularly effective for representing terrains where the elevation is the only varying factor, such as hills, valleys, and plateaus, and it is best suited for terrains without complex 3D features like overhangs or caves. While we visualize elevation models in three dimensions, they are mathematically considered two-dimensional functions. In the domain of terrain generation, we will name them 2.5D models.
+
+Elevation models are widely used in industries where large-scale terrain representation is crucial. In video games, they provide the foundation for creating expansive open-world environments. In geographic information systems (GIS) and remote sensing, height fields are used to represent real-world terrain data, offering a practical means of visualizing and analyzing geographical features. The ability to manipulate and control terrain features procedurally makes elevation models a common choice for applications that require efficient terrain generation and rendering.
+
+They offer a powerful method for representing terrains in procedural generation, combining simplicity with flexibility. While they have limitations in representing complex 3D structures, their efficiency and compatibility with existing algorithms make them indispensable in a variety of applications.
+
+\subsubsubsection{Implicit height fields}
+Implicit height fields represent the terrain as a mathematical function that provides a height value at any given point in the domain. These functions can be procedural or closed-form expressions, allowing for compact storage and infinite precision in theory. The elevation function allows for easy manipulation of terrain features, making it ideal for generating terrains that require smooth, continuous surfaces. However, the primary disadvantage is the computational complexity involved in evaluating the function, especially for large or highly detailed terrains. The challenge lies in constructing functions that can realistically represent large-scale terrains with complex landforms.
+
+\subsubsubsection{Discrete height fields}
+Discrete height fields, or explicit height fields, are one of the most prevalent methods for terrain representation. These models consist of a 2D grid where each cell contains a height value, representing the elevation at that point. Height fields are particularly advantageous because they are simple to implement and are directly compatible with many rendering techniques and hardware, but also due to their closeness with image processing, a domain studied for many decades now.
+
+The main advantage of height fields is their ability to handle large datasets efficiently, providing a balance between memory usage and detail. However, they are limited by their inability to represent terrains with overhangs or caves, as each point on the grid can only hold a single elevation value. Additionally, height fields often require interpolation methods, such as bi-linear or bi-cubic interpolation, to reconstruct a continuous surface from the discrete grid points. 
+% While this allows for smooth terrain surfaces, it can introduce artifacts at grid boundaries and requires careful handling to maintain realism.
+
+\subsubsection{Volumetric models}
+Volumetric models represent a more complex approach to terrain modeling, allowing for the depiction of 3D features that go beyond the simple surface-based representation provided by elevation models. These models capture not only the surface of the terrain but also its internal structure, making them ideal for representing terrains with overhangs, caves, and other subsurface features. Volumetric models are defined by a function $\mu : \R^3 \to M$, where $M$ denotes the material type at any given point in 3D space. This allows for a detailed representation of the terrain's internal composition, which can be crucial for applications requiring realistic geological simulations.
+
+Volumetric models, including layered materials, voxel grids, and implicit models, are essential in applications where terrain complexity and detail are primordial. In geological simulations, these models allow for accurate representation of subsurface structures and processes. Voxel models are widely used in games that require dynamic terrain deformation, providing a rich interactive environment for players. Implicit models are favored in situations where smooth, continuous surfaces are needed [FIND OTHER USE CASES].
+
+\subsubsubsection{Function volumetric models}
+Implicit models represent the terrain using an implicit surface, which is defined as the zero-level set of a continuous field function $f : \R^3 \to \R$. The terrain surface is the set of points where this field function equals zero. This approach allows for the smooth representation of complex 3D shapes and is particularly well-suited for modeling continuous, organic structures like rolling hills, caves, and natural arches. Implicit models are flexible and can represent terrains with overhangs and tunnels, which are challenging for height field-based models.
+
+One of the key advantages of implicit models is their ability to produce smooth surfaces without the need for discrete polygonal meshes, which can result in realistic and natural-looking terrains. However, the computational complexity of evaluating the implicit function, especially for large terrains, can be a significant drawback. Additionally, converting an implicit surface into a mesh for rendering can be challenging and resource-intensive.
+
+\subsubsubsection{Layered models}
+Layered models are a type of volumetric representation that encode different material layers within the terrain. Each layer is defined by its thickness or elevation, and multiple layers can be stacked to represent complex geological formations. These layers might include materials like bedrock, sand, soil, or water, each contributing to the overall structure of the terrain. Layered models are particularly useful in simulations that involve processes like erosion or sedimentation, where the interaction between different material layers are affect the physical process.
+
+The primary advantage of layered models is their ability to represent a stratified terrain with distinct material properties, which can be manipulated individually. This makes them well-suited for simulations that require detailed geological accuracy. However, they are more complex to implement than simple elevation models and require additional computational resources to manage the interactions between layers. 
+
+
+\subsubsubsection{Voxel grid models}
+Voxel grids are a common method for representing 3D terrains in procedural generation, offering the ability to capture complex internal structures and features that are difficult or impossible to represent with surface-based models. In a voxel grid, the 3D space is divided into a regular grid of small, cube-shaped elements called voxels (volumetric pixels). Each voxel holds information about the material or properties of the terrain at that specific point in space. This approach allows for detailed modeling of features such as caves, tunnels, overhangs, and intricate underground networks. The regular grid structure allows for the use of image processing-oriented algorithms.
+
+There are two primary types of voxel grids used in terrain representation: binary voxel grids and density voxel grids. Each has distinct characteristics, advantages, and limitations, making them suitable for different applications. Binary voxel grids are the simplest form of voxel representation. In these grids, each voxel is either "filled" or "empty," representing the presence or absence of material. This binary state is typically represented by a 1 (filled) or 0 (empty). Binary voxel grids are straightforward to implement and require much less memory compared to more complex voxel representations, making them ideal for applications where the primary concern is whether a space is occupied or not.
+
+The simplicity of binary voxel grids is one of their main advantages. They are easy to understand and visualize, with each voxel requiring only a single bit of information to represent its state. Additionally, because only a binary state is stored, these grids can be memory-efficient when combined with compression techniques like Sparse Voxel Octrees (SVOs). The simplicity of the data structure also allows for quick processing, making binary voxel grids suitable for real-time applications where performance is required. However, the binary nature of these grids limits their ability to represent variations in material density or properties, or even smoothness, resulting in less detailed terrain models. This can lead to hard, blocky edges in the terrain, which may appear unnatural without additional smoothing or processing.
+
+Binary voxel grids are commonly used in applications where simple occupancy information is sufficient. For example, voxel-based games like Minecraft utilize binary grids to create terrains composed of solid blocks with clear boundaries. These grids are also employed in scientific simulations where the primary concern is the presence or absence of materials, rather than detailed material properties. [TRANSFORM TO MATERIAL-VOXELS]
+
+On the other hand, density voxel grids allow each voxel to store a range of values, representing varying degrees of material presence. Instead of a simple binary state, a density voxel grid assigns a scalar value to each voxel, which can represent material density, opacity, or other properties. This added complexity enables density voxel grids to represent subtle variations in terrain, such as gradual changes in material density or smooth transitions between solid and empty spaces, allowing for more realistic and natural-looking terrain models.
+
+% The use of density voxel grids results in soft transitions and smooth surfaces, reducing the blockiness typically associated with binary voxel grids. They are versatile and can represent not only solid terrain but also phenomena like fog, fluid densities, or temperature gradients. However, the increased detail and realism come at the cost of greater complexity. Density voxel grids require more memory and computational power, making them more challenging to implement and manage. The additional data and processing required can also lead to slower performance, particularly in real-time applications.
+
+Density voxel grids are often used in high-fidelity simulations where detail and realism are essential. They are found in applications such as medical imaging, scientific visualizations, and advanced terrain modeling for films and visual effects. These grids are also employed in procedural terrain generation systems that require smooth and natural transitions between different terrain features, such as caves, cliffs, and eroded landscapes.
+
+\subsection{Terrain manipulation}
+- ... 
+
+% - ...
+
+% \subsection{2.5D terrains}
+% - ...
+
+% \subsubsection{Height maps}
+% - ...
+
+% \subsubsection{Height functions}
+% - ...
+
+% \subsection{3D terrains}
+% - Need for 3D concepts \\
+% ** Geological information \\
+% ** Volumetric data \\
+% - ...
+
+% \subsubsection{Main issues}
+% - Memory \\
+% - Visualization \\
+% - Modifications \\
+% - Conversion between representations \\
+% ** Information loss \\
+% *** Error propagation on geometry (approximations on normals, Z resolution, surface, etc.) \\
+% *** Loss of subsurface information \\
+% - ...
+
+% \subsubsection{Types, definitions, advantages, disadvantages}
+% - Voxel grids \\
+% - Material stacks \\
+% - Meshes \\
+% - Implicit surfaces \\
+% - Implicit materials \\
+% - ...
+
+% \subsection{Other models}
+% - Concept of semantics \\
+% - ...
+
+
+\section{Procedural terrain generation}
 \label{sec:state-of-the-art_procedural-generation}
 Procedural generation is a method used in computer science to create data algorithmically rather than manually, enabling the automatic generation of large amounts of content with minimal human input. This approach is crucial in fields such as game development, where it helps create expansive, varied worlds, and in simulations or data generation where diverse scenarios or datasets are needed. The process typically involves defining rules and algorithms that dictate how content is generated, ensuring it meets specific criteria and patterns, often incorporating randomness through noise functions to produce unique results each time. Incorporating adjustable parameters and customizable rules in the algorithms allows users to influence the characteristics and outcomes of the generated content. This method enhances efficiency, creativity, and scalability in digital content creation, but the main challenges are ensuring the generated content from a single algorithm is both diverse and coherent and achieving a balance between speed, realism and control to satisfy the desired design and quality.
 
@@ -51,7 +151,7 @@ Computer technology improvements have played a crucial role in the evolution of 
 
 % Looking to the future, current trends in procedural generation include hybrid approaches that combine procedural techniques with manual design to balance complexity and artistic control. User-driven content is becoming more prevalent, allowing players and users to influence procedural content generation. Moreover, procedural generation is increasingly being applied in advanced simulations for areas such as training, virtual reality, and scientific research, including climate modeling and urban planning.
 
-\subsection{Models represented}
+\subsection{Terrain generation}
 Procedural generation encompasses various models and techniques that create complex and natural-looking content. These models range from mathematical functions to advanced neural networks and physical simulations, each resulting on the generation of diverse and realistic environments.
 
 One foundational technique in procedural generation is noise. Perlin noise, developed by Ken Perlin in 1983, is a gradient noise function designed to produce smooth, coherent patterns that mimic natural phenomena. Its continuous and smooth randomness makes it particularly suitable for generating textures, terrains, and procedural landscapes that appear natural. Building on this, Simplex noise, introduced by Perlin in 2001, offers a more computationally efficient alternative with fewer directional artifacts. It is favored for its improved visual coherence and efficiency in higher-dimensional spaces, making it ideal for procedural texture generation and terrain creation. Another variant of noise, Worley noise creates patterns based on the distance between points in a space. This technique produces cellular structures with distinct boundaries, making it useful for generating textures like stone or marble, and for modeling natural patterns such as cloud formations and cellular structures.
@@ -61,6 +161,122 @@ In addition to noise functions, cellular automata provide another approach to pr
 Neural networks represent a more recent advancement in procedural generation. Artificial Neural Networks (ANNs), inspired by the human brain, learn patterns and generate data. Generative models, including Generative Adversarial Networks (GANs) and Variational Autoencoders (VAEs), are designed specifically for content generation. GANs use two neural networks—a generator and a discriminator—that compete with each other to produce realistic outputs. VAEs, on the other hand, encode and decode data to and from a latent space to generate new, similar instances. These models are applied to generate realistic textures, terrains, and photorealistic images, enhancing the detail and variety of content in video games and simulations.
 
 Finally, physical phenomena modeling uses simulations of real-world processes to generate natural features and behaviors. This includes models for fluid dynamics, erosion, sediment transport, and other geological and environmental processes. These models are most often used for improve the realistism of terrains than creating them. Terrain features such as mountains, valleys, and riverbeds, as well as environmental simulations that include weather patterns, climate, and natural disaster scenarios can be modeled through simulations. Erosion models, for instance, simulate the effects of weathering and erosion on terrain, using algorithms that mimic natural processes like water flow and wind. Sediment transport models simulate the movement and deposition of sediment, contributing to the realistic formation and evolution of terrain.
+
+% \subsection{Existing terrain generation techniques}
+[UP: PREVIOUS, BOTTOM: NEW]
+
+Procedural generation techniques in terrain generation involve creating terrains using algorithms that do not directly simulate physical processes but instead rely on mathematical models to produce realistic landscapes. These techniques are often phenomenological, focusing on reproducing the observable effects of natural phenomena like erosion, tectonic activity, and sediment deposition. The primary advantage of procedural generation is its ability to create detailed, expansive terrains with relatively little data, often without relying on real-world exemplars. 
+
+Procedural terrain generation methods can be broadly classified into two categories: large-scale terrain generation and procedural landform generation. Large-scale terrain generation techniques focus on creating entire terrains over extensive areas, emphasizing fractal and self-similar properties to ensure that details appear consistent at various scales. These methods often offer limited direct control over the specific features of the terrain, as they are primarily concerned with creating natural-looking landscapes across large domains. Examples of such methods include subdivision schemes, faulting, and noise-based techniques, each of which brings a different approach to refining and detailing the terrain.
+
+[CITATIONS]
+
+Subdivision schemes iteratively refine an initial coarse terrain by subdividing it and adding detail, often guided by fractal principles. A well-known method is the diamond-square algorithm, which can produce terrains with fractal characteristics but may introduce unwanted artifacts such as local extrema. To mitigate these issues, alternative schemes like the square-square method, which uses a mix of triangle and square subdivisions, have been developed to maintain geometric consistency and reduce artifacts. However, these methods are still prone to producing directional artifacts, requiring further refinement through modified algorithms.
+
+Faulting is another procedural technique that begins with a flat terrain and adds random vertical faults, displacing points on either side of the fault line based on their distance from it. This method is effective in simulating the effects of tectonic activity on terrain formation. The terrain's elevation is determined by summing the contributions of multiple faults, with random coefficients controlling the magnitude of displacement. The use of smooth step functions ensures that the transition between displaced and non-displaced areas is gradual, creating realistic fault lines. However, this technique requires careful selection of faults to maintain terrain consistency and avoid excessive or unnatural elevation changes.
+
+Noise functions, particularly fractional Brownian motion (fBm), are foundational in procedural terrain generation, used to introduce turbulence and multi-scale effects that mimic the appearance of natural landscapes. By summing noise at different scales and amplitudes, these functions create terrains with a variety of features, from gentle rolling hills to rugged mountains. Specific noise functions, such as ridge noise, are designed to generate sharp features like crests and ridges, while multi-fractal noise allows for non-uniform fractal properties, enhancing the realism of the terrain. Warping techniques, such as domain warping, are applied to avoid grid artifacts and simulate erosion effects without resorting to full physical simulations, further refining the terrain's appearance.
+
+Procedural landform generation techniques, in contrast, focus on the creation of specific terrain features like rivers, cliffs, and canyons. These methods operate on a smaller scale and provide more direct control over the resulting shapes, allowing for targeted synthesis of particular landforms. Controlled subdivision [CITATION], for example, enhances traditional fractal methods by incorporating user-defined features like river networks into the terrain generation process. This approach can be extended to simulate planetary-scale watersheds, ensuring that the generated terrain adheres to the desired topological and hydrological characteristics.
+
+Feature-based construction techniques allow users to define terrain features through interactive sketch-based interfaces, where control curves determine the shape and extent of the landforms. These curves guide the multi-resolution deformation process, ensuring that the terrain conforms to the sketched profiles. By blending different types of curves, such as elevation and cross-sectional profiles, detailed and complex landforms can be created. Procedural generation is used to add fine details like layered terraces and isolated mesas, while shortest-path algorithms help define natural river trajectories.
+
+[TODO]
+% In volumetric procedural terrains, implicit modeling is employed to define terrains using a continuous field function. This allows for the creation of complex 3D features such as overhangs, caves, and cliffs, which are challenging to represent with surface-based models. The field function is warped to simulate overhangs and cliffs, while the terrain's surface is smoothed to achieve a realistic appearance. 
+% Layer stack models represent different material layers within the terrain, and smoothing techniques ensure that transitions between layers are natural and continuous.
+
+Procedural generation techniques offer a powerful and flexible approach to terrain generation, allowing for the creation of vast, detailed landscapes with minimal input data. However, these techniques also present challenges, particularly in balancing realism with computational efficiency. While large-scale methods excel at creating expansive terrains with fractal properties, they often lack the direct control needed to generate specific landforms. Conversely, landform generation techniques provide greater control but may require more computational resources to achieve the desired level of detail. The complexity and realism of a process is then defined by the mix of the different algorithms possible in order to create large terrains with realistic landforms.
+
+% - Almost all rely on elevation models \\
+% ** More precisely on discrete height fields \\
+% *** Because of the closeness with image processing \\
+% - Most algorithms are focused on alpine landscapes \\
+% ** Because easier to observe, much more research on the topic, historically first geo features simulated
+
+
+\subsection{Fluid simulations}
+
+Fluid simulations are inevitable in representing natural phenomena in terrain generation, particularly in modeling water flow, erosion, and sediment transport. These simulations are used for creating realistic and dynamic environmental models that accurately reflect the interactions between fluids and terrain. The ability to simulate fluid behaviors such as river currents, coastal erosion, and sediment deposition is fundamental to producing realistic terrains.
+
+Fluid simulations can be categorized into various methods, each with its unique applications. Techniques like Particle-In-Cell (PIC), Fluid-Implicit Particle (FLIP), and Stable Fluids are commonly used to simulate fluid dynamics. PIC combines particles with a grid to offer a straightforward approach for basic fluid simulations and visualizations. FLIP builds on the PIC method by enhancing accuracy and efficiency through a hybrid approach that merges particle and grid techniques, making it suitable for complex fluid behaviors. Stable Fluids, a grid-based method, is designed for simulating stable, incompressible fluids with minimal computational complexity, often used in interactive applications where real-time rendering is required.
+
+More sophisticated methods include Smoothed Particle Hydrodynamics (SPH) and Marker-And-Cell (MAC). SPH is a particle-based method where fluid properties are represented by particles that interact based on smoothing kernels, useful for detailed simulations, including interactions between fluids and terrain. MAC and other grid-based approaches use a grid to simulate fluid behavior, providing detailed and accurate representations suitable for various scales of environments. Hybrid methods combine the strengths of grid and particle approaches, balancing the need for detail with performance requirements in complex simulations.
+
+Fluid simulations are integral to terrain representation, particularly in modeling erosion and sediment transport. These simulations allow for the realistic modeling of erosion processes, which affect terrain features like riverbeds and valleys over time. By simulating how fluids interact with the terrain, these models can show how sediment is moved and deposited, contributing to the natural evolution of the landscape. Water flow and hydrology are other applications of fluid simulations in terrain generation. Simulating surface water dynamics, such as the flow of rivers, lakes, and wetlands, helps create realistic environments where water interacts dynamically with the terrain. 
+% Additionally, subsurface flow simulations model groundwater movement and its interactions with surface features, adding another layer of realism to the terrain.
+
+% In interactive environments, such as video games and virtual simulations, real-time fluid simulations are crucial for creating dynamic water interactions. These simulations enable the depiction of responsive and changing environments, where water flow can be influenced by user actions or environmental conditions, enhancing the immersive experience.
+
+Despite their importance, fluid simulations come with significant challenges and considerations. One of the primary concerns is the computational resources required to run accurate and detailed simulations. Performance trade-offs are often necessary, especially in real-time applications where the simulation must balance accuracy with computational efficiency. Complex 3D fluid simulations require powerful hardware, including advanced processors and substantial memory, to handle the intensive calculations involved.
+
+Another challenge lies in balancing accuracy with realism. While detailed fluid dynamics can produce highly realistic simulations, they often come at the cost of performance. Simulation artifacts, or inaccuracies, can also impact the perceived realism of the terrain, requiring careful attention to detail in the modeling process. Integrating fluid simulations with terrain models presents its own set of challenges. Ensuring that fluids interact seamlessly with the terrain, such as through fluid erosion or sediment deposition, requires sophisticated techniques to maintain consistency between the simulated fluid behaviors and the terrain features.
+
+Recent developments in fluid simulation technology have focused on enhancing both the accuracy and efficiency of these simulations. Advancements in algorithms have led to new techniques that improve the realism and computational performance of fluid models. There has also been significant progress in real-time fluid simulation, with innovations aimed at improving interactivity.
+
+The integration of Deep Learning and Machine Learning into fluid simulations represents a recent trend in this field. AI-enhanced simulations use machine learning to refine fluid simulation accuracy and adaptivity, enabling more realistic and responsive environments. Predictive models, powered by AI, can simulate complex fluid behaviors based on historical data, offering new possibilities for dynamic and evolving terrain representations.
+
+
+
+% - Definition and purpose: \\
+% ** Overview: explanation of fluid simulations and their role in representing natural phenomena in terrains, including water flow, erosion, and sediment transport. \\
+% ** Importance: impact of accurate fluid simulations on creating realistic terrain and environmental models.\\
+% \subsection{Types of fluid simulations}
+% - 2D fluid simulations: \\
+% ** Particle-In-Cell (PIC): \\
+% *** Concept: combines particles with a grid to simulate fluid dynamics. \\
+% *** Applications: used for simpler simulations and visualizations. \\
+% ** Fluid-Implicit Particle (FLIP): \\
+% *** Concept: a hybrid method that combines particle and grid approaches for better accuracy and efficiency. \\
+% *** Applications: suitable for capturing complex fluid behaviors in 2D environments. \\
+% ** Stable Fluids: \\
+% *** Concept: a grid-based method for simulating stable, incompressible fluids with less computational complexity. \\
+% *** Applications: often used in interactive applications where real-time performance is crucial.\\
+% - 3D fluid simulations: \\
+% ** Smoothed Particle Hydrodynamics (SPH): \\
+% *** Concept: a particle-based method where fluid properties are represented by particles that interact based on smoothing kernels. \\
+% *** Applications: useful for highly detailed simulations of fluids, including interactions with terrain. \\
+% ** Grid-based methods: \\
+% *** Concept: methods like Marker-And-Cell (MAC) and Navier-Stokes equations applied on a grid to simulate fluid behavior. \\
+% *** Applications: used for detailed and accurate 3D simulations, including large-scale environments. \\
+% ** Hybrid methods: \\
+% *** Concept: combining grid and particle approaches to leverage the strengths of both methods.\\
+% *** Applications: balancing detail and performance in complex simulations. 
+
+% \subsection{Applications in terrain representation}
+% - Erosion and sediment transport: \\
+% ** Simulation of erosion: how fluid simulations model erosion processes affecting terrain features such as riverbeds and coastlines. \\
+% ** Sediment movement: modeling the transport and deposition of sediment, contributing to realistic terrain evolution. \\
+% - Water flow and hydrology: \\
+% ** Surface water dynamics: representing the flow of water across terrain surfaces, including rivers, lakes, and wetlands. \\
+% ** Subsurface flow: simulating groundwater movement and interactions with terrain features. \\
+% - Interactive environments: \\
+% ** Real-time simulations: implementing fluid simulations in interactive applications, such as video games and virtual environments, where dynamic water interactions are crucial. 
+
+% \subsection{Challenges and considerations}
+% - Computational resources: \\
+% ** Performance trade-offs: balancing simulation accuracy with computational efficiency, especially for real-time applications. \\
+% ** Hardware requirements: the need for powerful processors and memory to handle complex 3D fluid simulations. \\
+% - Accuracy vs. realism: \\
+% ** Detail vs. performance: finding the right balance between detailed fluid dynamics and the practical limitations of simulation resources. \\
+% ** Simulation artifacts: addressing potential artifacts or inaccuracies in simulations that can impact realism. \\
+% - Integration with terrain models: \\
+% ** Interaction with terrain: ensuring fluid simulations integrate seamlessly with terrain models, including handling interactions such as fluid erosion or deposition. \\
+% ** Data consistency: maintaining consistency between simulated fluid behaviors and terrain features for accurate representations. 
+
+% \subsection{Recent developments and future trends}
+% - Advancements in algorithms: \\
+% ** New techniques: emerging algorithms and methods that enhance the accuracy and efficiency of fluid simulations. \\
+% ** Real-time improvements: innovations aimed at improving real-time performance and interactivity in fluid simulations. \\
+% - Integration with Deep Learning and Machine Learning: \\
+% ** AI-enhanced simulations: using machine learning to improve fluid simulation accuracy and adaptivity. \\
+% ** Predictive models: leveraging AI to predict and simulate complex fluid behaviors based on historical data. 
+
+% - Very important in procedural terrain generation \\
+% - Allows justifying the geophysics of a simulation/generation \\
+% - Quite fast solutions in 2D (PIC, FLIP, Stable Fluids, SPH, etc.) \\
+% - But becomes much heavier and memory-intensive in 3D \\
+% - ...
+
 
 \subsection{User interaction}
 \subsubsection{Realism-speed-control balance}
@@ -161,128 +377,14 @@ The fine-tuning speed can be improved by different strategies:
 
 % Error Handling: Implementing robust error handling and recovery mechanisms addresses potential issues that may arise during regeneration, such as unexpected results or system failures. Effective error management ensures that users can continue working without significant disruptions.
 
-\section{Terrain representations}
-\label{sec:state-of-the-art_terrain-representations}
-A terrain can be represented in various ways, each of them suited for a given application of which we give an brief overview, more details can be found in \cite{Galin2019}.
 
-\subsection{Elevation models}
+\section{Underwater landscapes}
+- Use "seascape" instead of "landscape" and "aerial landscapes" for above water. \\
+** Not official terms, but may be very useful for the rest of this thesis..! \\
+- Describe main differences with landscape generation \\
+- Describe coral islands ecosystems.
 
-Elevation models are a fundamental approach in terrain representation, widely used in procedural generation due to their simplicity and efficiency. These models define the terrain as a function $h : \R^2 \to \R$, where each point in a 2D plane is mapped to an elevation value. This approach is particularly effective for representing terrains where the elevation is the only varying factor, such as hills, valleys, and plateaus, and it is best suited for terrains without complex 3D features like overhangs or caves. While we visualize elevation models in three dimensions, they are mathematically considered two-dimensional functions. In the domain of terrain generation, we will name them 2.5D models.
-
-Elevation models are widely used in industries where large-scale terrain representation is crucial. In video games, they provide the foundation for creating expansive open-world environments. In geographic information systems (GIS) and remote sensing, height fields are used to represent real-world terrain data, offering a practical means of visualizing and analyzing geographical features. The ability to manipulate and control terrain features procedurally makes elevation models a common choice for applications that require efficient terrain generation and rendering.
-
-They offer a powerful method for representing terrains in procedural generation, combining simplicity with flexibility. While they have limitations in representing complex 3D structures, their efficiency and compatibility with existing algorithms make them indispensable in a variety of applications.
-
-\subsubsection{Implicit height fields}
-Implicit height fields represent the terrain as a mathematical function that provides a height value at any given point in the domain. These functions can be procedural or closed-form expressions, allowing for compact storage and infinite precision in theory. The elevation function allows for easy manipulation of terrain features, making it ideal for generating terrains that require smooth, continuous surfaces. However, the primary disadvantage is the computational complexity involved in evaluating the function, especially for large or highly detailed terrains. The challenge lies in constructing functions that can realistically represent large-scale terrains with complex landforms.
-
-\subsubsection{Discrete height fields}
-Discrete height fields, or explicit height fields, are one of the most prevalent methods for terrain representation. These models consist of a 2D grid where each cell contains a height value, representing the elevation at that point. Height fields are particularly advantageous because they are simple to implement and are directly compatible with many rendering techniques and hardware, but also due to their closeness with image processing, a domain studied for many decades now.
-
-The main advantage of height fields is their ability to handle large datasets efficiently, providing a balance between memory usage and detail. However, they are limited by their inability to represent terrains with overhangs or caves, as each point on the grid can only hold a single elevation value. Additionally, height fields often require interpolation methods, such as bi-linear or bi-cubic interpolation, to reconstruct a continuous surface from the discrete grid points. 
-% While this allows for smooth terrain surfaces, it can introduce artifacts at grid boundaries and requires careful handling to maintain realism.
-
-\subsection{Volumetric models}
-Volumetric models represent a more complex approach to terrain modeling, allowing for the depiction of 3D features that go beyond the simple surface-based representation provided by elevation models. These models capture not only the surface of the terrain but also its internal structure, making them ideal for representing terrains with overhangs, caves, and other subsurface features. Volumetric models are defined by a function $\mu : \R^3 \to M$, where $M$ denotes the material type at any given point in 3D space. This allows for a detailed representation of the terrain's internal composition, which can be crucial for applications requiring realistic geological simulations.
-
-Volumetric models, including layered materials, voxel grids, and implicit models, are essential in applications where terrain complexity and detail are primordial. In geological simulations, these models allow for accurate representation of subsurface structures and processes. Voxel models are widely used in games that require dynamic terrain deformation, providing a rich interactive environment for players. Implicit models are favored in situations where smooth, continuous surfaces are needed [FIND OTHER USE CASES].
-
-\subsubsection{Function volumetric models}
-Implicit models represent the terrain using an implicit surface, which is defined as the zero-level set of a continuous field function $f : \R^3 \to \R$. The terrain surface is the set of points where this field function equals zero. This approach allows for the smooth representation of complex 3D shapes and is particularly well-suited for modeling continuous, organic structures like rolling hills, caves, and natural arches. Implicit models are flexible and can represent terrains with overhangs and tunnels, which are challenging for height field-based models.
-
-One of the key advantages of implicit models is their ability to produce smooth surfaces without the need for discrete polygonal meshes, which can result in realistic and natural-looking terrains. However, the computational complexity of evaluating the implicit function, especially for large terrains, can be a significant drawback. Additionally, converting an implicit surface into a mesh for rendering can be challenging and resource-intensive.
-
-\subsubsection{Layered models}
-Layered models are a type of volumetric representation that encode different material layers within the terrain. Each layer is defined by its thickness or elevation, and multiple layers can be stacked to represent complex geological formations. These layers might include materials like bedrock, sand, soil, or water, each contributing to the overall structure of the terrain. Layered models are particularly useful in simulations that involve processes like erosion or sedimentation, where the interaction between different material layers are affect the physical process.
-
-The primary advantage of layered models is their ability to represent a stratified terrain with distinct material properties, which can be manipulated individually. This makes them well-suited for simulations that require detailed geological accuracy. However, they are more complex to implement than simple elevation models and require additional computational resources to manage the interactions between layers. 
-
-
-\subsubsection{Voxel grid models}
-Voxel grids are a common method for representing 3D terrains in procedural generation, offering the ability to capture complex internal structures and features that are difficult or impossible to represent with surface-based models. In a voxel grid, the 3D space is divided into a regular grid of small, cube-shaped elements called voxels (volumetric pixels). Each voxel holds information about the material or properties of the terrain at that specific point in space. This approach allows for detailed modeling of features such as caves, tunnels, overhangs, and intricate underground networks. The regular grid structure allows for the use of image processing-oriented algorithms.
-
-There are two primary types of voxel grids used in terrain representation: binary voxel grids and density voxel grids. Each has distinct characteristics, advantages, and limitations, making them suitable for different applications. Binary voxel grids are the simplest form of voxel representation. In these grids, each voxel is either "filled" or "empty," representing the presence or absence of material. This binary state is typically represented by a 1 (filled) or 0 (empty). Binary voxel grids are straightforward to implement and require much less memory compared to more complex voxel representations, making them ideal for applications where the primary concern is whether a space is occupied or not.
-
-The simplicity of binary voxel grids is one of their main advantages. They are easy to understand and visualize, with each voxel requiring only a single bit of information to represent its state. Additionally, because only a binary state is stored, these grids can be memory-efficient when combined with compression techniques like Sparse Voxel Octrees (SVOs). The simplicity of the data structure also allows for quick processing, making binary voxel grids suitable for real-time applications where performance is required. However, the binary nature of these grids limits their ability to represent variations in material density or properties, or even smoothness, resulting in less detailed terrain models. This can lead to hard, blocky edges in the terrain, which may appear unnatural without additional smoothing or processing.
-
-Binary voxel grids are commonly used in applications where simple occupancy information is sufficient. For example, voxel-based games like Minecraft utilize binary grids to create terrains composed of solid blocks with clear boundaries. These grids are also employed in scientific simulations where the primary concern is the presence or absence of materials, rather than detailed material properties. [TRANSFORM TO MATERIAL-VOXELS]
-
-On the other hand, density voxel grids allow each voxel to store a range of values, representing varying degrees of material presence. Instead of a simple binary state, a density voxel grid assigns a scalar value to each voxel, which can represent material density, opacity, or other properties. This added complexity enables density voxel grids to represent subtle variations in terrain, such as gradual changes in material density or smooth transitions between solid and empty spaces, allowing for more realistic and natural-looking terrain models.
-
-% The use of density voxel grids results in soft transitions and smooth surfaces, reducing the blockiness typically associated with binary voxel grids. They are versatile and can represent not only solid terrain but also phenomena like fog, fluid densities, or temperature gradients. However, the increased detail and realism come at the cost of greater complexity. Density voxel grids require more memory and computational power, making them more challenging to implement and manage. The additional data and processing required can also lead to slower performance, particularly in real-time applications.
-
-Density voxel grids are often used in high-fidelity simulations where detail and realism are essential. They are found in applications such as medical imaging, scientific visualizations, and advanced terrain modeling for films and visual effects. These grids are also employed in procedural terrain generation systems that require smooth and natural transitions between different terrain features, such as caves, cliffs, and eroded landscapes.
-
-
-% - ...
-
-% \subsection{2.5D terrains}
-% - ...
-
-% \subsubsection{Height maps}
-% - ...
-
-% \subsubsection{Height functions}
-% - ...
-
-% \subsection{3D terrains}
-% - Need for 3D concepts \\
-% ** Geological information \\
-% ** Volumetric data \\
-% - ...
-
-% \subsubsection{Main issues}
-% - Memory \\
-% - Visualization \\
-% - Modifications \\
-% - Conversion between representations \\
-% ** Information loss \\
-% *** Error propagation on geometry (approximations on normals, Z resolution, surface, etc.) \\
-% *** Loss of subsurface information \\
-% - ...
-
-% \subsubsection{Types, definitions, advantages, disadvantages}
-% - Voxel grids \\
-% - Material stacks \\
-% - Meshes \\
-% - Implicit surfaces \\
-% - Implicit materials \\
-% - ...
-
-% \subsection{Other models}
-% - Concept of semantics \\
-% - ...
-
-\subsection{Existing terrain generation techniques}
-Procedural generation techniques in terrain generation involve creating terrains using algorithms that do not directly simulate physical processes but instead rely on mathematical models to produce realistic landscapes. These techniques are often phenomenological, focusing on reproducing the observable effects of natural phenomena like erosion, tectonic activity, and sediment deposition. The primary advantage of procedural generation is its ability to create detailed, expansive terrains with relatively little data, often without relying on real-world exemplars. 
-
-Procedural terrain generation methods can be broadly classified into two categories: large-scale terrain generation and procedural landform generation. Large-scale terrain generation techniques focus on creating entire terrains over extensive areas, emphasizing fractal and self-similar properties to ensure that details appear consistent at various scales. These methods often offer limited direct control over the specific features of the terrain, as they are primarily concerned with creating natural-looking landscapes across large domains. Examples of such methods include subdivision schemes, faulting, and noise-based techniques, each of which brings a different approach to refining and detailing the terrain.
-
-[CITATIONS]
-
-Subdivision schemes iteratively refine an initial coarse terrain by subdividing it and adding detail, often guided by fractal principles. A well-known method is the diamond-square algorithm, which can produce terrains with fractal characteristics but may introduce unwanted artifacts such as local extrema. To mitigate these issues, alternative schemes like the square-square method, which uses a mix of triangle and square subdivisions, have been developed to maintain geometric consistency and reduce artifacts. However, these methods are still prone to producing directional artifacts, requiring further refinement through modified algorithms.
-
-Faulting is another procedural technique that begins with a flat terrain and adds random vertical faults, displacing points on either side of the fault line based on their distance from it. This method is effective in simulating the effects of tectonic activity on terrain formation. The terrain's elevation is determined by summing the contributions of multiple faults, with random coefficients controlling the magnitude of displacement. The use of smooth step functions ensures that the transition between displaced and non-displaced areas is gradual, creating realistic fault lines. However, this technique requires careful selection of faults to maintain terrain consistency and avoid excessive or unnatural elevation changes.
-
-Noise functions, particularly fractional Brownian motion (fBm), are foundational in procedural terrain generation, used to introduce turbulence and multi-scale effects that mimic the appearance of natural landscapes. By summing noise at different scales and amplitudes, these functions create terrains with a variety of features, from gentle rolling hills to rugged mountains. Specific noise functions, such as ridge noise, are designed to generate sharp features like crests and ridges, while multi-fractal noise allows for non-uniform fractal properties, enhancing the realism of the terrain. Warping techniques, such as domain warping, are applied to avoid grid artifacts and simulate erosion effects without resorting to full physical simulations, further refining the terrain's appearance.
-
-Procedural landform generation techniques, in contrast, focus on the creation of specific terrain features like rivers, cliffs, and canyons. These methods operate on a smaller scale and provide more direct control over the resulting shapes, allowing for targeted synthesis of particular landforms. Controlled subdivision [CITATION], for example, enhances traditional fractal methods by incorporating user-defined features like river networks into the terrain generation process. This approach can be extended to simulate planetary-scale watersheds, ensuring that the generated terrain adheres to the desired topological and hydrological characteristics.
-
-Feature-based construction techniques allow users to define terrain features through interactive sketch-based interfaces, where control curves determine the shape and extent of the landforms. These curves guide the multi-resolution deformation process, ensuring that the terrain conforms to the sketched profiles. By blending different types of curves, such as elevation and cross-sectional profiles, detailed and complex landforms can be created. Procedural generation is used to add fine details like layered terraces and isolated mesas, while shortest-path algorithms help define natural river trajectories.
-
-[TODO]
-% In volumetric procedural terrains, implicit modeling is employed to define terrains using a continuous field function. This allows for the creation of complex 3D features such as overhangs, caves, and cliffs, which are challenging to represent with surface-based models. The field function is warped to simulate overhangs and cliffs, while the terrain's surface is smoothed to achieve a realistic appearance. 
-% Layer stack models represent different material layers within the terrain, and smoothing techniques ensure that transitions between layers are natural and continuous.
-
-Procedural generation techniques offer a powerful and flexible approach to terrain generation, allowing for the creation of vast, detailed landscapes with minimal input data. However, these techniques also present challenges, particularly in balancing realism with computational efficiency. While large-scale methods excel at creating expansive terrains with fractal properties, they often lack the direct control needed to generate specific landforms. Conversely, landform generation techniques provide greater control but may require more computational resources to achieve the desired level of detail. The complexity and realism of a process is then defined by the mix of the different algorithms possible in order to create large terrains with realistic landforms.
-
-% - Almost all rely on elevation models \\
-% ** More precisely on discrete height fields \\
-% *** Because of the closeness with image processing \\
-% - Most algorithms are focused on alpine landscapes \\
-% ** Because easier to observe, much more research on the topic, historically first geo features simulated
-
-\subsection{Underwater landscapes}
+\subsection{Main differences with aerial terrains}
 In the field of terrain generation, particularly when it comes to modeling underwater landscapes, the challenge is to accurately represent complex environments that include both geological and biological features. The underwater world is filled with diverse structures, ranging from vast coral reefs to intricate cave systems, each requiring specialized techniques to model their unique characteristics.
 
 \subsubsection{3D Data for underwater landscapes}
@@ -377,7 +479,7 @@ The procedural generation of underwater landscapes involves the integration of a
 % ** LOD \\
 % - ...
 
-\section{Coral reefs (biological aspects)}
+\subsection{Coral reefs (biological aspects)}
 \label{sec:state-of-the-art_biology}
 [BLA BLA BLA TODO]
 
@@ -513,90 +615,6 @@ The procedural generation of underwater landscapes involves the integration of a
 % \subsubsection{Education and awareness}
 % - Public outreach: raising awareness about the importance of coral reefs and the actions individuals can take to support conservation efforts. \\
 % - Training programs: providing training for scientists, managers, and local stakeholders to enhance reef management and restoration practices.
-
-
-\section{Fluid simulations}
-
-Fluid simulations are inevitable in representing natural phenomena in terrain generation, particularly in modeling water flow, erosion, and sediment transport. These simulations are used for creating realistic and dynamic environmental models that accurately reflect the interactions between fluids and terrain. The ability to simulate fluid behaviors such as river currents, coastal erosion, and sediment deposition is fundamental to producing realistic terrains.
-
-Fluid simulations can be categorized into various methods, each with its unique applications. Techniques like Particle-In-Cell (PIC), Fluid-Implicit Particle (FLIP), and Stable Fluids are commonly used to simulate fluid dynamics. PIC combines particles with a grid to offer a straightforward approach for basic fluid simulations and visualizations. FLIP builds on the PIC method by enhancing accuracy and efficiency through a hybrid approach that merges particle and grid techniques, making it suitable for complex fluid behaviors. Stable Fluids, a grid-based method, is designed for simulating stable, incompressible fluids with minimal computational complexity, often used in interactive applications where real-time rendering is required.
-
-More sophisticated methods include Smoothed Particle Hydrodynamics (SPH) and Marker-And-Cell (MAC). SPH is a particle-based method where fluid properties are represented by particles that interact based on smoothing kernels, useful for detailed simulations, including interactions between fluids and terrain. MAC and other grid-based approaches use a grid to simulate fluid behavior, providing detailed and accurate representations suitable for various scales of environments. Hybrid methods combine the strengths of grid and particle approaches, balancing the need for detail with performance requirements in complex simulations.
-
-Fluid simulations are integral to terrain representation, particularly in modeling erosion and sediment transport. These simulations allow for the realistic modeling of erosion processes, which affect terrain features like riverbeds and valleys over time. By simulating how fluids interact with the terrain, these models can show how sediment is moved and deposited, contributing to the natural evolution of the landscape. Water flow and hydrology are other applications of fluid simulations in terrain generation. Simulating surface water dynamics, such as the flow of rivers, lakes, and wetlands, helps create realistic environments where water interacts dynamically with the terrain. 
-% Additionally, subsurface flow simulations model groundwater movement and its interactions with surface features, adding another layer of realism to the terrain.
-
-% In interactive environments, such as video games and virtual simulations, real-time fluid simulations are crucial for creating dynamic water interactions. These simulations enable the depiction of responsive and changing environments, where water flow can be influenced by user actions or environmental conditions, enhancing the immersive experience.
-
-Despite their importance, fluid simulations come with significant challenges and considerations. One of the primary concerns is the computational resources required to run accurate and detailed simulations. Performance trade-offs are often necessary, especially in real-time applications where the simulation must balance accuracy with computational efficiency. Complex 3D fluid simulations require powerful hardware, including advanced processors and substantial memory, to handle the intensive calculations involved.
-
-Another challenge lies in balancing accuracy with realism. While detailed fluid dynamics can produce highly realistic simulations, they often come at the cost of performance. Simulation artifacts, or inaccuracies, can also impact the perceived realism of the terrain, requiring careful attention to detail in the modeling process. Integrating fluid simulations with terrain models presents its own set of challenges. Ensuring that fluids interact seamlessly with the terrain, such as through fluid erosion or sediment deposition, requires sophisticated techniques to maintain consistency between the simulated fluid behaviors and the terrain features.
-
-Recent developments in fluid simulation technology have focused on enhancing both the accuracy and efficiency of these simulations. Advancements in algorithms have led to new techniques that improve the realism and computational performance of fluid models. There has also been significant progress in real-time fluid simulation, with innovations aimed at improving interactivity.
-
-The integration of Deep Learning and Machine Learning into fluid simulations represents a recent trend in this field. AI-enhanced simulations use machine learning to refine fluid simulation accuracy and adaptivity, enabling more realistic and responsive environments. Predictive models, powered by AI, can simulate complex fluid behaviors based on historical data, offering new possibilities for dynamic and evolving terrain representations.
-
-
-
-% - Definition and purpose: \\
-% ** Overview: explanation of fluid simulations and their role in representing natural phenomena in terrains, including water flow, erosion, and sediment transport. \\
-% ** Importance: impact of accurate fluid simulations on creating realistic terrain and environmental models.\\
-% \subsection{Types of fluid simulations}
-% - 2D fluid simulations: \\
-% ** Particle-In-Cell (PIC): \\
-% *** Concept: combines particles with a grid to simulate fluid dynamics. \\
-% *** Applications: used for simpler simulations and visualizations. \\
-% ** Fluid-Implicit Particle (FLIP): \\
-% *** Concept: a hybrid method that combines particle and grid approaches for better accuracy and efficiency. \\
-% *** Applications: suitable for capturing complex fluid behaviors in 2D environments. \\
-% ** Stable Fluids: \\
-% *** Concept: a grid-based method for simulating stable, incompressible fluids with less computational complexity. \\
-% *** Applications: often used in interactive applications where real-time performance is crucial.\\
-% - 3D fluid simulations: \\
-% ** Smoothed Particle Hydrodynamics (SPH): \\
-% *** Concept: a particle-based method where fluid properties are represented by particles that interact based on smoothing kernels. \\
-% *** Applications: useful for highly detailed simulations of fluids, including interactions with terrain. \\
-% ** Grid-based methods: \\
-% *** Concept: methods like Marker-And-Cell (MAC) and Navier-Stokes equations applied on a grid to simulate fluid behavior. \\
-% *** Applications: used for detailed and accurate 3D simulations, including large-scale environments. \\
-% ** Hybrid methods: \\
-% *** Concept: combining grid and particle approaches to leverage the strengths of both methods.\\
-% *** Applications: balancing detail and performance in complex simulations. 
-
-% \subsection{Applications in terrain representation}
-% - Erosion and sediment transport: \\
-% ** Simulation of erosion: how fluid simulations model erosion processes affecting terrain features such as riverbeds and coastlines. \\
-% ** Sediment movement: modeling the transport and deposition of sediment, contributing to realistic terrain evolution. \\
-% - Water flow and hydrology: \\
-% ** Surface water dynamics: representing the flow of water across terrain surfaces, including rivers, lakes, and wetlands. \\
-% ** Subsurface flow: simulating groundwater movement and interactions with terrain features. \\
-% - Interactive environments: \\
-% ** Real-time simulations: implementing fluid simulations in interactive applications, such as video games and virtual environments, where dynamic water interactions are crucial. 
-
-% \subsection{Challenges and considerations}
-% - Computational resources: \\
-% ** Performance trade-offs: balancing simulation accuracy with computational efficiency, especially for real-time applications. \\
-% ** Hardware requirements: the need for powerful processors and memory to handle complex 3D fluid simulations. \\
-% - Accuracy vs. realism: \\
-% ** Detail vs. performance: finding the right balance between detailed fluid dynamics and the practical limitations of simulation resources. \\
-% ** Simulation artifacts: addressing potential artifacts or inaccuracies in simulations that can impact realism. \\
-% - Integration with terrain models: \\
-% ** Interaction with terrain: ensuring fluid simulations integrate seamlessly with terrain models, including handling interactions such as fluid erosion or deposition. \\
-% ** Data consistency: maintaining consistency between simulated fluid behaviors and terrain features for accurate representations. 
-
-% \subsection{Recent developments and future trends}
-% - Advancements in algorithms: \\
-% ** New techniques: emerging algorithms and methods that enhance the accuracy and efficiency of fluid simulations. \\
-% ** Real-time improvements: innovations aimed at improving real-time performance and interactivity in fluid simulations. \\
-% - Integration with Deep Learning and Machine Learning: \\
-% ** AI-enhanced simulations: using machine learning to improve fluid simulation accuracy and adaptivity. \\
-% ** Predictive models: leveraging AI to predict and simulate complex fluid behaviors based on historical data. 
-
-% - Very important in procedural terrain generation \\
-% - Allows justifying the geophysics of a simulation/generation \\
-% - Quite fast solutions in 2D (PIC, FLIP, Stable Fluids, SPH, etc.) \\
-% - But becomes much heavier and memory-intensive in 3D \\
-% - ...
 
 
 

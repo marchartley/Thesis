@@ -6,7 +6,7 @@
 \teaser{
 	 \includegraphics[width=0.9\linewidth]{Figures/Render/figureTeaser.png}
 	%  % \centering
-	  \caption{Our method can produce different scenes including coral islands and canyons at multi-scale using Semantic Terrain Entities to represent terrain features.}
+	  \caption{Our method can produce different scenes including coral islands and canyons at multiple scales using \glosses{EnvObj} to represent terrain features.}
 	\label{fig:semantic-representation_teaser}
 	}
 
@@ -16,6 +16,14 @@
 % Our method represents the different landmarks of a terrain using a geometric (as "without 3D repr") representation. To avoid cycles in the interactions between objects, we use the environment as a proxy. EnvObjs are independant, like cellular automata. Each object affects locally the environment by modifying EnvVals. This modifications are applied by the EnvObjs spreading EnvMat around them. They also absorb EnvMat from the other EnvObjs. We can consider that the diffusion is bounded thanks to a decay rate, meaning the system becomes stable after some time. Because it is stable, it is plausible. We break the stability by adding new EnvObjs following \glosses{GenRule}. New EnvObjs are placed in the environment where they may be the most probable, following a fitness function using the EnvVals. Then the shape of the skeleton is defined following a skeleton \gloss{FitnessFunc}. We wait for the environment to stabilize. It can take some time, and some EnvObjs might die (if fitness function fall below 0), but it will converge. The user can guide this process by defining EnvObjs that can spawn. Also, because it is simple skeleton, he can modifie shapes. The diffusion process is deterministic so no abrupt changes in the landscape. Also, the stability of the system can be broken by influencing EnvVals. So user can affect them through \Glosses{GeoEvent}. \Glosses{GeoEvent} affect one or more EnvVal over time, but we reduce the number of evaluation to the begining and end of the \glosses{GeoEvent}. Each EnvObj has a probability of chance to spawn each day, which can be computed as an amount per month, years, etc... (Probability Distribution Function of $p(X) = p^t$).  
 
 \section{Introduction}
+
+\begin{figure*}
+    \includegraphics[width=0.30 \linewidth]{./Figures/TopologicMaps/geologyMadagascar.jpeg}
+    \includegraphics[width=0.30 \linewidth]{./Figures/TopologicMaps/ErosionKosrae.jpg}
+    \includegraphics[width=0.30 \linewidth]{./Figures/TopologicMaps/PerthCanyon.jpg}
+    \caption{Three examples of topological maps used in geology, ecology and oceanology. [SOURCES]}
+\end{figure*}
+
 % Slight introduction
 Topographic maps are very useful tools for biologists, geologists or even oceanologists (which would call them "bathymetric charts"). These maps are displayed in 2D but provide 3D information about the altitude (or depth), but can also use symbology to represent the important elements that need to be visible. Map symbols are important in order to extract as much information as possible from a 2D object. In cartography, map symbols are defined as geometric primitives such as points, polylines, polygons, and (rarely) polyhedrons. These symbols are a simplification of the content of an environment, or an abstraction of the 3D shape of the terrain features. This is useful to understand the relationship between the different features, which enables to deduce rules in the evolution of a terrain. 
 
@@ -81,7 +89,7 @@ Due to the impossibility to observe the large-scale and the small-scale of under
 In an ecosystem, any element of the system has an impact on their surrounding. Simulating each physical properties such as shading, heat, humidity may require enormous computation power. By considering these properties as scalar fields surrounding the whole scene, and that features of the terrain affect locally the scalar fields, we can simplify the computation of the physical properties of the environment \cite{Grosbellet2016, Guerin2016a}. This process provides a scalable system from which scene details are rendered in a plausible way. In a similar way, other works represent the wind flow as a composition of local vector fields \cite{Wejchert1991}, avoiding complex fluid simulation while providing user control in a lightweight model. We extend these works by incorporating a time-evolution system such that the scene can be dynamic.
 
 
-\section{Overview}
+\section{Description of the method}
 \label{sec:semantic-representation_pipeline}
 
 \begin{figure*}
@@ -278,7 +286,7 @@ The only factor that can disrupt this equilibrium is a change in the \glosses{En
 \label{sec:semantic-representation_interaction}
 The user can guide the generation process. The use of simple shapes as \glosses{EnvObj} facilitate the edition of the simulation, as we can interactively add, remove or modify \glosses{EnvObj}, or focus the generation process in a restricted area. Interaction with the \glosses{EnvVal} is also provided as \glosses{GeoEvent}, that the user can invoke during the simulation. While the direct interactions on the \glosses{EnvObj} are instantaneous, as a the \glosses{GeoEvent} are active on a given duration.
 
-\subsection{Direct interactions on the \glosses{EnvObj}}
+\subsection{Direct interactions with the \glosses{EnvObj}}
 \label{sec:semantic-representation_manual-interaction}
 The interactive nature of our simulation enables the user to modify the state of the terrain by manipulating directly the \glosses{EnvObj} of the scene. We assume the modifications applied between two iterations of the simulation.
 
@@ -312,7 +320,7 @@ Figure~\ref{fig:semantic-representation_coral-colonization-scene} shows an examp
 
 Our water current simulation is modeled as a simple vector field. As such, the user is able to interact with it at any moment of the simulation, allowing for the death of sensible \glosses{EnvObj} while it will guide the simulation into a new landscape. By modifying the water currents, the user also modifies the transport rate of \glosses{EnvMat} at this position. The modification of currents is given as a stroke, a parametric curve $\curve$ for which we evaluate $\Delta \Wuser(\p)$ just as for curved environment objects (Section~\ref{sec:semantic-representation_water-currents}).
 
-\subsection{Indirect interaction of \glosses{EnvObj}}
+\subsection{Indirect interaction with \glosses{EnvObj}}
 \label{sec:semantic-representation_events}
 A configuration file can define in advance the different \glosses{GeoEvent} that should be triggered during the simulation. This can be useful to generate landscapes that are close to some existing locations. 
 Multiple \glosses{GeoEvent} can be triggered either as sudden or continuous environmental changes. These changes play a huge role in the morphology of landscapes.
@@ -371,7 +379,7 @@ with $\Delta \temperature_e$ the change of heat during an \gloss{GeoEvent}, $\te
 
 The framework can easily be extended as the \gloss{GeoEvent} system stays similar for all \glosses{GeoEvent}. Including higher level simulations in the \gloss{GeoEvent} system can be added, such as the simulation of tectonic activity, the use of fluid dynamics for tsunami \glosses{GeoEvent}, the integration of human activity, ...
 
-\section{Results}
+\section{Results and discussion}
 \label{sec:semantic-representation_results}
 Our method provides a way to generate scenes at different scales. We demonstrate this capacity with the generation of a large scene of an island (Figure~\ref{fig:semantic-representation_teaser}) after what we focused the generation process in a canyon (Figure~\ref{fig:semantic-representation_canyon-scene}), then a small-scale visualization of coral colonies (Figure~\ref{fig:semantic-representation_coral-colonization-scene}).
 In the examples, we rendered the \glosses{EnvObj} as a implicit tree or as individual meshes. The island, lagoons, reefs, canyons and sand ripples as implicit surfaces
