@@ -15,11 +15,13 @@
 \zzcommand{\growthRate}{\gamma}
 \zzcommand{\fitnessFunc}{\omega}
 \zzcommand{\fitnessFuncObj}{\fitnessFunc_\obj}
+\zzcommand{\fittingFunc}{\Gamma}
+\zzcommand{\fittingFuncObj}{\fittingFunc_\obj}
 
 \zzcommand{\Water}{\mathcal{W}}
 \zzcommand{\Wuser}{\Water_\text{user}}
 \zzcommand{\Wsimu}{\Water_\text{simulation}}
-\zzcommand{\Wobj}{\Water_\text{entities}}
+\zzcommand{\Wobj}{\waterModif_\text{entities}}
 
 \zzcommand{\terrain}{\mathcal{T}}
 \zzcommand{\height}{\mathcal{H}}
@@ -30,6 +32,13 @@
 \zzcommand{\events}{\text{events}}
 
 \zzcommand{\availableObjects}{\Tilde{\objects}}
+\zzcommand{\targetObjects}{\Hat{\objects}}
+
+\zzcommand{\environmentModif}{\environment^+}
+\zzcommand{\heightModif}{\height^+}
+\zzcommand{\waterModif}{\Water^+}
+\zzcommand{\materialModif}{\material^+}
+\zzcommand{\nothing}{\emptyset}
 
 \zzcommand{\tEvent}{t_e}
 
@@ -119,9 +128,10 @@
 \newdualentry[][]{LOD}{LoD}{level of detail}{Amount of graphical data or information displayed in a scene or image. Higher LOD means more detail, while lower LOD means less detail. This concept helps manage computational resources, where less important or distant objects have lower LOD to improve performance.}
 
 % Semantic
-\newdualentry[][]{EnvObj}{STE}{Semantic Terrain Entity}{Geographic feature represented sparsly which describe a landscape. We represent it with a \gloss{Skeleton}, \glosses{GenRule} and \glosses{EnvMat}. }{Semantic Terrain Entities}
+\newdualentry[][]{EnvObj}{STE}{semantic terrain entity}{Geographic feature represented sparsly which describe a landscape. We represent it with a \gloss{Skeleton}, \glosses{GenRule} and \glosses{EnvMat}. }{semantic terrain entities}
 \newdualentry[][]{EnvVal}{}{environmental attribute}{Value of a geographic field at one point in space and time. }
-\newdualentry[][]{EnvMat}{}{environmental modifier}{Description of a modification of a \gloss{EnvVal} around a \gloss{EnvObj}. It can represent the spread or the absorption of material around it, or the deformation of water currents. }
+\newdualentry[][]{EnvModif}{}{environmental modifier}{Description of a modification of a \gloss{EnvVal} around a \gloss{EnvObj}. It can represent the spread or the absorption of material around it, or the deformation of water currents. }
+\newdualentry[][]{EnvMat}{}{environmental material}{Material available.}
 \newdualentry[][]{GeoEvent}{}{geomorphic event}{Modification of a \gloss{EnvVal} in an interval of time with or without spatial bounds. }
 \newdualentry[][]{Skeleton}{}{skeleton}{Simplified shape of a \gloss{EnvObj}, as it could be symbolized in a map: as a point, a curve or a region. }
 \newdualentry[][]{GenRule}{}{generation rule}{Composed of a \gloss{FitnessFunc} and \gloss{FittingFunc}, the optimisation of the \gloss{GenRule} of an \gloss{EnvObj} through the maximization of its components describe where and how new elements can be added to a semantic terrain. }
@@ -129,3 +139,81 @@
 \newdualentry[][]{FittingFunc}{}{skeleton fitting function}{Function affected to a \gloss{EnvObj} that, given the local \gloss{EnvVal} and the shape of the skeleton of the \gloss{EnvObj}, returns a score describing how well this \gloss{EnvObj} fits. It may be seen as a refinement of the \gloss{FitnessFunc}. }
 \newdualentry[][]{SteadyState}{}{steady state}{A system is at steady state when internal properties do not change overtime once a dynamic equilibrium has been reached. The \glosses{EnvMat} emission from \glosses{EnvObj} can be seen as a thermodynamic system which achieve thermodynamic equilibrium over time. }
 \newdualentry[][]{CoarseHeight}{}{coarse height function}{Simplified function representing the height of a \gloss{EnvObj} in the 2D plane, useful to estimate the altitude of a point $\p$ of the terrain $\height(\p)$ as a combination of the \gloss{CoarseHeight} of all \glosses{EnvObj} close to $\p$. }
+
+
+
+
+
+\newdualentry[][]{WarpFunction}{}{warp function}{$\warp: \R^n \to \R^n$ is a function that, given a $n$-dimensional point $\p$ returns another point $\q$. The function is usually bijective.}
+
+
+\newdualentry[][]{ProceduralGeneration}{}{procedural generation}{A method for creating data algorithmically rather than manually, used across various fields to automate content creation.}
+\newdualentry[][]{TerrainGeneration}{}{terrain generation}{The process of algorithmically creating landforms in virtual environments, often using mathematical models and noise functions to simulate natural terrains.}
+\newdualentry[][]{VirtualTerrain}{}{virtual terrain}{Digitally simulated landscape used in video games, simulations, and visualizations, which mimics real-world or imaginary terrains.}
+\newdualentry[][]{ComputerGraphics}{}{computer graphics}{The field of computing dedicated to generating and managing visual content and images through software and hardware.}
+\newdualentry[][]{Seascape}{}{seascape}{An underwater environment or ecosystem, important in marine biology and underwater photography.}
+\newdualentry[][]{TerrainRepresentation}{}{terrain representation}{Different methods used to depict geographical features in two-dimensional and three-dimensional formats.}
+\newdualentry[][]{FluidSimulation}{}{fluid simulation}{A computational method to model fluid behaviors in graphics, gaming, and simulation, often using algorithms that calculate the motion and interaction of liquids and gases.}
+\newdualentry[][]{FluidSolver}{}{fluid solver}{A software or algorithm designed to calculate and predict the behavior of fluids within a simulation environment by solving equations relative to fluid dynamics.}
+\newdualentry[][]{Rendering}{rendering}{}{The process of generating a photorealistic or non-photorealistic image from a 2D or 3D model by means of computer programs. The results of displaying the texture, color, and light interactions in a scene are calculated and converted into pixels to form the complete image.}
+\newdualentry[][]{RealTimeRendering}{}{real-time rendering}{The process of generating images from 3D models at a fast enough rate to provide interaction and movement, as seen in video games and simulations.}
+\newdualentry[][]{OfflineRendering}{}{offline rendering}{The process of generating a high-quality image or animation frame by allowing the computer more processing time, typically used in film and animation production.}
+\newdualentry[][]{Regeneration}{}{regeneration}{The process of re-creating or updating digital content dynamically, often used in procedural generation to modify terrains or environments based on user interaction or changes in parameters.}
+\newdualentry[][]{LandscapeFeature}{}{landscape feature}{Distinct attributes or formations within a terrain, such as hills, valleys, or rivers, that define the character of the landscape.}
+\newdualentry[][]{KarstNetwork}{}{karst network}{Complex underground drainage systems and structures found in soluble rock landscapes, important in geological studies.}
+\newdualentry[][]{CoralIsland}{}{coral island}{An island formed from coral debris and associated organic material, found in tropical ocean regions.}
+\newdualentry[][]{Sparseness}{}{sparseness}{A property of data or procedural models where significant portions of the space contain no actual data or minimal features, often used to optimize storage and processing.}
+\newdualentry[][]{ErosionSimulation}{}{erosion simulation}{The computational imitation of geological erosion processes in digital environments to create more realistic landscapes in games and simulations.}
+\newdualentry[][]{ImplicitVolume}{}{implicit volume}{A type of 3D model defined mathematically by a function that describes whether points in space are inside or outside the volume.}
+\newdualentry[][]{ImplicitSurface}{}{implicit surface}{A surface in 3D space defined by an equation, used in computer graphics to generate complex geometrical shapes procedurally.}
+\newdualentry[][]{Parallelization}{}{parallelization}{The process of dividing computational tasks into multiple components that can be processed simultaneously, improving performance and speed, especially in graphics and simulation.}
+\newdualentry[][]{ElevationTerrainModel}{}{elevation terrain model}{A model representing the elevation or altitude of various points on the Earth's surface, used in geographic studies.}
+\newdualentry[][]{GeographicInformationSystem}{GIS}{geographic information system}{A system designed to capture, store, manipulate, analyze, manage, and present spatial or geographic data.}
+\newdualentry[][]{GeographicInformationScience}{GIScience}{geographic information science}{A scientific discipline that encompasses the theoretical aspects, methodologies, and applications of spatial data, focusing on the study and improvement of geographic information systems (GIS) and related technologies. It deals with the principles behind collecting, analyzing, and visualizing geographic data, including spatial analysis, data management, and the integration of various data forms.}
+\newdualentry[][]{ImplicitHeightField}{}{implicit height field}{A field representing variations in height across a surface, defined through mathematical functions rather than discrete measurements.}
+\newdualentry[][]{DiscreteHeightField}{}{discrete height field}{A specific form of terrain representation where the terrain's elevation is captured at discrete points, often organized in a grid.}
+\newdualentry[][]{VolumetricTerrainModel}{}{volumetric terrain model}{A 3D representation of terrain that includes volume, allowing for the depiction of complex underground structures and features.}
+\newdualentry[][]{LayeredMaterialTerrainModel}{}{layered material terrain model}{A representation that incorporates different material layers to depict the geological stratification of an area.}
+\newdualentry[][]{VoxelGridTerrainModel}{}{voxel grid terrain model}{A terrain representation based on a grid of voxels, each storing information about the terrain's properties at that point.}
+\newdualentry[][]{Voxel}{}{voxel}{The 3D equivalent of a pixel, representing a value on a regular grid in three-dimensional space, used for constructing volumetric environments and objects.}
+\newdualentry[][]{BinaryVoxel}{}{binary voxel}{A voxel that can represent two states (e.g., filled or empty), used for creating binary volumetric models where each voxel is either solid or not.}
+\newdualentry[][]{MaterialVoxel}{}{material voxel}{A voxel that carries information about the material type at its location.}
+\newdualentry[][]{DensityVoxel}{}{density voxel}{A voxel that represents the density of material at a point, used in simulations where variable material density is needed.}
+\newdualentry[][]{SparseVoxelOctree}{}{sparse voxel octree}{An efficient data structure that stores voxel data in a tree hierarchy, reducing memory usage by only storing data for regions that contain relevant information.}
+\newdualentry[][]{VoxelDirectedAcyclicGraph}{}{voxel directed acyclic graph}{A data structure that organizes voxels in a hierarchical, non-cyclic manner, enabling efficient storage and manipulation of volumetric data in graphics and spatial analysis.}
+\newdualentry[][]{NoiseFunction}{}{noise function}{A function that generates a pattern of noise used to add surface detail or randomness to computer graphics, often used in texture and terrain generation.}
+\newdualentry[][]{FineTuning}{}{fine tuning}{The process of making small adjustments to a model or algorithm to optimize its performance or output quality.}
+\newdualentry[][]{SimplexNoise}{}{simplex noise}{A method for constructing a gradient noise similar to Perlin noise but with fewer directional artifacts and lower computational overhead. It is used in higher-dimensional graphics for more efficient and visually appealing results.}
+\newdualentry[][]{FractalGeometry}{}{fractal geometry}{The study of shapes and patterns that repeat at increasingly fine scales, used in procedural generation to create complex, self-similar textures and structures.}
+\newdualentry[][]{WorleyNoise}{}{worley noise}{A noise function that generates a cellular pattern, used in graphics to create textures that mimic certain natural materials like stone or wood.}
+\newdualentry[][]{FractionalBrownianMotion}{}{fractional Brownian motion}{A random motion whose changes are self-similar and depend on a scaling factor, used in graphics to generate landscapes, clouds, and other natural phenomena.}
+\newdualentry[][]{MachineLearning}{}{machine learning}{The study of algorithms and statistical models that computer systems use to perform specific tasks without explicit instructions, relying on patterns and inference.}
+\newdualentry[][]{DeepLearning}{}{deep learning}{A subset of machine learning involving neural networks with many layers, used for tasks like image recognition, speech recognition, and natural language processing.}
+\newdualentry[][]{GradientNoiseFunction}{}{gradient noise function}{A type of noise used in computer graphics to generate smoothly varying random patterns, often used for textures and terrain modeling.}
+\newdualentry[][]{Texture}{}{texture}{The visual appearance or feel of a surface. In computer graphics, textures are bitmap images applied to the surface of a 3D model to add color, detail, and material properties, simulating the look of real-world materials.}
+\newdualentry[][]{CellularAutomata}{}{cellular automata}{A model used in computational systems where cells in a grid evolve rules based on the states of neighboring cells, applicable in various scientific fields.}
+\newdualentry[][]{NeuralNetwork}{}{neural network}{A computing system inspired by the structure and functions of human brain neural networks, designed to recognize patterns and solve specific problems by learning from data. It consists of layers of interconnected nodes (neurons) that can learn to perform tasks by considering examples, generally without being programmed with any task-specific rules.}
+\newdualentry[][]{GenerativeAdversarialNetwork}{}{generative adversarial network}{A class of machine learning systems where two neural networks contest with each other in a game (as in "adversarial"), typically used to generate realistic synthetic data.}
+\newdualentry[][]{VariationalAutoencoder}{}{variational autoencoder}{A type of neural network that aims to encode input data into a latent representation, then reconstruct the input data from this representation, used in unsupervised learning tasks.}
+\newdualentry[][]{LargeScaleTerrain}{}{large-scale terrain}{Refers to large digital terrains used in simulations and games that require extensive geographical details and can often be explored interactively.}
+\newdualentry[][]{SmallScaleTerrain}{}{small-scale terrain}{Refers to small digital terrains with more detailed segments of terrain used in close-up views or where high levels of detail are required for visual effects or analysis.}
+\newdualentry[][]{SubdivisionScheme}{}{subdivision scheme}{A technique in computer graphics used to refine a mesh by splitting each polygonal face into smaller faces, improving smoothness and detail. This method allows for progressively higher levels of detail in 3D models and images.}
+\newdualentry[][]{Faulting}{}{faulting}{A process that simulates geological faults, creating abrupt changes in elevation to mimic earth's tectonic movements.}
+\newdualentry[][]{SmoothStep}{}{smooth step}{A mathematical function used in graphics programming to interpolate smoothly between two values with zero derivatives at both ends, useful in shading and texture mapping, but also in blending together two different functions.}
+\newdualentry[][]{DiamondSquareAlgorithm}{}{diamond-square algorithm}{An algorithm used for generating fractal landscapes or terrains through recursive subdivision, providing a simple method for creating rough, naturally appearing terrains.}
+\newdualentry[][]{RidgeNoise}{}{ridge noise}{A type of noise function used in procedural terrain generation to create ridged, mountainous landscapes with sharp crests and rugged features.}
+\newdualentry[][]{MultiFractalNoise}{}{multi-fractal noise}{Noise generated with fractal properties that vary spatially, used to create more complex, varied textures and terrains.}
+\newdualentry[][]{Warping}{}{warping}{The process of distorting a field to modify structural and visual properties.}
+\newdualentry[][]{DomainWarping}{}{domain warping}{A technique in procedural generation where the input coordinates to a function or texture are distorted, used to create more organic and varied patterns.}
+\newdualentry[][]{ControlledSubdivision}{}{controlled subdivision}{The deliberate manipulation of subdivision processes in modeling to achieve specific forms or structures.}
+\newdualentry[][]{SketchBasedInterface}{}{sketch-based interface}{An interface design that allows users to interact with digital systems through sketching or drawing.}
+\newdualentry[][]{ControlCurve}{}{control curve}{Parametric curve used in computer graphics and modeling to guide the transformation or manipulation of objects, allowing for precise control over the resulting shape.}
+\newdualentry[][]{FeatureBasedConstructionTechnique}{}{feature-based construction technique}{The integration and manipulation of specific terrain features such as ridges, valleys, cliffs, and riverbeds, directly into the terrain model. It allows for precise control over the placement and characteristics of these features, enhancing the realism and complexity of the generated landscape.}
+% \newdualentry[][]{ParticleInCell}{}{Particle-In-Cell (PIC)}{A computational technique used in fluid simulations where fluid particles are tracked in a grid to model complex fluid interactions.}
+% \newdualentry[][]{FluidImplicitParticle}{}{Fluid-Implicit Particle (FLIP)}{A hybrid simulation approach that combines the Particle-In-Cell method with an implicit treatment of the fluid's pressure, used to enhance the stability and detail of fluid simulations.}
+% \newdualentry[][]{StableFluidsAlgorithm}{}{Stable fluids algorithm (from Jos Stam)}{A numerical algorithm developed by Jos Stam for simulating fluids in a stable and efficient manner, widely used in visual effects and animation.}
+\newdualentry[][]{SmoothedParticleHydrodynamics}{}{Smoothed Particle Hydrodynamics (SPH)}{A particle-based method for simulating the physics of fluids and gases, using particles to approximate the properties and motion of the fluid.}
+% \newdualentry[][]{MarkerAndCell}{}{Marker-And-Cell (MAC)}{A computational method for simulating incompressible fluids, using a grid to track fluid velocity and pressure, and markers to follow the fluid's interface.}
+\newdualentry[][]{SmoothingKernel}{}{smoothing kernel}{A function used in particle-based simulations (like SPH) to smooth out values across particles, enhancing stability and realism in fluid simulations.}
+\newdualentry[][]{latent space}{}{latent space}{A representation in machine learning where inputs are converted to a set of abstract dimensions, used to generate new data instances with similar properties.}
+\newdualentry[][]{Ecosystem}{}{ecosystem}{A biological community of interacting organisms and their physical environment, studied in ecology to understand the relationships and dynamics within natural systems.}
