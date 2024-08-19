@@ -7,13 +7,16 @@
 \section{Terrain representations}
 \label{sec:state-of-the-art_terrain-representations}
 
-\subsection{What are we calling "terrain"?}
-- ... 
+Terrain refers to the physical features and configuration of a specific area of land. It includes the elevation, slope, and the overall topography, such as mountains, valleys, and plains. Terrain is often used to describe the surface characteristics of the land, focusing on the natural contours and the geographical aspects that define a region's physical form.
 
-\subsection{Virtual terrain representations}
+While the term "terrain" describes the physical characteristics of land, it does not include the natural elements that shape an area's identity. Elements like vegetation, water bodies, and climatic conditions, such as snow cover, are essential to how we perceive and understand a landscape. Therefore, when discussing procedural generation in virtual environments, "landscape generation" is a more fitting term, as it integrates these natural elements along with the topographical features.
+
+In addition to "terrain generation," other terms such as "landscape generation," "world generation," and "environment generation" can be used to describe the creation of virtual landscapes. These terms are interchangeable and can all refer to the process of generating physical terrain along with natural and artificial elements. However, by convention and for simplicity, the term "terrain generation" is most commonly used in the field. Despite its original focus on the physical features of the land, "terrain generation" has evolved to encompass a broader range of environmental elements, making it a convenient and widely accepted term for describing the comprehensive process of creating virtual environments.
+
+% \subsection{Virtual terrain representations}
 A terrain can be represented in various ways, each of them suited for a given application of which we give an brief overview, more details can be found in \cite{Galin2019}.
 
-\subsubsection{Elevation models}
+\subsection{Elevation models}
 
 Elevation models are a fundamental approach in terrain representation, widely used in procedural generation due to their simplicity and efficiency. These models define the terrain as a function $h : \R^2 \to \R$, where each point in a 2D plane is mapped to an elevation value. This approach is particularly effective for representing terrains where the elevation is the only varying factor, such as hills, valleys, and plateaus, and it is best suited for terrains without complex 3D features like overhangs or caves. While we visualize elevation models in three dimensions, they are mathematically considered two-dimensional functions. In the domain of terrain generation, we will name them 2.5D models.
 
@@ -21,48 +24,53 @@ Elevation models are widely used in industries where large-scale terrain represe
 
 They offer a powerful method for representing terrains in procedural generation, combining simplicity with flexibility. While they have limitations in representing complex 3D structures, their efficiency and compatibility with existing algorithms make them indispensable in a variety of applications.
 
-\subsubsubsection{Implicit height fields}
+\subsubsection{Implicit height fields}
 Implicit height fields represent the terrain as a mathematical function that provides a height value at any given point in the domain. These functions can be procedural or closed-form expressions, allowing for compact storage and infinite precision in theory. The elevation function allows for easy manipulation of terrain features, making it ideal for generating terrains that require smooth, continuous surfaces. However, the primary disadvantage is the computational complexity involved in evaluating the function, especially for large or highly detailed terrains. The challenge lies in constructing functions that can realistically represent large-scale terrains with complex landforms.
 
-\subsubsubsection{Discrete height fields}
+\subsubsection{Discrete height fields}
 Discrete height fields, or explicit height fields, are one of the most prevalent methods for terrain representation. These models consist of a 2D grid where each cell contains a height value, representing the elevation at that point. Height fields are particularly advantageous because they are simple to implement and are directly compatible with many rendering techniques and hardware, but also due to their closeness with image processing, a domain studied for many decades now.
 
 The main advantage of height fields is their ability to handle large datasets efficiently, providing a balance between memory usage and detail. However, they are limited by their inability to represent terrains with overhangs or caves, as each point on the grid can only hold a single elevation value. Additionally, height fields often require interpolation methods, such as bi-linear or bi-cubic interpolation, to reconstruct a continuous surface from the discrete grid points. 
 % While this allows for smooth terrain surfaces, it can introduce artifacts at grid boundaries and requires careful handling to maintain realism.
 
-\subsubsection{Volumetric models}
+\subsection{Volumetric models}
 Volumetric models represent a more complex approach to terrain modeling, allowing for the depiction of 3D features that go beyond the simple surface-based representation provided by elevation models. These models capture not only the surface of the terrain but also its internal structure, making them ideal for representing terrains with overhangs, caves, and other subsurface features. 
 
 Volumetric models, including layered materials, voxel grids, and implicit models, are essential in applications where terrain complexity and detail are primordial. In geological simulations, these models allow for accurate representation of subsurface structures and processes. Voxel models are widely used in games that require dynamic terrain deformation, providing a rich interactive environment for players. Implicit models are favored in situations where smooth, continuous surfaces are needed [FIND OTHER USE CASES].
 
-\subsubsubsection{Implicit volumetric models}
+\subsubsection{Implicit volumetric models}
 Implicit volumetric models describe the terrain's shape and features using an implicit function. The terrain is represented by a mathematical function $f: \R^3 \to \R$ that determines the terrain surface by evaluating to an isovalue, often zero. This function provides a continuous representation of the terrain, with points inside the terrain returning positive values and while points in the air evaluate to negative values. It allows for the seamless representation of complex terrain features, including caves, overhangs, and varying geological structures, which are impossible to represent with  elevation models.
 
 One of the key advantages of implicit models is their ability to produce smooth surfaces without the need for discrete polygonal meshes, which can result in realistic and natural-looking terrains. However, the computational complexity of evaluating the implicit function, especially for large terrains, can be a significant drawback. Additionally, converting an implicit surface into a mesh for rendering can be challenging and resource-intensive. 
 
-\subsubsubsection{Layered models}
+\subsubsection{Layered models}
 Layered models are a type of volumetric representation that encode different material layers within the terrain and are defined by a function $\mu : \R^3 \to M$, where $M$ denotes the material type at any given point in 3D space. This allows for a detailed representation of the terrain's internal composition, which can be crucial for applications requiring realistic geological simulations. Each layer is defined by its thickness or elevation, and multiple layers can be stacked to represent complex geological formations. These layers might include materials like bedrock, sand, soil, or water, each contributing to the overall structure of the terrain. Layered models are particularly useful in simulations that involve processes like erosion or sedimentation, where the interaction between different material layers affects the physical process.
 
 The primary advantage of layered models is their ability to represent a stratified terrain with distinct material properties, which can be manipulated individually. This makes them well-suited for simulations that require detailed geological accuracy. However, they are more complex to implement than simple elevation models and require additional computational resources to manage the interactions between layers. 
 
 
-\subsubsubsection{Voxel grid models}
+\subsubsection{Voxel grid models}
 Voxel grids are a common method for representing 3D terrains in procedural generation, offering the ability to capture complex internal structures and features that are difficult or impossible to represent with surface-based models. In a voxel grid, the 3D space is divided into a regular grid of small, cube-shaped elements called voxels (volumetric pixels). Each voxel holds information about the material or properties of the terrain at that specific point in space. This approach allows for detailed modeling of features such as caves, tunnels, overhangs, and intricate underground networks. The regular grid structure allows for the use of image processing-oriented algorithms.
 
-There are three primary types of voxel grids used in terrain representation: binary voxel grids, material voxel grids and density voxel grids. Each has distinct characteristics, advantages, and limitations, making them suitable for different applications. Binary voxel grids are the simplest form of voxel representation. In these grids, defined $f: \R^3 \to [0, 1]$, each voxel is either "filled" or "empty," representing the presence or absence of material. This binary state is typically represented by a 1 (filled) or 0 (empty). Binary voxel grids are straightforward to implement and require much less memory compared to more complex voxel representations, making them ideal for applications where the primary concern is whether a space is occupied or not.
+There are three primary types of voxel grids used in terrain representation: binary voxel grids, material voxel grids and density voxel grids. Each has distinct characteristics, advantages, and limitations, making them suitable for different applications. 
+
+\subsubsubsection{Binary voxel grids}
+Binary voxel grids are the simplest form of voxel representation. In these grids, defined $f: \R^3 \to [0, 1]$, each voxel is either "filled" or "empty," representing the presence or absence of material. This binary state is typically represented by a 1 (filled) or 0 (empty). Binary voxel grids are straightforward to implement and require much less memory compared to more complex voxel representations, making them ideal for applications where the primary concern is whether a space is occupied or not.
 
 The simplicity of binary voxel grids is one of their main advantages. They are easy to understand and visualize, with each voxel requiring only a single bit of information to represent its state. Additionally, because only a binary state is stored, these grids can be memory-efficient when combined with compression techniques like Sparse Voxel Octrees (SVOs) or voxel Directed Acyclic Graphs (DAG). The simplicity of the data structure also allows for quick processing, making binary voxel grids suitable for real-time applications where performance is required. However, the binary nature of these grids limits their ability to represent variations in material density or properties, or even smoothness, resulting in less detailed terrain models. This can lead to hard, blocky edges in the terrain, which may appear unnatural without additional smoothing or processing.
 
+\subsubsubsection{Material voxel grids}
 Material voxel grids, defined as $\mu: \R^3 \to M$, are commonly used in applications where simple occupancy information is sufficient. For example, voxel-based games like Minecraft utilize material grids to create terrains composed of solid blocks with clear boundaries. These grids are also employed in scientific simulations where the primary concern is the presence or absence of materials, rather than detailed material properties.
 
+\subsubsubsection{Density voxel grids}
 Finally, density voxel grids allow each voxel to store a range of values, representing varying degrees of material presence with $f: \R^3 \to \R$. Instead of a simple discrete state, a density voxel grid assigns a continuous value to each voxel, which can represent material density, opacity, or other properties. This added complexity enables density voxel grids to represent subtle variations in terrain, such as gradual changes in material density or smooth transitions between solid and empty spaces, allowing for more realistic and natural-looking terrain models.
 
 % The use of density voxel grids results in soft transitions and smooth surfaces, reducing the blockiness typically associated with binary voxel grids. They are versatile and can represent not only solid terrain but also phenomena like fog, fluid densities, or temperature gradients. However, the increased detail and realism come at the cost of greater complexity. Density voxel grids require more memory and computational power, making them more challenging to implement and manage. The additional data and processing required can also lead to slower performance, particularly in real-time applications.
 
 Density voxel grids are often used in high-fidelity simulations where detail and realism are essential. They are found in applications such as medical imaging, scientific visualizations, and advanced terrain modeling for films and visual effects. These grids are also employed in procedural terrain generation systems that require smooth and natural transitions between different terrain features, such as caves, cliffs, and eroded landscapes.
 
-\subsection{Terrain manipulation}
-- ... 
+% \subsection{Terrain manipulation}
+% - ... 
 
 % - ...
 
@@ -106,29 +114,32 @@ Density voxel grids are often used in high-fidelity simulations where detail and
 
 \section{Procedural terrain generation}
 \label{sec:state-of-the-art_procedural-generation}
-Procedural generation is a method used in computer science to create data algorithmically rather than manually, enabling the automatic generation of large amounts of content with minimal human input. This approach is crucial in fields such as game development, where it helps create large, varied worlds, and in simulations or data generation where diverse scenarios or datasets are needed. The process typically involves defining rules and algorithms that dictate how content is generated, ensuring it meets specific criteria and patterns, often incorporating randomness through noise functions to produce unique results each time. Incorporating adjustable parameters and customizable rules in the algorithms allows users to influence the characteristics and outcomes of the generated content. This method enhances efficiency, creativity, and scalability in digital content creation, but the main challenges are ensuring the generated content from a single algorithm is both diverse and coherent and achieving a balance between speed, realism and control to satisfy the desired design and quality.
+Procedural generation is a computational method used in computer science to create data algorithmically rather than manually, enabling the automatic generation of large amounts of content with minimal human input. This approach is crucial in fields such as game development, where it helps create large, varied worlds, and in simulations or data generation where diverse scenarios or datasets are needed. The process typically involves defining rules and algorithms that dictate how content is generated, ensuring it meets specific criteria and patterns, often incorporating randomness through noise functions to produce unique results each time. Incorporating adjustable parameters and customizable rules in the algorithms allows users to influence the characteristics and outcomes of the generated content. This method enhances efficiency, creativity, and scalability in digital content creation. However, one of the main challenges is ensuring that content generated by a single algorithm remains both diverse and coherent, but the main challenges are ensuring the generated content from a single algorithm is both diverse and coherent and achieving a balance between speed, realism and control to satisfy the desired design and quality.
 
 \subsection{Definition}
 Procedural generation is a powerful technique for creating data algorithmically, rather than manually. This method is massively used in areas such as computer graphics, simulations, and game development. Essentially, it involves using predefined rules or algorithms to generate complex structures or systems. For example, it can be employed to create landscapes, textures, or even entire worlds.
 
-One of the main benefits of procedural generation is its data independence. Content is typically generated in real-time or on-the-fly, rather than being explicitly stored, which allows for the creation of large and dynamic environments without requiring significant storage space. Additionally, procedural generation is advantageous for producing diverse content quickly, enabling the creation of vast amounts of data that may require only minor adjustments or improvements.
+One of the main benefits of procedural generation is its data independence. Content is typically generated in real-time or on-the-fly, rather than being explicitly stored, which allows for the creation of large and dynamic environments without requiring significant storage space. However, procedural generation is also advantageous for producing diverse content quickly, enabling the creation of vast amounts of data that may require only minor adjustments or improvements.
 
-In practical applications, procedural generation is commonly used in video games. It enables the creation of vast, varied, and detailed environments efficiently, without requiring large storage. This automated approach involves defining a set of rules or procedures that produce diverse outputs, making the content creation process both dynamic and flexible. The generated content can adapt and change in response to different inputs or conditions, which is particularly valuable for applications needing variability and adaptability. 
+In practical applications, procedural generation is commonly used in video games. It enables the creation of vast, varied, and detailed environments efficiently, without requiring large storage. For instance, games like \textit{Minecraft} use procedural generation to create expansive worlds with diverse biomes, while titles like \textit{No Man's Sky} generate entire galaxies filled with unique planets. This automated approach involves defining a set of rules or procedures that produce diverse outputs, making the content creation process both dynamic and flexible. The generated content can adapt and change in response to different inputs or conditions, which is particularly valuable for applications needing variability and adaptability. 
 
-- INCLUDE OTHER USE CASE THAN TERRAIN GENERATION: \\
-** Character animation, level generation, character texturing, ... \\
-** Add examples from games \\
-- INCLUDE CINEMA USE CASES \\
-** Large realistic terrains gen, facial animation, crowd simulation, ... (find other use cases) \\
-- INCLUDE SIMULATION:  \\
-** Real-world scenes, environment variable isolation, ... 
+Beyond terrain generation, procedural generation is widely employed in various aspects of digital content creation across multiple industries. In video games, it is used for character animation, allowing for the automatic generation of diverse character movements and behaviors that respond dynamically to the environment. Level design benefits from procedural techniques by creating vast, intricate game levels that are unique with each playthrough, enhancing replayability. Texturing in games also utilizes procedural generation to produce varied surface details, such as the appearance of weathered stone or realistic skin textures, for example.
+
+In the film industry, procedural generation plays a crucial role in generating realistic terrains for expansive outdoor scenes that would be time-consuming and costly to model by hand. It is also used in facial animation, where algorithms can create subtle, lifelike expressions that enhance the realism of CGI characters. Crowd simulations are another widely used application, where procedural techniques generate large numbers of unique characters with varied appearances and behaviors, populating scenes with realistic and dynamic crowds.
+
+In simulations, procedural generation is integral to creating accurate representations of real-world environments. This includes generating complex ecosystems, urban layouts, and geological formations for scientific research, training simulations, and virtual reality applications. Additionally, procedural methods are used to isolate and control environmental variables, allowing researchers to test different scenarios and observe outcomes in a controlled, repeatable manner.
 
 The integration of algorithms and data is a key aspect of procedural generation. It combines mathematical models, noise functions, and other algorithms to produce both realistic and abstract content. This might involve generating natural features like landscapes or textures, or even entire ecosystems. Incorporating elements of real-world phenomena, such as erosion patterns in terrain generation, can make the environments more believable and interactive.
 
 Moreover, procedural generation allows for user-driven customization. Users can influence or guide the content generation process, leading to user-specific outcomes. This feature, combined with the scalability and efficiency of procedural methods, means that large amounts of data can be produced with relatively low computational and storage costs compared to manually crafted content.
 
-[STOCHASTIC v. DETERMINIST ALGORITHMS]
-% Procedural generation can be categorized into deterministic and stochastic systems. Deterministic systems produce predictable and repeatable outputs given the same input parameters, while stochastic systems introduce randomness, leading to varied outputs even with identical initial conditions. 
+Procedural generation can be categorized into two main types: deterministic and stochastic systems.
+
+Deterministic systems produce outputs that are entirely predictable and repeatable given the same initial parameters and input conditions. This means that running the same algorithm with identical inputs multiple times generates the exact same output. This predictability is valuable in scenarios where consistency and reliability are essential, such as in engineering simulations or when reproducing specific results for debugging purposes in game development. For example, in a video game, a deterministic procedural system might be used to generate the same game world across different sessions, ensuring that all players experience the same environment under the same conditions. Or in content creation pipelines, where artists or designers might want to fine-tune specific aspects of the generated content. Since the output is repeatable, they can iteratively adjust parameters and see how these changes affect the final result, making it easier to achieve the desired outcome.
+
+Stochastic systems, on the other hand, introduce elements of randomness into the generation process, resulting in varied outputs even when the same initial parameters are used. This randomness allows for the creation of diverse and unpredictable content, which is particularly important in applications where variation and uniqueness are desired. For instance, in procedural content generation for video games, stochastic systems might be employed to generate a wide variety of levels, landscapes, or in-game items, ensuring that each playthrough feels different.
+
+In many cases, procedural generation systems may combine deterministic and stochastic elements to leverage the strengths of both approaches. For example, a game might use deterministic algorithms to generate the overall structure of a level, ensuring certain key elements are always present, while using stochastic processes to populate the level with varied details and features, less critical in the application. This hybrid approach can provide a balance between consistency and variability, making it possible to create dynamic content that remains coherent.
 
 Rule-based systems are another aspect of procedural generation, using predefined rules to generate content. This approach allows for controlled and structured outputs. Typically, procedural generation involves iterative processes, where initial results are refined or adjusted based on additional rules or parameters.
 
@@ -137,19 +148,121 @@ The advantages of procedural generation include efficiency, as it reduces the ne
 However, there are challenges associated with procedural generation. The complexity of developing and fine-tuning algorithms can be significant, requiring careful balancing of parameters. Striking a balance between realistic content and computational performance can also be difficult. Furthermore, meeting user expectations for content quality and variety, especially in interactive applications, can be a challenge.
 
 \subsection{History}
-Early developments in procedural generation can be traced back to the mid-20th century, grounded in mathematical and algorithmic theories. This period saw the introduction of key concepts like randomness and noise functions, which laid the foundation for procedural techniques. One notable advancement was the introduction of noise functions, such as Perlin noise in 1983. This method allowed for the generation of smooth, natural-looking randomness in computer graphics. [ORIGINAL USE CASE OF PERLIN NOISE + DESCRIPTION OF NOISE FUNCTION]
+The history of procedural generation can be traced back to the mid-20th century, rooted in mathematical and algorithmic theories. During this period, foundational concepts such as randomness, fractal geometry, and noise functions were introduced, laying the groundwork for modern procedural techniques.
 
-Building on this, Ken Perlin developed Simplex noise in 1985. Simplex noise represented a significant improvement over Perlin noise by offering a more computationally efficient and visually pleasing alternative. During the same era, fractal geometry emerged, introducing the concept of generating self-similar structures. This had a substantial impact on terrain generation and procedural modeling, providing a new way to create intricate and repeating patterns. [DESCRIPTION OF NOISE FUNCTION]
+\subsubsection{Noises}
+One of the earliest and most significant developments in procedural generation was the introduction of noise functions. Noise functions are mathematical constructs used to generate pseudo-random, yet smooth and coherent, patterns. These patterns are critical in creating natural-looking textures and landscapes in computer graphics.
 
-As procedural generation began to find applications in video games and interactive media, its impact became more pronounced. In 1980, the game "Rogue" showcased procedural generation in its level design, featuring randomly generated dungeons and item placements. This was followed by "Elite" in 1984, which utilized procedural generation to create unique characteristics for each planet of an entire world of 2048 planets, such as names, positions in space, economic models, and resource availability, for about 20Ko of memory storage. This approach contributed to a diverse and large game universe, enhancing replayability and exploration.
+Ken Perlin introduced Perlin noise in 1983, initially for the CGI movie \textit{Tron} (1982), a groundbreaking method for generating smooth, gradient-based noise. Perlin noise can be defined as a continuous function $P(\p)$ that takes a point $\p$ in n-dimensional space and returns a scalar value that represents the noise intensity at that point. The function is defined as a sum of several layers of noise, called "octaves," each with its own frequency and amplitude:
 
-The evolution continued with significant milestones in procedural content generation (PCG). "Dwarf Fortress," released in 2006, became renowned for its deep and complex world generation, which included detailed civilizations, histories, and ecosystems. "Spore," released in 2008, pushed the boundaries further by extensively using procedural generation, as the game did not store textures, music, or animations. "Minecraft," released in 2011, revolutionized procedural generation in gaming by creating vast, open worlds with a variety of biomes and features. [CITATIONS]
+\begin{align}
+P(\p) = \sum_{i=0}^{n-1} a_i \cdot \text{noise}(f_i \cdot \p)
+\end{align}
 
-In addition to video games, procedural generation found applications in simulations and computer graphics. For scientific simulations, it was used in terrain generation for geological studies and virtual landscapes, as well as in fluid dynamics to simulate realistic fluid behaviors. In the domain of computer graphics and animation, procedural techniques became essential for creating complex visual effects, landscapes, and textures in films, which would be labor-intensive to model manually. The emergence of real-time graphics and game engines like Unreal Engine and Unity further leveraged procedural generation to create dynamic content and diverse environments.
+where  $n$ is the number of octaves, $a_i$ is the amplitude of the $i$-th octave, $f_i$ is the frequency of the $i$-th octave.
 
-Computer technology improvements have played a crucial role in the evolution of procedural generation. Improvements in noise functions, such as Worley noise and new variations of Perlin noise, enhanced both the quality and efficiency of procedural methods. Recent developments in machine learning and deep learning have been integrated with procedural generation to produce more complex and adaptive content. The increase in computing power has also been pivotal, allowing for the generation of more detailed and complex procedural content in real time. Additionally, the use of parallel processing and GPUs has accelerated these processes, enabling real-time applications and high-resolution simulations.
+The primary application of Perlin noise was in generating textures that mimic natural phenomena, such as clouds, fire, and marble. Perlin noise's key advantage was its ability to produce visually appealing, continuous gradients that avoided the harsh randomness seen in earlier noise functions. This made it an essential tool in computer graphics, particularly in texture mapping and terrain generation.
 
-% Looking to the future, current trends in procedural generation include hybrid approaches that combine procedural techniques with manual design to balance complexity and artistic control. User-driven content is becoming more prevalent, allowing players and users to influence procedural content generation. Moreover, procedural generation is increasingly being applied in advanced simulations for areas such as training, virtual reality, and scientific research, including climate modeling and urban planning.
+Building on his earlier work, Ken Perlin developed Simplex noise in 2001, which was designed to address some of the limitations of Perlin noise. Simplex noise is a more computationally efficient and visually isotropic alternative. It operates on a triangular (in 2D) or tetrahedral (in 3D) grid, reducing computational complexity, particularly in higher dimensions. The Simplex noise function, $S(\p)$, can be defined similarly to Perlin noise but uses a different gradient selection and interpolation process that results in fewer directional artifacts:
+
+\begin{align}
+S(\p) = \sum_{i=1}^{n} a_i \cdot \text{simplex\_noise}(f_i \cdot \p)
+\end{align}
+
+Simplex noise's reduced computational cost and smoother, isotropic results made it popular in real-time graphics applications, such as video games.
+
+Wavelet noise uses wavelet transforms to control the frequency content of the noise across different scales, reducing artifacts like aliasing and improving texture fidelity. It is expressed as:
+
+\begin{align}
+\text{Wavelet\_Noise}(\p) = \sum_{i=0}^{n-1} \text{Wavelet\_Transform}(a_i \cdot \text{noise}(f_i \cdot \p)),
+\end{align}
+
+allowing for detailed and consistent textures at multiple resolutions.
+
+
+Worley noise, introduced by Steven Worley, generates patterns based on the distances to randomly distributed points in space. This noise is particularly effective for creating cellular patterns, useful in simulating materials like stone or skin. The noise at a point $\p$ is computed as:
+
+\begin{align}
+W(\p) = \min_{i} \{ \text{distance}(\p, \q_i) \},
+\end{align}
+
+where $\q_i$ are the feature points.
+
+Curl noise is particularly useful for simulating fluid-like motion, such as swirling patterns in water or smoke. It is generated by taking the curl of a vector field derived from a noise function, resulting in a divergence-free flow. The curl noise is mathematically described as:
+
+\begin{align}
+\mathbf{C}(\p) = \nabla \times \mathbf{F}(\p),
+\end{align}
+
+where $\mathbf{F}(\p)$ is a vector field generated by the noise function.
+
+
+\subsubsection{Subdivision}
+% Another significant mathematical concept that influenced procedural generation was fractal geometry, introduced by Benoît B. Mandelbrot in the 1970s. Fractals are complex structures that exhibit self-similarity across different scales, meaning that their patterns repeat at every level of magnification. 
+
+In procedural generation, fractal geometry can be used to create natural-looking terrains and landscapes by generating structures that appear consistent across various scales. For example, the Diamond-Square algorithm, a fractal-based terrain generation technique, iteratively refines a coarse grid of points by introducing random variations. This process creates self-similar structures that resemble mountainous terrains:
+
+\begin{align}
+h(x, y) = \frac{h(x_1, y_1) + h(x_2, y_2) + h(x_3, y_3) + h(x_4, y_4)}{4} + \text{random\_offset}
+\end{align}
+
+where $h(x, y)$ is the height at a given point, and $(x_1, y_1), (x_2, y_2), (x_3, y_3), (x_4, y_4)$ are the surrounding points.
+
+Fractal-based methods revolutionized terrain generation by providing a mathematical framework for creating realistic and complex natural landscapes.
+
+\subsubsection{Entertaining industry}
+
+As procedural generation techniques matured, they found early applications in video games and interactive media. One of the first notable examples was the game \textit{Rogue} (1980), which utilized procedural generation to create its dungeon levels. In Rogue, each dungeon was generated anew each time a player started a game, ensuring that no two playthroughs were alike. This approach not only enhanced replayability but also minimized the amount of storage needed, as the game did not store pre-made levels but rather generated them on-the-fly.
+
+Another milestone in procedural generation was the game \textit{Elite} (1984), which utilized procedural algorithms to generate a massive universe containing 2048 unique planets, each with its own name, economy, and location in space. This vast universe was generated using only about 20KB of memory, thanks to the efficiency of the procedural techniques employed. The planets' attributes were generated using deterministic algorithms, ensuring that each planet's characteristics were consistent across different game sessions.
+
+\textit{Dwarf Fortress} (2006) took procedural generation to new heights by generating not just terrain, but entire worlds, complete with histories, civilizations, and ecosystems. The game uses complex algorithms to simulate thousands of years of history, resulting in a deeply detailed and dynamic world. The procedural generation in Dwarf Fortress goes beyond mere randomization; it involves creating a coherent and interconnected world where every element, from geography to political structures, is generated algorithmically.
+
+\textit{Spore} pushed the boundaries of procedural content generation by procedurally generating creatures, planets, and even entire galaxies. Unlike traditional games, Spore did not store textures, music, or animations. Instead, it generated these elements on-the-fly, allowing for an almost infinite level of variety and creativity.
+
+\textit{Minecraft} (2011), revolutionized procedural generation in gaming by creating vast, open worlds composed of blocks, with different biomes, caves, and structures all generated procedurally. The game's world is generated using a combination of Perlin noise and other algorithms to create varied and dynamic landscapes that players can explore indefinitely. Minecraft's use of procedural generation allowed for an infinite world size, limited only by the computing power available.
+
+Procedural generation's impact extends beyond gaming into simulations, scientific research, and computer graphics. In scientific simulations, procedural techniques are used to generate terrains for geological studies, allowing researchers to model and analyze various scenarios, such as erosion and sediment transport. Procedural generation is also used in fluid dynamics simulations to create realistic water flows, weather patterns, and other environmental phenomena.
+
+In computer graphics and animation, procedural generation is essential for creating complex visual effects, such as realistic landscapes, textures, and particle systems in movies. Procedural methods enable the efficient generation of vast and detailed environments that would be impractical to model manually. For example, in movies like \textit{The Lord of the Rings} (2001) and \textit{Avatar} (2009), procedural techniques were used to generate large natural landscapes, facial animations, crowds simulations, etc.
+
+\subsubsection{Parallelization and GPU utilisation}
+
+The exponential increase in computing power over the past few decades allowed exponential advancements in procedural generation, particularly for real-time content creation and complex simulations. The evolution from single-core processors to multi-core CPUs (Central Processing Unit), and more significantly, the rise of powerful Graphics Processing Units (GPUs) capable of massive parallel processing, has transformed how procedural algorithms are implemented.
+
+GPUs are perfect for procedural generation due to their architecture, which allows them to execute thousands of threads in parallel. Unlike CPUs, which are optimized for sequential processing and are typically limited to a few cores, GPUs contain thousands of smaller, simpler cores designed for handling multiple simple tasks simultaneously. This parallelization capability is essential for procedural generation, where large data grids need to be processed efficiently.
+
+In procedural generation, many operations can be performed independently on different parts of the data, making them ideal candidates for parallel execution. For example, when generating a large terrain, each point on the terrain grid can be computed independently based on noise functions or subdivision algorithms. By distributing these computations across many parallel threads, GPUs can dramatically accelerate the generation process, allowing for real-time updates and interactions in complex environments.
+
+GPGPU (General-purpose Processing on GPU) refers to the use of GPUs for performing computations that are traditionally handled by CPUs. Originally designed for rendering graphics, GPUs have evolved to support general-purpose computing tasks through frameworks like CUDA (Compute Unified Device Architecture) from NVIDIA and OpenCL (Open Computing Language). These frameworks allow developers to write programs that can harness the parallel processing power of GPUs for a wide range of computational tasks beyond just graphics rendering.
+
+In procedural generation, GPGPU is employed to accelerate various algorithms that require intensive computation. For example, noise functions like Perlin or Simplex noise can be computed in parallel across the entire terrain grid or texture space, enabling the real-time generation of complex patterns and surfaces. Or techniques such as the Diamond-Square algorithm or midpoint displacement can be implemented on the GPU, where each refinement step of the grid can be processed simultaneously for different segments of the terrain. Finally, procedural simulations of fluid dynamics, particle systems, and other physical phenomena can be executed on the GPU, where the interactions of thousands or even millions of particles are computed in parallel, resulting in realistic, real-time simulations.
+
+The integration of machine learning, particularly deep learning techniques, with procedural generation represents a the new step forwardin the domain. Machine learning models, such as Generative Adversarial Networks (GANs) and Variational Autoencoders (VAEs), have been leveraged to enhance the quality and diversity of procedurally generated content.
+
+GANs are composed of two neural networks, a generator and a discriminator, that are trained together in a competitive manner. The generator creates new data samples, while the discriminator evaluates them against real data. Through this process, the generator learns to produce increasingly realistic outputs. In procedural generation, GANs can be trained on datasets of real-world terrains, textures, or architectural styles, and then used to generate new, highly detailed and realistic content that closely mimics the training data. For instance, GANs can create entire landscapes that are indistinguishable from real-world environments, adding a layer of realism that traditional procedural techniques.
+
+VAEs are another type of deep learning model used in procedural generation. They work by encoding input data into a latent space, where similar inputs are mapped close to each other, and then decoding from this space to generate new data. VAEs are particularly useful for generating content that needs to maintain a certain level of coherence or adhere to specific stylistic constraints. For example, VAEs can generate new character models or textures that fit within a desired aesthetic, providing a high degree of control over the final output.
+
+[TALK ABOUT TRANSFORMERS ALSO]
+
+
+
+
+
+% Early developments in procedural generation can be traced back to the mid-20th century, grounded in mathematical and algorithmic theories. This period saw the introduction of key concepts like randomness and noise functions, which laid the foundation for procedural techniques. One notable advancement was the introduction of noise functions, such as Perlin noise in 1983. This method allowed for the generation of smooth, natural-looking randomness in computer graphics. [ORIGINAL USE CASE OF PERLIN NOISE + DESCRIPTION OF NOISE FUNCTION]
+
+% Building on this, Ken Perlin developed Simplex noise in 1985. Simplex noise represented a significant improvement over Perlin noise by offering a more computationally efficient and visually pleasing alternative. During the same era, fractal geometry emerged, introducing the concept of generating self-similar structures. This had a substantial impact on terrain generation and procedural modeling, providing a new way to create intricate and repeating patterns. [DESCRIPTION OF NOISE FUNCTION]
+
+% As procedural generation began to find applications in video games and interactive media, its impact became more pronounced. In 1980, the game "Rogue" showcased procedural generation in its level design, featuring randomly generated dungeons and item placements. This was followed by "Elite" in 1984, which utilized procedural generation to create unique characteristics for each planet of an entire world of 2048 planets, such as names, positions in space, economic models, and resource availability, for about 20Ko of memory storage. This approach contributed to a diverse and large game universe, enhancing replayability and exploration.
+
+% The evolution continued with significant milestones in procedural content generation (PCG). "Dwarf Fortress," released in 2006, became renowned for its deep and complex world generation, which included detailed civilizations, histories, and ecosystems. "Spore," released in 2008, pushed the boundaries further by extensively using procedural generation, as the game did not store textures, music, or animations. "Minecraft," released in 2011, revolutionized procedural generation in gaming by creating vast, open worlds with a variety of biomes and features. [CITATIONS]
+
+% In addition to video games, procedural generation found applications in simulations and computer graphics. For scientific simulations, it was used in terrain generation for geological studies and virtual landscapes, as well as in fluid dynamics to simulate realistic fluid behaviors. In the domain of computer graphics and animation, procedural techniques became essential for creating complex visual effects, landscapes, and textures in films, which would be labor-intensive to model manually. The emergence of real-time graphics and game engines like Unreal Engine and Unity further leveraged procedural generation to create dynamic content and diverse environments.
+
+% Computer technology improvements have played a crucial role in the evolution of procedural generation. Improvements in noise functions, such as Worley noise and new variations of Perlin noise, enhanced both the quality and efficiency of procedural methods. Recent developments in machine learning and deep learning have been integrated with procedural generation to produce more complex and adaptive content. The increase in computing power has also been pivotal, allowing for the generation of more detailed and complex procedural content in real time. Additionally, the use of parallel processing and GPUs has accelerated these processes, enabling real-time applications and high-resolution simulations.
+
+% % Looking to the future, current trends in procedural generation include hybrid approaches that combine procedural techniques with manual design to balance complexity and artistic control. User-driven content is becoming more prevalent, allowing players and users to influence procedural content generation. Moreover, procedural generation is increasingly being applied in advanced simulations for areas such as training, virtual reality, and scientific research, including climate modeling and urban planning.
 
 \subsection{Terrain generation}
 Procedural generation encompasses a diverse range of techniques used to create complex, natural-looking content, particularly in terrain generation. These techniques span from mathematical models to advanced simulations and can be broadly categorized into methods for large-scale terrain generation and procedural landform generation. 
@@ -210,27 +323,77 @@ By combining these diverse techniques, procedural generation enables the creatio
 % - Most algorithms are focused on alpine landscapes \\
 % ** Because easier to observe, much more research on the topic, historically first geo features simulated
 
-
 \subsection{Fluid simulations}
+Fluid simulations are an essential component of procedural terrain generation, particularly for modeling the behavior of water and its interactions with the terrain. These simulations are crucial for creating realistic and dynamic environmental models that accurately reflect natural phenomena, such as river flow, coastal erosion, sediment transport, and overall hydrology.
 
-Fluid simulations are almost inevitable in representing natural phenomena in terrain generation, particularly in modeling water flow, erosion, and sediment transport. These simulations are used for creating realistic and dynamic environmental models that accurately reflect the interactions between fluids and terrain. The ability to simulate fluid behaviors such as river currents, coastal erosion, and sediment deposition is fundamental to producing realistic terrains.
+At the core of fluid simulations are the Navier-Stokes equations, which describe the motion of fluid substances. These equations account for various forces acting on a fluid, such as pressure, viscosity, and external forces like gravity. 
+\begin{align}
+    \rho \left( \frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \nabla) \mathbf{u} \right) = -\nabla p + \mu \nabla^2 \mathbf{u} + \mathbf{f}
+\end{align}
+Where $\mathbf{u} = (u, v, w)$ is the fluid velocity vector, with components $u$, $v$, and $w$ in the $x$-, $y$-, and $z$-directions, respectively, $t$ is time, $\rho$ is the fluid density, $p$ is the pressure field within the fluid, $\mu$ is the dynamic viscosity of the fluid, $\nabla p$ is the pressure gradient force, $\mu \nabla^2 \mathbf{u}$ is the viscous diffusion term, representing the effects of internal friction within the fluid and finally, $\mathbf{f}$ represents external body forces, such as gravity.
 
-Fluid simulations can be categorized into various methods, each with its unique applications. Techniques like Particle-In-Cell (PIC), Fluid-Implicit Particle (FLIP), and Stable Fluids are commonly used to simulate fluid dynamics. PIC combines particles with a grid to offer a straightforward approach for basic fluid simulations and visualizations. FLIP builds on the PIC method by enhancing accuracy and efficiency through a hybrid approach that merges particle and grid techniques, making it suitable for complex fluid behaviors. Stable Fluids, a grid-based method, is designed for simulating stable, incompressible fluids with minimal computational complexity, often used in interactive applications where real-time rendering is required.
+For an incompressible fluid like water, the Navier-Stokes equations can be simplified by assuming that the fluid density remains constant, leading to the incompressibility condition:
 
-More sophisticated methods include Smoothed Particle Hydrodynamics (SPH) and Marker-And-Cell (MAC). SPH is a particle-based method where fluid properties are represented by particles that interact based on smoothing kernels, useful for detailed simulations, including interactions between fluids and terrain. MAC and other grid-based approaches use a grid to simulate fluid behavior, providing detailed and accurate representations suitable for various scales of environments. Hybrid methods combine the strengths of grid and particle approaches, balancing the need for detail with performance requirements in complex simulations.
+\begin{align}
+    \nabla \cdot \mathbf{u} = 0
+\end{align}
 
-Fluid simulations are integral to terrain generation, particularly in modeling erosion and sediment transport. These simulations allow for the realistic modeling of erosion processes, which affect terrain features like riverbeds and valleys over time. By simulating how fluids interact with the terrain, these models can show how sediment is moved and deposited, contributing to the natural evolution of the landscape. Water flow and hydrology are other applications of fluid simulations in terrain generation. Simulating surface water dynamics, such as the flow of rivers, lakes, and wetlands, helps create realistic environments where water interacts dynamically with the terrain. 
-% Additionally, subsurface flow simulations model groundwater movement and its interactions with surface features, adding another layer of realism to the terrain.
+This condition ensures that the volume of fluid elements remains unchanged as they move through space, which is crucial for accurately simulating water flow.
 
-% In interactive environments, such as video games and virtual simulations, real-time fluid simulations are crucial for creating dynamic water interactions. These simulations enable the depiction of responsive and changing environments, where water flow can be influenced by user actions or environmental conditions, enhancing the immersive experience.
+The Navier-Stokes equations are highly non-linear, which means that even small changes in the input conditions can lead to significant and unpredictable changes in the fluid's behavior. The non-linearity makes solving these equations a expensive computational problem, as it requires iterative methods to find stable solutions. Each step of the simulation must balance the forces acting on the fluid, such as pressure and viscosity, while ensuring that the solution remains physically accurate and stable over time. This process becomes particularly demanding when aiming for realistic, high-resolution simulations where fine details like turbulence and surface tension must be accurately captured.In this case we require dense computational grids or a large number of particles, and these elements must be updated frequently to maintain the realism of the simulation, which exponentially increase the computations and the memory used.
 
-While significant for terrain generation, fluid simulations still present important challenges. The main issue is the computational resources required to run accurate and detailed simulations. Performance trade-offs are often necessary, especially in real-time applications where the simulation must balance accuracy with computational efficiency. Complex 2D (or 2.5D) fluid simulations already require powerful hardware, including advanced processors and substantial memory, to handle the intensive calculations involved. 3D simulations are even more computationally expensive, as the third dimension has to be taken into account.
+The computation cost is further amplified when simulations are performed in 3D space. Unlike 2D simulations, where calculations are confined to a plane, 3D simulations must account for the full complexity of fluid movement in all directions. This increases the number of computations required, making real-time applications like as video games and interactive simulations almost incapable to use them.
 
-Another challenge lies in balancing accuracy with realism. While detailed fluid dynamics can produce highly realistic simulations, they often come at the cost of performance. Simulation artifacts, or inaccuracies, can also impact the perceived realism of the terrain, requiring careful attention to detail in the modeling process. Integrating fluid simulations with terrain models presents its own set of challenges. Ensuring that fluids interact seamlessly with the terrain, such as through fluid erosion or sediment deposition, requires sophisticated techniques to maintain consistency between the simulated fluid behaviors and the terrain features.
+Different fluid solvers have been developed to approximate the solutions to the Navier-Stokes equations, each with its strengths and weaknesses. These solvers vary in how they represent the fluid (the Lagrangian approach using particles or the Eulerian approach with discrete grids, or a combination of both) and how they handle the computational trade-offs between accuracy, stability, and performance. The choice of a fluid solver depends on the specific requirements of the simulation, such as the need for real-time performance, the level of detail required, or the types of fluid behavior being modeled.
 
-Recent developments in fluid simulation technology have focused on enhancing both the accuracy and efficiency of these simulations. Advancements in algorithms have led to new techniques that improve the realism and computational performance of fluid models. There has also been significant progress in real-time fluid simulation, with innovations aimed at improving interactivity.
+\subsubsection{Marker-And-Cell (MAC) Method}
 
-The integration of Deep Learning and Machine Learning into fluid simulations represents a recent trend in this field. AI-enhanced simulations use machine learning to refine fluid simulation accuracy and adaptivity, enabling more realistic and responsive environments. Predictive models, powered by AI, can simulate complex fluid behaviors based on historical data, offering new possibilities for dynamic and evolving terrain representations.
+The Marker-And-Cell (MAC) method is one of the earliest and most fundamental grid-based techniques for simulating incompressible fluid flows. In the MAC method, the fluid's velocity components are stored at the faces of grid cells, while pressure values are stored at the cell centers. Marker particles are used to track the fluid's free surface, ensuring that fluid interfaces and boundaries are accurately captured. The MAC method excels at maintaining the incompressibility condition of fluids and accurately modeling pressure fields, which are important for realistic fluid dynamics. Because of its emphasis on accuracy and detailed pressure modeling, MAC is more oriented toward realism, especially in scenarios where the precise behavior of fluids is essential. However, its grid-based nature can lead to challenges in handling complex geometries and fine details at fluid boundaries, as the resolution is limited by the grid size. Moreover, the method can be computationally intensive, especially for high-resolution grids, making it less ideal for real-time applications.
+
+\subsubsection{Stable Fluids}
+
+Building on the grid-based approach of the MAC method, the Stable Fluids method addresses key stability issues that arise in fluid simulations. Stable Fluids uses a semi-Lagrangian advection scheme and implicit solvers to achieve stability even with large time steps, which is particularly advantageous in real-time applications like video games or interactive simulations. This method is designed with performance in mind, allowing for the simulation of fluid motion without the numerical dissipation that can degrade the accuracy of results over time, which was a common problem in other grid-based methods. While Stable Fluids prioritize performance and stability, particularly in real-time environments, the use of implicit solvers can introduce smoothing effects that reduce the sharpness of fine details in the fluid's motion. Additionally, the method's reliance on grid resolution still limits its ability to represent highly detailed surface interactions, making it a good compromise between realism and performance.
+
+\subsubsection{Particle-In-Cell (PIC) Method}
+
+The Particle-In-Cell (PIC) method represents a hybrid approach that combines the strengths of particle-based and grid-based methods. Fluid properties are stored on a grid, but the fluid's motion is tracked using particles, which carry velocity and position information only. The particles interact with the grid to update the fluid's velocity field, and the grid provides a stable mean for solving the fluid dynamics equations. PIC is particularly useful for capturing the large-scale motion of fluids, benefiting from the grid's stability while using particles to track detailed fluid behavior. However, the method leans more toward performance over accuracy due to its hybrid nature and ability to handle large-scale fluid movements efficiently. A major downside of PIC is its tendency toward numerical dissipation, where the fluid's kinetic energy is artificially reduced over time, leading to a loss of fine details, especially in turbulent flows. This dissipation occurs because the interpolation between particles and the grid tends to average out small-scale variations in velocity, making PIC less suitable for scenarios where high fidelity and detail are required.
+
+\subsubsection{Fluid-Implicit Particle (FLIP) Method}
+
+The Fluid-Implicit Particle (FLIP) method is an evolution of the PIC method designed to address its numerical dissipation problem. FLIP retains the grid-particle hybrid approach but modifies how particle velocities are updated. Instead of fully relying on the grid's velocity field, FLIP updates particle velocities by applying only the changes in the grid's velocity field, preserving the fluid's kinetic energy and maintaining the detail in small-scale motions. This approach significantly reduces numerical dissipation, making FLIP more oriented toward realism, particularly in simulations that require detailed fluid dynamics like splashing, swirling, and other turbulent effects. However, FLIP is more computationally expensive than PIC and can suffer from instability issues, particularly when dealing with highly turbulent flows. The increased computational cost and the need for careful tuning of simulation parameters to maintain stability make FLIP less ideal for performance-focused applications but suitable for scenarios where high fidelity and detailed fluid behavior are essential.
+
+\subsubsection{Smoothed Particle Hydrodynamics (SPH)}
+
+Smoothed Particle Hydrodynamics (SPH) is a purely particle-based method that models fluids using discrete particles, each representing a small volume of fluid. These particles interact with each other based on smoothing kernels, which define the influence of one particle on its neighbors over a certain distance. SPH is particularly well-suited for simulating free-surface flows, such as waves, splashes, and other fluid phenomena where the interaction between fluid particles is complex and highly dynamic. Due to its ability to handle complex boundaries and fluid interfaces naturally, SPH is much more focused on realism, especially in scenarios that require accurate computation of fluid dynamics and interactions. However, SPH is computationally intensive, especially for high-resolution simulations where a large number of particles is required. Additionally, SPH can suffer from stability issues, such as particle clumping or excessive smoothing, which can detract from the realism of the simulation if not carefully managed. These factors make SPH better suited for applications where realism is prioritized over performance, particularly in high-fidelity simulations used in film and scientific research, but not for real-time applications.
+
+
+
+
+
+
+
+
+
+% \subsection{Fluid simulations}
+
+% Fluid simulations are almost inevitable in representing natural phenomena in terrain generation, particularly in modeling water flow, erosion, and sediment transport. These simulations are used for creating realistic and dynamic environmental models that accurately reflect the interactions between fluids and terrain. The ability to simulate fluid behaviors such as river currents, coastal erosion, and sediment deposition is fundamental to producing realistic terrains.
+
+% Fluid simulations can be categorized into various methods, each with its unique applications. Techniques like Particle-In-Cell (PIC), Fluid-Implicit Particle (FLIP), and Stable Fluids are commonly used to simulate fluid dynamics. PIC combines particles with a grid to offer a straightforward approach for basic fluid simulations and visualizations. FLIP builds on the PIC method by enhancing accuracy and efficiency through a hybrid approach that merges particle and grid techniques, making it suitable for complex fluid behaviors. Stable Fluids, a grid-based method, is designed for simulating stable, incompressible fluids with minimal computational complexity, often used in interactive applications where real-time rendering is required.
+
+% More sophisticated methods include Smoothed Particle Hydrodynamics (SPH) and Marker-And-Cell (MAC). SPH is a particle-based method where fluid properties are represented by particles that interact based on smoothing kernels, useful for detailed simulations, including interactions between fluids and terrain. MAC and other grid-based approaches use a grid to simulate fluid behavior, providing detailed and accurate representations suitable for various scales of environments. Hybrid methods combine the strengths of grid and particle approaches, balancing the need for detail with performance requirements in complex simulations.
+
+% Fluid simulations are integral to terrain generation, particularly in modeling erosion and sediment transport. These simulations allow for the realistic modeling of erosion processes, which affect terrain features like riverbeds and valleys over time. By simulating how fluids interact with the terrain, these models can show how sediment is moved and deposited, contributing to the natural evolution of the landscape. Water flow and hydrology are other applications of fluid simulations in terrain generation. Simulating surface water dynamics, such as the flow of rivers, lakes, and wetlands, helps create realistic environments where water interacts dynamically with the terrain. 
+% % Additionally, subsurface flow simulations model groundwater movement and its interactions with surface features, adding another layer of realism to the terrain.
+
+% % In interactive environments, such as video games and virtual simulations, real-time fluid simulations are crucial for creating dynamic water interactions. These simulations enable the depiction of responsive and changing environments, where water flow can be influenced by user actions or environmental conditions, enhancing the immersive experience.
+
+% While significant for terrain generation, fluid simulations still present important challenges. The main issue is the computational resources required to run accurate and detailed simulations. Performance trade-offs are often necessary, especially in real-time applications where the simulation must balance accuracy with computational efficiency. Complex 2D (or 2.5D) fluid simulations already require powerful hardware, including advanced processors and substantial memory, to handle the intensive calculations involved. 3D simulations are even more computationally expensive, as the third dimension has to be taken into account.
+
+% Another challenge lies in balancing accuracy with realism. While detailed fluid dynamics can produce highly realistic simulations, they often come at the cost of performance. Simulation artifacts, or inaccuracies, can also impact the perceived realism of the terrain, requiring careful attention to detail in the modeling process. Integrating fluid simulations with terrain models presents its own set of challenges. Ensuring that fluids interact seamlessly with the terrain, such as through fluid erosion or sediment deposition, requires sophisticated techniques to maintain consistency between the simulated fluid behaviors and the terrain features.
+
+% Recent developments in fluid simulation technology have focused on enhancing both the accuracy and efficiency of these simulations. Advancements in algorithms have led to new techniques that improve the realism and computational performance of fluid models. There has also been significant progress in real-time fluid simulation, with innovations aimed at improving interactivity.
+
+% The integration of Deep Learning and Machine Learning into fluid simulations represents a recent trend in this field. AI-enhanced simulations use machine learning to refine fluid simulation accuracy and adaptivity, enabling more realistic and responsive environments. Predictive models, powered by AI, can simulate complex fluid behaviors based on historical data, offering new possibilities for dynamic and evolving terrain representations.
 
 
 
@@ -296,7 +459,7 @@ The integration of Deep Learning and Machine Learning into fluid simulations rep
 
 
 \subsection{User interaction}
-\subsubsection{Realism-speed-control balance}
+% \subsubsection{Realism-speed-control balance}
 User interaction affects how users balance realism, speed, and control over generated content.
 
 Realism refers to the extent to which generated content accurately represents real-world characteristics, such as visual details, physical processes, and natural patterns. This is especially important in simulations, visualizations, and training environments where plausibility [FIND BETTER TERM] is critical. Techniques to enhance realism include physical simulations, which model processes like erosion and sediment transport, and the integration of expert knowledge from fields such as geology and ecology. However, achieving realism can be challenging due to the complexity of detailed simulations and the need for specialized expertise, which can demand substantial computational resources and inputs.
@@ -316,18 +479,18 @@ Control refers to how much users can influence or direct the procedural generati
 Managing diverse and sometimes conflicting user expectations, such as balancing creative freedom with the demand for realistic outcomes, requires careful consideration. Additionally, it is essential to balance the complexity of procedural systems to ensure they remain user-friendly, avoiding overwhelming users or producing results that feel artificial or inconsistent.
 
 
-\subsubsection{Regeneration}
-The regeneration of procedurally generated models is an issue often overlooked. As the user is almost satisfied with its generation, he may decide to adjust slightly the parameters used. The challenges of the regeneration are multiple: How to let the user explore the \gloss{ParamSpace} of the model freely? How to ensure that a small change in a parameter induce a small change in the result? How to handle the edition from direct manipulations after regeneration? Those question arise directly from the realism-speed-control balance of our procedural models.
+% \subsubsection{Regeneration}
+% The regeneration of procedurally generated models is an issue often overlooked. As the user is almost satisfied with its generation, he may decide to adjust slightly the parameters used. The challenges of the regeneration are multiple: How to let the user explore the \gloss{ParamSpace} of the model freely? How to ensure that a small change in a parameter induce a small change in the result? How to handle the edition from direct manipulations after regeneration? Those question arise directly from the realism-speed-control balance of our procedural models.
 
-Users can manually start the regeneration process to refresh or update a model. This allows the content to reflect new parameters or conditions as specified by the user. The generation speed has a strong influence on the possibility for the user to fine tune parameters as algorithms that can be executed in real-time or interactive-time keep the user active in his work. Longer execution times force him to find optimal parameters beforehand in order to create a satisfying model faster than if it was hand-made, which, when the model is not completely explicit, may feel impossible. 
+% Users can manually start the regeneration process to refresh or update a model. This allows the content to reflect new parameters or conditions as specified by the user. The generation speed has a strong influence on the possibility for the user to fine tune parameters as algorithms that can be executed in real-time or interactive-time keep the user active in his work. Longer execution times force him to find optimal parameters beforehand in order to create a satisfying model faster than if it was hand-made, which, when the model is not completely explicit, may feel impossible. 
 
-The fine-tuning speed can be improved by different strategies:
-\begin{itemize}
-    \item Modifications that have a local incidence on the resulting model requires only a local regeneration of the output. Limiting the spatial scope of an interaction is an efficient mean to keep at the same time a way to explore the \gloss{ParamSpace} of the algorithm while keeping the predictability of the outcome by avoiding global changes from a local edition.
-    \item Live preview of the outcome can be displayed in a coarse computation, allowing to have a rough idea of the result without the full computation. This strategy is easier to develop with algorithms using refinement paradigms.
-\end{itemize}
+% The fine-tuning speed can be improved by different strategies:
+% \begin{itemize}
+%     \item Modifications that have a local incidence on the resulting model requires only a local regeneration of the output. Limiting the spatial scope of an interaction is an efficient mean to keep at the same time a way to explore the \gloss{ParamSpace} of the algorithm while keeping the predictability of the outcome by avoiding global changes from a local edition.
+%     \item Live preview of the outcome can be displayed in a coarse computation, allowing to have a rough idea of the result without the full computation. This strategy is easier to develop with algorithms using refinement paradigms.
+% \end{itemize}
 
-[TODO]
+% [TODO]
 % Interface controls: various tools and options in the user interface enable users to initiate regeneration. 
 % This may include buttons or commands designed to reload or update the generated content based on user inputs.
 
