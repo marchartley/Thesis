@@ -3,6 +3,7 @@
 \zzcommand{\C}{\mathbb{C}}
 \zzcommand{\Z}{\mathbb{Z}}
 \zzcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\zzcommand{\abs}[1]{\left| #1 \right|}
 
 \zzcommand{\obj}{\text{STE}}
 
@@ -21,12 +22,12 @@
 \zzcommand{\Water}{\mathcal{W}}
 \zzcommand{\Wuser}{\Water_\text{user}}
 \zzcommand{\Wsimu}{\Water_\text{simulation}}
-\zzcommand{\Wobj}{\waterModif_\text{entities}}
+\zzcommand{\Wobj}{\waterModif_\text{objects}}
 
 \zzcommand{\terrain}{\mathcal{T}}
 \zzcommand{\height}{\mathcal{H}}
 \zzcommand{\depth}{\mathcal{D}}
-\zzcommand{\objects}{\mathcal{S}}
+\zzcommand{\objects}{\mathcal{O}}
 \zzcommand{\environment}{\mathcal{E}}
 \zzcommand{\Wlevel}{\mathcal{L}}
 \zzcommand{\events}{\text{events}}
@@ -83,6 +84,7 @@
 \zzcommand{\Econt}{\energy_{\text{continuity}}}
 \zzcommand{\Eimage}{\energy_{\text{image}}}
 \zzcommand{\Ecurv}{\energy_{\text{curvature}}}
+\zzcommand{\Egradient}{\energy_{\text{gradient}}}
 % \zzcommand{\time}{t}
 \zzcommand{\curve}{C}
 \zzcommand{\absorption}{A}
@@ -116,6 +118,8 @@
 
 \zzcommand{\noise}{\eta}
 
+\zzcommand{\dot}[2]{\langle  #1  , #2 \rangle}
+
 
 
 
@@ -128,7 +132,7 @@
 \newdualentry[][]{LOD}{LoD}{level of detail}{Amount of graphical data or information displayed in a scene or image. Higher LOD means more detail, while lower LOD means less detail. This concept helps manage computational resources, where less important or distant objects have lower LOD to improve performance.}
 
 % Semantic
-\newdualentry[][]{EnvObj}{STE}{semantic terrain entity}{Geographic feature represented sparsly which describe a landscape. We represent it with a \gloss{Skeleton}, \glosses{GenRule} and \glosses{EnvMat}. }{semantic terrain entities}
+\newdualentry[][]{EnvObj}{}{environmental object}{Geographic feature represented sparsly which describe a landscape. We represent it with a \gloss{Skeleton}, \glosses{GenRule} and \glosses{EnvMat}. }
 \newdualentry[][]{EnvVal}{}{environmental attribute}{Value of a geographic field at one point in space and time. }
 \newdualentry[][]{EnvModif}{}{environmental modifier}{Description of a modification of a \gloss{EnvVal} around a \gloss{EnvObj}. It can represent the spread or the absorption of material around it, or the deformation of water currents. }
 \newdualentry[][]{EnvMat}{}{environmental material}{Material available.}
@@ -146,7 +150,7 @@
 
 \newdualentry[][]{WarpFunction}{}{warp function}{$\warp: \R^n \to \R^n$ is a function that, given a $n$-dimensional point $\p$ returns another point $\q$. The function is usually bijective.}
 
-
+% Introduction
 \newdualentry[][]{ProceduralGeneration}{}{procedural generation}{A method for creating data algorithmically rather than manually, used across various fields to automate content creation.}
 \newdualentry[][]{TerrainGeneration}{}{terrain generation}{The process of algorithmically creating landforms in virtual environments, often using mathematical models and noise functions to simulate natural terrains.}
 \newdualentry[][]{VirtualTerrain}{}{virtual terrain}{Digitally simulated landscape used in video games, simulations, and visualizations, which mimics real-world or imaginary terrains.}

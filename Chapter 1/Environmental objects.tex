@@ -90,7 +90,7 @@ Due to the impossibility to observe the large-scale and the small-scale of under
 
 In an ecosystem, every element within the system has an impact on its surroundings, and accurately simulating physical properties like shading, heat, and humidity can require immense computational power. To address this, instead of simulating these properties individually for each object, they can be represented as scalar fields that span the entire scene. These scalar fields, which may represent temperature, humidity, or occlusion, are locally influenced by nearby objects and terrain features, such as trees casting shadows or buildings radiating heat. This approach, as described in \cite{Grosbellet2016, Guerin2016a}, allows for the environment's physical properties to be computed in a more efficient manner. By simplifying the complex interactions into these localized scalar fields, their method provides a scalable system that can handle large and detailed scenes. This system effectively renders scene details, such as snow accumulation or leaf distribution, in a way that is visually plausible, ensuring realistic results without the need for exhaustive simulations. 
 %In a similar way, other works represent the wind flow as a composition of local vector fields \cite{Wejchert1991}, avoiding complex fluid simulation while providing user control in a lightweight model. We extend these works by incorporating a time-evolution system such that the scene can be dynamic.
-In a similar approach, Wejchert and Haumann \cite{Wejchert1991} represent wind flow as a composition of local vector fields, known as "flow primitives", which can be combined to simulate complex fluid behavior. This method simplifies the computation by avoiding full fluid simulations, instead offering a lightweight model that allows for intuitive user control over the flow dynamics.
+In a similar approach, parallely Wejchert and Haumann \cite{Wejchert1991} and Sims \cite{Sims1990} represent wind flow as a composition of local vector fields, known as "flow primitives", which can be combined to simulate complex fluid behavior. This method simplifies the computation by avoiding full fluid simulations, instead offering a lightweight model that allows for intuitive user control over the flow dynamics.
 By combining these approaches, we can create dynamic ecosystems where environmental effects and fluid flows interact in a plausible manner, while requiring a low computation effort and preserving a high user control.
 
 
@@ -236,21 +236,20 @@ Following the gradient of the \gloss{FittingFunc} $\nabla \fittingFunc$ is done 
 This \gloss{FittingFunc} strategy is efficient to describe rivers as we can set $\fittingFunc(\p) = \height(\p)$ to force it to always run downstream. 
 
 \subsubsubsection{Energy optimization}
-Using a modified version the Active Contours algorithm \cite{Kass1988}, we can optimize the energy for the curve $\curve$ given $\energy = \Einternal + \Eshape + \Eimage$ with  
+Using a modified version the Active Contours algorithm \cite{Kass1988}, we can minimize the energy for the parametric curve $\curve$ given $\energy(\curve) = \Einternal + \Eshape + \Eimage$ with  
 \begin{align}
     \label{eq:internal-energy-equation}
-    \Einternal &= \frac{1}{2} \left( \norm{\frac{d v}{d t}(t)}^2 + \norm{\frac{d^2 v}{d t^2}(t)}^2  \right) \\
-    \Eshape &= \left( \Length - \int_{0}^{1}{\curve'(t) \, dt} \right)^2 \\
-    \Eimage &= \int_{\p \in \curve} \fittingFunc(\p) \, d\p
+    \Einternal &= \left( \int_{\curve}{ \norm{\curve'(s)}^2 \, ds} + \int_{\curve}{ \norm{\curve''(s)}^2 \, ds}  \right) \\
+    \Eshape &= \left( \Length - \int_{\curve}{ \, ds } \right)^2 \\
+    \Eimage &= \int_{\curve}{ \fittingFunc(\curve(s)) \, ds }
 \end{align}
-The internal energy $\Einternal$ force the shape continuity while the shape energy $\Eshape$ force the shape into a specific target length $\Length$, and finally $\Eimage$ that use the definition of the \gloss{FittingFunc} to attract the points of the curve toward a local minimum.
+In this configuration, $\Einternal$ induce a smooth continuity of the curve by reducing the spacing of each point while reducing the curvature. At the same time, $\Eshape$ apply constraints on the curve shape, which, in this case, is to target a specific length $\Length$. Finally, $\Eimage$ integrate the \gloss{FittingFunc} over the curve, often seen as an attractor. As such, the curve search for an optimized shape given constraints in $\Eshape$ for minimizing $\Eimage$.
 
-As we allow control over control points of the curve, we approximate this energy in the discrete form using: 
-\begin{align}
-    \Einternal &= \frac{1}{2} \left( \norm{\frac{d v}{d t}(t)}^2 + \norm{\frac{d^2 v}{d t^2}(t)}^2  \right) \\
-    \Eshape &= \left( \Length - \int_{0}^{1}{\curve'(t) \, dt} \right)^2 \\
-    \Eimage &= \int_{\p \in \curve} \fittingFunc(\p) \, d\p
-\end{align}
+If a steep coast can be found where the terrain slope is important near the water level, we can define $\fittingFunc = \abs{\height + 1} / \norm{\Delta \height}$. In this case, the curve will follow a path at the water level and spread its extremities over areas with a steep slope. 
+
+A river may also be symbolized as a parametric curve, but we need to add information about the direction and magnitude of the slope. As such, we can use $\fittingFunc = 1 - \dot{\curve'}{\Delta \height}$ which forces the direction of the curve to fit with the terrain slope.
+
+% The internal energy $\Einternal$ force the shape continuity while the shape energy $\Eshape$ force the shape into a specific target length $\Length$, and finally $\Eimage$ that use the definition of the \gloss{FittingFunc} to attract the points of the curve toward a local minimum.
 
 % While the first two possibilities are trivial, the later can also be optimized using the Active Contours algorithm by optimizing the energy $\energy = \Einternal + \Eshape$ with \eqref{eq:internal-energy-equation}. We applied a length constraint on the curves : 
 % \begin{align*}
@@ -259,6 +258,7 @@ As we allow control over control points of the curve, we approximate this energy
 % with $\length$ the curve's length and $\Length$ the target length. This algorithm is sensible to the initial shape of the curve, so we start with a straight line following the isolevel at the seed point.
 
 \subsubsection{Region-based \gloss{Skeleton}}
+\cite{Getreuer2012}
 A region is defined as an isocontour of the field for which the target area $\Area$ is found. From the seed point, we follow the isolevel of the \gloss{FitnessFunc} $\nabla \fittingFunc^\perp$ until a loop is created to define the initial condition of the shape. Using the Active Contours algorithm, we can optimize the region's energy defined as $\energy = \Einternal + \gamma \Eshape$ with  
 \begin{align}
     \label{eq:internal-energy-equation}
