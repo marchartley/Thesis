@@ -250,7 +250,7 @@ If a steep coast can be found where the terrain slope is important near the wate
 The internal energy, already introduced in \citep{Kass1988} is composed of two components imposing penalities on the local properties of the points of the curve. The first derivative forces the points along the curve to be evenly spaced by minimizing the curve tension, while the second derivative restrict it from forming sharp corners. As our aim is to represent natural elements, we rarely find sharp elements and thus, keep the original definition from the Snake formulation.
 
 \subsubsubsection{External energy}
-The external energy is also present in the original work. Using an external scalar field, each point of the curve is forced to follow the steepest slope of the field. 
+The external energy is also present in the original work. Using an external scalar field, each point of the curve is forced to follow the steepest slope of the field. The external field can be seen as an attractor for the curve.
 
 \subsubsubsection{Shape energy}
 We introduced the shape energy, an energy defined on the whole curve to apply constraints on its final shape. As many natural features have a given dimension, we may add a constraint on the lenght of the \gloss{Skeleton}. 
@@ -322,6 +322,10 @@ At each iteration, \glosses{EnvObj} are interrogated to verify if they are still
 
 \section{\Glosses{EnvModif}}
 \label{sec:semantic-representation_materials}
+Each \gloss{EnvObj} once present in the scene has an impact on the environment $\environment$ through their modifiers $\environmentModif$. We list three types of influence, which are the \gloss{EnvMat} modifiers $\materialModif$, the height modifiers $\heightModif$ and the water modifiers $\waterModif$. These modifiers are direct impact and can be computed as 
+\begin{align*}
+    \environment^* = \environment + \sum_{o \in \objects}{ \environmentModif_o }
+\end{align*}
 
 \subsection{\Gloss{EnvMat} modifiers}
 The environment is composed of a scalar field for each of the possible material that can be found in the terrain. The scalar fields represents the availability of the material at any point, but not a height field. Each material is defined with a mass $\mass$, a fluid velocity factor $\velFactor$, a diffusion rate $\diffusion$ and finally a decay rate $\decay$.
@@ -352,7 +356,20 @@ We solve \eqref{eq:material-displacement-equation} numerically using Euler integ
 The introduction of the decay rate $\decay \in ]0; 1]$ in the equation allows for the reach of a steady-state, where we can consider the simulation stable. As the user updates the state of the simulation manually, we observe the reach of this steady state before continuing the iterative steps.
 
 \subsection{Height modifiers}
-The computation of the height $\height(\p)$ is done using the \gloss{CoarseHeight} of each \gloss{EnvObj} affecting a point $\p$.
+The computation of the height $\height(\p)$ is done using the \gloss{CoarseHeight} of each \gloss{EnvObj} affecting a point $\p$. We can then simplify the shape of a mountain to a cone, a reef as a curved cylinder or a coral boulder as a sphere. As we consider surface height and not surface volume, we use the top-view height field projection, which ignore overhangs and cavities.
+
+The \gloss{CoarseHeight} is an implicit height field that is used for estimating the shape of the \gloss{EnvObj} while providing a hint of the surface normal at each point. Using implicit surfaces allows us to evaluate the altitude and the slope at any point analytically, without requiring the computation of the whole field. The analytical solution induce the multi-scale aspect of the method. 
+
+We divide the \glosses{CoarseHeight} in three categories: 
+\begin{itemize}
+    \item $\mathcal{G}$: \glosses{EnvObj} whose shape is defined from an absolute zero of the terrain,
+    \item $\mathcal{A}$: \glosses{EnvObj} whose shape is defined using a notion of altitude, typical of coral-related elements as the depth from the water surface is prevalent,
+    \item $\mathcal{F}$: \glosses{EnvObj} that are defined at the terrain surface. They represent objects that can be seen as bumps or carves from an aerial view. 
+\end{itemize}
+
+
+
+The implicit surface formulation defines a tree whose leaves are primitives and nodes are operators \cite{Bernhardt2010,Wyvill1999}. In our implementation, we use the commutative addition operation for each 
 
 \subsection{Influence on water currents}
 \label{sec:semantic-representation_water-currents}
