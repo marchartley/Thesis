@@ -4,44 +4,41 @@
 
 % \section{Procedural generation}
 % \label{sec:introduction_procedural-generation}
-Over the past 50 years, terrain generation has emerged as an increasingly active domain inside the field of computer graphics. As the demand for more realistic, faster, and automated processes has grown, terrain generation techniques have evolved to meet these challenges. As these objectives get progressively achieved, a new trend has started to emmerge in which focus is pushed toward user control. The focus of this work is on one specific branch of terrain generation: the interactive creation and modeling of landscapes.
+Over the past 50 years, terrain generation has emerged as an increasingly active domain inside the field of computer graphics. As the demand for more realistic, faster, and automated processes has grown, terrain generation techniques have evolved to meet these needs. As these objectives get progressively achieved, a new trend has started to emmerge in which focus is pushed toward user control. The focus of this work is on one specific branch of terrain generation: the interactive creation and modeling of landscapes.
 
-[TODO]
-% The utility of landscape generation extends beyond purely scientific pursuits, finding applications in diverse fields such as biology, geology, and robotics. Additionally, it has become a crucial tool in the entertainment industry, particularly in video games and cinema, where realistic and dynamic environments are essential for immersive experiences. The ability to generate landscapes that help in understanding natural rules and testing hypotheses makes this an invaluable tool for both researchers and content creators.
+The utility of landscape generation goes beyond purely scientific pursuits, finding applications in diverse fields such as biology, geology, and robotics. Additionally, it has become a central tool in the entertainment industry, particularly in video games and cinema, where creating realistic and dynamic environments is key for immersive experiences. The ability to generate landscapes that help in understanding natural rules and testing hypotheses makes this the ideal tool for both researchers and industries.
 
-What sets this work apart is its emphasis on underwater landscapes or "seascapes", an area still overviewed but with an important relevance in marine biology, oceanography, and underwater robotics. Furthermore, the extension of these techniques to new areas of the entertainment industry, such as video games and cinema, presents new opportunities for innovation.
+What sets this work apart is its emphasis on underwater landscapes or "seascapes", an area still overviewed but is important in domains such as marine biology, oceanography, and underwater robotics. Furthermore, the extension of these techniques to new areas of the entertainment industry, such as video games and cinema, presents new opportunities for innovation.
 
-[TODO]
-% However, this exploration of the domain comes with significant challenges. Finding a balance between automation and the user's creative desires is crucial, as is the ability to isolate variables and manage scaling effectively. There are three main approaches to generating virtual worlds: simulations, user interaction/modeling, and procedural modeling. Procedural modeling, in particular, is noteworthy for its potential in "automatic generation," where content is created using functions independently of user actions. For example, Perlin noise might be used for terrain generation, random noise for rock modeling, or specific algorithms for texture generation.
+However, this exploration of the domain comes with significant difficulties. Finding a balance between automation and the user's creative desires is essential, as is the ability to isolate variables and manage scaling effectively. 
+% There are three main approaches to generating virtual worlds: simulations, user interaction/modeling, and procedural modeling. Procedural modeling, in particular, is noteworthy for its potential in "automatic generation," where content is created using functions independently of user actions. For example, Perlin noise might be used for terrain generation, random noise for rock modeling, or specific algorithms for texture generation.
+The central question guiding this research is: "How can we efficiently guide the user in the creation of virtual content along the production process line to maintain as much control as possible over the final product?" This concept of "guiding" rather than "replacing" the user is, from my point of view, fundamental, as no machine can truly know better than a human what the final product should look like. The goal is to present algorithms that can be used flexibly within a production pipeline, adapting to many terrain representations, fluid solvers, landscape types, user's hardwares, or objectives, whether the final use is real-time rendering, realism, or animation.
 
-The central question guiding this research is: "How can we efficiently guide the user in the creation of virtual content along the production process line to maintain as much control as possible over the final product?" This concept of "guiding" rather than "replacing" the user is, from my point of view, fundamental, as no machine can truly know better than a human what the final product should look like. The goal is to present algorithms that can be used flexibly within a production pipeline, adapting to many terrain representation, fluid solver, landscape type, user's hardware, or objective, whether the final use is real-time rendering, realism, or animation.
-
-Maintaining control over the creative process is essential. Each generated result should feel unique, meet the user's expectations, be explainable, and be easily correctible without requiring a complete regeneration. This approach ensures that the user remains at the center of the creative process, with the tools and algorithms serving to enhance their objectives, rather than replace them.
+Maintaining control over the creative process is essential. Each generated result should feel unique, meet the user's expectations, be explainable, and be easily correctible without requiring a complete regeneration. This approach ensures that the user remains at the center of the creative process, with the tools and algorithms serving to enhance their objectives, rather than replacing the users themselves.
 
 \section{Contributions and outlines}
-This research follows a chronological order of terrain generation, beginning from the development of an abstract representation that bridges the gap between computer science and Earth science. This approach offers a generalization of the desired landscape type, with a particular focus on underwater environments, but also applicable to terrestrial landscapes.
+This thesis proposes several contributions in different branches of terrain generation. We will divide these works in three parts: the semantic representation of environments, the modeling of specific features and the terrain enhancement. Those three parts are presented in the chronological order in which a modeler would create his work: first drawing the esquisse of his artwork to see what it could look like coarsely at the end, then produce each element one by one, and finally add the final details that improve the whole. 
 
-A second key contribution is the proposal of new types of landscape features, including karst networks and coral islands, which maintain the notion of sparseness through the use of implicit volumes. 
-
-Finally, a new particle-based erosion simulation method is introduced. This method is agnostic to the terrain representation, making it lightweight, fast, and easy to implement. 
+This research follows the same order for terrain generation, beginning from the development of an abstract representation that bridges the gap between computer science and Earth science, offering a generalization of the desired landscape type, with a particular focus on underwater environments, but also applicable to terrestrial landscapes (\cref{chap:semantic-representation}). Secondly, we will develop on the problematic of 3D modeling of some natural features, and more specifically on coral islands (\cref{chap:coral-island}) and karst networks (\cref{chap:karsts}). Finally, we propose an erosion method that amplify the realism of the virtual terrain (\cref{chap:erosion}).
+%  a new particle-based erosion simulation method is introduced in \cref{chap:erosion}. This method is agnostic to the terrain representation, making it lightweight, fast, and easy to implement. 
 
 The overarching aim is to provide maximum control to the user, not only during the generation process but also in making corrections to details upstream, ensuring that the final product aligns with the user's vision.
 
-\subsection{Semantics}
-[TODO]
+\subsubsubsection{Semantics}
+% [TODO]
 % The work is heavily oriented towards underwater landscape generation, developed in collaboration with marine biologists to ensure scientific accuracy and relevance. 
-This interdisciplinary approach enriches the modeling process, ensuring that the generated landscapes reflect real-world biological and geological phenomena.
+% This interdisciplinary approach enriches the modeling process, ensuring that the generated landscapes reflect real-world biological and geological phenomena.
+The semantic representation we present in the first part of this work aims to design the features of a terrain with an abstraction the 3D aspect of the surface. We will see in the \cref{chap:semantic-representation} the introduction of \glosses{EnvObj} and their simplified representation, used to have a symbolic representation of the terrain features, biotic and abiotic, that are present in the scene. Using symbolism allows us to focus on the interactions between the different elements of an environment without the high computational needs of running an accurate multiphysics simulation. Moreover, the simplified representation used allows the user to manipulate the shape of the final terrain, without having to choose a specific terrain representation.
 
-\subsection{Modeling}
+\subsubsubsection{Modeling}
+As the global layout of the terrain is defined, the 3D modeling of the terrain surface can begin. Many methods have been proposed in the computer graphics community to shape specific terrain features using procedural methods. We will propose two new contributions to these methods. 
 
-[NOT GOOD AT ALL, TO REDO]
+In \cref{chap:coral-island}, we present a method to model a coral island from a sketch by using the properties that have been observed in travel journals, such as the radiality, the global structure of the visual features, the typical profile. The method is simple but constraint. We then use the procedural paradigm of sketching to create a large synthetic dataset of terrains, that is fed in a deep learning generative model to unlock the limitations of the initial sketching. This pipeline shows that we can first use the given properties to create a simplified model and then, by simply fine-tuning an off-the-shelf pretrained GAN model, remove these constraints to improve the user's possibilities.
 
-The generation of certain landscape elements, such as karst networks and coral islands, remains relatively new. While karsts have been explored in previous research (Axel Paris), the representation of coral islands, particularly in the context of Darwin's theories, is an innovative contribution. Karst networks are represented in a highly user-friendly manner, using a directed acyclic graph structure, which closely resembles a tree structure. This method is enhanced by a fractal generation approach with cycles, allowing for iterative generation of complex landscapes. The modeling of coral islands is based on both historical observations and travel journals.
+In \cref{chap:karsts}, we propose a new algorithm for the generation of karst networks. This geomorphological feature has been studied previously with a geologist point of view. We provide a new viewpoint on the problem by focusing on the non-expert user control to shape the structure of the network by using a directed acyclic graph, which closely resembles a tree structure. This method is enhanced by a fractal generation approach with cycles, allowing for iterative generation of complex landscapes.
 
-\subsection{Amplification}
-To increase the realism of the generated landscapes, details are added through a particle-based erosion method. This method is designed to be generalizable for flexibility, and its implementation is oriented towards speed and parallelization. 
-
-These contributions collectively aim to advance the field of terrain generation, providing new tools and methods that offer both flexibility and control to users, while also pushing the boundaries of what is possible in the simulation and modeling of natural landscapes.
+\subsubsubsection{Enhancement}
+To increase the realism and the visual impact of the generated synthetic landscapes, the use of terrain enhancement techniques are often required. We tackled the specific challenge of running erosion simulations, a type of enhancement that mimics the effects of water, wind and erosive forces on a virtual terrain to improve the belivability of the final landscape. A particle-based erosion method is proposed in \cref{chap:erosion}, designed to be generalizable for flexibility on multiple levels, and its implementation is oriented towards speed and parallelization. The main flexibility of our method is to be applicable to many terrain representations, but also to be agnostic to the fluid solver used and to be generalized for both landscapes and seascapes.
 
 Due to the disparities of works for the different topics proposed in this thesis, we will introduce the topic, present a state of the art and develop our methods in each chapter.
 
@@ -125,7 +122,7 @@ Due to the disparities of works for the different topics proposed in this thesis
 % ** Based on travel journals \\
 % - ... 
 
-% \subsection{Amplification}
+% \subsection{Enhancement}
 % - Increasing realism by adding details \\
 % - Particle-based erosion method \\
 % ** Generalization for flexibility \\

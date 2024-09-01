@@ -148,6 +148,14 @@
 {\multicitedelim}
 {\usebibmacro{postnote}}
 
+
+\DeclareCiteCommand{\citeProgram}[\mkbibparens]
+  {\usebibmacro{prenote}\usebibmacro{cite:init}}
+  {\usebibmacro{citeindex}
+   \printtext[bibhyperref]{\mkbibemph{\printfield{title}}, \printdate}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
 \AtEveryBibitem{\clearfield{url}}
 \AtEveryBibitem{\clearfield{note}} % Notes from Mendeley
 
@@ -205,7 +213,6 @@
 %   \endgroup
 % }
 
-\renewcommand{\ref}[1]{\cref{#1}}
 \renewcommand{\eqref}[1]{\cref{#1}}
 
 \zzcommand{\to}{\mapsto}

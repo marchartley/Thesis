@@ -49,7 +49,7 @@ In an ecosystem, any element of the system has an impact on their surrounding. S
 \section{Method}
 \label{sec:semantic-representation_method}
 The overall pipeline of the method is based on simple incremental generation like most rule-based systems. In this type of system, the final state is defined either by reaching equilibrium, or by verifying specific conditions, such as a maximum number of iterations. 
-We define our pipeline in three phases (Figure~\ref{fig:semantic-representation_pipeline}): the initialization phase that describe the generation and simulation rules, the iterative phase generating populating the terrain with our environmental objects and finally the output.
+We define our pipeline in three phases (\cref{fig:semantic-representation_pipeline}): the initialization phase that describe the generation and simulation rules, the iterative phase generating populating the terrain with our environmental objects and finally the output.
 
 
 \subsection{Pipeline overview}
@@ -62,22 +62,22 @@ We define our pipeline in three phases (Figure~\ref{fig:semantic-representation_
 \end{figure*}
 
 The generation of the terrain is initialized using an initial height field $\height$ and a water level $\Wlevel$. The height field provides variation on the depth $\depth$, which can influence the generation process of the scene. We set $\depth = \height - \Wlevel$. \\
-The list of available environmental objects $\availableObjects$, representing the different elements that can be present in the scene, are provided with their properties: type, size, generation rules, growing conditions and effects on the environment values (Section~\ref{sec:semantic-representation_environmental-objects}). \\
-Finally, different materials can be defined with their properties such as diffusion speed, mass, damping factor and influence from the water currents. Materials distributions are represented as a scalar field $\material: \R^2 \to \R$ and water currents as a vector field $\Water: \R^2 \to \R^2$ that can be evaluated by the environmental objects of the scene to simulate their growth and spawn at the most probable position. The environmental properties $\environment = (\depth, \Water, \Wlevel, \material)$ is composed of depth, water currents, water level and materials distribution information at any point of the terrain (Section~\ref{sec:semantic-representation_communication}). \\
-The definition of environmental objects' properties and environment properties is done with field experts, providing the pertinent parameters required to model the evolution of the terrain elements using expert knowledge (Section~\ref{sec:semantic-representation_biology}). Additional properties can easily be added to the environment properties $\environment$ in order to fit to the experts needs, such as atmospheric pressure, humidity, temperature, ... \\
+The list of available environmental objects $\availableObjects$, representing the different elements that can be present in the scene, are provided with their properties: type, size, generation rules, growing conditions and effects on the environment values (\cref{sec:semantic-representation_environmental-objects}). \\
+Finally, different materials can be defined with their properties such as diffusion speed, mass, damping factor and influence from the water currents. Materials distributions are represented as a scalar field $\material: \R^2 \to \R$ and water currents as a vector field $\Water: \R^2 \to \R^2$ that can be evaluated by the environmental objects of the scene to simulate their growth and spawn at the most probable position. The environmental properties $\environment = (\depth, \Water, \Wlevel, \material)$ is composed of depth, water currents, water level and materials distribution information at any point of the terrain (\cref{sec:semantic-representation_communication}). \\
+The definition of environmental objects' properties and environment properties is done with field experts, providing the pertinent parameters required to model the evolution of the terrain elements using expert knowledge (\cref{sec:semantic-representation_biology}). Additional properties can easily be added to the environment properties $\environment$ in order to fit to the experts needs, such as atmospheric pressure, humidity, temperature, ... \\
 The generation phase can optionally be started with an initial set of environmental objects present in the scene. 
 
 %- Main loop \\
 Once the initialization phase is done, the generation begins. The generation process is incremental and its main loop is composed of two different steps: the instantiation of new environmental objects then the update of the environment.
 % - Object instantiation \\
-At each iteration, new environmental objects can be created at their most fitting locations if possible. The generation rules provided in the initialization phase are used to find the optimal position from stochastic sampling (Section~\ref{sec:semantic-representation_generation-rules}). 
-All environmental objects are evaluating their state analytically using the fitting function provided as input (Section~\ref{sec:semantic-representation_obj-evaluation}).
+At each iteration, new environmental objects can be created at their most fitting locations if possible. The generation rules provided in the initialization phase are used to find the optimal position from stochastic sampling (\cref{sec:semantic-representation_generation-rules}). 
+All environmental objects are evaluating their state analytically using the fitting function provided as input (\cref{sec:semantic-representation_obj-evaluation}).
 % Once the new objects are instantiated, the process can continue.
 % - Environment update \\
-Once the instantiation step is done, the environment's values are updated by each environmental object by deposing and absorbing some of the available materials (Section~\ref{sec:semantic-representation_materials}) while modifying the water currents (Section~\ref{sec:semantic-representation_water-currents}) around them. Finally, water currents and height field's gradient displace materials of the terrain at each iteration.
+Once the instantiation step is done, the environment's values are updated by each environmental object by deposing and absorbing some of the available materials (\cref{sec:semantic-representation_materials}) while modifying the water currents (\cref{sec:semantic-representation_water-currents}) around them. Finally, water currents and height field's gradient displace materials of the terrain at each iteration.
 % We consider the water currents to be a steady-state flow, allowing us to remove the variation from time in the flow equations.
 % The water currents are updated locally by each environmental object using an analytical form $W^*(\p) = W(\p) + \omega(\p)$.
-During the generation process, the user can alter directly the distribution and shapes of the environmental objects (Section~\ref{sec:semantic-representation_manual-interaction}) and perturb the generation process by planning geological events that have impacts on the environment values (Section~\ref{sec:semantic-representation_events}).
+During the generation process, the user can alter directly the distribution and shapes of the environmental objects (\cref{sec:semantic-representation_manual-interaction}) and perturb the generation process by planning geological events that have impacts on the environment values (\cref{sec:semantic-representation_events}).
 
 % - Output result \\
 The output of our system is a set of environmental objects disposed in the plane. We do not provide the 3D representation of the environmental objects, letting the user define the rendering method. The figures used in the paper use a mix of implicit surfaces and triangular meshes.
@@ -210,7 +210,7 @@ The user can guide the generation process. The use of simple shapes as environme
 The interactive nature of our simulation enables the user to modify the state of the terrain by manipulating directly the environmental objects of the scene. We assume the modifications applied between two iterations of the simulation.
 
 Translating an environmental object is trivial, we simply requires to evaluate the state of the environmental objects at a translated position. The deformation of environmental objects can be applied on curve and region environmental objects by updating the control points of the skeleton and recomputing the resulting implicit surfaces. The evaluation positions used for region environmental objects are displaced by applying a cage deformation of the 2D shape using the Green coordinates of points in the shape. After the alteration of the region, evaluation points should be keeping a similar distribution than before, avoiding unexpected results during the interaction.
-By modifying an environmental object, the environment values may change, which can result in the destruction of the now incompatible environment objects in the scene (Figure~\ref{fig:semantic-representation_user-interaction}).
+By modifying an environmental object, the environment values may change, which can result in the destruction of the now incompatible environment objects in the scene (\cref{fig:semantic-representation_user-interaction}).
 
 \begin{figure}
     % \centering
@@ -225,8 +225,8 @@ As long as a non-zero fitting function is defined in the terrain, new environmen
 
 % \subsubsection{Guiding the simulation}
 Control over the region of the terrain that should be updated can be given by adjusting all fitting functions through a scalar field $\influence: \R^2 \to \R $ such that the fitting function $\fitnessFuncObj(\p)$ of any new environmental object is evaluated as $\fitnessFuncObj^*(\p) = \influence{\p} \fitnessFuncObj(\p)$. This is especially useful in the planning of robotic simulations as we can first generate the overall shape of our terrain and secondly focus the generation process around the areas that may be visited by the robot, avoiding useless simulations and computer power. 
-Figure~\ref{fig:semantic-representation_coral-colonization-scene} shows an example of colonization of the coral polyps that we limited manually into an annulus.
-% Figure~\ref{fig:semantic-representation_focus-area-example} shows an example of colonization of the coral polyps that we limited manually.
+\cref{fig:semantic-representation_coral-colonization-scene} shows an example of colonization of the coral polyps that we limited manually into an annulus.
+% \cref{fig:semantic-representation_focus-area-example} shows an example of colonization of the coral polyps that we limited manually.
 
 % \begin{figure}
 %     % \centering
@@ -236,7 +236,7 @@ Figure~\ref{fig:semantic-representation_coral-colonization-scene} shows an examp
 % \end{figure}
 
 % - Changing the water currents \\
-Our water current simulation is modeled as a simple vector field. As such, the user is able to interact with it at any moment of the simulation, allowing for the death of sensible environmental objects while it will guide the simulation into a new landscape. By modifying the water currents, the user also modifies the transport rate of materials at this position. The modification of currents is given as a stroke, a parametric curve $\curve$ for which we evaluate $\Delta \Wuser(\p)$ just as for curved environment objects (Section~\ref{sec:semantic-representation_water-currents}).
+Our water current simulation is modeled as a simple vector field. As such, the user is able to interact with it at any moment of the simulation, allowing for the death of sensible environmental objects while it will guide the simulation into a new landscape. By modifying the water currents, the user also modifies the transport rate of materials at this position. The modification of currents is given as a stroke, a parametric curve $\curve$ for which we evaluate $\Delta \Wuser(\p)$ just as for curved environment objects (\cref{sec:semantic-representation_water-currents}).
 
 \subsubsection{Geological events}
 \label{sec:semantic-representation_events}
@@ -244,7 +244,7 @@ A configuration file can define in advance the different events that should be t
 Multiple geological events can be triggered either as sudden or continuous environmental changes. These changes play a huge role in the morphology of landscapes.
 We define events with a starting point and an ending point, such that at any time of the simulation we can compute the progress of the event as $\tEvent \in [0, 1]$.
 
-Water level changes are important events that shape the underwater landscapes. As previously submerged environmental objects get elevated above water level, flora and fauna terrain elements dry and die. Deprived from the living part of the elements, everything is more affected by terrestrial erosion. By updating the value of the depth $\depth$ evaluated in the fitting functions, any environmental object that is sensible to the depth will be impacted automatically, that may be causing death (Figure~\ref{fig:semantic-representation_water-event}). The modification of the water level is defined as 
+Water level changes are important events that shape the underwater landscapes. As previously submerged environmental objects get elevated above water level, flora and fauna terrain elements dry and die. Deprived from the living part of the elements, everything is more affected by terrestrial erosion. By updating the value of the depth $\depth$ evaluated in the fitting functions, any environmental object that is sensible to the depth will be impacted automatically, that may be causing death (\cref{fig:semantic-representation_water-event}). The modification of the water level is defined as 
 \begin{align*}
     \depth(\p) = \depth_0(\p) + \sum_{e \in \events} \Delta \depth_e \tEvent
 \end{align*}
@@ -258,7 +258,7 @@ with $\Delta \depth_e$ the amount of water rising or lowering during an event. W
     \label{fig:semantic-representation_water-event}
 \end{figure}
 
-Subsidence and uplift are the main geological events that create or destroy islands in the long term. These events are simulated as a simple factor on the height field of the generated terrain (Figure~\ref{fig:semantic-representation_subsidence-event}). Subsidence is not always uniform in the terrain. As such, the user can provide a position $\q$ at which the subsidence is the strongest, the amount of subsidence applied $\Delta \height_e$ and a standard deviation $\std$ for which we can then compute at any point in space and time of the simulation the height of the terrain
+Subsidence and uplift are the main geological events that create or destroy islands in the long term. These events are simulated as a simple factor on the height field of the generated terrain (\cref{fig:semantic-representation_subsidence-event}). Subsidence is not always uniform in the terrain. As such, the user can provide a position $\q$ at which the subsidence is the strongest, the amount of subsidence applied $\Delta \height_e$ and a standard deviation $\std$ for which we can then compute at any point in space and time of the simulation the height of the terrain
 \begin{align*}
     \height(\p) = \height_0(\p) \cdot \sum_{e \in \events}{\frac{G(\norm{\p - \q})}{G(0)}} \Delta \height_e \tEvent 
 \end{align*}
@@ -275,7 +275,7 @@ with $G(x)$ the Gaussian function
     \label{fig:semantic-representation_subsidence-event}
 \end{figure}
 
-Storms are factors of the geomorphology of coral reefs \cite{VilaConcejo2016, Oron2023} and coasts \cite{Dominguez2005, Cowart2010}. Due to the extreme wind and wave velocities coasts are highly eroded in a short time period and the more fragile corals near the water surface are broken, possibly causing breaches in the reefs and spreading polyps in the currents direction. While there are many factors at play to understand the apparition of storms and the hydrodynamics affecting it, we simplified the model of storms to the user as a single epicenter $\q$ with a wind velocity $\windVelocity$ and a standard deviation $\std$ representing the spread around the epicenter (Figure~\ref{fig:semantic-representation_storm-event}). The computation of water currents are then computed as 
+Storms are factors of the geomorphology of coral reefs \cite{VilaConcejo2016, Oron2023} and coasts \cite{Dominguez2005, Cowart2010}. Due to the extreme wind and wave velocities coasts are highly eroded in a short time period and the more fragile corals near the water surface are broken, possibly causing breaches in the reefs and spreading polyps in the currents direction. While there are many factors at play to understand the apparition of storms and the hydrodynamics affecting it, we simplified the model of storms to the user as a single epicenter $\q$ with a wind velocity $\windVelocity$ and a standard deviation $\std$ representing the spread around the epicenter (\cref{fig:semantic-representation_storm-event}). The computation of water currents are then computed as 
 \begin{align*}
     \Wuser(\p) = \Wuser^*(\p) + \sum_{e \in \events | \tEvent \in [0, 1]} {\windVelocity \frac{G(\norm{\p - \q}}{G(0)}}
 \end{align*}
@@ -313,19 +313,19 @@ The environmental factors simulated are greatly simplified as the real processes
 
 \section{Results}
 \label{sec:semantic-representation_results}
-Our method provides a way to generate scenes at different scales. We demonstrate this capacity with the generation of a large scene of an island (Figure~\ref{fig:semantic-representation_teaser}) after what we focused the generation process in a canyon (Figure~\ref{fig:semantic-representation_canyon-scene}), then a small-scale visualization of coral colonies (Figure~\ref{fig:semantic-representation_coral-colonization-scene}).
+Our method provides a way to generate scenes at different scales. We demonstrate this capacity with the generation of a large scene of an island (\cref{fig:semantic-representation_teaser}) after what we focused the generation process in a canyon (\cref{fig:semantic-representation_canyon-scene}), then a small-scale visualization of coral colonies (\cref{fig:semantic-representation_coral-colonization-scene}).
 In the examples, we rendered the environmental objects as a implicit tree or as individual meshes. The island, lagoons, reefs, canyons and sand ripples as implicit surfaces
 
 % \subsection{Mid-scale}
 % \label{sec:semantic-representation_mid-scale}
 A canyon scene can be generated using our method. The water flow is affected by the curve of the canyon such that the currents are oriented in the direction of the curve's tangent.In this example, we force the position of arches to be inside the canyon. The arches deposits a material "rock deposit", which is the main element of the fitting function of the Rock object. The "rock deposit" is slightly affected by water currents, but its mass make it highly affected by gravity. As such, rocks will spawn underneath arches. In reality, an arch is often created as part of a large coral boulder that sees the calcareous bottom part detached by the water currents, often resulting in an arch surrounded by big rocks and smaller rocks from the erosion of the first rocks.
 As such, we define an environmental object "Arch" with a fitting function $\fitnessFunc_{arch}(\p) = 5 - d(canyon - \p) * \norm{\Water(\p)}$, an environmental object "Rock" using $\fitnessFunc_{rock}(\p) = \material_{rock\_deposit}(\p)$ and Pebble using $\fitnessFunc_{pebble}(\p) = \material_{smaller\_rock\_deposit}(\p)$. Finally, sand ripples are simply described as curves appearing where there is a lot of sand available: $\fitnessFunc_{ripple}(\p) = \material_{sand}(\p)$.
-Following these simple rules, Figure~\ref{fig:semantic-representation_canyon-scene} shows the emergence of details in the scene. 
+Following these simple rules, \cref{fig:semantic-representation_canyon-scene} shows the emergence of details in the scene. 
 
 % \subsection{Small-scale}
 % \label{sec:semantic-representation_small-scale}
 In this example we defined three different types of corals, coralA, coralB and coralC, to illustrate the possibility to model behaviours from the choice of fitting functions. Each of the coral types deposits a material "coral polyp" and "coral polyp A" ("coral polyp B" and "coral polyp C" respectively). By considering a fitting function that minimize the ratio $\frac{\text{coral polyp}}{\text{coral polyp A}}$, we can see an emergent behavior of the three types of coral fighting for the space colonization.
-Figure~\ref{fig:semantic-representation_coral-colonization-scene} shows the result of this simulation at three different interations. At the border between two colonies, none of the colonies make progression due to the amount of coral polyp specific from the other colony.
+\cref{fig:semantic-representation_coral-colonization-scene} shows the result of this simulation at three different interations. At the border between two colonies, none of the colonies make progression due to the amount of coral polyp specific from the other colony.
 
 \begin{figure*}
     % \centering

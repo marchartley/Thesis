@@ -5,7 +5,7 @@
 \minitoc
 
 
-\newcommand{\referenceExemple}[1] {\textit{Figure~\ref{tab:erosion_result_figures}: #1}}
+\newcommand{\referenceExemple}[1] {\textit{\cref{tab:erosion_result_figures}: #1}}
 
 
 
@@ -101,7 +101,7 @@ For volumetric representations, the alteration of the terrain is not as trivial.
 To define where to perform the erosion process the local slope variations are more than often used combined with eroding medium information. This fluid can be simulated using particle systems, Smoothed Particle Hydrodynamics (SPH) \cite{Kristof2009} or approximated using a simple vector field. 
 Proposed methods offer a specific erosion effect tailored to a single terrain representation and fluid simulation.
 
-In this work we propose an approach to simulate a large part of the geomorphological and meteorological phenomena present in the literature of terrain generation (including 3D and volumetric effects). We introduce a generalized algorithm performing the three stages of erosion on surface and volume representations alike, and expose very few intuitive parameters to be adjusted by the user (Figure~\ref{fig:erosion_pipeline}).
+In this work we propose an approach to simulate a large part of the geomorphological and meteorological phenomena present in the literature of terrain generation (including 3D and volumetric effects). We introduce a generalized algorithm performing the three stages of erosion on surface and volume representations alike, and expose very few intuitive parameters to be adjusted by the user (\cref{fig:erosion_pipeline}).
 We propose to tackle separately the material variation and the fluid simulation. Our method relies on a particle system to simulate eroding agents, each thrown particle will collide with the terrain, perform terrain alteration at the collision point and transport material along its path. 
 Their motion is computed using simple particle physics accounting for the medium density and particle properties (buoyancy and gravity forces). We consider each particle as independent, hence, they do not interact with each other, no collision detection or response. This simplification allows for efficient parallel computation. 
 When more accuracy or control is needed, we propose to provide a vector field used to modify the particle speed at each time step. The nature of this vector field is flexible, it can be computed using a more or less accurate fluid simulation (SPH, FLIP,...) or be manually defined by the user. We propose a particle-based strategy for material alteration that can be applied on surface and volumetric representation. \\
@@ -149,7 +149,7 @@ Erosion comes in many forms. These includes influences like glaciers, snow, tect
 % \section{Technical background}
 \section{Particle erosion}% [instead of "Technical background"]}
 \label{sec:erosion_method}
-Erosion occurs in three stages: material detachment, transport and deposition (respectively in red, black and green in Figure~\ref{fig:erosion_ablation_erosion}). In our approach, particles move through the medium following its flow (i.e. wind in air or currents in water) and then absorb or deposit a small amount of material upon contact with the land surface, effectively fulfilling the three stages of erosion.
+Erosion occurs in three stages: material detachment, transport and deposition (respectively in red, black and green in \cref{fig:erosion_ablation_erosion}). In our approach, particles move through the medium following its flow (i.e. wind in air or currents in water) and then absorb or deposit a small amount of material upon contact with the land surface, effectively fulfilling the three stages of erosion.
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/ablation_erosion.pdf}
@@ -184,7 +184,7 @@ We can then compute the erosion rate $\erosionRate$ at any contact point between
 \end{align}
 with $\erosionStrength \in [0,1]$ a user-defined erosion constant, $\criticalShearStress$ the critical shear stress value for which the matter starts to behave like a fluid and $a$ a power-law constant, typically considered as $a = 1$. 
 
-In our method, the eroded quantity is approximated as the material contained in the half sphere, of radius $\particleSize$, in the normal opposite direction at the particle impact point (Figure~\ref{fig:erosion_erosion_heightfield}). We then use \eqref{eq:erosion_erosionRate}: 
+In our method, the eroded quantity is approximated as the material contained in the half sphere, of radius $\particleSize$, in the normal opposite direction at the particle impact point (\cref{fig:erosion_erosion_heightfield}). We then use \eqref{eq:erosion_erosionRate}: 
 \begin{align}\label{eq:erosion_erosionAmount} 
 \erosionAmount = \erosionRate \frac{ 2 \pi \particleSize^3 }{ 3 }
 \end{align}
@@ -227,7 +227,7 @@ Finally, the particle position can be integrated as:
 \begin{align} \nonumber
 \p = \int{ \velocity \, dt} + \p_0.
 \end{align}
-When the particle hits the ground, a coefficient of restitution affects its behaviour by reducing its velocity post-collision. This value depends on ground material as it is influenced mainly by the material's particle shape, coefficient of friction and density \cite{Yan2020}. Less bouncy particles lose speed quickly and settle down sooner, forming a steeper pile (Figure~\ref{fig:erosion_coefficient of restitution-diagram} blue), or a higher talus angle like chalk. On the other hand, more bouncy particles disperse more widely upon hitting a surface, resulting in a gentler accumulation like clay (Figure~\ref{fig:erosion_coefficient of restitution-diagram} red).
+When the particle hits the ground, a coefficient of restitution affects its behaviour by reducing its velocity post-collision. This value depends on ground material as it is influenced mainly by the material's particle shape, coefficient of friction and density \cite{Yan2020}. Less bouncy particles lose speed quickly and settle down sooner, forming a steeper pile (\cref{fig:erosion_coefficient of restitution-diagram} blue), or a higher talus angle like chalk. On the other hand, more bouncy particles disperse more widely upon hitting a surface, resulting in a gentler accumulation like clay (\cref{fig:erosion_coefficient of restitution-diagram} red).
 \begin{figure}
 \centering
 \includegraphics{figures/bounciness.pdf}
@@ -252,7 +252,7 @@ Many erosion systems incorporate fluid simulation, requiring regular updates for
 \item \textbf{Particle velocities in fluid simulation:} \\
 With a Lagrangian fluid simulation relying on particle systems \cite{Koschier2022}, our particle velocities can be incorporated in its computation. This approach is only a provisional solution due to potential parameter mismatches with main fluid simulation. \\
 \item \textbf{Velocity field diffusion:} \\
-Given the minor changes to the surface level at each erosion iteration, which reflect the gradual alterations in terrain surface, we can estimate that the velocity at a fixed point transitioning between the inside and outside of the terrain closely mirrors the velocities observed in its surrounding area. In this context, we can simply interpolate the velocity field at any transitioning point. This simple method, as used in Figure~\ref{fig:erosion_underwater_result}, allows us to find a balance between achieving realistic flow simulations and maintaining computational efficiency.
+Given the minor changes to the surface level at each erosion iteration, which reflect the gradual alterations in terrain surface, we can estimate that the velocity at a fixed point transitioning between the inside and outside of the terrain closely mirrors the velocities observed in its surrounding area. In this context, we can simply interpolate the velocity field at any transitioning point. This simple method, as used in \cref{fig:erosion_underwater_result}, allows us to find a balance between achieving realistic flow simulations and maintaining computational efficiency.
 \end{itemize}
 % Our contribution part
 % ------------------------------------------------------------
@@ -264,12 +264,12 @@ Given the minor changes to the surface level at each erosion iteration, which re
     \caption{Our overall pipeline: our erosion process compute matter displacement of a terrain using an arbitrary representation as long as intersections between particles and the ground can be detected. An optional velocity field, provided by the user, guides the particles trajectories. We propose surface alteration methods to apply the erosion to the terrain in a coherent way between possible representations. }
     \label{fig:erosion_figure_pipeline}
 \end{figure}
-In this section, we describe how to apply detachment and deposition to different terrain representations with our method (Figure~\ref{fig:erosion_figure_pipeline}). We cover the most commonly used representations namely height fields, layered terrains, voxel grid and implicit surfaces, note that our work could be extended to additional representations. Two conditions need to be satisfied for a representation to be eligible for our erosion method: being able to evaluate the intersection of a particle with the ground and compute the normal of the terrain at this point. To the best of our knowledge, all representation do. \\
+In this section, we describe how to apply detachment and deposition to different terrain representations with our method (\cref{fig:erosion_figure_pipeline}). We cover the most commonly used representations namely height fields, layered terrains, voxel grid and implicit surfaces, note that our work could be extended to additional representations. Two conditions need to be satisfied for a representation to be eligible for our erosion method: being able to evaluate the intersection of a particle with the ground and compute the normal of the terrain at this point. To the best of our knowledge, all representation do. \\
 We use Verlet integration for the particle's physics  \cite{Verlet1967}, with low error rate and stability even for high $dt$, reducing computation time for negligible imprecision \cite{Baraff1998, Swope1982}.
 
 For all the representations, the amount of material absorbed by the particle, i.e. the erosion value $\erosionAmount$ from \eqref{eq:erosion_erosionAmount}, is taken around the particle at a radius $\particleSize$, meaning that the modification of the terrain by a particle at position $c$ will only occur for the positions $\p$ satisfying $||\p - c|| < \particleSize$. At the same time, the amount $\depositAmount$ from \eqref{eq:erosion_deltaDepositon} is deposited, resulting in a change $\totalErosion = \depositAmount - \erosionAmount$\\ 
 In our simulation, while the dynamics are informed by physical principles, the particle size is conceptualized within a dimensionless framework. This provides the flexibility to adapt our results to various real-world scales, ensuring the applicability of our model across diverse scenarios.
-Note that, for a 2.5D terrain, we can consider that half of the sphere surrounding the particle is affected which has a volume of $V_{2.5D} = \frac{2 \pi \particleSize^3}{3}$ while a 3D terrain is affected by the full sphere $V_{3D} = \frac{4 \pi \particleSize^3}{3}$ (as illustrated  Figure~\ref{fig:erosion_erosion_heightfield}). In the following sections, we will describe the strategies used to modify the amount of matter for different representations. 
+Note that, for a 2.5D terrain, we can consider that half of the sphere surrounding the particle is affected which has a volume of $V_{2.5D} = \frac{2 \pi \particleSize^3}{3}$ while a 3D terrain is affected by the full sphere $V_{3D} = \frac{4 \pi \particleSize^3}{3}$ (as illustrated  \cref{fig:erosion_erosion_heightfield}). In the following sections, we will describe the strategies used to modify the amount of matter for different representations. 
 \begin{figure}
 \centering
 \includegraphics{a_erosion_deposition.pdf}
@@ -381,7 +381,7 @@ our proposition for SDF \eqref{eq:erosion_erosionMetaball} enables erosion for c
 % \includegraphics{figures/multi_representations.pdf}
 % \label{fig:erosion_comparison-representations}
 % \end{wrapfigure}
-Our erosion process enables the simulation of a wide range of erosion effects on the major terrain representations alike. In this section, we present applications that demonstrate the versatility of our method by changing the particle's effect size, quantity, density, maximum capacity, deposition factor and the velocity fields. The results of each process are presented in Figure~\ref{tab:erosion_result_figures}, parameters used are available at Table~\ref{tab:erosion_result_parameters}. 
+Our erosion process enables the simulation of a wide range of erosion effects on the major terrain representations alike. In this section, we present applications that demonstrate the versatility of our method by changing the particle's effect size, quantity, density, maximum capacity, deposition factor and the velocity fields. The results of each process are presented in \cref{tab:erosion_result_figures}, parameters used are available at \cref{tab:erosion_result_parameters}. 
 It is important to note that all erosion examples presented in this section are available for any 3D terrain representation. However, we cannot create volumetric structure, such as overhangs, using 2.5D representations (height fields).
 
 Environment density $\fluidDensity$ is set to \SI{1}{\kilogram\per\cubic\meter} above water level (terrain blue part) and to \SI{1000}{\kilogram\per\cubic\meter} below it.
@@ -405,7 +405,7 @@ Velocity field's refinement is done by using the presented diffusion strategy.
             \exampleWaterCurrents \\
             \hline
         \end{tabular}
-        \caption{Parameters used for the generation of the terrains presented in Figure~\ref{tab:erosion_result_figures}, with "Rep" the representation  (\heightmap: Heightmap, \densityVox: Density-voxels, \binaryVox: Binary voxels, \implicit: Implicit) "Res" the resolution in meter per voxel or cell, $\#P$ the number of particles per iteration, $\#N$ the number of iterations, $\particleSize$ the particles radius (in voxel or cell unit), $COR$ the coefficient of restitution, $\particleDensity$ the particle density in \SI{}{\kilogram\per\cubic\meter}, $\capacityFactor$, $\erosionRate$ and $\depositionRate$ respectively the capacity, erosion and deposition factors, "Vel field" the type of velocity field used and $t$ the computation time of the simulation in seconds on CPU. \\ $^{(1)}$ The velocity field is a vector field defined as $\fluidVelocity(\p) = [0 ~ sin(\p_x) ~ 0]^T$.}
+        \caption{Parameters used for the generation of the terrains presented in \cref{tab:erosion_result_figures}, with "Rep" the representation  (\heightmap: Heightmap, \densityVox: Density-voxels, \binaryVox: Binary voxels, \implicit: Implicit) "Res" the resolution in meter per voxel or cell, $\#P$ the number of particles per iteration, $\#N$ the number of iterations, $\particleSize$ the particles radius (in voxel or cell unit), $COR$ the coefficient of restitution, $\particleDensity$ the particle density in \SI{}{\kilogram\per\cubic\meter}, $\capacityFactor$, $\erosionRate$ and $\depositionRate$ respectively the capacity, erosion and deposition factors, "Vel field" the type of velocity field used and $t$ the computation time of the simulation in seconds on CPU. \\ $^{(1)}$ The velocity field is a vector field defined as $\fluidVelocity(\p) = [0 ~ sin(\p_x) ~ 0]^T$.}
         \label{tab:erosion_result_parameters}
         
 \end{table*}
@@ -413,14 +413,14 @@ Velocity field's refinement is done by using the presented diffusion strategy.
 \subsection{Rain}
 Hydraulic erosion from rain is the most common process used in terrain generation. In this case, particles are seen as water droplets falling from the sky and rolling downhill due to the gravitational force of Earth. No velocity field is required from fluid simulation. These parameters result in a detailed geometry of the rills on the side of mountains that quickly emerge and deposit many sediments in the valley.  
 We demonstrate the result of rain erosion in \referenceExemple{Rain} with a computation time of 4 seconds.  \\
-Using this erosion parameters in combination with water bodies results in different outcomes (Figure \ref{fig:erosion_continuous-erosion}). The terrain above water is directly affected by the erosion process while particles colliding with the underwater part of the terrain are slowed down and filled with sediments, leading to mainly apply deposition. The result is a typical hydraulic erosion on mountains and the formation of slopes and beaches near water level.
+Using this erosion parameters in combination with water bodies results in different outcomes (\cref{fig:erosion_continuous-erosion}). The terrain above water is directly affected by the erosion process while particles colliding with the underwater part of the terrain are slowed down and filled with sediments, leading to mainly apply deposition. The result is a typical hydraulic erosion on mountains and the formation of slopes and beaches near water level.
 
 \subsection{Coastal erosion}
 Waves repeated motion  creates coastal erosion, that can be seen as cliffs with holes at the water level. \\
 We apply a uniform velocity field in the water pointing towards the coast to simulate waves and emit particles from the water area with a large size, a density between air and water densities, a high capacity factor and a low deposition factor $\depositionRate$. Using these parameters, the erosion process is focused at the interface of air and water, and apply a coarse detachment while depositing a very small quantity of sediments, simulating the corrosive effect of water on limestone. \\ 
 This effect can only be simulated on 3D terrain representations, but will create cliffs on a 2D representation. 
-\referenceExemple{Coastal} presents the result of coastal erosion on a density-voxel grid that creates overhangs around sea level using a small amount of particles. Note that, the same effect using an alternate implicit representation based on SDF is displayed in Figure \ref{fig:erosion_screen-paris2019-1}.
-A shaded version of this effect is presented in Figure \ref{fig:erosion_closerImage}.
+\referenceExemple{Coastal} presents the result of coastal erosion on a density-voxel grid that creates overhangs around sea level using a small amount of particles. Note that, the same effect using an alternate implicit representation based on SDF is displayed in \cref{fig:erosion_screen-paris2019-1}.
+A shaded version of this effect is presented in \cref{fig:erosion_closerImage}.
 
 \subsection{Rivers}
 Given a source point, we generate particles that run downhill, simulating the formation of a river. More complex erosion simulation using fluid simulations like SPH \cite{Kristof2009} would create realistic results at the cost of high processing time. Our method offers the flexibility to be applied either with a velocity field (simple, used given or resulting from a fluid simulation) or without allowing for simplicity and efficiency.\\
@@ -449,7 +449,7 @@ Procedural generation of underwater 3D terrains has received little attention. T
 Our method works in a water environment by giving at least water density to particles. Given a velocity field describing underwater currents from a complex simulation or from a sketch, the particle system erodes the terrain. \\ 
 In the example presented in \referenceExemple{Underwater}, the velocity field is given by a simple 3D fluid simulation \cite{Stam1999} applied on the terrain.
 
-A complex water flow simulation is computed using SIMPLE \cite{Caretto1973} fluid simulation with OpenFOAM. The resulting erosion can then follow complex water movement and erode the terrain at the most affected parts of the 3D terrain as the trajectories of the particles (green) is highly affected by the fluid velocity (blue). The density of the particles and the environment being close, the buoyancy cancels most of the gravity force, leaving the velocity of the particles computed by the fluid velocity $\fluidVelocity$ and settling velocity $\settlingVelocity$ from \eqref{eq:erosion_velocity-computation-final} (Figure~\ref{fig:erosion_underwater_result}).
+A complex water flow simulation is computed using SIMPLE \cite{Caretto1973} fluid simulation with OpenFOAM. The resulting erosion can then follow complex water movement and erode the terrain at the most affected parts of the 3D terrain as the trajectories of the particles (green) is highly affected by the fluid velocity (blue). The density of the particles and the environment being close, the buoyancy cancels most of the gravity force, leaving the velocity of the particles computed by the fluid velocity $\fluidVelocity$ and settling velocity $\settlingVelocity$ from \eqref{eq:erosion_velocity-computation-final} (\cref{fig:erosion_underwater_result}).
 \begin{figure}[ht]
     % \centering
     \includegraphics{Results/flowfield.pdf}
@@ -459,7 +459,7 @@ A complex water flow simulation is computed using SIMPLE \cite{Caretto1973} flui
 
 
 \subsection{Multiple phenomena} 
-A terrain eroded with multiple erosion phenomena applied on a 500x500x50 density-voxel grid is illustrated in Figure~\ref{fig:erosion_multiErosions}. Here, water-density particles are applying rain on the terrain while the coasts of the river are being eroded thanks to a velocity field defined at the water level. The velocity field defined in the air mainly affects particles with air-density, such that wind erosion can be applied at the same time. The computation of these effects took 7 seconds on CPU.
+A terrain eroded with multiple erosion phenomena applied on a 500x500x50 density-voxel grid is illustrated in \cref{fig:erosion_multiErosions}. Here, water-density particles are applying rain on the terrain while the coasts of the river are being eroded thanks to a velocity field defined at the water level. The velocity field defined in the air mainly affects particles with air-density, such that wind erosion can be applied at the same time. The computation of these effects took 7 seconds on CPU.
 
 \begin{figure}[ht]
     % \centering
@@ -473,7 +473,7 @@ A terrain eroded with multiple erosion phenomena applied on a 500x500x50 density
 In the following section, we compare our method with existing ones to show that while we are versatile on the terrain representation, we are also able to reproduce various effects without applying specific algorithms. The other works are displayed in blue to distinguish them from ours.
 
 \subsection{Coastal erosion on implicit terrain representation}
-\citep{Paris2019} present an erosion simulation method applied to implicit terrains able to create coastal erosion, karsts and caves by adding negative sphere primitive in the terrain's construction tree. The positions of the spheres are determined using a Poisson disk sampling at the weakest terrain area defined by the Geology tree of their model. They are simulating the corrosion effect of water on the rocks. Our work is also able to approximate this phenomena by defining the position of these sphere primitives at the position where the water particles hit the surface. While the computation time of the positions of the sphere is higher due to the fact that we are evaluating the position of our particles at every time step in the implicit model (which could be improved by the triangulation of the implicit surface, or better, a dynamic triangulation), the distribution of our erosion primitives is based on a physical model instead of a mathematical model, meaning that we can integrate more easily the direction and strength of the waves for example. The management of their sphere primitives can be replicated with our method by considering that a particle exists until a collision occurs, at which point it disappears. Their method is not conserving the mass of the terrain, which is acceptable for the corrosion simulation, but limits its validity for other erosion simulations. In our method, the particle can be tracked until it settles, ensuring mass conservation (Figure~\ref{fig:erosion_screen-paris2019-1});
+\citep{Paris2019} present an erosion simulation method applied to implicit terrains able to create coastal erosion, karsts and caves by adding negative sphere primitive in the terrain's construction tree. The positions of the spheres are determined using a Poisson disk sampling at the weakest terrain area defined by the Geology tree of their model. They are simulating the corrosion effect of water on the rocks. Our work is also able to approximate this phenomena by defining the position of these sphere primitives at the position where the water particles hit the surface. While the computation time of the positions of the sphere is higher due to the fact that we are evaluating the position of our particles at every time step in the implicit model (which could be improved by the triangulation of the implicit surface, or better, a dynamic triangulation), the distribution of our erosion primitives is based on a physical model instead of a mathematical model, meaning that we can integrate more easily the direction and strength of the waves for example. The management of their sphere primitives can be replicated with our method by considering that a particle exists until a collision occurs, at which point it disappears. Their method is not conserving the mass of the terrain, which is acceptable for the corrosion simulation, but limits its validity for other erosion simulations. In our method, the particle can be tracked until it settles, ensuring mass conservation (\cref{fig:erosion_screen-paris2019-1});
 
 \begin{figure}
 \centering
@@ -483,7 +483,7 @@ In the following section, we compare our method with existing ones to show that 
 \end{figure}
 
 \subsection{Wind erosion on voxel grid representation}
-\citep{Jones2010} propose a weathering erosion on voxel grids by approximating and eroding continuously the most exposed voxels. When a solid voxel is decimated, it is considered deposit and is displaced down the slope until a minimal talus angle in the terrain is reached and if the deposition is eroded again, it disappears. Our work is able to reproduce their algorithm by sending our particles from a close distance to the terrain surface. By doing so, we reproduce the erosion process as much as the deposition process since the air particles, filled with sediments, is falling automatically towards the local minimum of the erosion point. Just like in their work, we can easily define the resistance value of the materials to add diversity in the results. By adding the possibility of a wind field, even a very simple uniform vector field, to the simulation, we naturally add the wind shadowing effect that protects a gobelin surrounded by bigger gobelins, and also allows the deposit slope to fit more closely to the wind direction (Figure~\ref{fig:erosion_screen-jones2010}).
+\citep{Jones2010} propose a weathering erosion on voxel grids by approximating and eroding continuously the most exposed voxels. When a solid voxel is decimated, it is considered deposit and is displaced down the slope until a minimal talus angle in the terrain is reached and if the deposition is eroded again, it disappears. Our work is able to reproduce their algorithm by sending our particles from a close distance to the terrain surface. By doing so, we reproduce the erosion process as much as the deposition process since the air particles, filled with sediments, is falling automatically towards the local minimum of the erosion point. Just like in their work, we can easily define the resistance value of the materials to add diversity in the results. By adding the possibility of a wind field, even a very simple uniform vector field, to the simulation, we naturally add the wind shadowing effect that protects a gobelin surrounded by bigger gobelins, and also allows the deposit slope to fit more closely to the wind direction (\cref{fig:erosion_screen-jones2010}).
 
 \begin{figure}[ht]
     \centering
@@ -493,7 +493,7 @@ In the following section, we compare our method with existing ones to show that 
 \end{figure}
 
 \subsection{Hydraulic erosion on height field representation}
-\citep{Mei2007} integrate and adapt to the GPU the pipe model proposed in \cite{OBrien1995} for the fluid simulation. This simulation is simple but efficient enough to approximate the Shallow-Water equations in real time and use the speed of columns of water to compute the erosion and deposition rate on the 2D grid of the terrain at each time step. Using columns of water even allows the flow to overpass small bumps on the terrain over time. Our method initially rely on a stable fluid flow that is consistent during the whole life time of a particle, but by refining the simulation at each time step instead of at the end of the particles lifetime, our erosion model is able to reproduce this effect, allowing the terrain to have a single batch of fluid going through it. Our method can be seen as a generalization of Mei at al. that can then be used on more than discrete 2D grids (Figure~\ref{fig:erosion_screen-mei2007-1}). 
+\citep{Mei2007} integrate and adapt to the GPU the pipe model proposed in \cite{OBrien1995} for the fluid simulation. This simulation is simple but efficient enough to approximate the Shallow-Water equations in real time and use the speed of columns of water to compute the erosion and deposition rate on the 2D grid of the terrain at each time step. Using columns of water even allows the flow to overpass small bumps on the terrain over time. Our method initially rely on a stable fluid flow that is consistent during the whole life time of a particle, but by refining the simulation at each time step instead of at the end of the particles lifetime, our erosion model is able to reproduce this effect, allowing the terrain to have a single batch of fluid going through it. Our method can be seen as a generalization of Mei at al. that can then be used on more than discrete 2D grids (\cref{fig:erosion_screen-mei2007-1}). 
 
 \begin{figure}[ht]
     \centering
@@ -503,7 +503,7 @@ In the following section, we compare our method with existing ones to show that 
 \end{figure}
 
 \subsection{Wind erosion on stacked materials representation}
-\citep{Paris2020} simulate the effect of wind over sand fields defined on stacked materials, creating dune structures, even taking into account obstacles like \cite{Roa2004} and different material layers like vegetation \cite{Cordonnier2017a} that are not affected by abrasion\cite{Paris2020}. A wind field simulation is required to produce results, and while \cite{Roa2004} and \cite{Onoue2000} consider a uniform vector field, this work consider a dynamic vector multi-scaled warped field from the terrain height. The sand grains then apply multiple moves: sand lift, bounces, reptation and avalanching. Once the sand is lifted by the wind, the trajectory of the grains can be seen as the displacement of particles, fitting completely with our model as illustrated Figure~\ref{fig:erosion_screen-paris2020}.
+\citep{Paris2020} simulate the effect of wind over sand fields defined on stacked materials, creating dune structures, even taking into account obstacles like \cite{Roa2004} and different material layers like vegetation \cite{Cordonnier2017a} that are not affected by abrasion\cite{Paris2020}. A wind field simulation is required to produce results, and while \cite{Roa2004} and \cite{Onoue2000} consider a uniform vector field, this work consider a dynamic vector multi-scaled warped field from the terrain height. The sand grains then apply multiple moves: sand lift, bounces, reptation and avalanching. Once the sand is lifted by the wind, the trajectory of the grains can be seen as the displacement of particles, fitting completely with our model as illustrated \cref{fig:erosion_screen-paris2020}.
 \begin{figure}[ht!]
 \centering
 \includegraphics{otherPapersRepro/desert.pdf}
@@ -544,6 +544,6 @@ Erosion algorithms are often limited to the use of height fields, but by finding
 \begin{figure*}
 	\centering
     \includegraphics{Results/results.pdf}
-	\caption{Erosion processes results on various representations presented in section \ref{sec:erosion_erosion_examples}. Used parameters used are detailed in  Table~\ref{tab:erosion_result_parameters}.}
+	\caption{Erosion processes results on various representations presented in section \ref{sec:erosion_erosion_examples}. Used parameters used are detailed in  \cref{tab:erosion_result_parameters}.}
 	\label{tab:erosion_result_figures}
 \end{figure*}
