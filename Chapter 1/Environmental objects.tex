@@ -367,9 +367,19 @@ We divide the \glosses{CoarseHeight} in three categories:
     \item $\mathcal{F}$: \glosses{EnvObj} that are defined at the terrain surface. They represent objects that can be seen as bumps or carves from an aerial view. 
 \end{itemize}
 
+% The implicit surface formulation defines a binary tree whose leaves are primitives and nodes are operators \cite{Wyvill1999,Bernhardt2010}. In our implementation, we use the associative property of addition, minimum and maximum binary functions to flatten the trees and bypass the binary restriction that deepen the tree. 
 
+We compute the depth change given for each category:
+\begin{align*}
+    \heightModif_{\mathcal{G}} (\p) = \max_{o \in \mathcal{G}}{ \heightModif_o(\p) } \\
+    \heightModif_{\mathcal{A}} (\p) = \min_{o \in \mathcal{A}}{ \heightModif_o(\p) } \\
+    \heightModif_{\mathcal{F}} (\p) = \sum_{o \in \mathcal{F}}{ \heightModif_o(\p) }
+\end{align*}
 
-The implicit surface formulation defines a tree whose leaves are primitives and nodes are operators \cite{Bernhardt2010,Wyvill1999}. In our implementation, we use the commutative addition operation for each 
+The final altitude is computed as
+\begin{align}
+    \heightModif = \max(\heightModif_{\mathcal{G}}, \heightModif_{\mathcal{A}}) + \heightModif_{\mathcal{F}}
+\end{align}
 
 \subsection{Influence on water currents}
 \label{sec:semantic-representation_water-currents}

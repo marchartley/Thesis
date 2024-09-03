@@ -387,7 +387,9 @@ It is important to note that all erosion examples presented in this section are 
 Environment density $\fluidDensity$ is set to \SI{1}{\kilogram\per\cubic\meter} above water level (terrain blue part) and to \SI{1000}{\kilogram\per\cubic\meter} below it.
 Velocity field's refinement is done by using the presented diffusion strategy.
 
-\begin{table*}
+\afterpage{
+\begin{landscape}
+\begin{table}%[htbp]
     % \centering
         \begin{tabular}{|lHlllllllllllll|}
             \hline
@@ -407,8 +409,9 @@ Velocity field's refinement is done by using the presented diffusion strategy.
         \end{tabular}
         \caption{Parameters used for the generation of the terrains presented in \cref{tab:erosion_result_figures}, with "Rep" the representation  (\heightmap: Heightmap, \densityVox: Density-voxels, \binaryVox: Binary voxels, \implicit: Implicit) "Res" the resolution in meter per voxel or cell, $\#P$ the number of particles per iteration, $\#N$ the number of iterations, $\particleSize$ the particles radius (in voxel or cell unit), $COR$ the coefficient of restitution, $\particleDensity$ the particle density in \SI{}{\kilogram\per\cubic\meter}, $\capacityFactor$, $\erosionRate$ and $\depositionRate$ respectively the capacity, erosion and deposition factors, "Vel field" the type of velocity field used and $t$ the computation time of the simulation in seconds on CPU. \\ $^{(1)}$ The velocity field is a vector field defined as $\fluidVelocity(\p) = [0 ~ sin(\p_x) ~ 0]^T$.}
         \label{tab:erosion_result_parameters}
-        
-\end{table*}
+\end{table}
+\end{landscape}
+}
 
 \subsection{Rain}
 Hydraulic erosion from rain is the most common process used in terrain generation. In this case, particles are seen as water droplets falling from the sky and rolling downhill due to the gravitational force of Earth. No velocity field is required from fluid simulation. These parameters result in a detailed geometry of the rills on the side of mountains that quickly emerge and deposit many sediments in the valley.  
