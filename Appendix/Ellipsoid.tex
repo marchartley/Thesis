@@ -1,0 +1,145 @@
+\zzcommand{\ct}{\cos \theta}
+\zzcommand{\cct}{\cos^2 \theta}
+\zzcommand{\st}{\sin \theta}
+\zzcommand{\sst}{\sin^2 \theta}
+
+\zzcommand{\cp}{\cos \phi}
+\zzcommand{\ccp}{\cos^2 \phi}
+\zzcommand{\sp}{\sin \phi}
+\zzcommand{\ssp}{\sin^2 \phi}
+
+
+\chapter{Computation of ellipsoids in 2.5D}
+\label{chap:computation-ellipsoid}
+
+In the erosion process on a height field, we may want to represent the impact of a particle collision on a surface as a half sphere that we flatten to increase or lower the surface of the ground. The scaling should happen in the direction of the ground normal. In three dimensions, we may use the implicit formulation of an ellipsoid to achieve this, but in 2.5D this computation become trickier.
+
+\section{Simplified to ellipses}
+
+We will first illustrate the computation in a reduced dimension. In this case, we look at an ellipse.
+The common equation for an ellipse is function of $x$, $y$, the half-length $a$ and half-width $b$:
+\begin{align}
+    \label{eq:ellipsoid_simplified-ellipse}
+    \frac{x^2}{a^2} + \frac{y^2}{b^2} = 1
+\end{align}
+
+We can generalize the equation to translate the center of the ellipse to the position $(x_0, y_0)$ by setting $x'=(x-x_0)$ and $y'=(y-y_0)$ and apply a rotation $\theta$:
+\begin{align}
+    \label{eq:ellipsoid_general-ellipse}
+    \frac{(x' \ct + y' \st)^2}{a^2} + \frac{(x' \st - y' \ct)^2}{b^2} = 1
+\end{align}
+
+For the rest of the operations, we will consider $x_0=0$ and $y_0=0$ for concisness.
+However this function takes $x$ and $y$ as parameters while we would like to remove $y$ from the equation to lower the 2D shape in a 1D function $f(x)$.
+
+Isolating the variable $y$ transforms the formulation into a quadratic equation:
+\begin{align}
+    \label{eq:ellipsoid_full-ellipse}
+    y^2 \left( \frac{\sst}{a^2} + \frac{\cct}{b^2} \right) + 2yx \ct \st \left( \frac{1}{a^2} - \frac{1}{b^2} \right) + x^2 \left( \frac{\cct}{a^2} + \frac{\sst}{b^2} \right) - 1 = 0
+\end{align}
+
+We want to solve the quadratic equation using the form 
+\begin{align}
+    Ay^2 + By + C = 0
+\end{align}
+
+Decomposing the equation \eqref{eq:ellipsoid_full-ellipse}, we find
+\begin{align}
+    A &= \frac{\sst}{a^2} + \frac{\cct}{b^2} \\
+    B &= 2x \ct \st \left( \frac{1}{a^2} - \frac{1}{b^2} \right) \\
+    C &= x^2 \left( \frac{\cct}{a^2} + \frac{\sst}{b^2} \right) - 1
+\end{align}
+
+Solving $f(x)$ gets us to 
+\begin{align}
+    \label{eq:ellipsoid_final-ellipse}
+    f(x) = \frac{-B \pm \sqrt{B^2 - 4 A C}}{2 A}
+\end{align}
+
+The function $f(x)$ provides us with the "upper shell" of the ellipse at the position $x$.
+
+Since the function is directly related to the domain of the ellipse, we can compute the bounds of the function by identifying the two points where the tangent is vertical. From the general ellipse formulation (\eqref{eq:ellipsoid_general-ellipse}), we get 
+\begin{align}
+    \label{eq:ellipsoid_ellipse-bounds}
+    x_{\text{min}} &= -\sqrt{a^2 \cct + b^2 \sst} \\
+    x_{\text{max}} &= +\sqrt{a^2 \cct + b^2 \sst} \\
+    y_{\text{max}} &= \sqrt{a^2 \sst + b^2 \cct} \\
+    y_{\text{min}} &= \min\left( f(x_{\text{min}}), f(x_{\text{max}}) \right)
+\end{align}
+
+The area under the curve is half the area of an ellipse, such that 
+\begin{align}
+    \int_{x_{\text{min}}}^{x_{\text{max}}} f(x) \,dx = \frac{\pi a b}{2}
+\end{align}
+
+Finally, we consider the ground locally linear with a rotation $\theta$ such that the ground surface is defined as $g(x) = x \tan(\theta)$. So the amount of material that is being added as such can be computed as 
+\begin{align}
+    \text{Area} = \int \max \left( f(x) - g(x), 0 \right) \, dx
+\end{align}
+We correct the added area by scaling the added matter:
+\begin{align}
+    \Tilde{g}(x) = g(x) + \frac{\max \left( f(x) - g(x), 0 \right)}{\text{Area}} \pi a b
+\end{align}
+
+
+
+
+
+
+
+
+
+
+\section{Complex case for ellipsoids}
+We will use a similar method to translate this idea from the ellipse to the ellipsoid.
+
+First, the common equation of an ellipsoid is defined as $x$, $y$, $z$, and $a$, $b$, $c$ respectively the half-length, half-width and half-depth of the ellipsoid:
+\begin{align}
+    \label{eq:ellipsoid_simplified-ellipsoid}
+    \frac{x^2}{a^2} + \frac{y^2}{b^2} + \frac{z^2}{c^2} = 1
+\end{align}
+
+We can generalize the equation to translate the center of the ellipse to the position $(x_0, y_0, z_0)$ by setting $x'=(x-x_0)$, $y'=(y-y_0)$ and $z'=(z-z_0)$ and apply a rotation $(\theta, \phi)$. Once again, we will consider $x_0=0$, $y_0=0$ and $z_0=0$, but including them becomes trivial:
+\begin{align}
+    \label{eq:ellipsoid_general-ellipsoid}
+      &\frac{\left( x \cp\ct + y \sp - z \cp\st \right)^2}{a^2} \\
+    + &\frac{\left( -x\sp\ct + y\cp + z\sp\st \right)^2}{b^2} \\
+    + &\frac{\left( x\st + z\ct \right)^2}{c^2} - 1 = 0
+\end{align}
+
+We would like to remove $z$ from the equation to lower the 3D shape in a 2D function $f(x,y)$.
+
+Isolating the variable $z$ transforms the formulation into a quadratic equation that we will directly decompose in the form $Az^2 + Bz + C = 0$:
+\begin{align}
+    A &= \left( \frac{\ccp\sst}{a^2} + \frac{\ssp\sst}{b^2} + \frac{\cct}{c^2} \right) \\
+    B &= -2x\left( \frac{\ccp\ct\st}{a^2} + \frac{\ssp\cct\st}{b^2} - \frac{\st\ct}{c^2} \right) \\ &+ 2y \left( -\frac{\sp\cp\st}{a^2} + \frac{\cp\st\sp}{b^2} \right) \\
+    C &= x^2 \left( \frac{\ccp\cct}{a^2} + \frac{\ssp\cct}{b^2} + \frac{\sst}{c^2} \right) + y^2 \left( \frac{\ssp}{a^2} + \frac{\ccp}{b^2} \right)
+\end{align}
+
+Solving $f(x, y)$ gets us, once again, to 
+\begin{align}
+    \label{eq:ellipsoid_final-ellipsoid}
+    f(x) = \frac{-B \pm \sqrt{B^2 - 4 A C}}{2 A}
+\end{align}
+
+The function $f(x, y)$ provides us with the "upper shell" of the ellipsoid at the position $(x, y)$.
+
+For finding the domain of definition of the function $f$, we solve the inequality $B^2 - 4 A C \geq 0$.
+\begin{align}
+    \label{eq:ellipsoid_ellipsoid-bounds}
+    \left( -c^2 y (a^2 - b^2) \frac{\sin(2\phi)}{2} + x \left( -a^2 b^2 + a^2 c^2 \sin^2(\phi) + b^2 c^2 \cos^2(\phi) \right) \cos(\theta) \right)^2 \sin^2(\theta) - \left( -a^2 b^2 c^2 + c^2 y \left( -x (a^2 - b^2) \left( \sin(2\phi - \theta) + \sin(2\phi + \theta) \right)/2 + y \left( a^2 \cos^2(\phi) + b^2 \sin^2(\phi) \right) \right) + x^2 \left( a^2 b^2 \sin^2(\theta) + a^2 c^2 \sin^2(\phi) \cos^2(\theta) + b^2 c^2 \cos^2(\phi) \cos^2(\theta) \right) \right)
+\end{align}
+
+The area under the curve is half the area of an ellipse, such that 
+\begin{align}
+    \int_{x_{\text{min}}}^{x_{\text{max}}} f(x) \,dx = \frac{\pi a b}{2}
+\end{align}
+
+Finally, we consider the ground locally linear with a rotation $\theta$ such that the ground surface is defined as $g(x) = x \tan(\theta)$. So the amount of material that is being added as such can be computed as 
+\begin{align}
+    \text{Area} = \int \max \left( f(x) - g(x), 0 \right) \, dx
+\end{align}
+We correct the added area by scaling the added matter:
+\begin{align}
+    \Tilde{g}(x) = g(x) + \frac{\max \left( f(x) - g(x), 0 \right)}{\text{Area}} \pi a b
+\end{align}

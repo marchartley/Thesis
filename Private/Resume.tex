@@ -1,0 +1,240 @@
+\documentclass[letterpaper,10pt]{article}
+%%%%%%%%%%%%%%%%%%%%%%%
+%% BEGIN_FILE: mteck.sty
+
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\usepackage{bookmark}
+\usepackage{lastpage}
+
+\usepackage{CormorantGaramond}
+\usepackage{charter}
+
+\usepackage{xcolor}
+\definecolor{accentTitle}{HTML}{0e6e55}
+\definecolor{accentText}{HTML}{0e6e55}
+\definecolor{accentLine}{HTML}{a16f0b}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\urlstyle{same}
+
+\addtolength{\oddsidemargin}{-0.7in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-0.7in}
+\addtolength{\textheight}{1.4in}
+
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\setlength{\tabcolsep}{0pt}
+\setlength{\footskip}{3.7pt}
+\raggedbottom
+\raggedright
+
+\input{glyphtounicode}
+\pdfgentounicode=1
+
+\newcommand{\documentTitle}[2]{
+  \begin{center}
+    {\Huge\color{accentTitle} #1}
+    \vspace{10pt}
+    {\color{accentLine} \hrule}
+    \vspace{2pt}
+    \footnotesize{#2}
+    \vspace{2pt}
+    {\color{accentLine} \hrule}
+  \end{center}
+}
+
+\newcommand{\documentFooter}[1]{
+  \setlength{\footskip}{10.25pt}
+  \fancyfoot[C]{\footnotesize #1}
+}
+
+\newcommand{\numberedPages}{
+  \documentFooter{\thepage/\pageref{LastPage}}
+}
+
+\titleformat{\section}{
+  \vspace{-5pt}
+  \color{accentText}
+  \raggedright\large\bfseries
+}{}{0em}{}[\color{accentLine}\titlerule]
+
+\newcommand{\tinysection}[1]{
+  \phantomsection
+  \addcontentsline{toc}{section}{#1}
+  {\large{\bfseries\color{accentText}#1} {\color{accentLine} |}}
+}
+
+\newcommand{\heading}[2]{
+  \hspace{10pt}#1\hfill#2\\
+}
+
+\newcommand{\headingBf}[2]{
+  \heading{\textbf{#1}}{\textbf{#2}}
+}
+
+\newcommand{\headingIt}[2]{
+  \heading{\textit{#1}}{\textit{#2}}
+}
+
+\newenvironment{resume_list}{
+  \vspace{-7pt}
+  \begin{itemize}[itemsep=-2px, parsep=1pt, leftmargin=30pt]
+}{
+  \end{itemize}
+}
+
+\renewcommand\labelitemi{--}
+
+%% END_FILE: mteck.sty
+%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+  %---------%
+  % Heading %
+  %---------%
+
+  \documentTitle{Marc Hartley}{
+    \href{tel:+33628361505}{\raisebox{-0.05\height} \faPhone\ 06.28.36.15.05} ~ | ~
+    \href{mailto:marc.hartley@hotmail.com}{\raisebox{-0.15\height} \faEnvelope\ marc.hartley@hotmail.com} ~ | ~
+    \href{https://linkedin.com/in/hartleymarc/}{\raisebox{-0.15\height} \faLinkedin\ linkedin.com/in/hartleymarc} ~ | ~
+    \href{https://github.com/marchartley}{\raisebox{-0.15\height} \faGithub\ github.com/marchartley}
+  }
+
+  %---------%
+  % Summary %
+  %---------%
+
+  \tinysection{Summary}
+  Currently finishing my PhD studies in Procedural terrain generation.
+
+  %--------%
+  % Skills %
+  %--------%
+
+  \section{Skills}
+
+%   \begin{multicols}{2}
+    \begin{itemize}[itemsep=-2px, parsep=1pt, leftmargin=120pt]
+      \item[\textbf{Research interests}] Procedural generation, 3D modeling, Geometry processing, Physics simulation
+      \item[\textbf{Programming Languages}] C/C++, Python, Julia, R, VBA, Java, C\#, AutoIt
+      \item[\textbf{Web Development}] PHP, SQL, HTML5, CSS3, jQuery, AJAX, AngularJS, ASP.NET
+      \item[\textbf{Database Management}] Oracle, Postgres, MySQL, Google Datastore, Firebase, MongoDB, InfluxDB
+    %   \item[\textbf{Hardware}] Raspberry Pi, Arduino
+      \item[\textbf{Program Architecture}] UML, MERISE
+      \item[\textbf{Languages}] French (Native), English (Fluent), Spanish (Intermediate), German (Intermediate)
+    \end{itemize}
+%   \end{multicols}
+
+
+  %-----------%
+  % Education %
+  %-----------%
+
+  \section{Education}
+
+  \headingBf{PhD student: "Procedural generation of underwater environments"}{2021 -- Present}
+  \headingIt{University of Montpellier, France}{Director: FIORIO Christophe, Supervisors: FARAJ Noura \& GODARY-DEJEAN Karen}
+
+  \headingBf{Master's in Visual Computing}{2019 -- 2021}
+  \headingIt{University of Nantes, France}{Valedictorian}
+
+  \headingBf{Bachelor's in IT Systems Management}{2018 -- 2019}
+  \headingIt{Hitema, Paris, France}{}
+
+  \headingBf{DUT in Computer Science}{2016 -- 2018}
+  \headingIt{IUT of Annecy, France}{}
+
+  %------------%
+  % Experience %
+  %------------%
+
+  \section{Experience}
+
+  \headingBf{Mission complémentaire d'enseignement}{2021 -- 2024}
+  \headingIt{University of Montpellier, Montpellier, France}{}
+  \begin{resume_list}
+    \item L1: Computational complexity
+    \item L3: Image processing and 3D programming. TER: Procedural terrain generation
+    \item M1: OpenGL programming, mesh processing. TER: Procedural vegetation generation
+  \end{resume_list}
+
+  \headingBf{Master 2 Research Internship}{Feb 2020 -- Aug 2020}
+  \headingIt{LISTIC, University Savoie Mont-Blanc, Annecy, France}{}
+  \begin{resume_list}
+    \item Researching a low cost ML process for gait measurement with the use of PIR sensors trained through RGBD camera.
+    \item Implementation of pose estimation, computation of gait measures, training of NN from the depth camera to PIR sensors.
+    \item Best paper award at XXIII IMEKO World Congress 2021.
+  \end{resume_list}
+
+  \headingBf{Master 1 Research Internship}{Apr 2019 -- Jul 2019}
+  \headingIt{LS2N, University of Nantes, France}{}
+  \begin{resume_list}
+    \item Implementation and analysis of a methodology for compression of temporal 3D point-cloud sequences with the use of TSPLVQ (Tree-Structured Point-Lattice Vector Quantization).
+  \end{resume_list}
+
+  \headingBf{Bachelor Apprenticeship}{Sep 2018 -- Aug 2019}
+  \headingIt{Domomat, Annecy, France}{}
+  \begin{resume_list}
+    \item Developed and optimized an e-commerce website and an intranet application for employees.
+  \end{resume_list}
+
+  \headingBf{VBA Developer Internship}{Apr 2018 -- Jun 2018}
+  \headingIt{Marti Construction SA, Geneva, Switzerland}{}
+  \begin{resume_list}
+    \item Developed a dynamic shared knowledge portal and a stock management tool.
+  \end{resume_list}
+
+  %--------------%
+  % Publications %
+  %--------------%
+
+  \section{Publications}
+
+  \headingBf{Abdel Khalek, F. and Hartley, M. and Benoit, E. and Perrin, S. and Marechal, L. and Barthod, C. A low-cost machine learning process for gait measurement using biomechanical sensors}{}
+  \headingIt{XXIII IMEKO World Congress 2021}{}
+  \begin{resume_list}
+    \item Best paper award
+  \end{resume_list}
+
+  \headingBf{Hartley, Marc and Mellado, Nicolas and Fiorio, Christophe and Faraj, Noura. Flexible terrain erosion}{}
+  \headingIt{The Visual Computer, 2024}{}
+  \begin{resume_list}
+    \item Best student paper award at CGI2024
+  \end{resume_list}
+
+  %-----------------%
+  % Personal Info   %
+  %-----------------%
+%   \section{Personal Information}
+
+%   \begin{resume_list}
+%     \item First aid trainer
+%     \item Fireman and fire cadet trainer
+%     \item Car and motorcycle driving licenses
+%   \end{resume_list}
+
+  %-----------%
+  % Interests %
+  %-----------%
+
+%   \section{Interests}
+%   \begin{resume_list}
+%     \item Visual Computing, Computer Vision, IoT
+%     \item Machine Learning \& Deep Learning
+%     \item Human Biomechanics \& Behavior, Climate, Ethics
+%   \end{resume_list}
+
+\end{document}

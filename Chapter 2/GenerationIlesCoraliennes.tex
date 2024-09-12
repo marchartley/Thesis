@@ -170,11 +170,16 @@ Geologically, the interaction between the sinking volcanic island and the upward
 
 \section{Related works}
 \label{sec:coral-island_related-works}
-- Perlin + falloff \\
-** But lacks control \\
-- Uplift [SCHOTT UPLIFT] \cite{Cordonnier2016,Cordonnier2017a} \\
-** But we propose a method that limits the required interaction \\
-- Sketching [PEYTAVIE SKETCHING, EMILIEN FIRST PERSON] \cite{Gain2009} \\
+An intuitive approach for island generation is to use a height field produced through Perlin or Simplex noise functions and apply a falloff map above it. A falloff map is a function $\R^2 \to [0, 1]$ that can be multiplied by the height function to attenuate it, describing a global shape of the island. When using another noise function for the generation of the falloff map, an infinite terrain of islands can be created. This approach, however, does not take into account geological or biological factors, which then make it feel less natural. Control on the noise functions is not intuitive for the user.
+
+Recent works have focused their terrain generation method towards the use of the uplift formulation \cite{Cordonnier2016,Cordonnier2017a,Schott2023,Tzathas2024}. In these models, the user describe areas that are uplifted, which can be seen as areas where heat is produce under the Earth mantel, and the algorithm tries to find an equilibrium between the uplift function and an erosion function. The governing equation for the uplift-erosion, called the stream power equation, is defined as a rate of growth, or increase of height $h$
+\begin{align}
+    \frac{\partial h}{\partial t} = u - s^n a^m + \Delta h
+\end{align}
+with $u$ the uplift force and $s^n a^m$ a formulation for fluvial erosion with geomorphological constants $m$ and $n$ with a slope $\Delta h$. the drainage area $a$ represents the area form which all the water pass througha point $\p$. Finding a solution by iteration creates realistic slopes on the sides of heat points, resembling at young mountains. While the initial input, a 2D scalar field representing the uplift force, is a simple user interaction, many manipulations like domain warping can be added to distort the field, resulting in much more varied outputs. Furthermore, the solving process being function of time, the user may feel like interacting during the formation of mountain ranges. However, the resulting landscapes are limited to the scope of mountain ranges.
+
+Other landscape modelisation techniques involve the use of sketching. A sketch is mainly used on a plane, a 2D image, which makes it uneasy to add 2.5D or 3D features in a terrain. Some workaround have been explored to draw using more two points of view \cite{Gain2009} to add more information on the expected output. Another work use the point of view of a player on the ground to add the height information \cite{Tasse2014}. 
+
 ** Added radial constraint to simplify interaction \\
 - Geological modeling \cite{Patel2021} \\
 ** For us, it's hard to know what's happening underground (?) \\
@@ -185,19 +190,32 @@ Geologically, the interaction between the sinking volcanic island and the upward
 - Layer-based generation could improve the realism of examples by considering layer/environment interactions. \\
 - ...
 
+
+Most recent works, however, leverage the capacity of neural networks for turning a sketch into a 2.5D terrain. \citep{Guerin2017} use conditional Generative Adverserial Networks (cGAN) to encode terrain features as strokes and polygons in images, that are then transformed into an height field as output of the network. In these methods, strokes are rasterized to form a final image, which may lose precision and information. Each terrain feature, like rivers, crests or level sets, are described in a different channel to avoid losing all information after convolutions and pooling layers. 
+
+Networks that take directly parametric curves and polygons are not used as the number of input is generally set in advance, making it limited in its scope.
+
+The original work of cGAN \cite{Isola2017} use a single channel as input, for which each pixel describe an identifier of the element at this position [A REDIRE]. In out method we use this technique to let the user modify the content of its terrain more easily as it does not require any different software for the input image editing. The problem of the one-pixel wide features vanishing is avoided by representing only regions.
+
+In order for neural networks to be trained, a large amount of data have to be available. Coral reef islands representing a very small portion of  Earth's surface. In this work we decided to generate the data ourselves in order to train a network. 
+
 \section{Example generation}
 \label{sec:coral-island_example-generation}
+Generating synthetic data for the training of a neural network introduce a bias in the dataset. We use observations from old and recent expeditions in order to define in advance the biases that are being introduced. First, we will take advantage of the different characteristics that are commonly found in coral reef island. The assumptions we will use are listed below:
+\begin{enumerate}
+    \item Islands have a relatively round shape: the heat under Earth's mantel comes usually from a single point, making the uplifting force of volcanic islands radial around the epicenter. Plus, see erosion has the effect of smoothering corners.
+    \item Coral grows to a constant height around the island: coral polyps have to have access to sunlight to survive, resulting in a band of living corals starting from the water level to a certain depth of about 30m where coral colonies become much scarcer. 
+    \item All features are radial: the main features we want to create , that are island, beaches, lagoon and coral reef, are always in this order and are highly correlated to the shape of the island. We can place the assumption that the interface between each of these regions are radial around the island center.
+    \item Islands deformations are caused by winds and waves: the main natural phenomenon that morph an island into a shape is the effect of aerial and coastal erosion on its borders. We can leverage this idea by using a wind velocity field to apply domain wraping for the final height field. This operation allows the result to have non-radial and concave regions, removing the limitations listed above.
+    \item Islands are independent of each other: an island has no notable influence on another's elevation characteristics. We can then consider having multiple islands created with an algorithm and translated next to each other without finding notable incoherencies as long as the islands are not overlapping.
+    \item The profile is relatively identical all around the island: resulting from the point 3, as the regions of interest are in consecutive order, the profile in any direction of the island have similar shape, except for their scale.
+\end{enumerate}
+
 - We use Darwin's theory in our case because generation is relatively simple. \\
 - 2 steps: \\
 ** Generation of the island \\
 ** Generation of the reef \\
 - Numerous assumptions: \\
-** Island has a relatively round shape \\
-** Coral grows to a constant height around the island \\
-** All "features" are radial \\
-** Deformations of islands caused by winds and waves \\
-** Islands are independent of each other \\
-** The profile is relatively identical all around the island \\
 - ...
 
 \subsubsection{Input}
