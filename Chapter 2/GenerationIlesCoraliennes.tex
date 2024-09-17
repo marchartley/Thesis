@@ -1,3 +1,10 @@
+\zzcommand{\heightProfile}{h_{\text{profile}}}
+\zzcommand{\heightSubsid}{\height_{\text{subsid}}}
+\zzcommand{\coralMin}{z_\text{coral min}}
+\zzcommand{\coralMax}{z_\text{coral max}}
+
+
+
 \chapter{Automatic generation of coral reef islands}
 \label{chap:coral-island}
 \minitoc
@@ -209,33 +216,66 @@ Generating synthetic data for the training of a neural network introduce a bias 
     \item Islands deformations are caused by winds and waves: the main natural phenomenon that morph an island into a shape is the effect of aerial and coastal erosion on its borders. We can leverage this idea by using a wind velocity field to apply domain wraping for the final height field. This operation allows the result to have non-radial and concave regions, removing the limitations listed above.
     \item Islands are independent of each other: an island has no notable influence on another's elevation characteristics. We can then consider having multiple islands created with an algorithm and translated next to each other without finding notable incoherencies as long as the islands are not overlapping.
     \item The profile is relatively identical all around the island: resulting from the point 3, as the regions of interest are in consecutive order, the profile in any direction of the island have similar shape, except for their scale.
+    \item The subsidence only affects the ground, but not the coral reefs.
 \end{enumerate}
 
-- We use Darwin's theory in our case because generation is relatively simple. \\
-- 2 steps: \\
-** Generation of the island \\
-** Generation of the reef \\
-- Numerous assumptions: \\
-- ...
+These assumptions are not completely exact, but provide a simplified model of the coral formation following Darwin's theory.
+
+In this work we created an editor that allows to manipulate radial curves, allowing a user to layout the top view of the island, but also the side view.
+
+% - We use Darwin's theory in our case because generation is relatively simple. \\
+% - 2 steps: \\
+% ** Generation of the island \\
+% ** Generation of the reef \\
+% - Numerous assumptions: \\
+% - ...
 
 \subsubsection{Input}
-- Sketching of the island from above + profile view \\
-- Wind strength \\
-- Water level \\
-- Subsidence rate \\
-- ...
+Our method takes as input a top-view sketch and a profile sketch. From these two sketches we can apply a revolution to model in 3D the shape of the island. A wind map, a 2D vector field, is used to simulate erosion through warping. Finally, information about the water level and a subsidence rate is provided to simulate the the sinking of the island and the growth of the coral reef.
+
+In this initial algorithm, the island is centered in the scene. The different regions that compose the landscapes are defined by polygons whose vertices are defined in polar coordinates $(\radius, \phi)$ with $\radius \geq 0$, constraining each region to contain the center of the island. 
+
+The different regions we consider are mountains, island borders, beaches, lagoon, reef crests and abyss limits [ADD FIGURE]. We define in advance an order in which these regions appear, from the center of the island to the open ocean. This limits the radius of a region to be lower or equal to its successor's radius: $\radius_{i-1}(\phi) \leq \radius_{i}(\phi)$. 
+
+The profile of the island is given as a 1D function $\heightProfile: [0, 1] \to \R$. The height at the center of the island is defined as $\heightProfile(0)$, and each region $i$'s limit is defined at $\heightProfile(t_i)$ with $t_i = \frac{i}{n - 1}$. We can then use a linear interpolation to determine the height $h(\p) = \heightProfile(t_{\p})$ at any point $\p$ inside a region. Using the polar coordinates of $\p = (\radius_{\p}, \phi_{\p})$, we find $t_\p = \lerp \left( t_{i-1}, t_i, 1 - \frac{\radius_{\p} - \radius_{i-1}}{\radius_i - \radius_{i-1}} \right)$.
+
+The user can remove the radial constraint using a third interaction process, a deformation field $\warp: \R^2 \to \R^2$ simulating the effect of wind and waves on the island. We can then compute the final height $h(\warp \circ \p) = \heightProfile(t_{\p})$, or, as the implicit modeling community would write it, $\Tilde{h}(\p) = \warp^{-1} \circ h$.
+
+While we did not study it in depth, one can add a resistance function $\rho: [0, 1] \to [0, 1]$ defined in the same manner as the profile function $\heightProfile$ which can be seen as an attenuation of the deformation field $\Tilde{\warp} = \rho(t_{\p}) \warp$. We keep the same formulation $\Tilde{h}(\p) = \Tilde{\warp}^{-1} \circ h$.
+
+Once the initial terrain surface is computed, the algorithm apply the simulation step with the water level and subsidence rate provided.
+
+% - Sketching of the island from above + profile view \\
+% - Wind strength \\
+% - Water level \\
+% - Subsidence rate \\
+% - ...
 
 \subsubsection{"Simulation"}
-- Subsidence calculated by simple scaling \\
-** Note: No geological consistency \\
-*** Here, using a zero level to scale in Z \\
-*** No consideration of different soil materials \\
-- Reef growth \\
-** Does not consider any weather events \\
-** Considers the "keep up" strategy (as opposed to "give up" and "catch up") [large simplification] \\
-- Wind deformation \\
-** using directly $f(\p) = f(\warp(\p))$. \\
-- ...
+
+The simulation step for the coral reef generation is not physically based, but based on observation.
+
+We know that the coral reefs starts their formation at the borders of the island, close to the water surface and down to around 30m, and, while the ground is subsiding, it can remain close to the water surface when it "keeps up" (continues growing while the water level changes). 
+
+In our simulation, we use the initial height field $\height_0$, but also the same height field after subsidence occured. We will consider the effect of subsidence as a scale in the Z-direction for all the points in the original height field $\heightSubsid = (1 - \lambda) \height_0$ with $\lambda$ the subsidence state given by the user.
+
+The lifespan of volcanic islands being multiple orders of magnitude higher than coral reefs (multiple millions of years against about ten thousands years), we will neglect ground surface geomorphing during the reef simulation. 
+
+Let's investigate on the common shape of a coral reef. From the open sea to the island borders, we have the fore reef zone, the reef crest, and the reef flat zone. We focus our reef model around the crest as it remains close to the water level. Behind it, we find a small slope then a lagoon (respectively the back reef and lagoon zone, composing the reef flat zone) and in front of the reef, a stronger slope then a wall (respectively the butress zone and the deep fore reef, composing the fore reef zone). We will model each of these parts individually, then blend them with the initial height field.
+
+We set the position of the reef crest at the at all points from the initial height field that allows for corals to grow, i.e. $\coralMin \leq \height_0 \leq \coralMax$.
+
+
+% - Subsidence calculated by simple scaling \\
+% ** Note: No geological consistency \\
+% *** Here, using a zero level to scale in Z \\
+% *** No consideration of different soil materials \\
+% - Reef growth \\
+% ** Does not consider any weather events \\
+% ** Considers the "keep up" strategy (as opposed to "give up" and "catch up") [large simplification] \\
+% - Wind deformation \\
+% ** using directly $f(\p) = f(\warp(\p))$. \\
+% - ...
 
 \subsubsection{Output}
 - Height map of the island's surface \\

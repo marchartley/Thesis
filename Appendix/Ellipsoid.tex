@@ -50,10 +50,11 @@ Decomposing the equation \eqref{eq:ellipsoid_full-ellipse}, we find
     C &= x^2 \left( \frac{\cct}{a^2} + \frac{\sst}{b^2} \right) - 1
 \end{align}
 
+
 Solving $f(x)$ gets us to 
 \begin{align}
     \label{eq:ellipsoid_final-ellipse}
-    f(x) = \frac{-B \pm \sqrt{B^2 - 4 A C}}{2 A}
+    f(x) = \frac{-B + \sqrt{B^2 - 4 A C}}{2 A}
 \end{align}
 
 The function $f(x)$ provides us with the "upper shell" of the ellipse at the position $x$.
@@ -119,27 +120,31 @@ Isolating the variable $z$ transforms the formulation into a quadratic equation 
 Solving $f(x, y)$ gets us, once again, to 
 \begin{align}
     \label{eq:ellipsoid_final-ellipsoid}
-    f(x) = \frac{-B \pm \sqrt{B^2 - 4 A C}}{2 A}
+    f(x) = \frac{-B + \sqrt{B^2 - 4 A C}}{2 A}
 \end{align}
 
 The function $f(x, y)$ provides us with the "upper shell" of the ellipsoid at the position $(x, y)$.
 
-For finding the domain of definition of the function $f$, we solve the inequality $B^2 - 4 A C \geq 0$.
+While the function heavily relies on the trigonometric functions $\cos$ and $\sin$, we need to keep in mind that $\theta$ and $\phi$ are set for the ellipsoid, meaning that we can compute the value of $\cp, \ccp, \sp, \ssp, \ct, \cct, \st$ and $\sst$ once and use them for any point $(x, y)$.
+
+% For finding the domain of definition of the function $f$, we solve the inequality $B^2 - 4 A C \geq 0$.
+% \begin{align}
+%     \label{eq:ellipsoid_ellipsoid-bounds}
+%     \left( -c^2 y (a^2 - b^2) \frac{\sin(2\phi)}{2} + x \left( -a^2 b^2 + a^2 c^2 \sin^2(\phi) + b^2 c^2 \cos^2(\phi) \right) \cos(\theta) \right)^2 \sin^2(\theta) - \left( -a^2 b^2 c^2 + c^2 y \left( -x (a^2 - b^2) \left( \sin(2\phi - \theta) + \sin(2\phi + \theta) \right)/2 + y \left( a^2 \cos^2(\phi) + b^2 \sin^2(\phi) \right) \right) + x^2 \left( a^2 b^2 \sin^2(\theta) + a^2 c^2 \sin^2(\phi) \cos^2(\theta) + b^2 c^2 \cos^2(\phi) \cos^2(\theta) \right) \right)
+% \end{align}
+
+The volume under the function is half the volume of an ellipsoid, such that 
 \begin{align}
-    \label{eq:ellipsoid_ellipsoid-bounds}
-    \left( -c^2 y (a^2 - b^2) \frac{\sin(2\phi)}{2} + x \left( -a^2 b^2 + a^2 c^2 \sin^2(\phi) + b^2 c^2 \cos^2(\phi) \right) \cos(\theta) \right)^2 \sin^2(\theta) - \left( -a^2 b^2 c^2 + c^2 y \left( -x (a^2 - b^2) \left( \sin(2\phi - \theta) + \sin(2\phi + \theta) \right)/2 + y \left( a^2 \cos^2(\phi) + b^2 \sin^2(\phi) \right) \right) + x^2 \left( a^2 b^2 \sin^2(\theta) + a^2 c^2 \sin^2(\phi) \cos^2(\theta) + b^2 c^2 \cos^2(\phi) \cos^2(\theta) \right) \right)
+    \int_{x_{\text{min}}}^{x_{\text{max}}} \int_{y_{\text{min}}}^{y_{\text{max}}} f(x, y) \,dx \,dy = \frac{2 \pi a b c}{3}
 \end{align}
 
-The area under the curve is half the area of an ellipse, such that 
-\begin{align}
-    \int_{x_{\text{min}}}^{x_{\text{max}}} f(x) \,dx = \frac{\pi a b}{2}
-\end{align}
+[TO BE CONTINUED...?]
 
-Finally, we consider the ground locally linear with a rotation $\theta$ such that the ground surface is defined as $g(x) = x \tan(\theta)$. So the amount of material that is being added as such can be computed as 
-\begin{align}
-    \text{Area} = \int \max \left( f(x) - g(x), 0 \right) \, dx
-\end{align}
-We correct the added area by scaling the added matter:
-\begin{align}
-    \Tilde{g}(x) = g(x) + \frac{\max \left( f(x) - g(x), 0 \right)}{\text{Area}} \pi a b
-\end{align}
+% Finally, we consider the ground locally linear with a rotation $\theta$ such that the ground surface is defined as $g(x) = x \tan(\theta)$. So the amount of material that is being added as such can be computed as 
+% \begin{align}
+%     \text{Area} = \int \max \left( f(x) - g(x), 0 \right) \, dx
+% \end{align}
+% We correct the added area by scaling the added matter:
+% \begin{align}
+%     \Tilde{g}(x) = g(x) + \frac{\max \left( f(x) - g(x), 0 \right)}{\text{Area}} \pi a b
+% \end{align}
