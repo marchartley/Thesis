@@ -1,5 +1,6 @@
 \zzcommand{\heightProfile}{h_{\text{profile}}}
 \zzcommand{\heightSubsid}{\height_{\text{subsid}}}
+\zzcommand{\heightCoral}{\height_{\text{coral}}}
 \zzcommand{\coralMin}{z_\text{coral min}}
 \zzcommand{\coralMax}{z_\text{coral max}}
 
@@ -261,10 +262,26 @@ In our simulation, we use the initial height field $\height_0$, but also the sam
 
 The lifespan of volcanic islands being multiple orders of magnitude higher than coral reefs (multiple millions of years against about ten thousands years), we will neglect ground surface geomorphing during the reef simulation. 
 
-Let's investigate on the common shape of a coral reef. From the open sea to the island borders, we have the fore reef zone, the reef crest, and the reef flat zone. We focus our reef model around the crest as it remains close to the water level. Behind it, we find a small slope then a lagoon (respectively the back reef and lagoon zone, composing the reef flat zone) and in front of the reef, a stronger slope then a wall (respectively the butress zone and the deep fore reef, composing the fore reef zone). We will model each of these parts individually, then blend them with the initial height field.
+Let's investigate on the common shape of a coral reef. From the open sea to the island borders, we have the fore reef zone, the reef crest, and the reef flat zone. We focus our reef model around the crest as it remains close to the water level. Behind it, we find a small slope then a lagoon (respectively the back reef and lagoon zone, composing the reef flat zone) and in front of the reef, a stronger slope then a wall (respectively the buttress zone and the deep fore reef, composing the fore reef zone). We will model each of these parts individually, then blend them with the initial height field.
 
-We set the position of the reef crest at the at all points from the initial height field that allows for corals to grow, i.e. $\coralMin \leq \height_0 \leq \coralMax$.
+We can place all these limits in the field with:
+\begin{itemize}
+    \item Crest min are at $\height_0 = \coralMax$,
+    \item Crest max are at $\height_0 = \coralMin$,
+    \item Lagoon min are at current island borders $\heightSubsid = \Wlevel$,
+    \item Lagoon max are at Crest min - back reef width,
+    \item Deep fore reef min at Crest max + buttress width,
+    \item Deep fore reef max at Crest max + buttress width + fore reef width
+\end{itemize}
 
+Fixing a depth for the lagoon, reef crest, buttress end and abysses, we now have constraint heights that partially cover the terrain. We connect the missing parts using the cubic rational smoothstep function $\smooth(t) = \frac{x^3}{3x^3 - 3x + 1}$ proposed by Inigo Quilez.
+
+We then have a height field $\heightCoral$ for the coral landscape. We can blend the island and the coral height fields using a smooth max function, derived from the smooth min functions also proposed by Quilez: $\max(a, b) = b + k \left( \frac{\frac{\left( a-b \right)}{k}}{1-2^{\frac{\left( b - a  \right)}{k}}} \right)$ with $k$ a tolerence value. 
+
+
+While the results may not be physically accurate at all, we allow the user for much more control on the output.
+
+One can modify the filling by defining a height and slope constraint at each limit as proposed in \citep{Guerin2022}.
 
 % - Subsidence calculated by simple scaling \\
 % ** Note: No geological consistency \\
@@ -278,25 +295,31 @@ We set the position of the reef crest at the at all points from the initial heig
 % - ...
 
 \subsubsection{Output}
-- Height map of the island's surface \\
-- Island zones and coral zones \\
-- Possibility to recalculate ground height and coral height \\
-- ...
+We obtain as output a height field of a simplified coral reef island. The main importance of this method is to conserve the semantic of the terrain, as we can always know the location of the island, lagoons, reefs, etc. Keeping track of the semantic has multiple advantages:
+\begin{itemize}
+    \item Texturing the surface with respect to the terrain features is easily done.
+    \item Terrain augmentation is eased as we can add multiple post-processing methods like the creation of passes, the addition of spurs and grooves patterns, etc.
+    \item Subsurface ground material is available, even while working on 2D height fields.
+\end{itemize}
+% - Height map of the island's surface \\
+% - Island zones and coral zones \\
+% - Possibility to recalculate ground height and coral height \\
+% - ...
 
-\subsection{Closed form of coral growth}
-- Proposes a closed-form solution for surface calculation \\
-- Calculation of ground height: \\
-** Calculation of height by revolution around the origin point \\
-** Deformation of the revolution profile using the top-down sketch \\
-** Deformation of the height field by the wind map. \\
-- Calculation of growth: \\
-** On the initial heightmap, \\
-*** Any surface $z_{min} < h(p) < z_{max}$ becomes coral \\
-*** Calculation of the "low" contour $h(p) = z_{min}$ and "high" contour $h(p) = z_{max}$ \\
-*** ... \\
-- Deformation of the map using the wind map: \\
-** ... \\
-- ...
+% \subsection{Closed form of coral growth}
+% - Proposes a closed-form solution for surface calculation \\
+% - Calculation of ground height: \\
+% ** Calculation of height by revolution around the origin point \\
+% ** Deformation of the revolution profile using the top-down sketch \\
+% ** Deformation of the height field by the wind map. \\
+% - Calculation of growth: \\
+% ** On the initial heightmap, \\
+% *** Any surface $z_{min} < h(p) < z_{max}$ becomes coral \\
+% *** Calculation of the "low" contour $h(p) = z_{min}$ and "high" contour $h(p) = z_{max}$ \\
+% *** ... \\
+% - Deformation of the map using the wind map: \\
+% ** ... \\
+% - ...
 
 \subsection{Labeling of the map}
 - Using top-down sketch: \\
