@@ -1,35 +1,82 @@
-\chapter{Volumetric terrain modeling [MAYBE TO BE MOVED TO INTRO]}
+\chapter{Volumetric terrain modeling}
 \label{chap:volumic-modeling}
 \minitoc
 
-- Volumetric modeling is important for representing 3D structures \\
-- Allows for the representation of cavities, arches, overlays, etc. \\
-- The concept of materials allows for including much more information for the following parts: enhancement and rendering \\
-** Enhancement (e.g., erosion) needs to know the type of soil at the surface and subsurface to be realistic \\
-** Rendering needs to know the material at the surface to correctly display textures \\
-- ...
+\section{Introduction}
+[THIS MIGHT BE THE ABSTRACT OF THE PART]
+
+The output of the semantic terrain generation is a set of \glosses{EnvObj} containing a \gloss{Skeleton} defined as points, curves or regions. From this very coarse representation, we want to create the 3D geometry to visualize the real terrain. This parametric geometry representation of the \glosses{Skeleton} pushes us to use the implicit surface representation to model it. We extended this idea to work with implicit volumes with material information.
+
+Working with volumes instead of surfaces allows to keep the information of which terrain features occupies which points in space. Adding to this the notion of material information has many advantages: first, we can render different textures procedurally on the ground, the features and even the inside if needed. Secondly, this information can be used in post-processes like the erosion simulation step, where this information enables to weather more or less some parts, or add effects at the interface between multiple materials. Finally, including "invisible" materials like air or water allows to represent 3D objects like tunnels the same way as solid objects.
+
+% - Volumetric modeling is important for representing 3D structures \\
+% - Allows for the representation of cavities, arches, overlays, etc. \\
+% - The concept of materials allows for including much more information for the following parts: enhancement and rendering \\
+% ** Enhancement (e.g., erosion) needs to know the type of soil at the surface and subsurface to be realistic \\
+% ** Rendering needs to know the material at the surface to correctly display textures \\
+% - ...
 
 \section{Implicit terrains with materials}
 \label{sec:volumic-modeling_implicit-terrain-with-materials}
-- ...
 
-\subsection{Material density}
-- ...
+Material information in the terrain ground provides useful hints for the generation process. Recent works in terrain generation make use of construction trees to aggregate terrain features in a landscape. Construction trees allow to store the sparsely the features for a very low memory cost. While the implicit modeling has been studied for a long time now \cite{Turk2001}, only recently has the . In 3D modeling, the model of the BlobTree\cite{Schmidt2006} has been often used. More studies about blending functions \cite{Barthe2004,Bernhardt2010,DeGroot2014,Vaillant2013,Angles2017} enabled to find new ways to smoothly integrate the different nodes of the construction trees. In terrain generation, the use of construction trees have been used in 2.5D for adding and blending features together in order to represent a large scene \cite{Genevaux2015,Guerin2016}, but also in 3D to represent smaller features \cite{Paris2021a}. However, in these methods, the material information is lost and we consider that everything that is defined by the construction tree is composed of a single ground type. 
 
-\subsubsection{Material granularity}
-- ...
+We extended the idea of construction trees for 3D terrains by extending the operator nodes with positional information. While the problem of material definition inside overlapping objects remains an open problem, we propose solutions to tackle this problematic.
 
-\subsubsection{Soil triangle}
-- ...
+% \subsection{Material density}
+% % - Scalar value across the field \\
+% - ...
+
+% \subsubsection{Material granularity}
+% - ...
+
+% \subsubsection{Soil triangle}
+% - ...
+
+\subsection{Tree definition}
+- Tree structure \\
+** Leaves \\
+*** Implicit volumes \\
+*** Material information \\
+*** Bounded support \\
+** Nodes \\
+*** Not always unary or binary \\
+*** Blending functions \\
+*** Positional information \\
+** Evaluation at one point \\
+*** From leaves to trunk \\
+- ... 
+
+\section{Primitives}
+The leaves of the construction tree are implicit primitives. An implicit primitive is a scalar function $f: \R^3 \to \R$ for which we typically consider the surface at any point $\p$ satisfying $f(\p) = 0$. We consider that we are inside the volume for $f(\p) < 0$ and outside for $f(\p) > 0$. This definition include many possible functions like voxel grids (explicit function) or implicit volumes.
+
+We include an extra information in the node: the composing material. Typically, we represent the material as an index to a set of predefined materials like sand, rock, soil, water, etc... In our representation each primitive is associated to a unique material. 
 
 \subsection{Scalar functions}
-- ...
+The scalar functions associated to primitives are defined as $f: \R^3 \to \R$. We usually associate points and curves to the function in order to define parametric volumes.
+
+Examples of scalar functions may include:
+\begin{itemize}
+    \item Spheres: the parametric equation of the sphere is the most common model, using its center $c$ and radius $\radius$. $f(\p) = (c - \p)^2 - \radius^2$.
+    \item Tubes: using a parametric curve $\curve$ and a radius $\radius$, we can define tubes, that can represent arches or tunnels, depending on the material associated. $f(\p) = (\curve^* - \p)^2 - \radius^2$ with $\curve^*$ defined as the closest point of the curve from $\p$.
+\end{itemize}
+
+Scalar functions are not limited to simple equations. The tunnels digged in \cref{chap:karsts}, for example, use the implicit swept volume formulation \cite{Schroeder1994}, providing a parametric path and a parametric 2D shape to carve the ground. The later is also parametrized to evolve along the curve path in order to have an entry shape and an output shape that can be different.
+
+\subsection{Material information}
+The material information given for a primitive inform the evaluator what type of material should be present at any point $\p$ that satisfy $f(\p) < 0$.
+
+Now we also like to define the density of this material inside the primitive, such that in the case where two or more primitives are present in a single point, we can find a unique final material $\material$. In our work we considered the density function $\sigma: \R^3 \to \R$ to be completely related to the scalar function $f$ such as $\sigma = -f$. While not realistic, this default value is sufficient for most cases.
+
+\section{Nodes}
 
 \subsection{Blending functions}
 - ...
 
 \subsection{Placement functions}
 - ...
+
+\section{Rendering}
 
 \subsection{Material usage}
 - ...
@@ -40,8 +87,9 @@
 \subsubsection{Post-processing: material transformation}
 - ...
 
-\section{Graphical Representation of \glosses{EnvObj}}
+\section{Graphical representation of \glosses{EnvObj}}
 \label{sec:volumic-modeling_graphic-representation-env-objects}
 - Implicit surfaces \\
 - Meshes \\
+- Example of 3D environmental object representation in \cref{chap:karsts} \\
 - ...
