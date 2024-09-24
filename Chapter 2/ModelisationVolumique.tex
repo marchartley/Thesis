@@ -68,13 +68,57 @@ The material information given for a primitive inform the evaluator what type of
 
 Now we also like to define the density of this material inside the primitive, such that in the case where two or more primitives are present in a single point, we can find a unique final material $\material$. In our work we considered the density function $\sigma: \R^3 \to \R$ to be completely related to the scalar function $f$ such as $\sigma = -f$. While not realistic, this default value is sufficient for most cases.
 
-\section{Nodes}
+\section{Operators}
+In the construction tree structure, nodes represent operators. Unary operators are effective to translate, rotate or scale their child node, but many other manipulations are useful. On the other hand, $n$-ary nodes, containing two or more child nodes, aggregate their children like CSG trees with their union, soustraction and difference operations, but in a smooth manner, that we call blending.
 
-\subsection{Blending functions}
+\subsection{Unary nodes}
+An unary node has a unique child. They are used to apply transformations on their child, whever it is an implicit primitive or another node. In CSG, we often use unary operators to apply linear transformation on an object, such as a translation, a rotation or a scaling operation. 
+
+Other non-linear transformations may be applied on the child as twisting and warping operations. The twist, usually defined as 
+\begin{align}
+    T(x, y, z) = \left( x \cos(\theta(z)) - y \sin(\theta(z)), x \sin(\theta(z)) + y \cos(\theta(z)), z \right)
+\end{align}
+with $\theta(z)$ a scalar function defining the rotation strength function of $z$, resulting in a helice shape, while the warping operator would be defined as 
+\begin{align}
+    W(x,y,z) = (x,y,z) + F(x, y, z)
+\end{align}
+with $F$ a vector field that define the warp direction and strength.
+    
+
+Many other operators may be proposed, such as a noise function $f(\p) = f_A(\p) + \noise(\p)$.
+
+\subsection{Binary nodes}
+Having two children in a node creates a binary node. Binary nodes are widely used in CSG as the logic table OR, AND, XOR are themselves binary. 
+
+\subsubsection{Blending functions}
+- Symmetric blending: \\
+** Analogy easy with the 2.5D version \\
+** With the form $f(\p) = \sqrt[n]{f_A(\p)^n + f_B(\p)^n}$ from \cite{Bernhardt2010}. \\
+** We use the same function to determine the amount of each material $\sigma_A$ and $\sigma_B$. \\
+** But now, we need to define which material is present where. So nodes contains a vector of materials, such that multiple materials can be defined as each point. This multiple materials information is kept, we will see different solutions to render or collapse this vector in the next section.
+
+- Asymmetric blending: \\
+** A bit more complex than the 2.5D version. \\
+** Replacing: \\
+*** [FIND FUNCTION] \\
+** One-way blending: \\
+*** [FIND FUNCTION] \\
 - ...
 
-\subsection{Placement functions}
+\subsubsection{Placement functions}
+- Stacking = addition in 3D \\
+** "Liquid" positionning based on object A's surface \\
+- Fixed = "max" in 3D \\
+** A "free" object, or not dependent on environment for example \\
+- Roof = obj B is mirrored on Z and placed at above surface \\
+** Say obj A is a cave (or "hole object", like tunnel), place obj B (a stalctite for example) on the roof of the tunnel. \\
+- Ground = obj B is placed at lower surface \\
+** Say obj A is a cave (or "hole object", like tunnel), place obj B (a rock for example) on the ground of the tunnel. \\
 - ...
+
+\subsection{$n$-ary nodes}
+A binary tree may use more resources to evaluate $n$ primitives as it requires $2 n - 1$ operations on a balanced tree than a $n$-ary tree as we may evaluate all primitives at once. However, very few operators have been proposed for $n$-ary operators. We will then stick to the simplist one which is the union.
+
 
 \section{Rendering}
 

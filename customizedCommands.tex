@@ -6,6 +6,8 @@
 % Define \zzcommand for conditional commands
 \def\zzcommand#1{\let#1\undefined\newcommand#1}
 
+% \WarningFilter{hyperref}{Token not allowed in a PDF string} % Remove the warnings about \gls in titles or math functions in titles.
+
 \LetLtxMacro{\OldTilde}{\Tilde}
 \zzcommand{\Tilde}[1]{
   \StrLen{#1}[\temp]%
@@ -63,6 +65,7 @@
 \DeclareCiteCommand{\cite}[\mkbibparens]
   {\usebibmacro{prenote}\usebibmacro{cite:init}}
   {\usebibmacro{citeindex}
+  %  \printtext[bibhyperref]{[\thefield{entrykey}] \usebibmacro{cite}}}
    \printtext[bibhyperref]{\usebibmacro{cite}}}
   {\multicitedelim}
   {\usebibmacro{postnote}}
