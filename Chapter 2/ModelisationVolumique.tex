@@ -50,6 +50,16 @@ We extended the idea of construction trees for 3D terrains by extending the oper
 \section{Primitives}
 The leaves of the construction tree are implicit primitives. An implicit primitive is a scalar function $f: \R^3 \to \R$ for which we typically consider the surface at any point $\p$ satisfying $f(\p) = 0$. We consider that we are inside the volume for $f(\p) < 0$ and outside for $f(\p) > 0$. This definition include many possible functions like voxel grids (explicit function) or implicit volumes.
 
+We use the primitives to represent the presence of a feature at a given position, and as such we limited the domain of the function to be $f: \R^3 \to [0, 1]$ where a value closer to 1 is the presence of the given feature and 0 its absence. A common mapping from the "classic" function to the restrained function may look as $f_{\text{restrained}} = \sigmoid (- f_{\text{classic}})$ with the sigmoid function 
+\begin{align}
+    \sigmoid(x) = \frac{1}{1+e^{-t(x - x_0)}}
+\end{align}    
+with $t$ being the logistic growth rate and $x_0$ an offset of the function, the $x$ value of the function's midpoint. We typically set $x_0 = 0$ to center symmetry point of the function at $x = 0$. With this definition of the scalar function, the surface previously set at $f_{\text{classic}} = 0$ is transfered to $f_{\text{restrained}} = 0.5$. Keeping our values between 0 and 1 allows us to use more tools as to manipulate the content of our construction trees. By using the logit function 
+\begin{align}
+    \operatorname{logit}(x)=\frac{1}{t}\ln\left(\frac{x}{1-x}\right)+x_0
+\end{align}
+we can get back to the classic implicit formulations. As the exponential function quickly grow, we usually consider $\sigmoid(x)=1$ for $x \geq \frac{6}{t}$ and $\sigmoid(x)=0$ for $x \leq -\frac{6}{t}$.
+
 We include an extra information in the node: the composing material. Typically, we represent the material as an index to a set of predefined materials like sand, rock, soil, water, etc... In our representation each primitive is associated to a unique material. 
 
 \subsection{Scalar functions}
@@ -87,13 +97,17 @@ with $F$ a vector field that define the warp direction and strength.
 
 Many other operators may be proposed, such as a noise function $f(\p) = f_A(\p) + \noise(\p)$.
 
-\subsection{Binary nodes}
-Having two children in a node creates a binary node. Binary nodes are widely used in CSG as the logic table OR, AND, XOR are themselves binary. 
+\subsection{$n$-ary nodes}
+Our scenes may contain a large amount of elements and as such, a binary construction tree representation can become quickly deep and not ideal. We then focused the construction of $n$-ary trees, where each node can contain an undefined number $n$ of children with $n \geq 2$.
 
 \subsubsection{Blending functions}
+The primitive functions are defined on $f_{\text{primitive}}: \R^3 \to [0,1]$ and we want to keep the result of our blending functions in the same domain $f_{\text{blending}}: [0,1]^2 \to [0,1]$, providing us possible simplifications on the blending functions, which is a good thing as the inclusion of the materials, on the other hand, add complexities.
+
+First, we need to take into account that some materials are "solid" (sand, rock) and some are "invisible" (water, air). In the CSG paradigm, adding a solid and an invisible object would be seen as the substraction operation. 
+
 - Symmetric blending: \\
 ** Analogy easy with the 2.5D version \\
-** With the form $f(\p) = \sqrt[n]{f_A(\p)^n + f_B(\p)^n}$ from \cite{Bernhardt2010}. \\
+** With the form $f(\p) = \sqrt[n]{f_A(\p)^n + f_B(\p)^n}$. \\
 ** We use the same function to determine the amount of each material $\sigma_A$ and $\sigma_B$. \\
 ** But now, we need to define which material is present where. So nodes contains a vector of materials, such that multiple materials can be defined as each point. This multiple materials information is kept, we will see different solutions to render or collapse this vector in the next section.
 
@@ -116,19 +130,23 @@ Having two children in a node creates a binary node. Binary nodes are widely use
 ** Say obj A is a cave (or "hole object", like tunnel), place obj B (a rock for example) on the ground of the tunnel. \\
 - ...
 
-\subsection{$n$-ary nodes}
-A binary tree may use more resources to evaluate $n$ primitives as it requires $2 n - 1$ operations on a balanced tree than a $n$-ary tree as we may evaluate all primitives at once. However, very few operators have been proposed for $n$-ary operators. We will then stick to the simplist one which is the union.
-
-
-\section{Rendering}
+\section{Returning a material}
+As we are mixing together multiple primitives with different materials, some may want to collapse the possible materials to a single material. Discretizing the implicit models to a layer-based representation or a material-voxel grid, for example, require a single material for a point in space. No single answer can be found as we will always lose information by doing so. In the backend, the information about each quantities of material may be stored.
 
 \subsection{Material usage}
-- ...
+Storing all the materials that compose a single point in space have many usages. Determining properties such as density, porosity, granularity may be important indicators for future processes. While natural processes like corrosion is applied at the molecular level, keeping the information of the composition of the ground can allow to simulate natural phenomena much easily.
+
+However, when rendering the surface of a 3D model or a terrain, we usually need to reduce the number to textures to blend to one or few. Another use case of the collapse: if we want to transform an implicit model to a material-voxel grid, for example, a unique material may be affected to each voxel.
 
 \subsubsection{Defining the final material}
-- ...
+If we are in a situation in which we need to reduce the number of materials to a unique material, we have multiple solutions. Each solution has inevitably drawbacks.
+\begin{itemize}
+    \item Select the material with the highest amount. This simple solution requires close to no computation and is intuitive.
+    \item Classify materials in a taxonomy. This allows many new options to implement a voting system.
+    \item OTHER OPTION?
+\end{itemize}
 
-\subsubsection{Post-processing: material transformation}
+\subsubsection{Usage example: material transformation}
 - ...
 
 \section{Graphical representation of \glosses{EnvObj}}
