@@ -101,9 +101,9 @@ Many other operators may be proposed, such as a noise function $f(\p) = f_A(\p) 
 Our scenes may contain a large amount of elements and as such, a binary construction tree representation can become quickly deep and not ideal. We then focused the construction of $n$-ary trees, where each node can contain an undefined number $n$ of children with $n \geq 2$.
 
 \subsubsection{Blending functions}
-The primitive functions are defined on $f_{\text{primitive}}: \R^3 \to [0,1]$ and we want to keep the result of our blending functions in the same domain $f_{\text{blending}}: [0,1]^2 \to [0,1]$, providing us possible simplifications on the blending functions, which is a good thing as the inclusion of the materials, on the other hand, add complexities.
+The primitive functions are defined on $f_{\text{primitive}}: \R^3 \to [0,1]$ and we want to keep the result of our blending functions in the same domain $f_{\text{blending}}: [0,1]^2 \to [0,1]$, providing us possible simplifications on the blending functions, which is a good thing as the inclusion of the materials, on the other hand, adds complexities.
 
-First, we need to take into account that some materials are "solid" (sand, rock) and some are "invisible" (water, air). In the CSG paradigm, adding a solid and an invisible object would be seen as the substraction operation. 
+First, we need to take into account that some materials are "solid" (sand, rock) and some are "invisible" (water, air). In the CSG paradigm, adding a solid and an invisible object would be seen as the substraction operation. In our work, we consider
 
 - Symmetric blending: \\
 ** Analogy easy with the 2.5D version \\
@@ -120,14 +120,18 @@ First, we need to take into account that some materials are "solid" (sand, rock)
 - ...
 
 \subsubsection{Placement functions}
-- Stacking = addition in 3D \\
-** "Liquid" positionning based on object A's surface \\
 - Fixed = "max" in 3D \\
 ** A "free" object, or not dependent on environment for example \\
+In this case, we can evaluate intuitively $G(f_A(\p), f_B(\p))$
+- Stacking = addition in 3D \\
+** "Liquid" positionning based on object A's surface \\
+The equation for evaluating a position $\p$ of the function $f_B$ stacked over $f_A$ becomes $G(f_A(\p), f_B(\p - \begin{bmatrix}0 & 0 & \arg \max_z f_A(\p)\end{bmatrix}))$ \\
 - Roof = obj B is mirrored on Z and placed at above surface \\
 ** Say obj A is a cave (or "hole object", like tunnel), place obj B (a stalctite for example) on the roof of the tunnel. \\
+The equation becomes $G(f_A(\p), f_B(\p - \begin{bmatrix}0 & 0 & \arg \max_z f_B(\p) + \arg \max_z f_A(\p)\end{bmatrix}))$. \\
 - Ground = obj B is placed at lower surface \\
 ** Say obj A is a cave (or "hole object", like tunnel), place obj B (a rock for example) on the ground of the tunnel. \\
+The equation becomes $G(f_A(\p), f_B(\p - \begin{bmatrix}0 & 0 & \arg \min_z f_A(\p)\end{bmatrix}))$. \\
 - ...
 
 \section{Returning a material}
@@ -141,17 +145,26 @@ However, when rendering the surface of a 3D model or a terrain, we usually need 
 \subsubsection{Defining the final material}
 If we are in a situation in which we need to reduce the number of materials to a unique material, we have multiple solutions. Each solution has inevitably drawbacks.
 \begin{itemize}
-    \item Select the material with the highest amount. This simple solution requires close to no computation and is intuitive.
+    \item Select the material, or the $n$ materials, with the highest amount. This simple solution requires close to no computation and is intuitive.
     \item Classify materials in a taxonomy. This allows many new options to implement a voting system.
-    \item OTHER OPTION?
 \end{itemize}
 
 \subsubsection{Usage example: material transformation}
-- ...
+As multiple materials may be present at a single position $\p$, we can apply transformation on these materials. We may use the formulation of chemical reactions to describe the phenomena.
+
+An example of transformation can include $1 \text{dirt} + 1 \text{water} \to 2 \text{mud}$ to describe the mixing of soft materials with liquids may transform this place in a muddy floor. $1 \text{water current} + 1 \text{rock} \to 0.5 \text{sand}$ simulates the effect of water erosion on solid ground, approximating the desaggregation of rocks into granular materials in addition to corrosion, as the equation is not balanced. 
 
 \section{Graphical representation of \glosses{EnvObj}}
 \label{sec:volumic-modeling_graphic-representation-env-objects}
-- Implicit surfaces \\
-- Meshes \\
-- Example of 3D environmental object representation in \cref{chap:karsts} \\
-- ...
+
+As presented in \cref{chap:semantic-representation}, the \glosses{EnvObj} we used to define our sparse terrain are symbolics and have no geometric representation. It is still possible to translate the semantic representation into a 3D representation by using a construction tree of the form :
+
+- Root \\
+- Water primitive : 1 large block set at $z = \Wlevel$ \\
+- "Ground" primitives that are fixed at $z = 0$, aggregated with $G_\text{fixed}$ \\
+- "Water" primitives aggregated with water primitive, aggregated with $G_\text{roof}$ \\
+- "Surface" primitives aggregated with $G_\text{stack}$ to be automatically placed on top of the surface. \\
+
+While the constuction trees are mainly aimed at combining implicit surfaces, the definition of the primitives can easily be extended to include meshes and implicit volumes. In the rest of this thesis, we will most of the time use implicit volumes for elements that shape the ground and meshes for elements that populate the surface, like vegetation. An exmple of underground 3D feature, karst systems, presented in \cref{chap:karsts}, may require an exception as we will have it a fixed position from the surface. As such, we would apply the $G_\text{roof}(f_\text{surface}, f_\text{karst})$ positionning operator in order to fix the entrance of the karst at the surface.
+
+The implicit volumes used are mainly combinations of tubes, spheres, and boxes, with the inclusion of noise unary nodes to add rugosity at the surface.
