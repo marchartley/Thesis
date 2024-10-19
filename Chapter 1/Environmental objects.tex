@@ -8,6 +8,18 @@
     \caption{Our method can produce different scenes including coral reef islands and canyons at multiple scales using \glosses{EnvObj} to represent terrain features.}
 	\label{fig:semantic-representation_teaser}
 }
+\abstract
+\label{chap:semantic-representation_abstract}
+% - Terrain generation usually focus on geometry processing \\
+% - Some works include soil materials in their process \\
+% - But no semantic information is preserved \\
+% - Many fields use topologic maps to describe the environment \\
+% ** see Travel books \\
+% - Our method to abstract the geometry and focus on the symbolic \\
+% - ... 
+This chapter introduces a novel method for procedural terrain generation, which leverages a sparse representation of environmental features to produce landscapes that are lightweight, plausible and adaptable to user desires. The method differs from traditional terrain generation approaches by emphasizing multi-scale user interaction and incorporating expert knowledge to model the evolution of terrain features over time. By representing terrain features as discrete entities, or "\glosses{EnvObj}", the method enables dynamic interaction between these entities and their surrounding environment, represented through continuous scalar and vector fields. The generation process is iterative and allows for user-guided modifications at any iteration, including the introduction of environmental events that can influence the terrain's evolution. The proposed approach is particularly flexible, capable of generating both terrestrial and underwater landscapes with a focus on large-scale plausibility and detailed, localized feature representation. 
+\pagebreak 
+
 \minitoc
 
 % topography
@@ -482,11 +494,11 @@ with $\Delta \depth_e$ the amount of water rising or lowering during an \gloss{G
 
 Subsidence and uplift are the main \glosses{GeoEvent} that create or destroy islands in the long term. These \glosses{GeoEvent} are simulated as a simple factor on the height field of the generated terrain (\cref{fig:semantic-representation_subsidence-event}). Subsidence is not always uniform in the terrain. As such, the user can provide a position $\q$ at which the subsidence is the strongest, the amount of subsidence applied $\Delta \height_e$ and a standard deviation $\std$ for which we can then compute at any point in space and time of the simulation the height of the terrain
 \begin{align*}
-    \height(\p) = \height_0(\p) \cdot \sum_{e \in \events}{\frac{G(\norm{\p - \q})}{G(0)}} \Delta \height_e \tEvent 
+    \height(\p) = \height_0(\p) \cdot \sum_{e \in \events}{G(\norm{\p - \q})} \Delta \height_e \tEvent 
 \end{align*}
 with $G(x)$ the Gaussian function
 \begin{align*}
-    G(x) = {\frac {1}{\std {\sqrt {2\pi }}}} \exp \left(-\frac {x^{2}}{2 \std ^{2}}\right)
+    G(x) = \exp \left(-\frac {x^{2}}{2 \std ^{2}}\right)
 \end{align*}
 
 \begin{figure}

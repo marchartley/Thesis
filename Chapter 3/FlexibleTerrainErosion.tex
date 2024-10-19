@@ -1,16 +1,6 @@
 \graphicspath{ {./figures/} }
 
-\chapter{Particle erosion simulation}
-\label{chap:erosion}
-\minitoc
-
-
 \newcommand{\referenceExemple}[1] {\textit{\cref{tab:erosion_result_figures}: #1}}
-
-
-
-
-
 \newcommand{\addingFiguresToCell}[4]{%
         \includegraphics[width=0.2\textwidth]{#1}
         \includegraphics[width=0.2\textwidth]{#2}
@@ -76,13 +66,26 @@ Meanders & \addingFiguresToCell{Results/meanders_base.png}{Results/meanders_fin.
 }
 
 
-\begin{figure*}
+\chapter{Particle erosion simulation}
+\label{chap:erosion}
+
+\teaser {
 	\includegraphics{figures/teaser.pdf}
 	\centering
 	\caption{Applying shading and textures on the generated geometry can produce a plausible aspect of a coast eroded by waves on a long timespan, or a desertic landscape eroded by wind, or a mountainous area flatten by thermal erosion.}
 	\label{fig:erosion_closerImage}
-	\label{fig:erosion_teaser}
-\end{figure*}
+}
+
+\abstract
+% - Work carried out at the beginning of the thesis \\
+% - Representation choice still uncertain \\
+% - Search for abstraction of the representation \\
+% ** Drives the generalization of the erosion system
+
+In this chapter, we present a novel particle-based method for simulating erosion on various terrain representations, including height fields, voxel grids, material layers, and implicit terrains. Our approach breaks down erosion into two key processes - terrain alteration and material transport - allowing for flexibility in simulation. We utilize independent particles governed by basic particle physics principles, enabling efficient parallel computation. For increased precision, a vector field can adjust particle speed, adaptable for realistic fluid simulations or user-defined control. We address material alteration in 3D terrains with a set of equations applicable across diverse models, requiring only per-particle specifications for size, density, coefficient of restitution, and sediment capacity. Our modular algorithm is versatile for real-time and offline use, suitable for both 2.5D and 3D terrains.
+\pagebreak
+
+\minitoc
 
 \section{Introduction}
 Automated terrain generation is a key component of natural scene digital modeling for animated movies and video games. A standard approach is to first generate a base terrain geometry using noise to define the height on the input domain \cite{Musgrave1989, Olsen2004, Roudier1993}, the result will most likely lack realism and feel synthetic. Erosion simulation algorithms are applied, to simulate thousands of years of ageing by reproducing physical phenomena - i.e. effects of the elements (rain, wind, running water...) - affecting the terrain making it more believable \cite{Stachniak2005, Smelik2009, Galin2019}.\\
