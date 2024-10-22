@@ -79,7 +79,7 @@ The scalar functions associated to primitives are defined as $f: \R^3 \to \R$. W
 Examples of scalar functions may include:
 \begin{itemize}
     \item Spheres: the parametric equation of the sphere is the most common model, using its center $c$ and radius $\radius$. $f(\p) = (c - \p)^2 - \radius^2$.
-    \item Tubes: using a parametric curve $\curve$ and a radius $\radius$, we can define tubes, that can represent arches or tunnels, depending on the material associated. $f(\p) = (\curve^* - \p)^2 - \radius^2$ with $\curve^*$ defined as the closest point of the curve from $\p$.
+    \item Tubes: using a parametric curve $\curve$ and a radius $\radius$, we can define tubes, that can represent arches or tunnels, depending on the material associated. $f(\p) = (\closestCp - \p)^2 - \radius^2$ with $\closestCp$ defined as the closest point of the curve from $\p$.
 \end{itemize}
 
 Scalar functions are not limited to simple equations. The tunnels digged in \cref{chap:karsts}, for example, use the implicit swept volume formulation \cite{Schroeder1994}, providing a parametric path and a parametric 2D shape to carve the ground. The later is also parametrized to evolve along the curve path in order to have an entry shape and an output shape that can be different.
@@ -97,9 +97,9 @@ An unary node has a unique child. They are used to apply transformations on thei
 
 Other non-linear transformations may be applied on the child as twisting and warping operations. The twist, usually defined as 
 \begin{align}
-    T(x, y, z) = \left( x \cos(\theta(z)) - y \sin(\theta(z)), x \sin(\theta(z)) + y \cos(\theta(z)), z \right)
+    T(x, y, z) = \left( x \cos(\angl(z)) - y \sin(\angl(z)), x \sin(\angl(z)) + y \cos(\angl(z)), z \right)
 \end{align}
-with $\theta(z)$ a scalar function defining the rotation strength function of $z$, resulting in a helice shape, while the warping operator would be defined as 
+with $\angl(z)$ a scalar function defining the rotation strength function of $z$, resulting in a helice shape, while the warping operator would be defined as 
 \begin{align}
     W(x,y,z) = (x,y,z) + F(x, y, z)
 \end{align}

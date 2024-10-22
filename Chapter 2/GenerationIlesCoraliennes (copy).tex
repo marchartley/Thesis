@@ -247,11 +247,11 @@ In this work we created an editor that allows to manipulate radial curves, allow
 \subsubsection{Input}
 Our method takes as input a top-view sketch and a profile sketch. From these two sketches we can apply a revolution to model in 3D the shape of the island. A wind map, a 2D vector field, is used to simulate erosion through warping. Finally, information about the water level and a subsidence rate is provided to simulate the the sinking of the island and the growth of the coral reef.
 
-In this initial algorithm, the island is centered in the scene. The different regions that compose the landscapes are defined by polygons whose vertices are defined in polar coordinates $(\radius, \phi)$ with $\radius \geq 0$, constraining each region to contain the center of the island. 
+In this initial algorithm, the island is centered in the scene. The different regions that compose the landscapes are defined by polygons whose vertices are defined in polar coordinates $(\radius, \angl)$ with $\radius \geq 0$, constraining each region to contain the center of the island. 
 
-The different regions we consider are mountains, island borders, beaches, lagoon, reef crests and abyss limits [ADD FIGURE]. We define in advance an order in which these regions appear, from the center of the island to the open ocean. This limits the radius of a region to be lower or equal to its successor's radius: $\radius_{i-1}(\phi) \leq \radius_{i}(\phi)$. 
+The different regions we consider are mountains, island borders, beaches, lagoon, reef crests and abyss limits [ADD FIGURE]. We define in advance an order in which these regions appear, from the center of the island to the open ocean. This limits the radius of a region to be lower or equal to its successor's radius: $\radius_{i-1}(\angl) \leq \radius_{i}(\angl)$. 
 
-The profile of the island is given as a 1D function $\heightProfile: [0, 1] \to \R$. The height at the center of the island is defined as $\heightProfile(0)$, and each region $i$'s limit is defined at $\heightProfile(t_i)$ with $t_i = \frac{i}{n - 1}$. We can then use a linear interpolation to determine the height $h(\p) = \heightProfile(t_{\p})$ at any point $\p$ inside a region. Using the polar coordinates of $\p = (\radius_{\p}, \phi_{\p})$, we find $t_\p = \lerp \left( t_{i-1}, t_i, 1 - \frac{\radius_{\p} - \radius_{i-1}}{\radius_i - \radius_{i-1}} \right)$.
+The profile of the island is given as a 1D function $\heightProfile: [0, 1] \to \R$. The height at the center of the island is defined as $\heightProfile(0)$, and each region $i$'s limit is defined at $\heightProfile(t_i)$ with $t_i = \frac{i}{n - 1}$. We can then use a linear interpolation to determine the height $h(\p) = \heightProfile(t_{\p})$ at any point $\p$ inside a region. Using the polar coordinates of $\p = (\radius_{\p}, \angl_{\p})$, we find $t_\p = \lerp \left( t_{i-1}, t_i, 1 - \frac{\radius_{\p} - \radius_{i-1}}{\radius_i - \radius_{i-1}} \right)$.
 
 The user can remove the radial constraint using a third interaction process, a deformation field $\warp: \R^2 \to \R^2$ simulating the effect of wind and waves on the island. We can then compute the final height $h(\warp \circ \p) = \heightProfile(t_{\p})$, or, as the implicit modeling community would write it, $\Tilde{h}(\p) = \warp^{-1} \circ h$.
 
@@ -342,14 +342,14 @@ The feature map paints the pixels corresponding to each of the regions instead o
 \end{itemize}
 
 In order to label the map, we first rasterize the map using polar coordinates and the 1D functions that represents each features border. 
-With the center of the island at the coordinates $(0, 0)$, we get the polar coordinates for any point $(x, y)$ as $\radius = \sqrt{x^2 + y^2}$ and $\phi = \arctan2 (y, x)$. We can then use the label $l \in \N$ with $l = \arg \min_i \left( \radius \leq \radius_{i}(\phi) \right)$. This operation is very fast and completely parallelizable.
+With the center of the island at the coordinates $(0, 0)$, we get the polar coordinates for any point $(x, y)$ as $\radius = \sqrt{x^2 + y^2}$ and $\angl = \arctan2 (y, x)$. We can then use the label $l \in \N$ with $l = \arg \min_i \left( \radius \leq \radius_{i}(\angl) \right)$. This operation is very fast and completely parallelizable.
 
 We did not include the limits specific to the coral reef previously cited (crest, lagoon, forereef, ...). The reason behind this being that, when a neural network will be trained on this task in order for the generation of the height field directly from a labelled map, we do not want the user to have to consider a large amount of labels.
 
 Once rasterized, the map is warped using the same displacement map $\Tilde{\warp}$ used for the height field deformation. As such, the feature map is directly associated to the height map.
 
 % - Using top-down sketch: \\
-% ** Features "Mountain", "Island borders", "Beach" are radial $(\phi, r)$, so we can label each point of the map as the "next" feature \\
+% ** Features "Mountain", "Island borders", "Beach" are radial $(\angl, r)$, so we can label each point of the map as the "next" feature \\
 % - Using coral simulation information: \\
 % ** Provides the labels "Lagoon" and "Reef \{begin, peak, end\}". \\
 % - The height map is directly associated to the feature map \\
@@ -360,7 +360,7 @@ Once rasterized, the map is warped using the same displacement map $\Tilde{\warp
 - Take advantage of the radial nature of the features \\
 - Some features can be optional (mountains) \\
 - Deformation of the feature lines \\ 
-** Influence on the radius: $\Tilde \radius(\phi) = \radius(\phi) + \noise(\phi)$ with $\noise$ continuous noise function $2\pi$-periodic. \\
+** Influence on the radius: $\Tilde \radius(\angl) = \radius(\angl) + \noise(\angl)$ with $\noise$ continuous noise function $2\pi$-periodic. \\
 - ...
 
 \section{cGAN}

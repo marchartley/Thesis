@@ -1,12 +1,12 @@
-\zzcommand{\ct}{\cos \theta}
-\zzcommand{\cct}{\cos^2 \theta}
-\zzcommand{\st}{\sin \theta}
-\zzcommand{\sst}{\sin^2 \theta}
+\zzcommand{\ct}{\cos \angl}
+\zzcommand{\cct}{\cos^2 \angl}
+\zzcommand{\st}{\sin \angl}
+\zzcommand{\sst}{\sin^2 \angl}
 
-\zzcommand{\cp}{\cos \phi}
-\zzcommand{\ccp}{\cos^2 \phi}
-\zzcommand{\sp}{\sin \phi}
-\zzcommand{\ssp}{\sin^2 \phi}
+\zzcommand{\cp}{\cos \anglTwo}
+\zzcommand{\ccp}{\cos^2 \anglTwo}
+\zzcommand{\sp}{\sin \anglTwo}
+\zzcommand{\ssp}{\sin^2 \anglTwo}
 
 
 \chapter{Computation of ellipsoids in 2.5D}
@@ -25,7 +25,7 @@ The common equation for an ellipse is function of $x$, $y$, the half-length $a$ 
     \frac{x^2}{a^2} + \frac{y^2}{b^2} = 1
 \end{align}
 
-We can generalize the equation to translate the center of the ellipse to the position $(x_0, y_0)$ by setting $x'=(x-x_0)$ and $y'=(y-y_0)$ and apply a rotation $\theta$:
+We can generalize the equation to translate the center of the ellipse to the position $(x_0, y_0)$ by setting $x'=(x-x_0)$ and $y'=(y-y_0)$ and apply a rotation $\angl$:
 \begin{align}
     \label{eq:ellipsoid_general-ellipse}
     \frac{(x' \ct + y' \st)^2}{a^2} + \frac{(x' \st - y' \ct)^2}{b^2} = 1
@@ -75,7 +75,7 @@ The area under the curve is half the area of an ellipse, such that
     \int_{x_{\text{min}}}^{x_{\text{max}}} f(x) \,dx = \frac{\pi a b}{2}
 \end{align}
 
-Finally, we consider the ground locally linear with a rotation $\theta$ such that the ground surface is defined as $g(x) = x \tan(\theta)$. So the amount of material that is being added as such can be computed as 
+Finally, we consider the ground locally linear with a rotation $\angl$ such that the ground surface is defined as $g(x) = x \tan(\angl)$. So the amount of material that is being added as such can be computed as 
 \begin{align}
     \text{Area} = \int \max \left( f(x) - g(x), 0 \right) \, dx
 \end{align}
@@ -102,7 +102,7 @@ First, the common equation of an ellipsoid is defined as $x$, $y$, $z$, and $a$,
     \frac{x^2}{a^2} + \frac{y^2}{b^2} + \frac{z^2}{c^2} = 1
 \end{align}
 
-We can generalize the equation to translate the center of the ellipse to the position $(x_0, y_0, z_0)$ by setting $x'=(x-x_0)$, $y'=(y-y_0)$ and $z'=(z-z_0)$ and apply a rotation $(\theta, \phi)$. Once again, we will consider $x_0=0$, $y_0=0$ and $z_0=0$, but including them becomes trivial:
+We can generalize the equation to translate the center of the ellipse to the position $(x_0, y_0, z_0)$ by setting $x'=(x-x_0)$, $y'=(y-y_0)$ and $z'=(z-z_0)$ and apply a rotation $(\angl, \anglTwo)$. Once again, we will consider $x_0=0$, $y_0=0$ and $z_0=0$, but including them becomes trivial:
 \begin{align}
     \label{eq:ellipsoid_general-ellipsoid}
       &\frac{\left( x \cp\ct + y \sp - z \cp\st \right)^2}{a^2} \\
@@ -127,12 +127,12 @@ Solving $f(x, y)$ gets us, once again, to
 
 The function $f(x, y)$ provides us with the "upper shell" of the ellipsoid at the position $(x, y)$.
 
-While the function heavily relies on the trigonometric functions $\cos$ and $\sin$, we need to keep in mind that $\theta$ and $\phi$ are set for the ellipsoid, meaning that we can compute the value of $\cp, \ccp, \sp, \ssp, \ct, \cct, \st$ and $\sst$ once and use them for any point $(x, y)$.
+While the function heavily relies on the trigonometric functions $\cos$ and $\sin$, we need to keep in mind that $\angl$ and $\anglTwo$ are set for the ellipsoid, meaning that we can compute the value of $\cp, \ccp, \sp, \ssp, \ct, \cct, \st$ and $\sst$ once and use them for any point $(x, y)$.
 
 % For finding the domain of definition of the function $f$, we solve the inequality $B^2 - 4 A C \geq 0$.
 % \begin{align}
 %     \label{eq:ellipsoid_ellipsoid-bounds}
-%     \left( -c^2 y (a^2 - b^2) \frac{\sin(2\phi)}{2} + x \left( -a^2 b^2 + a^2 c^2 \sin^2(\phi) + b^2 c^2 \cos^2(\phi) \right) \cos(\theta) \right)^2 \sin^2(\theta) - \left( -a^2 b^2 c^2 + c^2 y \left( -x (a^2 - b^2) \left( \sin(2\phi - \theta) + \sin(2\phi + \theta) \right)/2 + y \left( a^2 \cos^2(\phi) + b^2 \sin^2(\phi) \right) \right) + x^2 \left( a^2 b^2 \sin^2(\theta) + a^2 c^2 \sin^2(\phi) \cos^2(\theta) + b^2 c^2 \cos^2(\phi) \cos^2(\theta) \right) \right)
+%     \left( -c^2 y (a^2 - b^2) \frac{\sin(2\anglTwo)}{2} + x \left( -a^2 b^2 + a^2 c^2 \sin^2(\anglTwo) + b^2 c^2 \cos^2(\anglTwo) \right) \cos(\angl) \right)^2 \sin^2(\angl) - \left( -a^2 b^2 c^2 + c^2 y \left( -x (a^2 - b^2) \left( \sin(2\anglTwo - \angl) + \sin(2\anglTwo + \angl) \right)/2 + y \left( a^2 \cos^2(\anglTwo) + b^2 \sin^2(\anglTwo) \right) \right) + x^2 \left( a^2 b^2 \sin^2(\angl) + a^2 c^2 \sin^2(\anglTwo) \cos^2(\angl) + b^2 c^2 \cos^2(\anglTwo) \cos^2(\angl) \right) \right)
 % \end{align}
 
 The volume under the function is half the volume of an ellipsoid, such that 
@@ -142,7 +142,7 @@ The volume under the function is half the volume of an ellipsoid, such that
 
 [TO BE CONTINUED...?]
 
-% Finally, we consider the ground locally linear with a rotation $\theta$ such that the ground surface is defined as $g(x) = x \tan(\theta)$. So the amount of material that is being added as such can be computed as 
+% Finally, we consider the ground locally linear with a rotation $\angl$ such that the ground surface is defined as $g(x) = x \tan(\angl)$. So the amount of material that is being added as such can be computed as 
 % \begin{align}
 %     \text{Area} = \int \max \left( f(x) - g(x), 0 \right) \, dx
 % \end{align}
