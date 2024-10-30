@@ -82,7 +82,7 @@
 \DeclareCiteCommand{\citep}
 {\usebibmacro{prenote}\usebibmacro{cite:init}}
 {\usebibmacro{citeindex}
- \printtext[bibhyperref]{\usebibmacro{citefullbody}}}
+\printtext[bibhyperref]{\usebibmacro{citefullbody}}}
 {\multicitedelim}
 {\usebibmacro{postnote}}
 
@@ -96,10 +96,17 @@
 
 \AtEveryBibitem{\clearfield{url}}
 \AtEveryBibitem{\clearfield{note}} % Notes from Mendeley
+\newtotcounter{citenum}
+\AtEveryBibitem{\stepcounter{citenum}}
 
 \setlength\bibitemsep{1.5\itemsep}
 
 
+\newenvironment{Itemize}
+  {\begin{itemize}[label={}, leftmargin=0em, itemindent=3.0em, itemsep=0em, topsep=0em]} %, left=2em, itemsep=0.5em]} % Custom settings
+  {\end{itemize}}
+% Define new command \Item that applies italics to the title only
+\zzcommand{\Item}[1]{\item \textit{#1}}
 
 \lstset {
     language=C++,

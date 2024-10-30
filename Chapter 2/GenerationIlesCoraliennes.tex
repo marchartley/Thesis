@@ -1,4 +1,4 @@
-\graphicspath{ {./figures/cGAN_figures/} }
+\graphicspath{ {./Chapter 2/figures/cGAN/} }
 
 \zzcommand{\distRegions}{\Tilde{x}}
 
@@ -23,10 +23,23 @@ In this chapter, we propose a procedural method for generating single circular v
 
 Coral reef islands are formed through a dynamic interplay of volcanic activity, coral growth, and long-term geological processes. These islands begin as volcanic landmasses, created when magma from the Earth's mantle erupts through the ocean floor and builds up layers of volcanic rock, eventually rising above sea level. In tropical waters, these volcanic islands create ideal conditions for coral reefs to develop. Corals, thriving in the shallow, sunlit waters around the island, initially form fringing reefs attached to the island's coastline.
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width = \linewidth]{islandGrowth.pdf}
+    \caption{Volcanic islands rise above hotspots. The rise of magma from the hotspot forms a seamount. Consecutive eruptions from the volcano grow the seamount until the peak emerge above the sea level. The ground above and close to sea level is affected by hydraulic, aeolian and coastal erosion.}
+    \label{fig:coral-island_island-growth}
+\end{figure}
+
 As time passes, the volcanic island undergoes subsidence, a slow sinking process caused by the cooling and contraction of the Earth's crust beneath the island. In response to this subsidence, corals continue to grow upward, maintaining their position within the photic zone, where sunlight supports their survival. This upward growth leads to the formation of barrier reefs, which become separated from the island by a lagoon as the island sinks further.
 
 Eventually, the volcanic island may submerge completely beneath the ocean's surface, leaving only the coral structure visible above water. This process results in the formation of atolls, which are ring-shaped reefs encircling a central lagoon. Over geological time, the physical structure of the island evolves from a prominent volcanic peak to a coral-dominated reef system, shaped by the combined forces of subsidence, coral growth, and erosion.
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width = \linewidth]{reefGrowth.pdf}
+    \caption{Coral colonies grow near sea level, forming a fringing reef. As the hotspot below the island has moved, the island sinks slowly. The coral reef, however, continues its growth to keep living coral colonies in the photic zone. The sinking island increase the size of the lagoon, forming a barrier reef island. When the peak of the island is below the surface of the lagoon, an atoll is formed. }
+    \label{fig:coral-island_reef-growth}
+\end{figure}
 % 
 Charles Darwin's subsidence theory, developed from his observations in \citep{Darwin1842}, remains one of the most widely accepted explanations for the formation of coral reef islands. Darwin proposed that coral reefs form around volcanic islands that slowly subside over time due to geological processes. As the volcanic island sinks, coral reefs grow upward, maintaining their position near the surface of the ocean. This theory explains the transition from fringing reefs attached to the island's coast, to barrier reefs separated by a lagoon, and finally to atolls, where the volcanic island has completely submerged, leaving only the coral structure visible above water.
 
@@ -67,16 +80,23 @@ This method provides a simple and flexible approach to island generation, enabli
 
 
 
-\section{Related works}
+\section{State of the art}
 Procedural generation of terrain has been a well-researched area in computer graphics and simulations, where the goal is to create large, realistic landscapes with minimal manual input. Various methods have been developed over the years to generate terrains automatically, from noise-based approaches to physically-based erosion simulations, sketch-driven methods, and more recently, deep learning techniques.
 
 However, each of these techniques has its strengths and limitations, particularly when it comes to modeling coral reef islands. Coral islands present unique challenges due to the combination of long-term geological processes (such as subsidence and coral reef growth) and environmental interactions (like erosion caused by wind and waves). In this section, we review the key techniques that have been applied to terrain generation, highlight their limitations for coral island formation, and position our work as an approach that addresses these challenges.
 
 \subsection{Noise functions}
 % Noise functions
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width = \linewidth]{noise_examples3.pdf}
+    \caption{Three different results of an island generated from noise functions. In each case, the initial height field is the same, computed through flow noise. The falloff masks are also generated with a combination of fBm noise mitigated by the euclidean distance from the image center, warp noise and gamma correction. The only parameter modified for each example is the gamma correction. The results are very different, and hardly controllable. It is also difficult to represent lagoons and reefs using this method.}
+    \label{fig:coral-island_noise-example}
+\end{figure}
 Noise-based procedural generation remains one of the most widely used techniques for creating natural-looking terrains. Introduced by Ken Perlin, the Perlin noise and Simplex noise are foundational algorithms that generates pseudo-random yet continuous variations across a grid, producing terrain features that resemble organic landscapes \cite{Perlin1985,Perlin2001}.
 
-Beyond basic noise functions, more advanced techniques, such as Fractal Brownian Motion (FBM), are commonly used to add additional detail to terrains. FBM combines multiple layers, or "octaves," of noise at different frequencies, creating terrains with finer details and more realistic features. Noise functions are often paired with falloff maps to generate island-like terrains, where the height of the terrain gradually decreases toward the edges, mimicking the appearance of coastlines and providing a simple way to create basic island shapes.
+Beyond basic noise functions, more advanced techniques, such as fractal Brownian motion (fBm), are commonly used to add additional detail to terrains. FBm combines multiple layers, or "octaves," of noise at different frequencies, creating terrains with finer details and more realistic features. Noise functions are often paired with falloff maps to generate island-like terrains, where the height of the terrain gradually decreases toward the edges, mimicking the appearance of coastlines and providing a simple way to create basic island shapes.
 
 Despite their widespread use, noise-based methods have significant limitations when applied to the simulation of coral reef islands. While these techniques excel at producing large, varied landscapes quickly, they lack the geological accuracy needed to model real-world processes like volcanic subsidence and coral growth. These approaches generate random patterns, but are disconnected from the actual physical processes that govern coral island formation.
 
@@ -84,6 +104,17 @@ Our approach goes beyond the randomness of noise-based generation by incorporati
 
 \subsection{Erosion simulation}
 % Erosion simulation
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.45 \linewidth]{erosionCellularHawick2014.png}
+    \includegraphics[width = 0.45 \linewidth]{erosionHydraulicBenes2006.png}
+    \includegraphics{erosionHydraulicSchott2023_2.png}
+    \includegraphics{erosionRoudier1993.png}
+    \caption{Four examples from \cite{Hawick2014}, \cite{Benes2006}, \cite{Schott2023} and \cite{Roudier1993a}.}
+    \label{fig:coral-island_erosion-example}
+\end{figure}
+
 While noise functions generate random, natural-looking terrain, they often fail to capture the physical processes that shape real landscapes over time. To address this limitation, erosion simulations model how natural forces such as water flow and gravity wear down terrain features, creating valleys, river networks, and other detailed landforms. These simulations are particularly effective at representing mountainous landscapes, where erosion gradually sculpts the terrain over long periods of time, typically on the scale of hundreds to millions of years.
 
 Erosion simulations often use models like the Stream Power Law to describe how water erodes higher elevations and deposits sediment in lower areas. The rate of erosion depends on factors such as slope steepness and water flow, with steeper slopes and greater water volumes leading to faster erosion. Over time, these processes create detailed and realistic terrain features like river valleys and erosion channels. Erosion models are iterative, simulating the gradual shaping of landscapes by continuously balancing forces like erosion and uplift, as seen in the work of \cite{Cordonnier2016,Cordonnier2017a}. Their model simulates how tectonic forces uplift terrain, which is then eroded away over thousands of years. Similarly, \cite{Schott2023} and \cite{Tzathas2024} refined the Stream Power Law to generate realistic slopes and ridges through these long-term geological processes.
@@ -94,6 +125,15 @@ Our approach builds on the concept of terrain evolution by integrating the geolo
 
 \subsection{Sketching}
 % Sketching
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics{sketchingGain2009.png}
+    \includegraphics{sketchingTalgorn2018.png}
+    \includegraphics{sketchingTasse2014.png}
+    \caption{From \cite{Gain2009}, \cite{Talgorn2018}, \cite{Tasse2015}}
+    \label{fig:coral-island_sketching-examples}
+\end{figure}
 
 In procedural terrain generation, sketch-based approaches allow users to directly interact with and shape landscapes through intuitive sketching interfaces. These methods enable users to define key terrain features such as mountains, valleys, and coastlines by drawing them in a two-dimensional canvas, which are then translated into 2.5D terrains. Sketching provides a high level of artistic control, making it especially useful in creative applications such as video games and simulations, where user-defined terrain features are prioritized.
 
@@ -109,6 +149,13 @@ The key advantage of sketching in our system is that it combines the artistic co
 
 \subsection{Deep learning}
 % cGAN
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics{schemaGAN_cGAN.jpg}
+    \caption{The general structure of GAN and cGAN networks are similar: a generator network $G$ is trained to take some noise $z$ as input to try to create a "realistic" output $X_{\text{fake}}$ and a discriminator network $D$ is trained parallelly to distinguish generated data from real data. cGAN networks introduce an information of class $c$ in the input, which is used by the generator and discriminator in their inference process. In the end, only the generator is used to create new data. }
+    \label{fig:coral-island_GAN-scheme}
+\end{figure}
 
 In recent years, deep learning has become a innovative [MEH... "GAME CHANGER" OR SOMETHING LIKE THIS] tool in computer graphics, image processing, and procedural content generation. Deep learning refers to a class of machine learning techniques that use artificial neural networks with multiple layers to model complex patterns in data. By training these networks on large datasets, deep learning models can learn to generate new, realistic data by identifying the underlying relationships between inputs and outputs.
 
@@ -131,7 +178,6 @@ One of the key advantages of using a cGAN in our system is its ability to overco
 Additionally, the cGAN ensures that the generated island terrain aligns with the geological processes modeled in the system, such as subsidence and coral reef growth. By training the cGAN on thousands of examples that reflect these processes, we ensure that the final generated island models are both flexible and geologically plausible. The combination of user-driven design and data-driven generation through the cGAN allows for the creation of coral reef islands that are not only tailored to the user's input but also realistic in their form and structure.
 
 
-
 \section{Example generation}
 \label{sec:coral-island_example-generation}
 
@@ -140,28 +186,28 @@ Generating synthetic coral reef island terrains involves a combination of user i
 \subsection{Assumptions}
 In generating synthetic coral reef islands, we adopt a set of simplifying assumptions that are grounded in geological and biological observations. These assumptions streamline the process while producing plausible terrains. Below, we outline the key characteristics of our model:
 
-% \begin{itemize}
-    \textit{Radial symmetry:} Volcanic islands often begin as circular landmasses due to the radial uplift of magma from beneath the Earth's mantle. Erosion processes further smooth out sharp edges over time, reinforcing this initial symmetry. In our approach, we assume islands start with an approximately circular shape, providing a straightforward basis for terrain generation.
+\begin{Itemize}
+    \Item{Radial symmetry:} Volcanic islands often begin as circular landmasses due to the radial uplift of magma from beneath the Earth's mantle. Erosion processes further smooth out sharp edges over time, reinforcing this initial symmetry. In our approach, we assume islands start with an approximately circular shape, providing a straightforward basis for terrain generation.
 % This assumption reflects real-world volcanic islands, such as those in the Pacific, where erosion gradually shapes the initial circular form. Starting with a radial structure simplifies the generation and serves as a solid foundation for further deformation.
 
-    \textit{Radial arrangement of features:} The key island features like the island body, beaches, lagoons, and coral reefs, are arranged in concentric regions around the island center. This radial arrangement aligns with natural geological progression from the island to the surrounding reef.
+    \Item{Radial arrangement of features:} The key island features like the island body, beaches, lagoons, and coral reefs, are arranged in concentric regions around the island center. This radial arrangement aligns with natural geological progression from the island to the surrounding reef.
 % This simplifies the generation process by organizing features in a predictable order, similar to coral atolls where lagoons and reefs form protective rings around the island.
 
-    \textit{Wind and wave deformation:} Over time, wind and wave forces shape islands by introducing concave regions, carving out lagoons, and deforming coastlines [ADD CITATIONS]. To simulate these effects, we apply a wind deformation field that allows users to introduce natural variations that break the radial symmetry, resulting in more realistic island shapes.
+    \Item{Wind and wave deformation:} Over time, wind and wave forces shape islands by introducing concave regions, carving out lagoons, and deforming coastlines [ADD CITATIONS]. To simulate these effects, we apply a wind deformation field that allows users to introduce natural variations that break the radial symmetry, resulting in more realistic island shapes.
 % Wind and wave erosion play a significant role in shaping real coral islands, and simulating this erosion adds natural-looking variation. The wind field gives the user control over how much deformation is applied, creating non-uniform, dynamic island coastlines.
 
-    \textit{Independence of islands:} In this model, each island is treated as an independent entity, meaning its terrain does not influence neighboring islands. This allows multiple islands to be generated and placed freely without concern for terrain overlap or interaction. 
+    \Item{Independence of islands:} In this model, each island is treated as an independent entity, meaning its terrain does not influence neighboring islands. This allows multiple islands to be generated and placed freely without concern for terrain overlap or interaction. 
 % This assumption reflects the typical formation of islands in archipelagos, where individual islands are geographically separate. It simplifies the generation of multi-island scenes by avoiding unnecessary inter-island interactions.
 
-    \textit{Uniform profile shape:} We assume that the vertical profile of the island remains relatively uniform, meaning that the terrain's cross-section from the center outward is similar in every direction. While not accurate, this allows for consistent scaling of the profile in all directions, ensuring that the island's shape remains coherent and plausible.
+    \Item{Uniform profile shape:} We assume that the vertical profile of the island remains relatively uniform, meaning that the terrain's cross-section from the center outward is similar in every direction. While not accurate, this allows for consistent scaling of the profile in all directions, ensuring that the island's shape remains coherent and plausible.
 % Although real-world islands can have local variations in their profile, this uniformity makes the generation process more manageable and produces consistent terrain features.
 
-    \textit{Coral growth at constant depth:} Coral reefs require sunlight to thrive, which limits their growth to depths where light penetrates the water. In our model, coral growth is constrained to this depth range, with corals maintaining their proximity to the water surface as the volcanic island subsides.
+    \Item{Coral growth at constant depth:} Coral reefs require sunlight to thrive, which limits their growth to depths where light penetrates the water. In our model, coral growth is constrained to this depth range, with corals maintaining their proximity to the water surface as the volcanic island subsides.
 % Coral growth follows biological principles, growing upward in shallow waters. This assumption simplifies the process of modeling coral features and reflects the observed behavior of real coral reefs.
 
-    \textit{Subsidence and coral growth:} As the volcanic island subsides, coral reefs grow to keep pace with the sinking landmass, maintaining their height near the water surface, we call the "keep-up" strategy. In our model, the island subsides as a whole, while coral features are preserved by growing vertically. This separation allows the coral regions to remain unaffected by the subsidence of the island itself.
+    \Item{Subsidence and coral growth:} As the volcanic island subsides, coral reefs grow to keep pace with the sinking landmass, maintaining their height near the water surface, we call the "keep-up" strategy. In our model, the island subsides as a whole, while coral features are preserved by growing vertically. This separation allows the coral regions to remain unaffected by the subsidence of the island itself.
 % This assumption is based on Darwin's subsidence theory, which explains the formation of coral atolls. Modeling coral growth independently of the island's subsidence ensures the coral regions stay at the water surface as the island sinks.
-% \end{itemize}
+\end{Itemize}
 
 These assumptions, while simplified, provide an effective foundation for generating coral reef islands. They balance computational efficiency with geological plausibility, ensuring that the generated terrains are both flexible and realistic. Furthermore, the system allows users to break the radial symmetry and introduce more natural variations through wind deformation, adding another layer of flexibility to the model.
 
@@ -180,6 +226,14 @@ In this sketch, the user defines the overall horizontal layout of the island, in
 
 \subsubsection{Profile-view sketch}
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.45 \linewidth]{profileFunction.pdf}
+	\includegraphics[width=0.45 \linewidth]{schema_profile.jpg}
+    \caption{(Left) A profile function $\heightProfile$ is defined as a 1D function and represents the surface from the center of the island to the abysses. (Right) The cross-section representation of an island is often represented as a 1D function defined using terrain features as landmarks. }
+    \label{fig:coral-island_profile-function}
+\end{figure}
+
 The profile-view sketch defines the vertical elevation profile of the island along any radial direction, offering control over the islands height. In this view, the user specifies the elevation of different regions of the island, such as the island peak, beach, lagoon, abyss, and everything in-between, by drawing the corresponding profile curve.
 
 The regions outlines correspond to key terrain transitions: the highest point of the island (center), the island border, the beach, the lagoon, and the deep-sea abyss. The system uses these milestones to interpolate a continuous 1D height function $\heightProfile(\distRegions)$, where $\distRegions$ represents a non-uniform region distance from the islands center, and $h = \heightProfile(\distRegions)$ gives the height at each point. This continuous profile ensures smooth elevation transitions across the island.
@@ -187,6 +241,14 @@ The regions outlines correspond to key terrain transitions: the highest point of
 By combining the top-view and profile-view sketches, the system can generate a full 3D terrain model that accurately reflects the users design by revolution modeling.
 
 \subsubsection{Wind velocity field}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width = \linewidth]{windByStrokes.pdf}
+    \caption{From the parametric curve defined by a user (red), we define the velocity field by considering the velocity (first derivative) of the curve at the closest point $\closestCp$, modulated by a gaussian distance function $G(x)$. }
+    \label{fig:coral-island_wind-from-strokes}
+\end{figure}
+
 In addition to the sketches, the user can influence the shape of the island by defining a wind velocity field. This field simulates the effects of wind and wave erosion on the island's surface, introducing natural deformations such as coastline indentations, concave features, or variable lagoon shapes.
 
 The wind field is represented as a series of wind strokes drawn by the user on a 2D canvas. Each stroke represents a parametric curve, where the direction and strength of the wind are encoded as a vector field. The user controls the wind's direction by drawing these curves, and the system interprets the strokes to create a velocity field that defines how the terrain should be deformed.
@@ -272,6 +334,14 @@ We can then compute the final height $h(\warp \circ \p) = \heightProfile(t_{\p})
 This process introduces variations in the terrain, distorting the coastline, creating concave regions, and breaking the original radial symmetry defined by the top-view and profile-view sketches.
 
 \subsubsection{Resistance to deformation}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.0 \linewidth]{resistanceFunction.pdf}
+	% \includegraphics[width=0.45 \linewidth]{schema_profile.jpg}
+    \caption{The resistance function of the island is defined in the same way than the $\heightProfile$ function. The resistance to erosion and deformation arise from multiple factors such as depth, materials, wind shadowing, biotic and abiotic factors, ... Modeling all these factors is complex. As such, using a user-defined approximation through a resistance function $\resistance$ allows for more control. }
+    \label{fig:coral-island_resistance-function}
+\end{figure}
 
 To ensure that certain regions of the terrain, such as deep-water areas, remain relatively unaffected by the wind, a resistance function $\resistance(\distRegions)$ is applied. The resistance function modulates the effect of the wind deformation based on the previously computed piecewise parametric distance $\distRegions$.
 
@@ -366,16 +436,28 @@ A Generative Adversarial Network (GAN) consists of two competing neural networks
 
 For island generation, we use the pix2pix model, a specific cGAN designed for image-to-image translation. In this case, the input to the generator is a labeled map which is a 2D image where each pixel is assigned an ID representing a different region of the island (e.g., island body, beach, lagoon, coral reef). The output is an image where each pixel corresponds to the elevation of the terrain at that point, ie. a height field.
 
+\subsection{Pix2pix model}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics{example_pix2pix_facade.png}
+    \caption{Example of application of the pix2pix deep learning model: From a trained dataset of facades composed of real world images associated with their labeled maps, providing a new labeled map outputs a realistic facade image. }
+    \label{fig:coral-island_pix2pix-example}
+\end{figure}
+
+[- Bla bla about how the model works... ]
+
 \subsection{cGAN for island generation}
 
 The cGAN model was chosen for this task because it allows us to overcome some of the constraints of the initial procedural algorithm. While the first algorithm generates island terrains based on radial symmetry and a limited set of input parameters, cGAN can generate more complex and varied terrains by learning from a large dataset of examples. Specifically, the use of cGAN addresses the following challenges:
-\begin{itemize}
-    \item \textit{Increased variety:} The cGAN model can generate a wide range of island shapes and terrains by learning from the dataset. This allows for the creation of terrains that go beyond the predefined structures of the initial algorithm, introducing more natural variation in island features.
+\begin{Itemize}
+    \Item {Increased variety:} The cGAN model can generate a wide range of island shapes and terrains by learning from the dataset. This allows for the creation of terrains that go beyond the predefined structures of the initial algorithm, introducing more natural variation in island features.
 
-    \item \textit{Overcoming constraints:} In the initial algorithm, islands are always centered in the image and adhere to a radial symmetry. Using cGAN, we apply data augmentation (translation, scaling, and copy-pasting multiple islands in one sample) to remove these constraints, allowing islands to take more irregular shapes and positions.
+    \Item {Overcoming constraints:} In the initial algorithm, islands are always centered in the image and adhere to a radial symmetry. Using cGAN, we apply data augmentation (translation, scaling, and copy-pasting multiple islands in one sample) to remove these constraints, allowing islands to take more irregular shapes and positions.
 
-    \item \textit{Flexibility:} Once trained, the cGAN model acts as a black box that generates island terrains based on the labeled input. While this limits user control during the generation process, the model can produce a variety of terrains that still respect the underlying structure of the labeled map. This enables a flexible, rapid generation process without requiring the user to fine-tune parameters manually.
-\end{itemize}
+    \Item {Flexibility:} Once trained, the cGAN model acts as a black box that generates island terrains based on the labeled input. While this limits user control during the generation process, the model can produce a variety of terrains that still respect the underlying structure of the labeled map. This enables a flexible, rapid generation process without requiring the user to fine-tune parameters manually.
+\end{Itemize}
 
 \subsection{Training}
 
@@ -395,10 +477,10 @@ All augmentation techniques are applied both to the height field and the labeled
 Once trained, the cGAN model generates a height field from a given labeled map. The output is a complete 2D height map representing the terrain's elevation at each point. Although the cGAN works as a black box, the labeled map remains available after inference and retains valuable information for the user.
 
 The labeled map can be used for post-processing tasks, such as:
-\begin{itemize}
-    \item Texturing: Different regions of the terrain (e.g., beach, lagoon, coral reef) can be textured based on their region ID from the labeled map, allowing for detailed terrain decoration.
-    \item Material Information: The labeled map can provide cues about the underlying ground material in each region, which can be useful for additional simulations, such as erosion or weathering.
-\end{itemize}
+\begin{Itemize}
+    \Item {Texturing:} Different regions of the terrain (e.g., beach, lagoon, coral reef) can be textured based on their region ID from the labeled map, allowing for detailed terrain decoration.
+    \Item {Material information:} The labeled map can provide cues about the underlying ground material in each region, which can be useful for additional simulations, such as erosion or weathering.
+\end{Itemize}
 
 However, it's important to note that the current implementation of the cGAN does not allow for user control during the generation process itself. The model takes the labeled map as input and outputs a height field without any additional parameters that the user can adjust in real-time. While this limits user interaction, the resulting terrains are still varied and flexible thanks to the data diversity learned during training.
 
@@ -406,11 +488,11 @@ However, it's important to note that the current implementation of the cGAN does
 
 While the cGAN model provides increased flexibility and variety in island generation, it does come with certain limitations:
 
-\begin{itemize}
-    \item Biases from the synthetic dataset: Since the cGAN model is trained entirely on a procedurally generated dataset, it inherits the biases present in the initial algorithm. For example, while the model can break free from the radial symmetry constraint and center positioning, it still relies on the synthetic data's structure and patterns. This can limit the true diversity of the generated terrains, as the cGAN cannot generate terrains that deviate too far from the examples in the training set.
-    \item Lack of user control: Another limitation of using cGAN in this context is the lack of real-time user control during terrain generation. While traditional procedural generation methods allow users to tweak parameters (e.g., island size, beach width) during the generation process, the cGAN model operates as a black box, providing no mechanism for direct user interaction beyond the initial labeled map. This reduces the level of customization available to the user.
-    \item Data-driven dependence: The quality of the generated terrain depends entirely on the quality and variety of the training dataset. Since the dataset is synthetically generated, any limitations or biases in the initial dataset directly affect the cGAN's output. This dependence on data quality makes it crucial to design a well-augmented and varied dataset to ensure diverse and realistic outputs.
-\end{itemize}
+\begin{Itemize}
+    \Item {Biases from the synthetic dataset:} Since the cGAN model is trained entirely on a procedurally generated dataset, it inherits the biases present in the initial algorithm. For example, while the model can break free from the radial symmetry constraint and center positioning, it still relies on the synthetic data's structure and patterns. This can limit the true diversity of the generated terrains, as the cGAN cannot generate terrains that deviate too far from the examples in the training set.
+    \Item {Lack of user control:} Another limitation of using cGAN in this context is the lack of real-time user control during terrain generation. While traditional procedural generation methods allow users to tweak parameters (e.g., island size, beach width) during the generation process, the cGAN model operates as a black box, providing no mechanism for direct user interaction beyond the initial labeled map. This reduces the level of customization available to the user.
+    \Item {Data-driven dependence:} The quality of the generated terrain depends entirely on the quality and variety of the training dataset. Since the dataset is synthetically generated, any limitations or biases in the initial dataset directly affect the cGAN's output. This dependence on data quality makes it crucial to design a well-augmented and varied dataset to ensure diverse and realistic outputs.
+\end{Itemize}
 
 
 
@@ -444,3 +526,5 @@ Finally, further improvements could be made to the synthetic dataset. Incorporat
 One possible future improvement could involve incorporating the wind velocity field into the cGAN training process. While the labeled map is the only input used in the current implementation, the wind field could be added as an additional condition. This would be especially useful if the initial algorithm were augmented to include wind-driven features, such as cliffs or specific terrain deformations influenced by wind patterns. Adding the wind field as an input could help the cGAN generate more realistic terrains that better reflect the influence of wind on the landscape.
 
 Additionally, further development could explore improving how multiple islands are combined in a single sample. For example, using blending techniques to handle overlapping regions could allow islands to be positioned closer together, enabling the generation of more complex archipelagos without sacrificing the integrity of the height field.
+
+Many other neural networks models could be exploited to increase the possibilities, such as models with style transfer functionalities \cite{Gatys2015,Zhu2020} in order to change the overall aspect of a terrain \cite{Perche2023a,Perche2023b}, use text-to-images models \cite{Rombach2022,Radford2021} to generate height fields from a verbal prompt, or super-resolution models \cite{Dong2015} to increase the definition of details in the final output \cite{Guerin2016a}.
