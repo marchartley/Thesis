@@ -209,51 +209,121 @@ Density voxel grids are often used in high-fidelity simulations where detail and
 
 
 \subsection{Erosion processes}
-Erosion processes play a crucial role in shaping landscapes over time. We present different kind of erosion and how they apply to given terrain representations. Note that using existing methods all erosion methods can not be used on all representation.
+Driven by an array of natural forces and processes, erosion varies significantly across environments, from the intense carving of river valleys to the subtle reshaping of slopes in arctic regions. In this section, we present the primary types of erosion—thermal, hydraulic, and wind erosion—alongside other significant processes that contribute to landscape change. Each erosion type not only influences distinct terrain forms but also varies in applicability depending on terrain representation in simulations. Notably, not all erosion types are easily adaptable to all forms of terrain representation, due to inherent limitations in data resolution and computational methods.
 
 \subsubsection{Thermal erosion}
-Thermal erosion is driven by large temperature shifts, transferring material based on slope thresholds. The process is iterative, redistributing material until slopes stabilize. It can be computed efficiently on height fields and layered terrains due to their manipulable height nature \cite{Musgrave1989, Benes2001, Peytavie2009}. However, its application on voxel grids is challenging due to limited Z-axis resolution.
+Thermal erosion is the process through which temperature changes, primarily freeze-thaw cycles or permafrost thaw, lead to the breakdown, displacement, and reshaping of soil, rock, and sediment. This type of erosion is most prevalent in cold environments, including arctic, subarctic, and alpine regions where seasonal or climate-driven temperature fluctuations are common. When temperatures drop, water within rock and soil expands as it freezes, exerting pressure that weakens the material. As temperatures rise and the ice melts, the material is left fractured, which can lead to gradual downslope movement of soil and rocks. Thermal erosion is also prominent in permafrost regions, where the thawing of ice-rich ground destabilizes the soil, causing ground subsidence and creating unique landforms such as thermokarst lakes and thaw slumps.
+
+\subsubsubsection{Thaw slumps}
+Thaw slumps are bowl-shaped depressions that form when permafrost thaws, destabilizing the ground and causing large sections of soil and sediment to slump or slide downslope. These features are often seen on slopes, where the melting ground ice leads to waterlogged soil that can no longer support itself. Thaw slumps can expand over time as warming continues to melt permafrost, creating zones of exposed soil and water pooling at the base. In regions with high permafrost content, thaw slumps contribute to significant landscape transformation and are indicators of ongoing thermal erosion.
+
+\subsubsubsection{Thermokarst landforms}
+Thermokarst landforms, such as thermokarst lakes, ponds, and pits, emerge when ground ice within permafrost melts and causes the ground to collapse. As ice-rich permafrost thaws, it creates depressions that often fill with water, forming thermokarst lakes and ponds. These features are common in arctic and subarctic landscapes, where gradual permafrost melt reshapes the ground. Thermokarst landscapes can expand as thawing progresses, sometimes merging into larger lakes or interconnected depressions, leading to more extensive terrain deformation over time.
+
+\subsubsubsection{Talus slopes}
+Talus slopes, also known as scree slopes, form in mountainous and polar areas due to repeated freeze-thaw cycles that fracture rock along cliffs or steep faces. As water infiltrates rock crevices, it freezes and expands, gradually breaking the rock into fragments that accumulate at the base of slopes. This pile of angular rock debris forms a talus slope, which is particularly common beneath cliff faces where frost weathering is intense. Talus slopes are a direct result of thermal erosion, as the freeze-thaw process slowly but steadily breaks down bedrock into smaller fragments.
+
+\subsubsubsection{Rock fracturing and block fields}
+In regions with frequent freeze-thaw cycles, thermal erosion leads to extensive fracturing of exposed bedrock. Over time, these fractures can create large fields of broken rock fragments, known as block fields or felsenmeer. Block fields are typically found in high-altitude or high-latitude areas, where frost weathering is prevalent. This type of terrain is relatively stable but represents the cumulative effect of thermal erosion over many freeze-thaw cycles, resulting in expanses of fractured rock across mountain ridges or plateaus.
+
+\subsubsubsection{Soil creep}
+Soil creep is a gradual, downslope movement of soil and sediment due to freeze-thaw cycles that weaken and loosen soil on slopes. In permafrost regions, a related process known as solifluction occurs when thawed soil above a frozen layer becomes saturated and flows downslope, forming distinctive, lobed patterns called solifluction lobes. These features appear as small, terraced layers on slopes and are common in tundra environments. Soil creep and solifluction lobes are subtle but telltale signs of thermal erosion in cold climates.
+
+\subsubsubsection{Patterned ground}
+Patterned ground is a distinctive feature resulting from freeze-thaw processes in permafrost regions. It appears as polygons, stripes, or circular arrangements of soil and rock on the ground surface, created by the expansion and contraction of ground ice. These patterns form as ice pushes rocks and soil particles into specific shapes and alignments over repeated cycles of freezing and thawing. Patterned ground is commonly found in arctic and alpine regions, serving as a visual marker of active thermal erosion and freeze-thaw dynamics.
+
+% Thermal erosion is driven by large temperature shifts, transferring material based on slope thresholds. The process is iterative, redistributing material until slopes stabilize. It can be computed efficiently on height fields and layered terrains due to their manipulable height nature \cite{Musgrave1989, Benes2001, Peytavie2009}. However, its application on voxel grids is challenging due to limited Z-axis resolution.
 
 \subsubsection{Hydraulic erosion}
 
-\begin{wrapfigure}{L}{0.35\textwidth}
+\begin{wrapfigure}{L}{0.25\textwidth}
     \includegraphics[width=\linewidth]{hydraulic_erosion.pdf}
     \caption{Hydraulic erosion is tailored by the friction of water displacing sediments in a slope}
     \label{fig:erosion_hydraulic-erosion}
 \end{wrapfigure}
 
-Hydraulic erosion stems from water movement, eroding and depositing sediment based on water flow intensity. 2.5D terrains are widely studied for this simulation, using either water slope velocities \cite{Neidhold2005} or water simulations for erosion effects \cite{Mei2007}. For smaller scales, 3D fluid simulations on voxel grids have been proposed \cite{Benes2006}. Kristof et al \cite{Kristof2009} used SPH (Smoothed Particle Hydrodynamics) for meshless erosion simulations on various terrains. Their method involves numerous particle interactions, demanding significant computational power. Our approach draws inspiration from this but enhances efficiency by removing certain particle interactions.
+Hydraulic erosion is the process by which water, through its motion and force, dislodges and transports soil, sediment, and rock from the Earth’s surface. This erosion occurs in various forms across landscapes, driven by factors such as water velocity, volume, and surface material composition. Hydraulic erosion is a primary force in reshaping landforms, forming valleys, river channels, and coastlines, and it plays a central role in sediment redistribution in both terrestrial and coastal environments.
+
+2.5D terrains are widely studied for this simulation, using either water slope velocities \cite{Neidhold2005} or water simulations for erosion effects \cite{Mei2007}. For smaller scales, 3D fluid simulations on voxel grids have been proposed \cite{Benes2006}. Kristof et al \cite{Kristof2009} used SPH (Smoothed Particle Hydrodynamics) for meshless erosion simulations on various terrains. Their method involves numerous particle interactions, demanding significant computational power. Our approach draws inspiration from this but enhances efficiency by removing certain particle interactions.
 
 \subsubsubsection{Rivers}
 
-\begin{wrapfigure}{R}{0.35\textwidth}
+\begin{wrapfigure}{R}{0.25\textwidth}
     \includegraphics[width=\linewidth]{river_erosion.pdf}
-    \caption{.}
+    \caption{The erosion on the river bank is the combination of two processes: the detachment of the bottom of the sides, then the break of the upper coasts. }
     \label{fig:erosion_river-erosion-profile}
 \end{wrapfigure}
 
+In river systems, hydraulic erosion occurs as flowing water exerts a mechanical force on the riverbanks and bed. The energy of the moving water dislodges soil and rock particles, transporting them downstream. This process, known as fluvial erosion, deepens and widens river channels over time, contributing to the development of valleys, canyons, and floodplains. River-based hydraulic erosion is influenced by factors such as water velocity, sediment load, and riverbed composition, with faster-flowing rivers typically eroding at higher rates and transporting larger sediment particles.
+
 \subsubsubsection{Rain}
 
+Rain-induced hydraulic erosion, or rainfall erosion, involves the impact of raindrops on exposed soil surfaces. When raindrops strike the ground, they create small craters, displacing soil particles in a process known as splash erosion. As rain accumulates and flows overland, this sheet flow (or sheet erosion) can wash away layers of soil, especially on slopes where water can gain momentum. Prolonged or intense rainfall leads to greater erosion, creating rills or small channels on the surface that can develop into larger gullies, significantly altering the landscape.
 
 \subsubsubsection{Corrosion}
 
-\begin{wrapfigure}{R}{0.35\textwidth}
+\begin{wrapfigure}{R}{0.25\textwidth}
     \includegraphics[width=\linewidth]{corrosion_erosion.pdf}
     \caption{.}
     \label{fig:erosion_corrosion-erosion}
 \end{wrapfigure}
 
+Corrosion, or chemical erosion, in the context of hydraulic processes, refers to the chemical interactions between water and rock that lead to the dissolution or weakening of rock material. This form of erosion is common in river and coastal environments where water, often containing dissolved carbon dioxide, forms weak carbonic acid that reacts with minerals in rocks, particularly limestone. The chemical breakdown of rock through corrosion complements the mechanical forces of hydraulic erosion, making rocks more susceptible to further dislodgement and transport by water.
+
 \subsubsubsection{Landslides}
 
+In hydraulic erosion, landslides occur when water infiltrates soil or rock on slopes, increasing weight and reducing cohesion, leading to a sudden downslope movement of material. This process, also called slope failure, is often triggered by heavy or prolonged rainfall that saturates the soil, reducing its stability. Landslides contribute to hydraulic erosion by quickly redistributing large volumes of soil and rock, which are then often carried further by streams or rivers. Landslide-prone areas with steep slopes, loose soil, or unstable geological layers are especially susceptible to this form of erosion.
+
+\subsubsubsection{Coasts}
+
+Coastal erosion is the process by which wave action and tidal forces wear away and reshape coastlines, removing sediment and rock from beaches, cliffs, and shorelines. The energy from waves striking the shore can dislodge particles, leading to abrasion, where sediment carried by water further erodes rock surfaces. Over time, coastal erosion forms cliffs, caves, and other coastal landforms, and it is influenced by factors such as wave energy, sea level, coastal rock type, and shoreline configuration. Coastal erosion plays a vital role in shaping dynamic coastal landscapes, but it also poses challenges for coastal management due to its impact on infrastructure and habitats.
+
 \subsubsection{Wind erosion}
+Aeolian erosion, also known as wind erosion, is the process by which wind transports, dislodges, and deposits particles of soil, sand, and rock, particularly in arid and semi-arid regions where vegetation is sparse. This form of erosion is driven by the movement of loose particles across the surface and the abrasive impact of wind-driven sand. Aeolian erosion leads to distinctive landforms that shape desert landscapes, coastal areas, and regions downwind of deserts. Wind erosion typically occurs through three main processes: deflation (the removal of fine particles), saltation (the bouncing movement of medium-sized particles), and abrasion (the wearing down of rock surfaces by wind-driven particles).
+
+\subsubsubsection{Sand dunes}
+Sand dunes are mounds or ridges of sand formed by the accumulation of wind-transported particles. As wind moves sand across a surface, obstacles like rocks or vegetation can slow the particles, causing them to settle and accumulate into dunes. The shape and type of dune depend on wind direction, strength, sand availability, and landscape features. Common types of dunes include barchan dunes (crescent-shaped with tips pointing downwind), transverse dunes (long ridges perpendicular to the wind), and star dunes (with multiple arms formed by shifting winds). Dunes are dynamic features that migrate over time as wind continues to move sand particles, contributing to the constantly evolving desert landscape.
+
+\subsubsubsection{Yardangs}
+Yardangs are elongated ridges formed by wind erosion in areas where softer material is eroded faster than more resistant rock. The wind-carved ridges align with the prevailing wind direction, creating streamlined shapes with steep sides facing into the wind and gentler slopes on the lee side. Yardangs vary widely in size, from small ridges a few meters long to massive formations stretching for kilometers, as seen in desert regions of Iran and Egypt. Yardangs illustrate the power of wind erosion in shaping landscapes over long periods, with their formation largely dependent on rock hardness, wind intensity, and particle size.
+
+\subsubsubsection{Loess deposits}
+Loess deposits are thick layers of fine, silt-sized particles carried long distances by wind and eventually settled as dust. These deposits often originate from deserts, dry lake beds, or glaciated areas, where winds pick up and transport the fine particles. Loess is highly fertile due to its mineral content and porosity, and it forms extensive layers, sometimes tens of meters thick, in regions like the Loess Plateau in China and parts of the Midwestern United States. Loess deposits support agriculture but are also prone to erosion if disturbed, as they are easily moved by water and wind once exposed.
+
+\subsubsubsection{Hoodoos}
+Hoodoos, also known as pedestal rocks, are tall, slender rock formations with a broad top and narrow base. They form in arid regions where differential erosion occurs, with wind and occasional water eroding the softer rock layers at the base faster than the harder rock above. This process leaves a columnar structure with a cap rock that protects the softer layers below. Hoodoos are commonly found in areas like the American Southwest, where they add striking, unique shapes to the landscape. Their formation highlights the selective erosion caused by wind over long periods in areas with varied rock resistance.
+
+\subsubsubsection{Sand sheets}
+Sand sheets are flat or gently undulating expanses of sand that form in areas with limited sand supply or lower wind speeds. Unlike dunes, sand sheets lack significant relief and often cover large areas of desert terrain. The sand in these sheets typically consists of a mix of fine sand, silt, and clay, which creates a stable surface with limited movement. Sand sheets are common around dune fields and act as transitional zones between active dunes and more stabilized desert surfaces.
+
+\subsubsubsection{Pinnacles}
+Pinnacles are tall, slender rock formations that emerge as softer surrounding material is eroded by wind over time, leaving behind more resistant rock in narrow, tower-like structures. Pinnacles can form in areas with alternating layers of hard and soft rock, where wind erosion gradually removes the less resistant material. They are typically found in arid, open landscapes such as Australia’s Pinnacles Desert, where they create dramatic, vertical formations that illustrate the erosive power of wind in carving and isolating rock features over extended periods.
+
+\subsubsubsection{Caves}
+Aeolian caves, though less common than those formed by water erosion, develop when wind-driven sand particles carve out hollows in softer rock formations. These wind-eroded caves form in areas with exposed, less resistant rock layers where continuous abrasion slowly excavates recesses or shallow caves. The shape and size of aeolian caves depend on wind direction, particle size, and rock hardness. Aeolian caves are typically shallow, but they highlight how wind erosion can create sheltered, unique spaces within desert landscapes.
+
 Wind erosion shifts material through wind force, notably impacting areas with fine surface particles like deserts. It has been modeled on discrete height fields \cite{Roa2004, Paris2020} by mimicking sand's wind-driven trajectory and using thermal erosion for corrections. This process is simulated by iteratively displacing small amounts of matter, which make it less suitable for representations with discrete height resolution.
 
-\subsubsection{Erosion by other forces}
-Erosion comes in many forms. These includes influences like glaciers, snow, tectonic movements, and fauna, each introducing distinctive terrain patterns, enriching its intricacy \cite{Cordonnier2016,Cordonnier2017a,Cordonnier2018,Cordonnier2017b,Argudo2020}. However, most methods are tailored by a given terrain representation, often the height fields, and might not be applicable to other representations due to their intrinsic properties.
+% \subsubsection{Erosion by other forces}
+% Erosion comes in many forms. These includes influences like glaciers, snow, tectonic movements, and fauna, each introducing distinctive terrain patterns, enriching its intricacy \cite{Cordonnier2016,Cordonnier2017a,Cordonnier2018,Cordonnier2017b,Argudo2020}. However, most methods are tailored by a given terrain representation, often the height fields, and might not be applicable to other representations due to their intrinsic properties.
+
+\subsubsection{Other erosive processes}
+Beyond hydraulic, aeolian, and thermal erosion, several other processes contribute to the shaping and reshaping of landscapes. These include geophysical forces like glaciers, volcanos, and tectonic activity, as well as biological influences from animals and vegetation. Each of these processes plays a unique role in erosion, affecting landscapes in ways that reflect the interaction between natural forces and biological systems.
+
 \subsubsubsection{Glaciers}
-\subsubsubsection{Animals}
-\subsubsubsection{Storms}
+Glacial erosion is a powerful force in cold regions, where massive ice sheets and glaciers carve through rock, creating distinctive landforms. As glaciers move, they erode the underlying rock through plucking, where ice adheres to rock and pulls chunks away, and abrasion, where embedded rocks grind against bedrock, polishing and deepening valleys. These processes lead to characteristic U-shaped valleys, fjords, cirques, and moraines, all indicative of glacial activity. Glaciers not only erode but also transport vast amounts of sediment, which is deposited as the ice retreats, reshaping the landscape in profound ways.
+
 \subsubsubsection{Volcanos}
+Volcanos indirectly contribute to erosion by depositing loose volcanic material, such as ash, lava, and pyroclastic flows, which are highly vulnerable to wind and water erosion once settled. Following an eruption, rain or snowmelt can trigger lahars—volcanic mudflows that rapidly carry large amounts of debris down slopes, eroding valleys and river channels. Volcanic ash, when deposited on surrounding landscapes, can also create a loose surface layer that is quickly dispersed by wind, contributing to accelerated erosion and landscape change in volcanic regions.
+
+\subsubsubsection{Tectonic activity}
+Tectonic forces, through uplift and faulting, create steep landscapes and set the stage for erosion by raising mountain ranges and exposing new rock. This uplift increases slopes and makes landscapes more vulnerable to gravity-driven erosion and surface runoff. Earthquakes can further destabilize slopes, triggering landslides and rockfalls that accelerate erosion. By lifting rock layers to the surface, tectonic activity continuously exposes fresh material to erosion, influencing the overall rate and pattern of landscape evolution over geologic time.
+
+\subsubsubsection{Animals}
+Animals contribute to erosion in various ways, collectively known as bioerosion. Burrowing animals like rodents, insects, and earthworms disturb soil structure, loosening particles and making soil more vulnerable to wind and water erosion. Grazing animals compact soil and reduce vegetation cover, exposing the land to erosive forces. In coastal and marine environments, bioerosion is driven by organisms such as barnacles, algae, and coral-eating fish, which weaken and erode rock, contributing to shoreline and reef changes.
+
+\subsubsubsection{Vegetation}
+Vegetation plays a dual role in erosion by both stabilizing and sometimes enhancing erosion rates. Roots help anchor soil, making vegetated areas more resistant to erosion, while foliage shields soil from direct impact by wind and rain. However, when vegetation is removed through activities like logging, agriculture, or wildfires, the exposed soil becomes highly susceptible to rapid erosion. Different vegetation types also have varying effects; for example, deep-rooted plants provide better soil stability than shallow-rooted grasses. In deforested areas, erosion can increase dramatically, leading to sediment runoff, loss of soil fertility, and habitat degradation.
 
 
 \subsection{Fluid simulations}
