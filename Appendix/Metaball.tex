@@ -1,5 +1,10 @@
 \chapter{Computation of a metaball}
 \label{sec:erosion_appendix_metaball}
+
+\shortAbstract{
+    In this section we develop in more detail the formulation used for metaballs used in \cref{chap:erosion} for the simulation of particle erosion on implicit terrains.
+}
+
 We use the following formula to evaluate a metaball in space with a center $c$ and of radius $\Radius$:
 $$ g(\p) = 1 - \frac{||\p - c||}{\Radius} $$
 using the euclidean distance.
@@ -16,15 +21,15 @@ First, let's exploit the radial symmetry of the metaball and rewrite $g(\p) = 1 
 
 We can then integrate $g$ over the volume $V_{3D}$ as 
 \begin{align}
-&\int_{0}^{1}{ \int_{0}^{\pi}{ \int_{0}^{2\pi}{ g(r) r^2 \sin(\theta)\, dr} \, d\theta} \, d\phi} \nonumber \\
-= &\int_{0}^{1}{ \int_{0}^{\pi}{ \int_{0}^{2\pi}{ (1 - r) r^2 \sin(\theta)\, dr} \, d\theta} \, d\phi} \nonumber \\
-&= \int_{0}^{1}{ (1 - r)r^2 \, dr} \times \int_{0}^{\pi}{ \sin{\theta} \, d\theta } \times \int_{0}^{2\pi}{ 1 \, d\phi} \nonumber
+&\int_{0}^{1}{ \int_{0}^{\pi}{ \int_{0}^{2\pi}{ g(r) r^2 \sin(\angl)\, dr} \, d\angl} \, d\anglTwo} \nonumber \\
+= &\int_{0}^{1}{ \int_{0}^{\pi}{ \int_{0}^{2\pi}{ (1 - r) r^2 \sin(\angl)\, dr} \, d\angl} \, d\anglTwo} \nonumber \\
+&= \int_{0}^{1}{ (1 - r)r^2 \, dr} \times \int_{0}^{\pi}{ \sin{\angl} \, d\angl } \times \int_{0}^{2\pi}{ 1 \, d\anglTwo} \nonumber
 \end{align}
 
 We then break down the integrals one by one such as 
 $$ \int_{0}^{1}{ (1 - r)r^2 \, dr} = \frac{1}{12} \nonumber$$ 
-$$ \int_{0}^{\pi}{ \sin{\theta} \, d\theta } = 2 \nonumber$$ 
-$$ \int_{0}^{2\pi}{ 1 \, d\phi} = 2 \pi \nonumber$$
+$$ \int_{0}^{\pi}{ \sin{\angl} \, d\angl } = 2 \nonumber$$ 
+$$ \int_{0}^{2\pi}{ 1 \, d\anglTwo} = 2 \pi \nonumber$$
 
 By combining all these integrals, we get $\int{g} = \frac{1}{12} \times 2 \times 2\pi = \frac{\pi}{3}$.
 

@@ -93,276 +93,276 @@ VAEs are another type of deep learning model used in procedural generation. They
 
 \section{Procedural terrain generation}
 
-\subsection{Terrain representations}
+% \subsection{Terrain representations}
 
-Terrain refers to the physical features and configuration of a specific area of land. It includes the elevation, slope, and the overall topography, such as mountains, valleys, and plains. Terrain is often used to describe the surface characteristics of the land, focusing on the natural contours and the geographical aspects that define a region's physical form.
+% Terrain refers to the physical features and configuration of a specific area of land. It includes the elevation, slope, and the overall topography, such as mountains, valleys, and plains. Terrain is often used to describe the surface characteristics of the land, focusing on the natural contours and the geographical aspects that define a region's physical form.
 
-While the term "terrain" describes the physical characteristics of land, it does not include the natural elements that shape an area's identity. Elements like vegetation, water bodies, and climatic conditions, such as snow cover, are essential to how we perceive and understand a landscape. Therefore, when discussing procedural generation in virtual environments, "landscape generation" is a more fitting term, as it integrates these natural elements along with the topographical features.
+% While the term "terrain" describes the physical characteristics of land, it does not include the natural elements that shape an area's identity. Elements like vegetation, water bodies, and climatic conditions, such as snow cover, are essential to how we perceive and understand a landscape. Therefore, when discussing procedural generation in virtual environments, "landscape generation" is a more fitting term, as it integrates these natural elements along with the topographical features.
 
-In addition to "terrain generation," other terms such as "landscape generation," "world generation," and "environment generation" can be used to describe the creation of virtual landscapes. These terms are interchangeable and can all refer to the process of generating physical terrain along with natural and artificial elements. However, by convention and for simplicity, the term "terrain generation" is most commonly used in the field. Despite its original focus on the physical features of the land, "terrain generation" has evolved to encompass a broader range of environmental elements, making it a convenient and widely accepted term for describing the comprehensive process of creating virtual environments.
+% In addition to "terrain generation," other terms such as "landscape generation," "world generation," and "environment generation" can be used to describe the creation of virtual landscapes. These terms are interchangeable and can all refer to the process of generating physical terrain along with natural and artificial elements. However, by convention and for simplicity, the term "terrain generation" is most commonly used in the field. Despite its original focus on the physical features of the land, "terrain generation" has evolved to encompass a broader range of environmental elements, making it a convenient and widely accepted term for describing the comprehensive process of creating virtual environments.
 
-A terrain can be represented in various ways, each of them suited for a given application of which we give an brief overview, more details can be found in \cite{Galin2019}.
+% A terrain can be represented in various ways, each of them suited for a given application of which we give an brief overview, more details can be found in \cite{Galin2019}.
 
-\subsubsection{Elevation models}
+% \subsubsection{Elevation models}
 
-Elevation models are a fundamental approach in terrain representation, widely used in procedural generation due to their simplicity and efficiency. These models define the terrain as a function $h : \R^2 \to \R$, where each point in a 2D plane is mapped to an elevation value. This approach is particularly effective for representing terrains where the elevation is the only varying factor, such as hills, valleys, and plateaus, and it is best suited for terrains without complex 3D features like overhangs or caves. While we visualize elevation models in three dimensions, they are mathematically considered two-dimensional functions. In the domain of terrain generation, we will name them 2.5D models.
+% Elevation models are a fundamental approach in terrain representation, widely used in procedural generation due to their simplicity and efficiency. These models define the terrain as a function $h : \R^2 \to \R$, where each point in a 2D plane is mapped to an elevation value. This approach is particularly effective for representing terrains where the elevation is the only varying factor, such as hills, valleys, and plateaus, and it is best suited for terrains without complex 3D features like overhangs or caves. While we visualize elevation models in three dimensions, they are mathematically considered two-dimensional functions. In the domain of terrain generation, we will name them 2.5D models.
 
-Elevation models are widely used in industries where large-scale terrain representation is crucial. In video games, they provide the foundation for creating vast open-world environments. In geographic information systems (GIS) and remote sensing, height fields are used to represent real-world terrain data, offering a practical means of visualizing and analyzing geographical features. The ability to manipulate and control terrain features procedurally makes elevation models a common choice for applications that require efficient terrain generation and rendering.
+% Elevation models are widely used in industries where large-scale terrain representation is crucial. In video games, they provide the foundation for creating vast open-world environments. In geographic information systems (GIS) and remote sensing, height fields are used to represent real-world terrain data, offering a practical means of visualizing and analyzing geographical features. The ability to manipulate and control terrain features procedurally makes elevation models a common choice for applications that require efficient terrain generation and rendering.
 
-They offer a powerful method for representing terrains in procedural generation, combining simplicity with flexibility. While they have limitations in representing complex 3D structures, their efficiency and compatibility with existing algorithms make them indispensable in a variety of applications.
+% They offer a powerful method for representing terrains in procedural generation, combining simplicity with flexibility. While they have limitations in representing complex 3D structures, their efficiency and compatibility with existing algorithms make them indispensable in a variety of applications.
 
-\subsubsubsection{Implicit height fields}
-Implicit height fields represent the terrain as a mathematical function that provides a height value at any given point in the domain. These functions can be procedural or closed-form expressions, allowing for compact storage and infinite precision in theory. The elevation function allows for easy manipulation of terrain features, making it ideal for generating terrains that require smooth, continuous surfaces. However, the primary disadvantage is the computational complexity involved in evaluating the function, especially for large or highly detailed terrains. The challenge lies in constructing functions that can realistically represent large-scale terrains with complex landforms.
+% \subsubsubsection{Implicit height fields}
+% Implicit height fields represent the terrain as a mathematical function that provides a height value at any given point in the domain. These functions can be procedural or closed-form expressions, allowing for compact storage and infinite precision in theory. The elevation function allows for easy manipulation of terrain features, making it ideal for generating terrains that require smooth, continuous surfaces. However, the primary disadvantage is the computational complexity involved in evaluating the function, especially for large or highly detailed terrains. The challenge lies in constructing functions that can realistically represent large-scale terrains with complex landforms.
 
-\subsubsubsection{Discrete height fields}
-Discrete height fields, or explicit height fields, are one of the most prevalent methods for terrain representation. These models consist of a 2D grid where each cell contains a height value, representing the elevation at that point. Height fields are particularly advantageous because they are simple to implement and are directly compatible with many rendering techniques and hardware, but also due to their closeness with image processing, a domain studied for many decades now.
+% \subsubsubsection{Discrete height fields}
+% Discrete height fields, or explicit height fields, are one of the most prevalent methods for terrain representation. These models consist of a 2D grid where each cell contains a height value, representing the elevation at that point. Height fields are particularly advantageous because they are simple to implement and are directly compatible with many rendering techniques and hardware, but also due to their closeness with image processing, a domain studied for many decades now.
 
-The main advantage of height fields is their ability to handle large datasets efficiently, providing a balance between memory usage and detail. However, they are limited by their inability to represent terrains with overhangs or caves, as each point on the grid can only hold a single elevation value. Additionally, height fields often require interpolation methods, such as bi-linear or bi-cubic interpolation, to reconstruct a continuous surface from the discrete grid points. 
-% While this allows for smooth terrain surfaces, it can introduce artifacts at grid boundaries and requires careful handling to maintain realism.
+% The main advantage of height fields is their ability to handle large datasets efficiently, providing a balance between memory usage and detail. However, they are limited by their inability to represent terrains with overhangs or caves, as each point on the grid can only hold a single elevation value. Additionally, height fields often require interpolation methods, such as bi-linear or bi-cubic interpolation, to reconstruct a continuous surface from the discrete grid points. 
+% % While this allows for smooth terrain surfaces, it can introduce artifacts at grid boundaries and requires careful handling to maintain realism.
 
-\subsubsection{Volumetric models}
-Volumetric models represent a more complex approach to terrain modeling, allowing for the depiction of 3D features that go beyond the simple surface-based representation provided by elevation models. These models capture not only the surface of the terrain but also its internal structure, making them ideal for representing terrains with overhangs, caves, and other subsurface features. 
+% \subsubsection{Volumetric models}
+% Volumetric models represent a more complex approach to terrain modeling, allowing for the depiction of 3D features that go beyond the simple surface-based representation provided by elevation models. These models capture not only the surface of the terrain but also its internal structure, making them ideal for representing terrains with overhangs, caves, and other subsurface features. 
 
-Volumetric models, including layered materials, voxel grids, and implicit models, are essential in applications where terrain complexity and detail are primordial. In geological simulations, these models allow for accurate representation of subsurface structures and processes. Voxel models are widely used in games that require dynamic terrain deformation, providing a rich interactive environment for players. Implicit models are favored in situations where smooth, continuous surfaces are needed [FIND OTHER USE CASES].
+% Volumetric models, including layered materials, voxel grids, and implicit models, are essential in applications where terrain complexity and detail are primordial. In geological simulations, these models allow for accurate representation of subsurface structures and processes. Voxel models are widely used in games that require dynamic terrain deformation, providing a rich interactive environment for players. Implicit models are favored in situations where smooth, continuous surfaces are needed [FIND OTHER USE CASES].
 
-\subsubsubsection{Implicit volumetric models}
-Implicit volumetric models describe the terrain's shape and features using an implicit function. The terrain is represented by a mathematical function $f: \R^3 \to \R$ that determines the terrain surface by evaluating to an isovalue, often zero. This function provides a continuous representation of the terrain, with points inside the terrain returning positive values and while points in the air evaluate to negative values. It allows for the seamless representation of complex terrain features, including caves, overhangs, and varying geological structures, which are impossible to represent with  elevation models.
+% \subsubsubsection{Implicit volumetric models}
+% Implicit volumetric models describe the terrain's shape and features using an implicit function. The terrain is represented by a mathematical function $f: \R^3 \to \R$ that determines the terrain surface by evaluating to an isovalue, often zero. This function provides a continuous representation of the terrain, with points inside the terrain returning positive values and while points in the air evaluate to negative values. It allows for the seamless representation of complex terrain features, including caves, overhangs, and varying geological structures, which are impossible to represent with  elevation models.
 
-One of the key advantages of implicit models is their ability to produce smooth surfaces without the need for discrete polygonal meshes, which can result in realistic and natural-looking terrains. However, the computational complexity of evaluating the implicit function, especially for large terrains, can be a significant drawback. Additionally, converting an implicit surface into a mesh for rendering can be challenging and resource-intensive. \cite{Araujo2015} 
+% One of the key advantages of implicit models is their ability to produce smooth surfaces without the need for discrete polygonal meshes, which can result in realistic and natural-looking terrains. However, the computational complexity of evaluating the implicit function, especially for large terrains, can be a significant drawback. Additionally, converting an implicit surface into a mesh for rendering can be challenging and resource-intensive. \cite{Araujo2015} 
 
-\subsubsubsection{Layered models}
-Layered models are a type of volumetric representation that encode different material layers within the terrain and are defined by a function $\mu : \R^3 \to \material$, where $\material$ denotes the material type at any given point in 3D space. This allows for a detailed representation of the terrain's internal composition, which can be crucial for applications requiring realistic geological simulations. Each layer is defined by its thickness or elevation, and multiple layers can be stacked to represent complex geological formations. These layers might include materials like bedrock, sand, soil, or water, each contributing to the overall structure of the terrain. Layered models are particularly useful in simulations that involve processes like erosion or sedimentation, where the interaction between different material layers affects the physical process.
+% \subsubsubsection{Layered models}
+% Layered models are a type of volumetric representation that encode different material layers within the terrain and are defined by a function $\mu : \R^3 \to \material$, where $\material$ denotes the material type at any given point in 3D space. This allows for a detailed representation of the terrain's internal composition, which can be crucial for applications requiring realistic geological simulations. Each layer is defined by its thickness or elevation, and multiple layers can be stacked to represent complex geological formations. These layers might include materials like bedrock, sand, soil, or water, each contributing to the overall structure of the terrain. Layered models are particularly useful in simulations that involve processes like erosion or sedimentation, where the interaction between different material layers affects the physical process.
 
-The primary advantage of layered models is their ability to represent a stratified terrain with distinct material properties, which can be manipulated individually. This makes them well-suited for simulations that require detailed geological accuracy. However, they are more complex to implement than simple elevation models and require additional computational resources to manage the interactions between layers. 
+% The primary advantage of layered models is their ability to represent a stratified terrain with distinct material properties, which can be manipulated individually. This makes them well-suited for simulations that require detailed geological accuracy. However, they are more complex to implement than simple elevation models and require additional computational resources to manage the interactions between layers. 
 
 
-\subsubsubsection{Voxel grid models}
-Voxel grids are a common method for representing 3D terrains in procedural generation, offering the ability to capture complex internal structures and features that are difficult or impossible to represent with surface-based models. In a voxel grid, the 3D space is divided into a regular grid of small, cube-shaped elements called voxels (volumetric pixels). Each voxel holds information about the material or properties of the terrain at that specific point in space. This approach allows for detailed modeling of features such as caves, tunnels, overhangs, and intricate underground networks. The regular grid structure allows for the use of image processing-oriented algorithms.
+% \subsubsubsection{Voxel grid models}
+% Voxel grids are a common method for representing 3D terrains in procedural generation, offering the ability to capture complex internal structures and features that are difficult or impossible to represent with surface-based models. In a voxel grid, the 3D space is divided into a regular grid of small, cube-shaped elements called voxels (volumetric pixels). Each voxel holds information about the material or properties of the terrain at that specific point in space. This approach allows for detailed modeling of features such as caves, tunnels, overhangs, and intricate underground networks. The regular grid structure allows for the use of image processing-oriented algorithms.
 
-There are three primary types of voxel grids used in terrain representation: binary voxel grids, material voxel grids and density voxel grids. Each has distinct characteristics, advantages, and limitations, making them suitable for different applications. 
+% There are three primary types of voxel grids used in terrain representation: binary voxel grids, material voxel grids and density voxel grids. Each has distinct characteristics, advantages, and limitations, making them suitable for different applications. 
 
-\subsubsubsubsection{Binary voxel grids}
-Binary voxel grids are the simplest form of voxel representation. In these grids, defined $f: \R^3 \to [0, 1]$, each voxel is either "filled" or "empty," representing the presence or absence of material. This binary state is typically represented by a 1 (filled) or 0 (empty). Binary voxel grids are straightforward to implement and require much less memory compared to more complex voxel representations, making them ideal for applications where the primary concern is whether a space is occupied or not.
+% \subsubsubsubsection{Binary voxel grids}
+% Binary voxel grids are the simplest form of voxel representation. In these grids, defined $f: \R^3 \to [0, 1]$, each voxel is either "filled" or "empty," representing the presence or absence of material. This binary state is typically represented by a 1 (filled) or 0 (empty). Binary voxel grids are straightforward to implement and require much less memory compared to more complex voxel representations, making them ideal for applications where the primary concern is whether a space is occupied or not.
 
-The simplicity of binary voxel grids is one of their main advantages. They are easy to understand and visualize, with each voxel requiring only a single bit of information to represent its state. Additionally, because only a binary state is stored, these grids can be memory-efficient when combined with compression techniques like Sparse Voxel Octrees (SVOs) \cite{Laine2010} or voxel Directed Acyclic Graphs (DAG) \cite{Villanueva2017,Careil2020}. The simplicity of the data structure also allows for quick processing, making binary voxel grids suitable for real-time applications where performance is required. However, the binary nature of these grids limits their ability to represent variations in material density or properties, or even smoothness, resulting in less detailed terrain models. This can lead to hard, blocky edges in the terrain, which may appear unnatural without additional smoothing or processing.
+% The simplicity of binary voxel grids is one of their main advantages. They are easy to understand and visualize, with each voxel requiring only a single bit of information to represent its state. Additionally, because only a binary state is stored, these grids can be memory-efficient when combined with compression techniques like Sparse Voxel Octrees (SVOs) \cite{Laine2010} or voxel Directed Acyclic Graphs (DAG) \cite{Villanueva2017,Careil2020}. The simplicity of the data structure also allows for quick processing, making binary voxel grids suitable for real-time applications where performance is required. However, the binary nature of these grids limits their ability to represent variations in material density or properties, or even smoothness, resulting in less detailed terrain models. This can lead to hard, blocky edges in the terrain, which may appear unnatural without additional smoothing or processing.
 
-\subsubsubsubsection{Material voxel grids}
-Material voxel grids, defined as $\mu: \R^3 \to \material$, are commonly used in applications where simple occupancy information is sufficient. For example, voxel-based games like Minecraft utilize material grids to create terrains composed of solid blocks with clear boundaries. These grids are also employed in scientific simulations where the primary concern is the presence or absence of materials, rather than detailed material properties.
+% \subsubsubsubsection{Material voxel grids}
+% Material voxel grids, defined as $\mu: \R^3 \to \material$, are commonly used in applications where simple occupancy information is sufficient. For example, voxel-based games like Minecraft utilize material grids to create terrains composed of solid blocks with clear boundaries. These grids are also employed in scientific simulations where the primary concern is the presence or absence of materials, rather than detailed material properties.
 
-\subsubsubsubsection{Density voxel grids}
-Finally, density voxel grids allow each voxel to store a range of values, representing varying degrees of material presence with $f: \R^3 \to \R$. Instead of a simple discrete state, a density voxel grid assigns a continuous value to each voxel, which can represent material density, opacity, or other properties. This added complexity enables density voxel grids to represent subtle variations in terrain, such as gradual changes in material density or smooth transitions between solid and empty spaces, allowing for more realistic and natural-looking terrain models.
+% \subsubsubsubsection{Density voxel grids}
+% Finally, density voxel grids allow each voxel to store a range of values, representing varying degrees of material presence with $f: \R^3 \to \R$. Instead of a simple discrete state, a density voxel grid assigns a continuous value to each voxel, which can represent material density, opacity, or other properties. This added complexity enables density voxel grids to represent subtle variations in terrain, such as gradual changes in material density or smooth transitions between solid and empty spaces, allowing for more realistic and natural-looking terrain models.
 
-% The use of density voxel grids results in soft transitions and smooth surfaces, reducing the blockiness typically associated with binary voxel grids. They are versatile and can represent not only solid terrain but also phenomena like fog, fluid densities, or temperature gradients. However, the increased detail and realism come at the cost of greater complexity. Density voxel grids require more memory and computational power, making them more challenging to implement and manage. The additional data and processing required can also lead to slower performance, particularly in real-time applications.
+% % The use of density voxel grids results in soft transitions and smooth surfaces, reducing the blockiness typically associated with binary voxel grids. They are versatile and can represent not only solid terrain but also phenomena like fog, fluid densities, or temperature gradients. However, the increased detail and realism come at the cost of greater complexity. Density voxel grids require more memory and computational power, making them more challenging to implement and manage. The additional data and processing required can also lead to slower performance, particularly in real-time applications.
 
-Density voxel grids are often used in high-fidelity simulations where detail and realism are essential. They are found in applications such as medical imaging, scientific visualizations, and advanced terrain modeling for films and visual effects. These grids are also employed in procedural terrain generation systems that require smooth and natural transitions between different terrain features, such as caves, cliffs, and eroded landscapes.
+% Density voxel grids are often used in high-fidelity simulations where detail and realism are essential. They are found in applications such as medical imaging, scientific visualizations, and advanced terrain modeling for films and visual effects. These grids are also employed in procedural terrain generation systems that require smooth and natural transitions between different terrain features, such as caves, cliffs, and eroded landscapes.
 
-% \subsection{Terrain manipulation}
-% - ... 
+% % \subsection{Terrain manipulation}
+% % - ... 
 
-% - ...
-
-% \subsection{2.5D terrains}
-% - ...
-
-% \subsubsection{Height maps}
-% - ...
-
-% \subsubsection{Height functions}
-% - ...
-
-% \subsection{3D terrains}
-% - Need for 3D concepts \\
-% ** Geological information \\
-% ** Volumetric data \\
-% - ...
-
-% \subsubsection{Main issues}
-% - Memory \\
-% - Visualization \\
-% - Modifications \\
-% - Conversion between representations \\
-% ** Information loss \\
-% *** Error propagation on geometry (approximations on normals, Z resolution, surface, etc.) \\
-% *** Loss of subsurface information \\
-% - ...
-
-% \subsubsection{Types, definitions, advantages, disadvantages}
-% - Voxel grids \\
-% - Material stacks \\
-% - Meshes \\
-% - Implicit surfaces \\
-% - Implicit materials \\
-% - ...
-
-% \subsection{Other models}
-% - Concept of semantics \\
 % % - ...
 
-% \subsection{Procedural methods}
-% Procedural terrain generation beginings are closely related to texture synthesis, as the height field terrain representation share the same mathematical definition as greyscale images. 
+% % \subsection{2.5D terrains}
+% % - ...
 
-% We will divide the terrain generation methods in three main categories: 
-% \begin{itemize}
-%     \item Large-scale methods, for which a the algorithm aims to define a global shape for the terrain. Noise functions, subdivision 
-%     \item Feature-scale methods, for which an algorithm is focused for a specific terrain feature,
-%     \item Enhancement methods, which is used to improve an existing synthetic terrain.
-% \end{itemize} 
+% % \subsubsection{Height maps}
+% % - ...
 
-% % \subsubsection{Large-scale methods}
+% % \subsubsection{Height functions}
+% % - ...
 
-% \subsubsection{Noise functions}
-% \cite{Fournier1982}
+% % \subsection{3D terrains}
+% % - Need for 3D concepts \\
+% % ** Geological information \\
+% % ** Volumetric data \\
+% % - ...
 
-% Noise functions are mathematical mappings from an n-dimensional space to a scalar $ N: \R^n \to \R $, and more specifically is bounded to $N: \R^n \to [-1, 1]$, which could correspond to an intensity in a grayscale image, and thus, to an altitude of our terrains. The aim is to generate smooth, continuous variations in these values to mimic natural landscapes.
+% % \subsubsection{Main issues}
+% % - Memory \\
+% % - Visualization \\
+% % - Modifications \\
+% % - Conversion between representations \\
+% % ** Information loss \\
+% % *** Error propagation on geometry (approximations on normals, Z resolution, surface, etc.) \\
+% % *** Loss of subsurface information \\
+% % - ...
 
-% \subsubsubsection{Value noise}
+% % \subsubsection{Types, definitions, advantages, disadvantages}
+% % - Voxel grids \\
+% % - Material stacks \\
+% % - Meshes \\
+% % - Implicit surfaces \\
+% % - Implicit materials \\
+% % - ...
 
-% Value noise is a simple type of noise function where random values are generated at the vertices of a grid, and interpolation is used to create smooth transitions between these points. The process begins with the creation of a grid in a n-dimensional space, where each grid point $\Z^n$ is assigned a random value $ v $. For any point $\p$ within the grid cell, the value noise at that point is computed by interpolating the values at the surrounding grid points. Linear interpolation is often used, where the noise function at a point is given by 
-% \begin{align*}
-%     N(\p) = \text{lerp}(s, f_0, f_1)
-% \end{align*}
-% with $ f_0 $ and $ f_1 $ being the values at the grid points and $ s $ the interpolation factor. Smoothing can be enhanced by using higher-order interpolation methods, such as cubic interpolation, to make the transitions between points appear more natural and less grid-like.
+% % \subsection{Other models}
+% % - Concept of semantics \\
+% % % - ...
 
-% \subsubsubsection{Perlin noise}
+% % \subsection{Procedural methods}
+% % Procedural terrain generation beginings are closely related to texture synthesis, as the height field terrain representation share the same mathematical definition as greyscale images. 
 
-% Perlin noise \cite{Perlin1985} builds on value noise by using gradient vectors at the grid points rather than scalar values. This method begins by assigning pseudo-random gradient vectors at each grid point. For two-dimensional noise, these gradients typically point in one of several fixed directions. At any point $\p$ within a grid cell, the noise value is computed by taking the dot product of the gradient vectors at the surrounding grid points with the displacement vector from the grid point to $\p$ to determines the contribution of each grid point to the final noise value.
+% % We will divide the terrain generation methods in three main categories: 
+% % \begin{itemize}
+% %     \item Large-scale methods, for which a the algorithm aims to define a global shape for the terrain. Noise functions, subdivision 
+% %     \item Feature-scale methods, for which an algorithm is focused for a specific terrain feature,
+% %     \item Enhancement methods, which is used to improve an existing synthetic terrain.
+% % \end{itemize} 
 
-% The noise values are then interpolated using a smoothstep function, $ S(t) = 3t^2 - 2t^3 $, which is designed to reduce artifacts that might arise from simpler interpolation methods. To create more complex and detailed noise, multiple layers or octaves of Perlin noise are summed together, with each octave being a higher-frequency, lower-amplitude version of the base noise. This process is mathematically expressed as 
-% \begin{align*}
-%     P(\p) = \sum_{i=0}^{n} \left(\frac{1}{2}\right)^i \cdot \text{Perlin}(\p \cdot 2^i)
-% \end{align*}
-% where the sum combines contributions from all octaves to produce the final terrain.
+% % % \subsubsection{Large-scale methods}
 
-% Modern use of Perlin noise define it as the sum of the several layers of noise with their own frequency and amplitude:
+% % \subsubsection{Noise functions}
+% % \cite{Fournier1982}
 
-% \begin{align}
-% P(\p) = \sum_{i=0}^{n-1} a_i \cdot \text{noise}(f_i \cdot \p)
-% \end{align}
+% % Noise functions are mathematical mappings from an n-dimensional space to a scalar $ N: \R^n \to \R $, and more specifically is bounded to $N: \R^n \to [-1, 1]$, which could correspond to an intensity in a grayscale image, and thus, to an altitude of our terrains. The aim is to generate smooth, continuous variations in these values to mimic natural landscapes.
 
-% where $a_i$ is the amplitude of the $i$-th octave, $f_i$ is the frequency of the $i$-th octave.
-% Typically, the user sets $a_0$ and $f_0$, then we compute $a_i = a_{i-1} \cdot p$ and $f_i = f_{i-1} \cdot l$ with $p$ and $l$ the lacunarity and persistence respectively of the noise. 
+% % \subsubsubsection{Value noise}
 
-% To obtain a terrain that fits exactly the needs of the user, one may each of the parameters in the functions: $a_0, a_1, a_2, ..., a_o$ and $f_0, f_1, f_2, ..., f_o$. But this task is very time consuming.
+% % Value noise is a simple type of noise function where random values are generated at the vertices of a grid, and interpolation is used to create smooth transitions between these points. The process begins with the creation of a grid in a n-dimensional space, where each grid point $\Z^n$ is assigned a random value $ v $. For any point $\p$ within the grid cell, the value noise at that point is computed by interpolating the values at the surrounding grid points. Linear interpolation is often used, where the noise function at a point is given by 
+% % \begin{align*}
+% %     N(\p) = \text{lerp}(s, f_0, f_1)
+% % \end{align*}
+% % with $ f_0 $ and $ f_1 $ being the values at the grid points and $ s $ the interpolation factor. Smoothing can be enhanced by using higher-order interpolation methods, such as cubic interpolation, to make the transitions between points appear more natural and less grid-like.
 
-% \subsubsubsection{Simplex noise}
+% % \subsubsubsection{Perlin noise}
 
-% Simplex noise \cite{Perlin2001}, an advancement over Perlin noise, reduces computational complexity and eliminates the grid artifacts seen in Perlin noise by using a simplex grid instead of a standard Cartesian grid. In two dimensions, this grid is a triangular lattice, which replaces the square grid used in Perlin noise. The method begins by constructing the simplex grid, where each point is surrounded by equilateral triangles.
+% % Perlin noise \cite{Perlin1985} builds on value noise by using gradient vectors at the grid points rather than scalar values. This method begins by assigning pseudo-random gradient vectors at each grid point. For two-dimensional noise, these gradients typically point in one of several fixed directions. At any point $\p$ within a grid cell, the noise value is computed by taking the dot product of the gradient vectors at the surrounding grid points with the displacement vector from the grid point to $\p$ to determines the contribution of each grid point to the final noise value.
 
-% Gradient vectors are assigned to each vertex of the simplex grid, similar to Perlin noise. For a given point $\p$, the contribution of each vertex to the noise value is calculated using a weighting function that depends on the distance from the vertex to the point. The contribution is computed as 
-% % $ \text{contrib} = (1 - d_x^2 - d_y^2)^4 \cdot \text{dot}(\mathbf{g}, \mathbf{d}) $
-% \begin{align*}
-%     \text{contrib} = \left( \max \left( 0, \radius^2 - \sum_{i=1}^{n} {d_i^2} \right) \right)^4 \cdot \left( \sum_{i=1}^{n}{d_i \cdot \operatorname{grad}_i} \right)
-% \end{align*}
-% where $ d_i $ represents the $i$-th component of the displacement vector in the simplex grid, $\operatorname{grad}_i$ the $i$-th component of the gradient vector at the vertex of the simplex grid, and $\radius$ an influence radius typically set to $\radius=0.6$ as proposed by the author.
+% % The noise values are then interpolated using a smoothstep function, $ S(t) = 3t^2 - 2t^3 $, which is designed to reduce artifacts that might arise from simpler interpolation methods. To create more complex and detailed noise, multiple layers or octaves of Perlin noise are summed together, with each octave being a higher-frequency, lower-amplitude version of the base noise. This process is mathematically expressed as 
+% % \begin{align*}
+% %     P(\p) = \sum_{i=0}^{n} \left(\frac{1}{2}\right)^i \cdot \text{Perlin}(\p \cdot 2^i)
+% % \end{align*}
+% % where the sum combines contributions from all octaves to produce the final terrain.
 
-% The final noise value is the sum of contributions from all vertices that influence the point $\p$. After summing these contributions, normalization ensures that the noise values remain within a standard range, typically $[-1, 1]$. Simplex noise is computationally more efficient than Perlin noise, particularly in higher dimensions $n$ as it went from a complexity $O(n 2^n)$ to $O(n^2)$, because it requires fewer gradient calculations per grid point.
-
-% \subsubsubsection{Wavelet noise}
-
-% Wavelet noise \cite{Cook2005} addresses aliasing problems that occur when mapping three-dimensional noise to two-dimensional surfaces. The process begins by constructing a tile of noise coefficients using random values. A wavelet transform is then applied to this tile, decomposing the noise into different frequency components. This decomposition helps remove frequencies that could cause aliasing when the noise is projected onto lower dimensions.
-
-% The noise is reconstructed from the wavelet coefficients during runtime. The wavelet noise function is mathematically defined as 
-% \begin{align*}
-%     W(\p) = \sum_{i=1}^{n} c_i \cdot \phi\left(\frac{\p - \p_i}{s_i}\right)
-% \end{align*}
-% where $ c_i $ are coefficients, $ \p_i $ are grid points, and $ s_i $ are scales. The final noise value is obtained by summing the contributions from these wavelet functions, which are localized and minimize high-frequency noise, reducing the potential for aliasing. While wavelet noise provides excellent control over frequency content, making it ideal for applications like texturing, its use in infinite terrain generation is limited due to the fixed tile size.
-
-% \subsubsubsection{Worley noise}
-
-% Worley noise \cite{Worley1996} generates textures based on the distance between a point and a set of randomly distributed feature points. The process begins by randomly distributing feature points within each grid cell. For a given point $\p$, the distance to the nearest feature point in each surrounding grid cell is calculated. This distance is expressed as $ d_i = \min \left\{ ||\p - \q_i|| \right\} $, where $ \q_i $ are the coordinates of the $i$-th feature point.
-
-% The noise value is then determined based on these distances, typically by taking the minimum distance or the difference between the first and second closest distances. The resulting noise function can be expressed as 
-% \begin{align*}
-%     W(\p) = d_1(\p) - d_2(\p)
-% \end{align*}    
-% Worley noise is often used to create cellular textures, such as those seen in natural stone, water, or biological cells, adding intricate details to terrain surfaces.
-
-% \subsubsubsection{Curl noise}
-% Curl noise \cite{Bridson2007} is particularly useful for simulating fluid-like motion, such as swirling patterns in water or smoke. It is generated by taking the curl of a vector field $\mathbf{F}$ derived from a noise function (often the Perlin or Simplex noises), resulting in a divergence-free flow. The curl noise applies warping, a (most often bijective) deformation of the field, defined as $C: \R^n \to \R^n$ and is mathematically described as:
-
-% \begin{align}
-% C(\p) = \nabla \cdot \mathbf{F}(\p)
-% \end{align}
-
-% While this function does result in a scalar field that can be used in an elevation map, a composition with other noise functions are frequent in order to break some linearities in the output and introduce intentional swirling artifacts, such as in the flow noise \cite{Perlin2001b}.
-
-% \subsubsubsection{Other noise Functions}
-
-% Several other noise functions offer specialized functionalities for terrain generation. Gabor noise \cite{Tavernier2019} and Phasor noise \cite{Tricard2019} uses Gabor filters to generate noise patterns that are coherent and locally isotropic, making it a powerful tool in texture synthesis and vector field visualization. A variation of previous noises, the ridge noise \cite{Ebert2003} was developed to have sharper crests, looking like younger mountain chains, by simply modifying the noise function $\text{ridge}(\p) = 1 - \left| N(\p) \right|$. Many other noise functions can be used and mixed to create different effects like those introduced in \cite{VanWijk1991,Lewis1989,Gilet2014,Lewis1984}. More details on noise functions are presented in \citep{Reinhard2010}.
-
-% Large-scales terrains can be generated by a combination, of those noise functions, with the tuning of the noise parameters. While mainly used to describe large-scale landscapes, these noise functions are also frequently used down to the micro-scales to present small height variations or asperities on an object surface and are prevalent in the terrain enhancement methods \cite{Grenier2024}.
-
-
-% % One of the earliest and most significant developments in procedural generation was the introduction of noise functions. Noise functions are mathematical constructs used to generate pseudo-random, yet smooth and coherent, patterns. 
-
-% % From a noise function $N: \R^2 \to [-1, 1]$, we can associate a height to all points in our height field, which can then be displayed in 3D with textures to look at a landscape. Noise functions have then been studied to represent Earth's surface, such that tuning some parameters can simulate different regions of the globe.
-
-% % Ken Perlin introduced the Perlin noise \cite{Perlin1985}, initially for the CGI movie \textit{Tron} (1982), a groundbreaking method for generating smooth, gradient-based noise. Perlin noise can be defined as a continuous function $P(\p)$ that takes a point $\p$ in n-dimensional space and returns a scalar value that represents the noise intensity at that point. The function is defined as a sum of several layers of noise, called "octaves," each with its own frequency and amplitude:
+% % Modern use of Perlin noise define it as the sum of the several layers of noise with their own frequency and amplitude:
 
 % % \begin{align}
 % % P(\p) = \sum_{i=0}^{n-1} a_i \cdot \text{noise}(f_i \cdot \p)
 % % \end{align}
 
-% % where  $n$ is the number of octaves, $a_i$ is the amplitude of the $i$-th octave, $f_i$ is the frequency of the $i$-th octave.
+% % where $a_i$ is the amplitude of the $i$-th octave, $f_i$ is the frequency of the $i$-th octave.
 % % Typically, the user sets $a_0$ and $f_0$, then we compute $a_i = a_{i-1} \cdot p$ and $f_i = f_{i-1} \cdot l$ with $p$ and $l$ the lacunarity and persistence respectively of the noise. 
 
-% % The primary application of Perlin noise was in generating textures that mimic natural phenomena, such as clouds, fire, and marble. Perlin noise's key advantage was its ability to produce visually appealing, continuous gradients that avoided the rough randomness seen in earlier noise functions.
+% % To obtain a terrain that fits exactly the needs of the user, one may each of the parameters in the functions: $a_0, a_1, a_2, ..., a_o$ and $f_0, f_1, f_2, ..., f_o$. But this task is very time consuming.
 
-% % Building on his earlier work, Ken Perlin developed Simplex noise \cite{Perlin2001}, which was designed to address some of the limitations of Perlin noise. Simplex noise is a more computationally efficient and visually isotropic alternative. It operates on a triangular (in 2D) or tetrahedral (in 3D) grid, reducing computational complexity, particularly in higher dimensions. The Simplex noise function, $S(\p)$, can be defined similarly to Perlin noise but uses a different gradient selection and interpolation process that results in fewer directional artifacts:
+% % \subsubsubsection{Simplex noise}
+
+% % Simplex noise \cite{Perlin2001}, an advancement over Perlin noise, reduces computational complexity and eliminates the grid artifacts seen in Perlin noise by using a simplex grid instead of a standard Cartesian grid. In two dimensions, this grid is a triangular lattice, which replaces the square grid used in Perlin noise. The method begins by constructing the simplex grid, where each point is surrounded by equilateral triangles.
+
+% % Gradient vectors are assigned to each vertex of the simplex grid, similar to Perlin noise. For a given point $\p$, the contribution of each vertex to the noise value is calculated using a weighting function that depends on the distance from the vertex to the point. The contribution is computed as 
+% % % $ \text{contrib} = (1 - d_x^2 - d_y^2)^4 \cdot \text{dot}(\mathbf{g}, \mathbf{d}) $
+% % \begin{align*}
+% %     \text{contrib} = \left( \max \left( 0, \radius^2 - \sum_{i=1}^{n} {d_i^2} \right) \right)^4 \cdot \left( \sum_{i=1}^{n}{d_i \cdot \operatorname{grad}_i} \right)
+% % \end{align*}
+% % where $ d_i $ represents the $i$-th component of the displacement vector in the simplex grid, $\operatorname{grad}_i$ the $i$-th component of the gradient vector at the vertex of the simplex grid, and $\radius$ an influence radius typically set to $\radius=0.6$ as proposed by the author.
+
+% % The final noise value is the sum of contributions from all vertices that influence the point $\p$. After summing these contributions, normalization ensures that the noise values remain within a standard range, typically $[-1, 1]$. Simplex noise is computationally more efficient than Perlin noise, particularly in higher dimensions $n$ as it went from a complexity $O(n 2^n)$ to $O(n^2)$, because it requires fewer gradient calculations per grid point.
+
+% % \subsubsubsection{Wavelet noise}
+
+% % Wavelet noise \cite{Cook2005} addresses aliasing problems that occur when mapping three-dimensional noise to two-dimensional surfaces. The process begins by constructing a tile of noise coefficients using random values. A wavelet transform is then applied to this tile, decomposing the noise into different frequency components. This decomposition helps remove frequencies that could cause aliasing when the noise is projected onto lower dimensions.
+
+% % The noise is reconstructed from the wavelet coefficients during runtime. The wavelet noise function is mathematically defined as 
+% % \begin{align*}
+% %     W(\p) = \sum_{i=1}^{n} c_i \cdot \phi\left(\frac{\p - \p_i}{s_i}\right)
+% % \end{align*}
+% % where $ c_i $ are coefficients, $ \p_i $ are grid points, and $ s_i $ are scales. The final noise value is obtained by summing the contributions from these wavelet functions, which are localized and minimize high-frequency noise, reducing the potential for aliasing. While wavelet noise provides excellent control over frequency content, making it ideal for applications like texturing, its use in infinite terrain generation is limited due to the fixed tile size.
+
+% % \subsubsubsection{Worley noise}
+
+% % Worley noise \cite{Worley1996} generates textures based on the distance between a point and a set of randomly distributed feature points. The process begins by randomly distributing feature points within each grid cell. For a given point $\p$, the distance to the nearest feature point in each surrounding grid cell is calculated. This distance is expressed as $ d_i = \min \left\{ ||\p - \q_i|| \right\} $, where $ \q_i $ are the coordinates of the $i$-th feature point.
+
+% % The noise value is then determined based on these distances, typically by taking the minimum distance or the difference between the first and second closest distances. The resulting noise function can be expressed as 
+% % \begin{align*}
+% %     W(\p) = d_1(\p) - d_2(\p)
+% % \end{align*}    
+% % Worley noise is often used to create cellular textures, such as those seen in natural stone, water, or biological cells, adding intricate details to terrain surfaces.
+
+% % \subsubsubsection{Curl noise}
+% % Curl noise \cite{Bridson2007} is particularly useful for simulating fluid-like motion, such as swirling patterns in water or smoke. It is generated by taking the curl of a vector field $\mathbf{F}$ derived from a noise function (often the Perlin or Simplex noises), resulting in a divergence-free flow. The curl noise applies warping, a (most often bijective) deformation of the field, defined as $C: \R^n \to \R^n$ and is mathematically described as:
 
 % % \begin{align}
-% % S(\p) = \sum_{i=1}^{n} a_i \cdot \text{simplex\_noise}(f_i \cdot \p)
+% % C(\p) = \nabla \cdot \mathbf{F}(\p)
 % % \end{align}
 
-% % Simplex noise's reduced computational cost and smoother, isotropic results made it popular in real-time graphics applications, such as video games.
+% % While this function does result in a scalar field that can be used in an elevation map, a composition with other noise functions are frequent in order to break some linearities in the output and introduce intentional swirling artifacts, such as in the flow noise \cite{Perlin2001b}.
 
-% % Wavelet noise \cite{Cook2005} uses wavelet transforms to control the frequency content of the noise across different scales, reducing artifacts like aliasing and improving texture fidelity. It is expressed as:
+% % \subsubsubsection{Other noise Functions}
+
+% % Several other noise functions offer specialized functionalities for terrain generation. Gabor noise \cite{Tavernier2019} and Phasor noise \cite{Tricard2019} uses Gabor filters to generate noise patterns that are coherent and locally isotropic, making it a powerful tool in texture synthesis and vector field visualization. A variation of previous noises, the ridge noise \cite{Ebert2003} was developed to have sharper crests, looking like younger mountain chains, by simply modifying the noise function $\text{ridge}(\p) = 1 - \left| N(\p) \right|$. Many other noise functions can be used and mixed to create different effects like those introduced in \cite{VanWijk1991,Lewis1989,Gilet2014,Lewis1984}. More details on noise functions are presented in \citep{Reinhard2010}.
+
+% % Large-scales terrains can be generated by a combination, of those noise functions, with the tuning of the noise parameters. While mainly used to describe large-scale landscapes, these noise functions are also frequently used down to the micro-scales to present small height variations or asperities on an object surface and are prevalent in the terrain enhancement methods \cite{Grenier2024}.
+
+
+% % % One of the earliest and most significant developments in procedural generation was the introduction of noise functions. Noise functions are mathematical constructs used to generate pseudo-random, yet smooth and coherent, patterns. 
+
+% % % From a noise function $N: \R^2 \to [-1, 1]$, we can associate a height to all points in our height field, which can then be displayed in 3D with textures to look at a landscape. Noise functions have then been studied to represent Earth's surface, such that tuning some parameters can simulate different regions of the globe.
+
+% % % Ken Perlin introduced the Perlin noise \cite{Perlin1985}, initially for the CGI movie \textit{Tron} (1982), a groundbreaking method for generating smooth, gradient-based noise. Perlin noise can be defined as a continuous function $P(\p)$ that takes a point $\p$ in n-dimensional space and returns a scalar value that represents the noise intensity at that point. The function is defined as a sum of several layers of noise, called "octaves," each with its own frequency and amplitude:
+
+% % % \begin{align}
+% % % P(\p) = \sum_{i=0}^{n-1} a_i \cdot \text{noise}(f_i \cdot \p)
+% % % \end{align}
+
+% % % where  $n$ is the number of octaves, $a_i$ is the amplitude of the $i$-th octave, $f_i$ is the frequency of the $i$-th octave.
+% % % Typically, the user sets $a_0$ and $f_0$, then we compute $a_i = a_{i-1} \cdot p$ and $f_i = f_{i-1} \cdot l$ with $p$ and $l$ the lacunarity and persistence respectively of the noise. 
+
+% % % The primary application of Perlin noise was in generating textures that mimic natural phenomena, such as clouds, fire, and marble. Perlin noise's key advantage was its ability to produce visually appealing, continuous gradients that avoided the rough randomness seen in earlier noise functions.
+
+% % % Building on his earlier work, Ken Perlin developed Simplex noise \cite{Perlin2001}, which was designed to address some of the limitations of Perlin noise. Simplex noise is a more computationally efficient and visually isotropic alternative. It operates on a triangular (in 2D) or tetrahedral (in 3D) grid, reducing computational complexity, particularly in higher dimensions. The Simplex noise function, $S(\p)$, can be defined similarly to Perlin noise but uses a different gradient selection and interpolation process that results in fewer directional artifacts:
+
+% % % \begin{align}
+% % % S(\p) = \sum_{i=1}^{n} a_i \cdot \text{simplex\_noise}(f_i \cdot \p)
+% % % \end{align}
+
+% % % Simplex noise's reduced computational cost and smoother, isotropic results made it popular in real-time graphics applications, such as video games.
+
+% % % Wavelet noise \cite{Cook2005} uses wavelet transforms to control the frequency content of the noise across different scales, reducing artifacts like aliasing and improving texture fidelity. It is expressed as:
+
+% % % \begin{align}
+% % % \text{Wavelet\_Noise}(\p) = \sum_{i=0}^{n-1} \text{Wavelet\_Transform}(a_i \cdot \text{noise}(f_i \cdot \p)),
+% % % \end{align}
+
+% % % allowing for detailed and consistent textures at multiple resolutions.
+
+% % % A variation of previous noises, called Ridge noise \cite{Ebert2003} was developed to have sharper crests, looking like younger mountain chains, by simply modifying the noise function $\text{ridge}(\p) = 1 - \left| N(\p) \right|$.
+
+
+% % % Worley noise \cite{Worley1996}, introduced by Steven Worley, generates patterns based on the distances to randomly distributed points in space. This noise is particularly effective for creating cellular patterns, useful in simulating materials like stone or skin. The noise at a point $\p$ is computed as:
+
+% % % \begin{align}
+% % % W(\p) = \min_{i} \{ \text{distance}(\p, \q_i) \},
+% % % \end{align}
+
+% % % where $\q_i$ are the feature points.
+
+
+% % % Curl noise is particularly useful for simulating fluid-like motion, such as swirling patterns in water or smoke. It is generated by taking the curl of a vector field derived from a noise function, resulting in a divergence-free flow. The curl noise is mathematically described as:
+
+% % % \begin{align}
+% % % \mathbf{C}(\p) = \nabla \cdot \mathbf{F}(\p),
+% % % \end{align}
+
+% % % where $\mathbf{F}(\p)$ is a vector field generated by the noise function.
+
+% % % Large-scales terrains can be generated by a combination, of those noise functions, with the tuning of the noise parameters. To obtain a terrain that fits exactly the needs of the user, one may each of the parameters in the functions: $a_0, a_1, a_2, ..., a_o$ and $f_0, f_1, f_2, ..., f_o$. But this task is very time consuming.
+
+% % [SEE ALSO: \cite{Milliron2002}]
+
+% % \subsubsection{Fractal terrains}
+% % \cite{Musgrave1989,Lewis1987,Miller1986}
+% % % Another significant mathematical concept that influenced procedural generation was fractal geometry, introduced by Benoît B. Mandelbrot in the 1970s. Fractals are complex structures that exhibit self-similarity across different scales, meaning that their patterns repeat at every level of magnification. 
+
+% % In procedural generation, fractal geometry can be used to create natural-looking terrains and landscapes by generating structures that appear consistent across various scales. For example, the Diamond-Square algorithm, a fractal-based terrain generation technique, iteratively refines a coarse grid of points by introducing random variations. This process creates self-similar structures that resemble mountainous terrains:
 
 % % \begin{align}
-% % \text{Wavelet\_Noise}(\p) = \sum_{i=0}^{n-1} \text{Wavelet\_Transform}(a_i \cdot \text{noise}(f_i \cdot \p)),
+% % h(\p) = \frac{h(x_1, y_1) + h(x_2, y_2) + h(x_3, y_3) + h(x_4, y_4)}{4} + \text{random\_offset}
 % % \end{align}
 
-% % allowing for detailed and consistent textures at multiple resolutions.
+% % where $h(\p)$ is the height at a given point, and $(x_1, y_1), (x_2, y_2), (x_3, y_3), (x_4, y_4)$ are the surrounding points.
 
-% % A variation of previous noises, called Ridge noise \cite{Ebert2003} was developed to have sharper crests, looking like younger mountain chains, by simply modifying the noise function $\text{ridge}(\p) = 1 - \left| N(\p) \right|$.
+% % Fractal-based methods revolutionized terrain generation by providing a mathematical framework for creating realistic and complex natural landscapes.
 
-
-% % Worley noise \cite{Worley1996}, introduced by Steven Worley, generates patterns based on the distances to randomly distributed points in space. This noise is particularly effective for creating cellular patterns, useful in simulating materials like stone or skin. The noise at a point $\p$ is computed as:
-
-% % \begin{align}
-% % W(\p) = \min_{i} \{ \text{distance}(\p, \q_i) \},
-% % \end{align}
-
-% % where $\q_i$ are the feature points.
-
-
-% % Curl noise is particularly useful for simulating fluid-like motion, such as swirling patterns in water or smoke. It is generated by taking the curl of a vector field derived from a noise function, resulting in a divergence-free flow. The curl noise is mathematically described as:
-
-% % \begin{align}
-% % \mathbf{C}(\p) = \nabla \cdot \mathbf{F}(\p),
-% % \end{align}
-
-% % where $\mathbf{F}(\p)$ is a vector field generated by the noise function.
-
-% % Large-scales terrains can be generated by a combination, of those noise functions, with the tuning of the noise parameters. To obtain a terrain that fits exactly the needs of the user, one may each of the parameters in the functions: $a_0, a_1, a_2, ..., a_o$ and $f_0, f_1, f_2, ..., f_o$. But this task is very time consuming.
-
-% [SEE ALSO: \cite{Milliron2002}]
-
-% \subsubsection{Fractal terrains}
-% \cite{Musgrave1989,Lewis1987,Miller1986}
-% % Another significant mathematical concept that influenced procedural generation was fractal geometry, introduced by Benoît B. Mandelbrot in the 1970s. Fractals are complex structures that exhibit self-similarity across different scales, meaning that their patterns repeat at every level of magnification. 
-
-% In procedural generation, fractal geometry can be used to create natural-looking terrains and landscapes by generating structures that appear consistent across various scales. For example, the Diamond-Square algorithm, a fractal-based terrain generation technique, iteratively refines a coarse grid of points by introducing random variations. This process creates self-similar structures that resemble mountainous terrains:
-
-% \begin{align}
-% h(\p) = \frac{h(x_1, y_1) + h(x_2, y_2) + h(x_3, y_3) + h(x_4, y_4)}{4} + \text{random\_offset}
-% \end{align}
-
-% where $h(\p)$ is the height at a given point, and $(x_1, y_1), (x_2, y_2), (x_3, y_3), (x_4, y_4)$ are the surrounding points.
-
-% Fractal-based methods revolutionized terrain generation by providing a mathematical framework for creating realistic and complex natural landscapes.
-
-\subsection{Terrain generation}
+% \subsection{Terrain generation}
 Procedural generation encompasses a diverse range of techniques used to create complex, natural-looking content, particularly in terrain generation. These techniques span from mathematical models to advanced simulations and can be broadly categorized into methods for large-scale terrain generation and procedural landform generation. 
 
 Noise functions are foundational to procedural terrain generation, providing the basis for creating coherent, natural patterns across terrains. Perlin noise, developed by Ken Perlin in 1983, is a gradient-based noise function that produces smooth, continuous patterns, ideal for generating natural-looking textures and landscapes. Simplex noise, introduced by Perlin in 2001, improves upon Perlin noise by being more computationally efficient and reducing directional artifacts, especially in higher-dimensional spaces. Worley noise, another noise variant, generates patterns based on the distance between points, producing cellular structures useful for simulating natural textures like stone or marble, and for modeling phenomena like cloud formations. Fractional Brownian motion (fBm) builds on these noise functions by summing noise at different scales and amplitudes, creating terrains with varied features, from gentle hills to rugged mountains. Techniques like ridge noise focus on generating sharp features such as crests and ridges, while domain warping applies distortions to prevent grid artifacts and simulate erosion effects without the need for full physical simulations.
@@ -430,13 +430,13 @@ By combining these diverse techniques, procedural generation enables the creatio
 Procedural terrain generation algorithms usually take parameters into account in order to generate something that fits the user's needs. The tools that let the user interact with the different parameters are essential to include efficiently the user in the process. 
 
 The parameters that a user can play with can have many nature, and require a large varety of visual tools to interact with them. In the different nature of parameters, we can typically find: 
-\begin{itemize}
-    \item Noise parameters: Almost abstract values used in the equation ruling the noise functions. 
-    \item Physical constants: Constants that are used in physic simulations. They are often tweaked by the user to exagerate certain features, force some phenomena, etc... As they are constants, the parametrization of these values is often done inside the source code, as spinboxes, or inside a configuration file. 
-    \item Densities and distributions: Marking areas that are affected by a process, or where a seed can be used is useful to control a procedural algorithm. This is refered as "masking", but due to its binary nature, we can find sharp and unatural transitions from the use of binary masks. We often use weighted masks to provide more control about probabilities that a seed appear at one point. The control of the masks is usually done through grayscale images or by a "brush tool" that can modify the value directly on the surface of a 2D or 3D object. As virtual terrains are generally represented by a rectangular base, the use of brushes is a facade to the manipulation of a grayscale image.
-    \item Structures placement: Placing a specific terrain feature inside a terrain may be useful to finalize the generation of a landscape, or to add obstacles that will affect a physic simulation. This is usually implemented by clicking on the surface of the terrain, to provide the initial $xyz$ position, and then use translation and rotation tools to adjust the placement. If many elements are added, we usually use the previous strategy, involving masking, to add all the structures.
-    \item Manual manipulation of the terrain: In order to customize at a lower level the surface of the terrain, the user may be able to alter the surface of the terrain by using brushes. Clicking or dragging a brush on the surface usually result in the rise or lowering of the surface level around the brush. This process modifies the field representing the terrain. Procedural brushes can imply more complex behaviours, and may use the velocity of the brush stroke in its input.
-\end{itemize}
+\begin{Itemize}
+    \Item {Noise parameters:} Almost abstract values used in the equation ruling the noise functions. 
+    \Item {Physical constants:} Constants that are used in physic simulations. They are often tweaked by the user to exagerate certain features, force some phenomena, etc... As they are constants, the parametrization of these values is often done inside the source code, as spinboxes, or inside a configuration file. 
+    \Item {Densities and distributions:} Marking areas that are affected by a process, or where a seed can be used is useful to control a procedural algorithm. This is refered as "masking", but due to its binary nature, we can find sharp and unatural transitions from the use of binary masks. We often use weighted masks to provide more control about probabilities that a seed appear at one point. The control of the masks is usually done through grayscale images or by a "brush tool" that can modify the value directly on the surface of a 2D or 3D object. As virtual terrains are generally represented by a rectangular base, the use of brushes is a facade to the manipulation of a grayscale image.
+    \Item {Structures placement:} Placing a specific terrain feature inside a terrain may be useful to finalize the generation of a landscape, or to add obstacles that will affect a physic simulation. This is usually implemented by clicking on the surface of the terrain, to provide the initial $xyz$ position, and then use translation and rotation tools to adjust the placement. If many elements are added, we usually use the previous strategy, involving masking, to add all the structures.
+    \Item {Manual manipulation of the terrain:} In order to customize at a lower level the surface of the terrain, the user may be able to alter the surface of the terrain by using brushes. Clicking or dragging a brush on the surface usually result in the rise or lowering of the surface level around the brush. This process modifies the field representing the terrain. Procedural brushes can imply more complex behaviours, and may use the velocity of the brush stroke in its input.
+\end{Itemize}
 
 Each developer uses different strategies for each type of parameters as the needs or objectives of each application is different. Providing the user with too many parameters can be overwhelming, while too few can limit the output possibilities. In the meantime, providing unintuitive parameters like dimensionless values often result in trial and error strategy, requiering to run the generation algorithm many times before finding the appropriate values. This implies that the algorithms must be able to be executed fast. On an opposite side, removing some user controls to use hard-coded constants instead can greatly increase the speed. Finally, an algorithm that aims to be fast or let the user many parameters to control may reduce the realism of the output. Most algorithms try to strike a balance between realism, speed and control.
 
@@ -445,12 +445,12 @@ Each developer uses different strategies for each type of parameters as the need
 Realism refers to the extent to which generated content accurately represents real-world characteristics, such as visual details, physical processes, and natural patterns. This is especially important in simulations, visualizations, and training environments where plausibility [FIND BETTER TERM] is critical. Techniques to enhance realism include physical simulations, which model processes like erosion and sediment transport, and the integration of expert knowledge from fields such as geology and ecology. However, achieving realism can be challenging due to the complexity of detailed simulations and the need for specialized expertise, which can demand substantial computational resources and inputs. Usually, a realistic algorithm tends to have low user control and speed.
 
 On another hand, speed is about the efficiency of content generation within acceptable time constraints. While no official categorisation has been set, James Gain proposed to describe levels of speed based on response time:
-\begin{itemize}
-    \item Real-time: generation in less than 30 milliseconds, essential for interactive applications like VR environments. 
-    \item Interactive: generation in under 3 seconds, suitable for user-driven customization in games and simulations. 
-    \item Near-interactive: generation in less than 5 minutes, applicable for larger-scale simulations where some delay is acceptable. 
-    \item Long-term: generation that takes longer, often used for precomputed content or offline rendering.
-\end{itemize}
+\begin{Itemize}
+    \Item {Real-time:} generation in less than 30 milliseconds, essential for interactive applications like VR environments. 
+    \Item {Interactive:} generation in under 3 seconds, suitable for user-driven customization in games and simulations. 
+    \Item {Near-interactive:} generation in less than 5 minutes, applicable for larger-scale simulations where some delay is acceptable. 
+    \Item {Offline:} generation that takes longer, often used for precomputed content or offline rendering.
+\end{Itemize}
 
 The execution speed of a procedural algorithm is crucial as the user will fine-tune the parameters before being satisfied.
 Optimizing speed involves using efficient algorithms and parallel processing. Almost all recent works achieve fast execution time thanks to high parallelisation on GPU. Other types of algorithm may rely on a refinement paradigm, generating a coarse result at first and then iteratively adding finer details, such that the global output shape is available long time before the real final result.
@@ -544,52 +544,53 @@ Managing diverse and sometimes conflicting user expectations, such as balancing 
 % Bla bla bla, terrain + atmosphere = environment, environment + living beings = biogeocoenosis bla bla 
 
 % \subsection{}
-\subsection{Fluid simulations}
-Fluid simulations are an essential component of procedural terrain generation, particularly for modeling the behavior of water and its interactions with the terrain. These simulations are crucial for creating realistic and dynamic environmental models that accurately reflect natural phenomena, such as river flow, coastal erosion, sediment transport, and overall hydrology.
 
-At the core of fluid simulations are the Navier-Stokes equations, which describe the motion of fluid substances. These equations account for various forces acting on a fluid, such as pressure, viscosity, and external forces like gravity. 
-\begin{align}
-    \rho \left( \frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \nabla) \mathbf{u} \right) = -\nabla p + \mu \nabla^2 \mathbf{u} + \mathbf{f}
-\end{align}
-Where $\mathbf{u} = (u, v, w)$ is the fluid velocity vector, with components $u$, $v$, and $w$ in the $x$-, $y$-, and $z$-directions, respectively, $t$ is time, $\rho$ is the fluid density, $p$ is the pressure field within the fluid, $\mu$ is the dynamic viscosity of the fluid, $\nabla p$ is the pressure gradient force, $\mu \nabla^2 \mathbf{u}$ is the viscous diffusion term, representing the effects of internal friction within the fluid and finally, $\mathbf{f}$ represents external body forces, such as gravity.
+% \subsection{Fluid simulations}
+% Fluid simulations are an essential component of procedural terrain generation, particularly for modeling the behavior of water and its interactions with the terrain. These simulations are crucial for creating realistic and dynamic environmental models that accurately reflect natural phenomena, such as river flow, coastal erosion, sediment transport, and overall hydrology.
 
-For an incompressible fluid like water, the Navier-Stokes equations can be simplified by assuming that the fluid density remains constant, leading to the incompressibility condition:
+% At the core of fluid simulations are the Navier-Stokes equations, which describe the motion of fluid substances. These equations account for various forces acting on a fluid, such as pressure, viscosity, and external forces like gravity. 
+% \begin{align}
+%     \rho \left( \frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \nabla) \mathbf{u} \right) = -\nabla p + \mu \nabla^2 \mathbf{u} + \mathbf{f}
+% \end{align}
+% Where $\mathbf{u} = (u, v, w)$ is the fluid velocity vector, with components $u$, $v$, and $w$ in the $x$-, $y$-, and $z$-directions, respectively, $t$ is time, $\rho$ is the fluid density, $p$ is the pressure field within the fluid, $\mu$ is the dynamic viscosity of the fluid, $\nabla p$ is the pressure gradient force, $\mu \nabla^2 \mathbf{u}$ is the viscous diffusion term, representing the effects of internal friction within the fluid and finally, $\mathbf{f}$ represents external body forces, such as gravity.
 
-\begin{align}
-    \nabla \cdot \mathbf{u} = 0
-\end{align}
+% For an incompressible fluid like water, the Navier-Stokes equations can be simplified by assuming that the fluid density remains constant, leading to the incompressibility condition:
 
-This condition ensures that the volume of fluid elements remains unchanged as they move through space, which is crucial for accurately simulating water flow.
+% \begin{align}
+%     \nabla \cdot \mathbf{u} = 0
+% \end{align}
 
-The Navier-Stokes equations are highly non-linear, which means that even small changes in the input conditions can lead to significant and unpredictable changes in the fluid's behavior. The non-linearity makes solving these equations a expensive computational problem, as it requires iterative methods to find stable solutions. Each step of the simulation must balance the forces acting on the fluid, such as pressure and viscosity, while ensuring that the solution remains physically accurate and stable over time. This process becomes particularly demanding when aiming for realistic, high-resolution simulations where fine details like turbulence and surface tension must be accurately captured.In this case we require dense computational grids or a large number of particles, and these elements must be updated frequently to maintain the realism of the simulation, which exponentially increase the computations and the memory used.
+% This condition ensures that the volume of fluid elements remains unchanged as they move through space, which is crucial for accurately simulating water flow.
 
-The computation cost is further amplified when simulations are performed in 3D space. Unlike 2D simulations, where calculations are confined to a plane, 3D simulations must account for the full complexity of fluid movement in all directions. This increases the number of computations required, making real-time applications like as video games and interactive simulations almost incapable to use them.
+% The Navier-Stokes equations are highly non-linear, which means that even small changes in the input conditions can lead to significant and unpredictable changes in the fluid's behavior. The non-linearity makes solving these equations a expensive computational problem, as it requires iterative methods to find stable solutions. Each step of the simulation must balance the forces acting on the fluid, such as pressure and viscosity, while ensuring that the solution remains physically accurate and stable over time. This process becomes particularly demanding when aiming for realistic, high-resolution simulations where fine details like turbulence and surface tension must be accurately captured.In this case we require dense computational grids or a large number of particles, and these elements must be updated frequently to maintain the realism of the simulation, which exponentially increase the computations and the memory used.
 
-Different fluid solvers have been developed to approximate the solutions to the Navier-Stokes equations, each with its strengths and weaknesses. These solvers vary in how they represent the fluid (the Lagrangian approach using particles or the Eulerian approach with discrete grids, or a combination of both) and how they handle the computational trade-offs between accuracy, stability, and performance. The choice of a fluid solver depends on the specific requirements of the simulation, such as the need for real-time performance, the level of detail required, or the types of fluid behavior being modeled.
+% The computation cost is further amplified when simulations are performed in 3D space. Unlike 2D simulations, where calculations are confined to a plane, 3D simulations must account for the full complexity of fluid movement in all directions. This increases the number of computations required, making real-time applications like as video games and interactive simulations almost incapable to use them.
 
-\subsubsection{Marker-And-Cell (MAC) Method}
+% Different fluid solvers have been developed to approximate the solutions to the Navier-Stokes equations, each with its strengths and weaknesses. These solvers vary in how they represent the fluid (the Lagrangian approach using particles or the Eulerian approach with discrete grids, or a combination of both) and how they handle the computational trade-offs between accuracy, stability, and performance. The choice of a fluid solver depends on the specific requirements of the simulation, such as the need for real-time performance, the level of detail required, or the types of fluid behavior being modeled.
 
-The Marker-And-Cell (MAC) method is one of the earliest and most fundamental grid-based techniques for simulating incompressible fluid flows. In the MAC method, the fluid's velocity components are stored at the faces of grid cells, while pressure values are stored at the cell centers. Marker particles are used to track the fluid's free surface, ensuring that fluid interfaces and boundaries are accurately captured. The MAC method excels at maintaining the incompressibility condition of fluids and accurately modeling pressure fields, which are important for realistic fluid dynamics. Because of its emphasis on accuracy and detailed pressure modeling, MAC is more oriented toward realism, especially in scenarios where the precise behavior of fluids is essential. However, its grid-based nature can lead to challenges in handling complex geometries and fine details at fluid boundaries, as the resolution is limited by the grid size. Moreover, the method can be computationally intensive, especially for high-resolution grids, making it less ideal for real-time applications.
+% \subsubsection{Marker-And-Cell (MAC) Method}
 
-\subsubsection{Stable Fluids}
+% The Marker-And-Cell (MAC) method is one of the earliest and most fundamental grid-based techniques for simulating incompressible fluid flows. In the MAC method, the fluid's velocity components are stored at the faces of grid cells, while pressure values are stored at the cell centers. Marker particles are used to track the fluid's free surface, ensuring that fluid interfaces and boundaries are accurately captured. The MAC method excels at maintaining the incompressibility condition of fluids and accurately modeling pressure fields, which are important for realistic fluid dynamics. Because of its emphasis on accuracy and detailed pressure modeling, MAC is more oriented toward realism, especially in scenarios where the precise behavior of fluids is essential. However, its grid-based nature can lead to challenges in handling complex geometries and fine details at fluid boundaries, as the resolution is limited by the grid size. Moreover, the method can be computationally intensive, especially for high-resolution grids, making it less ideal for real-time applications.
 
-Building on the grid-based approach of the MAC method, the Stable Fluids method addresses key stability issues that arise in fluid simulations \cite{Stam1999}. Stable Fluids uses a semi-Lagrangian advection scheme and implicit solvers to achieve stability even with large time steps, which is particularly advantageous in real-time applications like video games or interactive simulations. This method is designed with performance in mind, allowing for the simulation of fluid motion without the numerical dissipation that can degrade the accuracy of results over time, which was a common problem in other grid-based methods. While Stable Fluids prioritize performance and stability, particularly in real-time environments, the use of implicit solvers can introduce smoothing effects that reduce the sharpness of fine details in the fluid's motion. Additionally, the method's reliance on grid resolution still limits its ability to represent highly detailed surface interactions, making it a good compromise between realism and performance.
+% \subsubsection{Stable Fluids}
 
-\subsubsection{Particle-In-Cell (PIC) Method}
+% Building on the grid-based approach of the MAC method, the Stable Fluids method addresses key stability issues that arise in fluid simulations \cite{Stam1999}. Stable Fluids uses a semi-Lagrangian advection scheme and implicit solvers to achieve stability even with large time steps, which is particularly advantageous in real-time applications like video games or interactive simulations. This method is designed with performance in mind, allowing for the simulation of fluid motion without the numerical dissipation that can degrade the accuracy of results over time, which was a common problem in other grid-based methods. While Stable Fluids prioritize performance and stability, particularly in real-time environments, the use of implicit solvers can introduce smoothing effects that reduce the sharpness of fine details in the fluid's motion. Additionally, the method's reliance on grid resolution still limits its ability to represent highly detailed surface interactions, making it a good compromise between realism and performance.
 
-The Particle-In-Cell (PIC) method represents a hybrid approach that combines the strengths of particle-based and grid-based methods. Fluid properties are stored on a grid, but the fluid's motion is tracked using particles, which carry velocity and position information only. The particles interact with the grid to update the fluid's velocity field, and the grid provides a stable mean for solving the fluid dynamics equations. PIC is particularly useful for capturing the large-scale motion of fluids, benefiting from the grid's stability while using particles to track detailed fluid behavior. However, the method leans more toward performance over accuracy due to its hybrid nature and ability to handle large-scale fluid movements efficiently. A major downside of PIC is its tendency toward numerical dissipation, where the fluid's kinetic energy is artificially reduced over time, leading to a loss of fine details, especially in turbulent flows. This dissipation occurs because the interpolation between particles and the grid tends to average out small-scale variations in velocity, making PIC less suitable for scenarios where high fidelity and detail are required.
+% \subsubsection{Particle-In-Cell (PIC) Method}
 
-\subsubsection{Fluid-Implicit Particle (FLIP) Method}
+% The Particle-In-Cell (PIC) method represents a hybrid approach that combines the strengths of particle-based and grid-based methods. Fluid properties are stored on a grid, but the fluid's motion is tracked using particles, which carry velocity and position information only. The particles interact with the grid to update the fluid's velocity field, and the grid provides a stable mean for solving the fluid dynamics equations. PIC is particularly useful for capturing the large-scale motion of fluids, benefiting from the grid's stability while using particles to track detailed fluid behavior. However, the method leans more toward performance over accuracy due to its hybrid nature and ability to handle large-scale fluid movements efficiently. A major downside of PIC is its tendency toward numerical dissipation, where the fluid's kinetic energy is artificially reduced over time, leading to a loss of fine details, especially in turbulent flows. This dissipation occurs because the interpolation between particles and the grid tends to average out small-scale variations in velocity, making PIC less suitable for scenarios where high fidelity and detail are required.
 
-The Fluid-Implicit Particle (FLIP) method is an evolution of the PIC method designed to address its numerical dissipation problem \cite{Brackbill1988}. FLIP retains the grid-particle hybrid approach but modifies how particle velocities are updated. Instead of fully relying on the grid's velocity field, FLIP updates particle velocities by applying only the changes in the grid's velocity field, preserving the fluid's kinetic energy and maintaining the detail in small-scale motions. This approach significantly reduces numerical dissipation, making FLIP more oriented toward realism, particularly in simulations that require detailed fluid dynamics like splashing, swirling, and other turbulent effects. However, FLIP is more computationally expensive than PIC and can suffer from instability issues, particularly when dealing with highly turbulent flows. The increased computational cost and the need for careful tuning of simulation parameters to maintain stability make FLIP less ideal for performance-focused applications but suitable for scenarios where high fidelity and detailed fluid behavior are essential.
+% \subsubsection{Fluid-Implicit Particle (FLIP) Method}
 
-\subsubsection{Smoothed Particle Hydrodynamics (SPH)}
+% The Fluid-Implicit Particle (FLIP) method is an evolution of the PIC method designed to address its numerical dissipation problem \cite{Brackbill1988}. FLIP retains the grid-particle hybrid approach but modifies how particle velocities are updated. Instead of fully relying on the grid's velocity field, FLIP updates particle velocities by applying only the changes in the grid's velocity field, preserving the fluid's kinetic energy and maintaining the detail in small-scale motions. This approach significantly reduces numerical dissipation, making FLIP more oriented toward realism, particularly in simulations that require detailed fluid dynamics like splashing, swirling, and other turbulent effects. However, FLIP is more computationally expensive than PIC and can suffer from instability issues, particularly when dealing with highly turbulent flows. The increased computational cost and the need for careful tuning of simulation parameters to maintain stability make FLIP less ideal for performance-focused applications but suitable for scenarios where high fidelity and detailed fluid behavior are essential.
 
-Smoothed Particle Hydrodynamics (SPH) \cite{Muller2003} is a purely particle-based method that models fluids using discrete particles, each representing a small volume of fluid. These particles interact with each other based on smoothing kernels, which define the influence of one particle on its neighbors over a certain distance \cite{Koschier2022}. SPH is particularly well-suited for simulating free-surface flows, such as waves, splashes, and other fluid phenomena where the interaction between fluid particles is complex and highly dynamic. Due to its ability to handle complex boundaries and fluid interfaces naturally, SPH is much more focused on realism, especially in scenarios that require accurate computation of fluid dynamics and interactions. However, SPH is computationally intensive, especially for high-resolution simulations where a large number of particles is required. Additionally, SPH can suffer from stability issues, such as particle clumping or excessive smoothing, which can detract from the realism of the simulation if not carefully managed. These factors make SPH better suited for applications where realism is prioritized over performance, particularly in high-fidelity simulations used in film and scientific research, but not for real-time applications.
+% \subsubsection{Smoothed Particle Hydrodynamics (SPH)}
 
-We can find improvements \cite{Roose2011}, can represent may elements \cite{Iwasaki2010}, either fluid or sediments \cite{Lenaerts2009}, so it is often used to simulate accurately water bodies \cite{Nikeghabali2018}.
+% Smoothed Particle Hydrodynamics (SPH) \cite{Muller2003} is a purely particle-based method that models fluids using discrete particles, each representing a small volume of fluid. These particles interact with each other based on smoothing kernels, which define the influence of one particle on its neighbors over a certain distance \cite{Koschier2022}. SPH is particularly well-suited for simulating free-surface flows, such as waves, splashes, and other fluid phenomena where the interaction between fluid particles is complex and highly dynamic. Due to its ability to handle complex boundaries and fluid interfaces naturally, SPH is much more focused on realism, especially in scenarios that require accurate computation of fluid dynamics and interactions. However, SPH is computationally intensive, especially for high-resolution simulations where a large number of particles is required. Additionally, SPH can suffer from stability issues, such as particle clumping or excessive smoothing, which can detract from the realism of the simulation if not carefully managed. These factors make SPH better suited for applications where realism is prioritized over performance, particularly in high-fidelity simulations used in film and scientific research, but not for real-time applications.
 
-Some other models exist, and are often proposed in OpenFOAM, either using grids, or particles, or an hybrid version \cite{Caretto1973} [ADD OTHER REFERENCES]. But some works tend in directions that are more "procedural" like the use of cellular automata \cite{Boldea2009,Cattaneo2005}, while other toward a more modern approach with the use of deep learning \cite{Tompson2017} [ADD OTHER REFERENCES].
+% We can find improvements \cite{Roose2011}, can represent may elements \cite{Iwasaki2010}, either fluid or sediments \cite{Lenaerts2009}, so it is often used to simulate accurately water bodies \cite{Nikeghabali2018}.
+
+% Some other models exist, and are often proposed in OpenFOAM, either using grids, or particles, or an hybrid version \cite{Caretto1973} [ADD OTHER REFERENCES]. But some works tend in directions that are more "procedural" like the use of cellular automata \cite{Boldea2009,Cattaneo2005}, while other toward a more modern approach with the use of deep learning \cite{Tompson2017} [ADD OTHER REFERENCES].
 
 
 
@@ -701,7 +702,7 @@ In the field of terrain generation, particularly when it comes to modeling under
 One of the most challenging aspects of underwater landscape modeling is capturing the complexity of its structure. Taking the example of coral reefs,these environments feature highly intricate 3D structures, including branching corals, coral mounds, and encrusting forms. These formations are not just surface-level features; they extend into the terrain with voids and cavities, such as caves, grottos, and karst networks, which add layers of complexity to their representation. Accurate modeling of coral reefs demands that the porous and irregular nature of these formations is represented in high detail, which is a significant challenge due to the variability of their structures.
 
 In addition to biological features, underwater landscapes are shaped by geological processes that must also be accurately represented. For example, sedimentary layers and underwater geological formations like seamounts and ridges are important components of the terrain. 
-% Furthermore, volcanic activity, including underwater volcanoes and hydrothermal vents, significantly impacts the landscape and ecosystem, necessitating their inclusion in any comprehensive model of underwater environments.
+% Furthermore, volcanic activity, including underwater volcanos and hydrothermal vents, significantly impacts the landscape and ecosystem, necessitating their inclusion in any comprehensive model of underwater environments.
 
 To gather the data needed for such detailed modeling, advanced measurement techniques are employed. Sonar, including multi-beam echo sounders, and LIDAR (Light Detection and Ranging) are commonly used to capture detailed 3D data of underwater terrains. These technologies allow for the mapping of areas that are otherwise difficult to access, providing the foundational data necessary for accurate terrain generation. Remote sensing technologies also play a major role, enabling the collection of data over large and remote areas, further enhancing the model's accuracy, but represent a significant challenge as the approvision of humans and hardware in these areas is far from easy to achieve.
 
@@ -748,7 +749,7 @@ The procedural generation of underwater landscapes involves the integration of a
 % ** Challenges: modeling coral reefs requires accurately representing the porous and irregular nature of coral formations, which can be challenging due to the high level of detail and variability. \\
 % - Geological features: \\
 % ** Sedimentary layers: representing sedimentary layers and underwater geological formations such as seamounts and underwater ridges. \\
-% ** Volcanic activity: incorporating features such as underwater volcanoes and hydrothermal vents, which affect the landscape and ecosystem. \\
+% ** Volcanic activity: incorporating features such as underwater volcanos and hydrothermal vents, which affect the landscape and ecosystem. \\
 % - Measurement and data collection: \\
 % ** Sonar and LIDAR: using sonar (e.g., multi-beam echo sounders) and LIDAR (Light Detection and Ranging) to collect detailed 3D data of underwater terrain. \\
 % ** Remote sensing: utilizing remote sensing technologies to map and model underwater landscapes, especially in areas that are difficult to access.

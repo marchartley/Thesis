@@ -8,6 +8,18 @@
     \caption{Our method can produce different scenes including coral reef islands and canyons at multiple scales using \glosses{EnvObj} to represent terrain features.}
 	\label{fig:semantic-representation_teaser}
 }
+\abstract
+\label{chap:semantic-representation_abstract}
+% - Terrain generation usually focus on geometry processing \\
+% - Some works include soil materials in their process \\
+% - But no semantic information is preserved \\
+% - Many fields use topologic maps to describe the environment \\
+% ** see Travel books \\
+% - Our method to abstract the geometry and focus on the symbolic \\
+% - ... 
+This chapter introduces a novel method for procedural terrain generation, which leverages a sparse representation of environmental features to produce landscapes that are lightweight, plausible and adaptable to user desires. The method differs from traditional terrain generation approaches by emphasizing multi-scale user interaction and incorporating expert knowledge to model the evolution of terrain features over time. By representing terrain features as discrete entities, or "\glosses{EnvObj}", the method enables dynamic interaction between these entities and their surrounding environment, represented through continuous scalar and vector fields. The generation process is iterative and allows for user-guided modifications at any iteration, including the introduction of environmental events that can influence the terrain's evolution. The proposed approach is particularly flexible, capable of generating both terrestrial and underwater landscapes with a focus on large-scale plausibility and detailed, localized feature representation. 
+\pagebreak 
+
 \minitoc
 
 % topography
@@ -17,7 +29,7 @@
 
 \section{Introduction}
 
-\begin{figure}[ht]
+\begin{figure}%[ht]
     \includegraphics[width=0.5 \linewidth]{./Figures/TopologicMaps/geologyMadagascar.jpeg}
     \includegraphics[width=0.5 \linewidth]{./Figures/TopologicMaps/CliffErosionBidefordAndScalby.jpg}
     \includegraphics[width=0.5 \linewidth]{./Figures/TopologicMaps/PerthCanyon.jpg}
@@ -75,8 +87,27 @@ Because many geographical terms and computer science terms are deceptive cognate
 % - Compare our nomenclature with introduction \\
 % - ... 
 
-\section{Related works}
+\section{State of the art}
 \label{sec:semantic-representation_related-works}
+
+\subsection{Vector modeling}
+...
+\subsubsection{Implicit modeling}
+...
+\subsubsection{Diffusion models}
+...
+
+\subsection{Ecosystems simulation}
+...
+\subsubsection{Environment modeling}
+...
+\subsubsection{Individual process}
+...
+\subsubsection{Multiple entity simulation process}
+...
+\subsubsection{Cellular automata}
+...
+
 Procedural terrain generation has been heavily studied for the last 40 years \cite{Galin2019}. Researches in this topic try to find new solutions to compromise between realism, user control and efficiency \cite{Gain2009}. Using fractal noise parametrized to resemble real landscape has been an important first step \cite{Musgrave1989} as it's a fast and light solution to generate procedurally the appearance of mountains. The lack of user control pushed newer works toward the use of controlled noise by including real DEM in the process through learning \cite{Kapp2020, Brosz2007}, while the rise of deep learning technologies gave higher control to the user through sketches \cite{Guerin2017, Talgorn2018}.
 
 All the algorithms aim to reproduce plausible relief in terrestrial landscapes, mostly limited to alpine landscapes, but a lack of research can be found in almost all other biomes \cite{Smelik2014}. Underwater landscapes generation, for example, has been almost completely absent from literature for many reasons: the difficulty of accessing the area, the lack of visibility under water and the complex physics of underwater geology and biology make the algorithms adapted for this environment scarce. 
@@ -407,7 +438,7 @@ $\Wobj$ is a deformation field defined as the accumulation of flow primitives \c
 \frac{a \eps^2}{2 r_\eps^3} \identity \right] \force
 \end{align*}
 with $a = \frac{1}{4 \pi \mu}$ and $b = \frac{a}{4 (1 - \upsilon)}$ provided $\mu$ a shear modulus and $\upsilon$ a Poisson ratio provided for each Kelvinlet, $r = \p - \q$ for $\p$ the evaluation position and $\q$ the center point of the Kelvinlet, $r_\eps = \sqrt{\norm{r}^2 + \eps^2}$ the regularized distance, $\eps$ a radial scale for the deformation field, $s$ a scaling factor and $\force$ the force vector of the grab operation.
-Deformations defined on curves use $\q = C(\p)$ with $C(\p)$ the closest point on the curve from the point $\p$ and $f = C'(\p)$. We can then define $u_o(\p) = s_\eps(\q - \p) + g_\eps(\p - \q)$.
+Deformations defined on curves use $\q = \closestCp$ with $\closestCp$ the closest point on the curve from the point $\p$ and $f = C'(\p)$. We can then define $u_o(\p) = s_\eps(\q - \p) + g_\eps(\p - \q)$.
 Finally, we can retrieve the velocity field from the objects:
 \begin{align*}
     \Wobj(\p) = \sum_{o \in \objects}^{}{\lambda_o u_o(\p)}
@@ -482,11 +513,11 @@ with $\Delta \depth_e$ the amount of water rising or lowering during an \gloss{G
 
 Subsidence and uplift are the main \glosses{GeoEvent} that create or destroy islands in the long term. These \glosses{GeoEvent} are simulated as a simple factor on the height field of the generated terrain (\cref{fig:semantic-representation_subsidence-event}). Subsidence is not always uniform in the terrain. As such, the user can provide a position $\q$ at which the subsidence is the strongest, the amount of subsidence applied $\Delta \height_e$ and a standard deviation $\std$ for which we can then compute at any point in space and time of the simulation the height of the terrain
 \begin{align*}
-    \height(\p) = \height_0(\p) \cdot \sum_{e \in \events}{\frac{G(\norm{\p - \q})}{G(0)}} \Delta \height_e \tEvent 
+    \height(\p) = \height_0(\p) \cdot \sum_{e \in \events}{G(\norm{\p - \q})} \Delta \height_e \tEvent 
 \end{align*}
 with $G(x)$ the Gaussian function
 \begin{align*}
-    G(x) = {\frac {1}{\std {\sqrt {2\pi }}}} \exp \left(-\frac {x^{2}}{2 \std ^{2}}\right)
+    G(x) = \exp \left(-\frac {x^{2}}{2 \std ^{2}}\right)
 \end{align*}
 
 \begin{figure}
