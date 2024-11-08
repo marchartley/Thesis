@@ -166,6 +166,30 @@
 \zzcommand{\subsubsubsection}[1]{\bigskip\noindent\textit{#1}\nopagebreak\par}
 \zzcommand{\subsubsubsubsection}[1]{\bigskip\noindent\textbf{#1}~}
 
+% \wrapFig{img_path}{width}{label}{caption}
+\zzcommand{\wrapFig}[4]{
+  \wrapFigL{#1}{#2}{#3}{#4}
+}
+
+\zzcommand{\wrapFigLR}[5]{
+  \def\tempwidth{#2}%
+  \ifx\tempwidth\empty
+    \def\tempwidth{0.25}%
+  \fi
+  \begin{wrapfigure}{#5}{\tempwidth \linewidth}
+    \includegraphics[width=\linewidth]{#1}
+    \expandafter\ifx\expandafter\relax\detokenize{#4}\relax\else\caption{#4}\fi
+    \expandafter\ifx\expandafter\relax\detokenize{#3}\relax\else\label{#3}\fi
+  \end{wrapfigure}
+}
+
+\zzcommand{\wrapFigL}[4]{
+  \wrapFigLR{#1}{#2}{#3}{#4}{L}
+}
+\zzcommand{\wrapFigR}[4]{
+  \wrapFigLR{#1}{#2}{#3}{#4}{R}
+}
+
 % \zzcommand{\break}{
 %     % {\centering $*$~$*$~$*$ \par}
 %     \bigskip\bigskip\bigskip
