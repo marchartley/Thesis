@@ -31,20 +31,47 @@ This chapter introduces a novel method for procedural terrain generation, which 
 
 \section{Introduction}
 
-\begin{figure}%[ht]
-    \includegraphics[width=0.5 \linewidth]{./Figures/TopologicMaps/geologyMadagascar.jpeg}
-    \includegraphics[width=0.5 \linewidth]{./Figures/TopologicMaps/CliffErosionBidefordAndScalby.jpg}
-    \includegraphics[width=0.5 \linewidth]{./Figures/TopologicMaps/PerthCanyon.jpg}
-    \includegraphics[width=0.5 \linewidth]{./Figures/TopologicMaps/QasrLibya.jpg}
-    \caption{Four examples of topographic maps used in earth science. From left to right and top to bottom: Sedimentary distribution other Madagascar island \cite{Pratt2017}, evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}, localization of key parameters of Perth Submarine Canyon, Autralia \cite{Huang2014}, and geological features distribution of karstic landscape at Qasr Lybia, Libya \cite{ElAmawy2009}}
-    \label{fig:semantic-representation_presentation}
-\end{figure}
+% \begin{figure}%[ht]
+%     \includegraphics[width=0.5 \linewidth]{./Figures/TopologicMaps/geologyMadagascar.jpeg}
+%     \includegraphics[width=0.5 \linewidth]{./Figures/TopologicMaps/CliffErosionBidefordAndScalby.jpg}
+%     \includegraphics[width=0.5 \linewidth]{./Figures/TopologicMaps/PerthCanyon.jpg}
+%     \includegraphics[width=0.5 \linewidth]{./Figures/TopologicMaps/QasrLibya.jpg}
+%     \caption{Four examples of topographic maps used in earth science. From left to right and top to bottom: Sedimentary distribution other Madagascar island \cite{Pratt2017}, evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}, localization of key parameters of Perth Submarine Canyon, Autralia \cite{Huang2014}, and geological features distribution of karstic landscape at Qasr Lybia, Libya \cite{ElAmawy2009}}
+%     \label{fig:semantic-representation_presentation}
+% \end{figure}
 
 % Slight introduction
 Topographic maps are very useful tools for biologists, geologists or even oceanologists (which would call them "bathymetric charts"). These maps are displayed in 2D but provide 3D information about the altitude (or depth), but can also use symbology to represent the important elements that need to be visible. Map symbols are important in order to extract as much information as possible from a 2D object. In cartography, map symbols are defined as geometric primitives such as points, polylines, polygons, and (more rarely) polyhedrons. These symbols are a simplification of the content of an environment, or an abstraction of the 3D nature of the terrain features as we can see in the examples in \cref{fig:semantic-representation_presentation}. This is useful to understand the relationship between the different features, which may enable to deduce physical rules in the evolution of a terrain. 
 
-% WHo would want it, and why?
 In such way, geologists can study the distribution of peaks in a mountain range, the location of soil types in an area, which in turn allow to deduce possible locations of karst networks, for example. Using the same tools, a biologist may interpret the effect of natural or artificial reefs on coastal erosion, or understand more clearly the interactions inside an ecosystem. Oceanologists may also deduce, using the same strategy, the formation of canyons and fans from old river systems. [A REDIRE]
+
+\wrapFigR{./Figures/TopologicMaps/CliffErosionBidefordAndScalby.jpg}{0.4}{fig:semantic-representation_topo-coasts}{}%{Evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}}
+
+The use of parametric lines representing coasts of islands or continents is heavily used as it is easy to understand the concept of interaction using curves. It also shows an easy way to present the evolution of this interaction with respect to time, as the continuous change of shape can be interpreted by our mind as a moving line, providing a sense of velocity of change. 
+
+While real coastlines are fractal, a representation using a continuous line is sufficient to be able to imagine the scene. A complex representation would be, on the other hand, difficult to read, without any significant improvement on the possibility to understand the reality, harder to draw and edit, and much more subject to change with time and become obsolete.
+
+A simple element like a curve can however contain properties to provide more information which may or may not be displayed on the map. In this example, coastlines have information about the observation year.
+
+
+\wrapFigL{./Figures/TopologicMaps/geologyMadagascar.jpeg}{0.4}{fig:semantic-representation_topo-madagascar}{Sedimentary distribution other Madagascar island \cite{Pratt2017}}
+
+Symbology can be used to represent at the same time large elements like regions with a specific type of soil, and very small and sparse elements like the peak of volcanos or buildings from \cref{fig:semantic-representation_topo-madagascar}. We can find, on a single map, elements described as 0D (sparse points, like volcanos and buildings), 1D (curves like the plate boundaries and shear zones) and 2D (regions like the sedimentary cover and tectonic plates).
+
+The geometric shape used to describe an element may vary depending on the scale at which the topographist wishes to represent it, or depending on the work focus of the map. The observatories are presented as single points (0D) in an island-scale map, but could be found as regions (2D) on city-scale maps. Beaches may be represented as curves, points or regions if the objective is to present their distribution, position, or shapes.
+
+
+\wrapFigR{./Figures/TopologicMaps/QasrLibya.jpg}{0.3}{fig:semantic-representation_topo-karst}{Geological features distribution of karstic landscape at Qasr Lybia, Libya \cite{ElAmawy2009}}
+
+A combination of multiple disciplines can be represented in a single topographic map to provide context about an area. We can find examples of representations with urbanism, geology, hydraulogy, and topography mixed together. Every discipline is linked with all others with relative strength. Urban regions are strongly affected by the geology and topography, while hydraulogy is directly impacted by topography. In this example, the karst geology is influenced by hydraulogy and geology, given that the presence of certain karst features are present in limestone areas with underground river networks. This also means that the presence of karst features can imply the presence (or a high probability of presence) of limestone and underground water flows, without the need to display them on a map. 
+
+Without its 3D representation, a karst expert may be able to visualize in 3D from \cref{fig:semantic-representation_topo-karst} a possible ground surface around dolines and lapies without additional information.
+
+
+\wrapFigL{./Figures/TopologicMaps/PerthCanyon.jpg}{0.4}{fig:semantic-representation_topo-canyon}{Localization of key parameters of Perth Submarine Canyon, Autralia \cite{Huang2014}}
+
+The presence of symbols in a topographic map does not imply the presence of an element in the real world. We can commonly find indicative symbols like the head and foot of a canyon, or the area affected by an element, which have no real geometry. However, the presence of these symbols bring useful information. The head buffer displayed in \cref{fig:semantic-representation_topo-canyon} add an explication on the deformation of the shelf break line. Looking at it in the other direction, the deformation on the shelf break with the canyon implies the presence of a canyon head.
+
 
 By simplifying the surface details in maps or models, we can concentrate more effectively on gaining a deep understanding of the underlying processes that shape the terrain. This focused understanding allows us to apply the insights we gain to a wide variety of terrain types. Essentially, this approach enables us to generalize our findings and apply them across diverse geographical landscapes, facilitating broader and more versatile applications of our knowledge.
 
@@ -52,10 +79,8 @@ Parallelly, terrain artists most of the time sketch the global shape of the terr
 
 Starting from an initial configuration or providing conditions on the desired output terrain, the algorithm we propose will let the different terrain features evolve as a multi-agent system in which the user can apply modifications or new constraints on the state of the environment. The resulting configuration is an environment conform to the constraints given by the user over the distribution of features present in the scene.
 
-% Why it does not already exists?
 As described in the previous chapter, most terrain generation algorithm use the geometry of an initial terrain surface to iteratively apply changes such as noise-based algorithms or erosion simulation. While the introduction of information about some environment variables or properties of the ground may influence the result of an algorithm, the control of the global shape of the terrain is lost as it treat locally the surface, without knowing which feature a certain point on the surface lies on.
 
-% Personal motivation
 The question which led to our solution is the multi-scale user interaction: "Is it possible to provide an interaction mean for terrain generation allowing the user to interact with a small structure like a rock in the same manner as with a large structure like a mountain?". 
 In this work, we want the user to be able to have a large scale representation of the terrain in order to generate a landscape that satisfies his needs while keeping the possibility to apply large modifications.
 In discussion with robotician users, we realise that we want to create a large landscape that can contain interesting configurations, select a smaller region that may have features in a disposition that fits its requirements and then refine again the given region.
