@@ -18,8 +18,6 @@
 % - Our method to abstract the geometry and focus on the symbolic \\
 % - ... 
 This chapter introduces a novel method for procedural terrain generation, which leverages a sparse representation of environmental features to produce landscapes that are lightweight, plausible and adaptable to user desires. The method differs from traditional terrain generation approaches by emphasizing multi-scale user interaction and incorporating expert knowledge to model the evolution of terrain features over time. By representing terrain features as discrete entities, or "\glosses{EnvObj}", the method enables dynamic interaction between these entities and their surrounding environment, represented through continuous scalar and vector fields. The generation process is iterative and allows for user-guided modifications at any iteration, including the introduction of environmental events that can influence the terrain's evolution. The proposed approach is particularly flexible, capable of generating both terrestrial and underwater landscapes with a focus on large-scale plausibility and detailed, localized feature representation. 
-
-[MISSING REFERENCES]: \citep{Alsweis2005} \\ \citep{Alsweis2006}  \\ \citep{Benes2003}  \\ \citep{Chng2011a}  \\ \citep{Chng2011b}  \\ \citep{Cordonnier2017b}  \\ \citep{DoNascimento2018}  \\ \citep{Ecormier-Nocca2021}  \\ \citep{Emilien2015a}  \\ \citep{Gain2017}  \\ \citep{Hammes2001}  \\ \citep{Onrust2001}  \\ \citep{Onrust2017}  \\ \citep{Kapp2020}  \\ \citep{Lane2002}  \\ \citep{Makowski2019}  \\ \citep{Peytavie2024}  \\ \citep{Seidl2012}  \\ \citep{Seidl2011}  \\ \citep{Weier2013}
 \pagebreak 
 
 \minitoc
@@ -41,20 +39,21 @@ This chapter introduces a novel method for procedural terrain generation, which 
 % \end{figure}
 
 % Slight introduction
-Topographic maps are very useful tools for biologists, geologists or even oceanologists (which would call them "bathymetric charts"). These maps are displayed in 2D but provide 3D information about the altitude (or depth), but can also use symbology to represent the important elements that need to be visible. Map symbols are important in order to extract as much information as possible from a 2D object. In cartography, map symbols are defined as geometric primitives such as points, polylines, polygons, and (more rarely) polyhedrons. These symbols are a simplification of the content of an environment, or an abstraction of the 3D nature of the terrain features as we can see in the examples in \cref{fig:semantic-representation_presentation}. This is useful to understand the relationship between the different features, which may enable to deduce physical rules in the evolution of a terrain. 
+Topographic maps are very useful tools for biologists, geologists or even oceanologists (which would call them "bathymetric charts"). These maps are displayed in 2D but provide 3D information about the altitude (or depth), but can also use symbology to represent the elements of different scale order need to be visible for interpreting correctly the context of a map. In cartography, map symbols are defined as geometric primitives such as points, polylines, polygons, and (more rarely) polyhedrons. Map symbols are important in order to extract as much information as possible while being an extreme simplification of the content of an environment, or an abstraction of the 3D nature of the terrain features. 
 
-In such way, geologists can study the distribution of peaks in a mountain range, the location of soil types in an area, which in turn allow to deduce possible locations of karst networks, for example. Using the same tools, a biologist may interpret the effect of natural or artificial reefs on coastal erosion, or understand more clearly the interactions inside an ecosystem. Oceanologists may also deduce, using the same strategy, the formation of canyons and fans from old river systems. [A REDIRE]
+This abstraction is useful to understand the relationship between the different features, which may enable to deduce physical rules in the evolution of a terrain through the process of observation. In fields where systemism is out of reach (earth science, biology, urbanism, ...), the deduction of rules through observation plays an important role in the understanding of phenomena and explication of situations. [A REDIRE VITE]
 
-\wrapFigR{./Figures/TopologicMaps/CliffErosionBidefordAndScalby.jpg}{0.4}{fig:semantic-representation_topo-coasts}{}%{Evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}}
-
-The use of parametric lines representing coasts of islands or continents is heavily used as it is easy to understand the concept of interaction using curves. It also shows an easy way to present the evolution of this interaction with respect to time, as the continuous change of shape can be interpreted by our mind as a moving line, providing a sense of velocity of change. 
-
-While real coastlines are fractal, a representation using a continuous line is sufficient to be able to imagine the scene. A complex representation would be, on the other hand, difficult to read, without any significant improvement on the possibility to understand the reality, harder to draw and edit, and much more subject to change with time and become obsolete.
-
-A simple element like a curve can however contain properties to provide more information which may or may not be displayed on the map. In this example, coastlines have information about the observation year.
+In such way, geologists can study the distribution of peaks in a mountain range, the location of soil types in an area (\cref{fig:semantic-representation_topo-madagascar}), which in turn allow to deduce possible locations of karst networks (\cref{fig:semantic-representation_topo-karst}), for example. Using the same abstraction tools, a biologist may interpret the effect of natural or artificial reefs on coastal erosion (\cref{fig:semantic-representation_topo-coasts}), or understand more clearly the interactions inside an ecosystem. Oceanologists may also deduce, using the same strategy, the formation of canyons and fans from old river systems (\cref{fig:semantic-representation_topo-canyon}). [A REDIRE]
 
 
-\wrapFigL{./Figures/TopologicMaps/geologyMadagascar.jpeg}{0.4}{fig:semantic-representation_topo-madagascar}{Sedimentary distribution other Madagascar island \cite{Pratt2017}}
+
+\wrapFigR{./Figures/TopologicMaps/CliffErosionBidefordAndScalby.jpg}{0.3}{fig:semantic-representation_topo-coasts}{Evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}}
+
+The use of parametric lines representing coasts of islands or continents is heavily used as it is easy to understand the concept of interaction using curves. It also shows an easy way to present the evolution of this interaction with respect to time, as the continuous change of shape can be interpreted by our mind as a moving shape, providing a sense of velocity of change (\cref{fig:semantic-representation_topo-coasts}). While real coastlines are fractal, a representation using a continuous line is sufficient to be able to imagine the real scene. A complex representation would be, on the other hand, difficult to read, without any significant improvement on the possibility to understand the reality, harder to draw and edit, and much more subject to change with time and become obsolete.
+
+Any element, like a coastline, then have an organic evolution over time, just like biologic elements as they can grow, shrink, and morph continuously. We see that one of the main differences of the evolution of organic elements, like the borders of a forest, and non-organic elements, like the borders of an island, reside in the time scale. 
+
+\wrapFigL{./Figures/TopologicMaps/geologyMadagascar.jpeg}{0.4}{fig:semantic-representation_topo-madagascar}{Sedimentary distribution over Madagascar island \cite{Pratt2017}}
 
 Symbology can be used to represent at the same time large elements like regions with a specific type of soil, and very small and sparse elements like the peak of volcanos or buildings from \cref{fig:semantic-representation_topo-madagascar}. We can find, on a single map, elements described as 0D (sparse points, like volcanos and buildings), 1D (curves like the plate boundaries and shear zones) and 2D (regions like the sedimentary cover and tectonic plates).
 
@@ -73,18 +72,21 @@ Without its 3D representation, a karst expert may be able to visualize in 3D fro
 The presence of symbols in a topographic map does not imply the presence of an element in the real world. We can commonly find indicative symbols like the head and foot of a canyon, or the area affected by an element, which have no real geometry. However, the presence of these symbols bring useful information. The head buffer displayed in \cref{fig:semantic-representation_topo-canyon} add an explication on the deformation of the shelf break line. Looking at it in the other direction, the deformation on the shelf break with the canyon implies the presence of a canyon head.
 
 
-By simplifying the surface details in maps or models, we can concentrate more effectively on gaining a deep understanding of the underlying processes that shape the terrain. This focused understanding allows us to apply the insights we gain to a wide variety of terrain types. Essentially, this approach enables us to generalize our findings and apply them across diverse geographical landscapes, facilitating broader and more versatile applications of our knowledge.
+Parallelly, terrain artists most of the time sketch the global shape of the terrain they will model beforehand, such that they can check, before the modeling part, that the consistency and plausibility of the terrain will be valid. Looking at a simplified map before starting the modeling step allows the designer to modify the overall shape of the terrain, at a large scale, before the 3D geometry comes into play, generating too much control points or vertices to be able to deal with. [TO CONTINUE]
 
-Parallelly, terrain artists most of the time sketch the global shape of the terrain they will model beforehand, such that they can check, before the modeling part, that the consistency and plausibility of the terrain will be valid. Looking at a simplified map before starting the modeling step allows the designer to modify the overall shape of the terrain, at a large scale, before the 3D geometry comes into play, generating too much control points or vertices to be able to deal with.
 
-Starting from an initial configuration or providing conditions on the desired output terrain, the algorithm we propose will let the different terrain features evolve as a multi-agent system in which the user can apply modifications or new constraints on the state of the environment. The resulting configuration is an environment conform to the constraints given by the user over the distribution of features present in the scene.
+As seen in the previous examples, by simplifying the surface details in maps or models we can concentrate more effectively on gaining a deep understanding of the underlying processes that shape the terrain. This focused understanding allows us to apply the insights we gain to a wide variety of terrain types. Essentially, this approach enables us to generalize our findings and apply them across diverse geographical landscapes, facilitating broader and more versatile applications of our knowledge.
 
-As described in the previous chapter, most terrain generation algorithm use the geometry of an initial terrain surface to iteratively apply changes such as noise-based algorithms or erosion simulation. While the introduction of information about some environment variables or properties of the ground may influence the result of an algorithm, the control of the global shape of the terrain is lost as it treat locally the surface, without knowing which feature a certain point on the surface lies on.
+In the use case of the generation of underwater environments, the elements to consider in a terrain vary greatly in size. Going from a single coral colony to a volcanic island, the use of topologic map enables biologists, geomorphologists, and hydrologists to study and understand the evolution of an area. The procedural construction of such landscape should fit the tools that the fields expert use in order to be coherent. 
+
+% As described in the previous chapter, most terrain generation algorithm use the geometry of an initial terrain surface to iteratively apply changes such as noise-based algorithms or erosion simulation. While the introduction of information about some environment variables or properties of the ground may influence the result of an algorithm, the control of the global shape of the terrain is lost as it treat locally the surface, without knowing which feature a certain point on the surface lies on.
 
 The question which led to our solution is the multi-scale user interaction: "Is it possible to provide an interaction mean for terrain generation allowing the user to interact with a small structure like a rock in the same manner as with a large structure like a mountain?". 
 In this work, we want the user to be able to have a large scale representation of the terrain in order to generate a landscape that satisfies his needs while keeping the possibility to apply large modifications.
 In discussion with robotician users, we realise that we want to create a large landscape that can contain interesting configurations, select a smaller region that may have features in a disposition that fits its requirements and then refine again the given region.
 In the optic of generating a large scale terrain in which we could focus the generation effort in a certain region, we wished to be able to see a coarse representation that can be computed quickly.
+
+Starting from an initial configuration or providing conditions on the desired output terrain, the algorithm we propose will let the different terrain features evolve as a multi-agent system in which the user can apply modifications or new constraints on the state of the environment. The resulting configuration is an environment conform to the constraints given by the user over the distribution of features present in the scene.
 
 We aim for our terrain generation method to be versatile enough to handle both terrestrial and aquatic environments. This dual capability would allow the method to be applicable to landscapes above the water level, such as mountains and valleys, as well as to submerged terrains, such as oceanic canyons and coral landscapes.
 
@@ -117,38 +119,69 @@ Because many geographical terms and computer science terms are deceptive cognate
 \section{State of the art}
 \label{sec:semantic-representation_related-works}
 
+Procedural terrain generation has been heavily studied for the last 40 years \cite{Galin2019}. Researches in this topic try to find new solutions to compromise between realism, user control and efficiency \cite{Gain2009}. Using fractal noise parametrized to resemble real landscape has been an important first step \cite{Musgrave1989} as it's a fast and light solution to generate procedurally the appearance of mountains. The lack of user control pushed newer works toward the use of controlled noise by including real DEM in the process through learning \cite{Kapp2020}, while the rise of deep learning technologies gave higher control to the user through sketches \cite{Guerin2017, Talgorn2018}.
+
+All the algorithms aim to reproduce plausible relief in terrestrial landscapes, mostly limited to alpine landscapes, but a lack of research can be found in almost all other biomes \cite{Smelik2014}. Underwater landscapes generation, for example, has been almost completely absent from literature for many reasons: the difficulty of accessing the area, the lack of visibility under water and the complex physics of underwater geology and biology make the algorithms adapted for this environment scarce. 
+
+While stochastic noise may be sufficient to model coarsely the ocean floor \cite{Mareschal1989}, this process won't cover areas with the biggest biomass, near shallower waters such as near coasts and islands. These areas, that represent a very small portion of the oceanic surface, are much more complex as many interactions between biolife, air and water are in action.
+
+Due to the impossibility to observe the large-scale and the small-scale of underwater environments, some works related to geology model large structures like the profile shape of the coral reef \cite{Bosscher1992}, simulate its surface growth \cite{Li2021}, or use procedural algorithms for single coral colonies' growth simulation \cite{Abela2015}. We however don't have a mix of the different scales, and neither methods take into account the environment such as the topography or the interaction of different terrain features. This is mainly due to the fact that the evolution time for each scale varies from a span of weeks to thousands of years.
+
 \subsection{Vector modeling}
-...
+
+Recent works have been presenting "feature tools" to correct landscapes from unaccurate DEM (2.5D) using vector-based features that modifies the geometry of the ground and water bodies to fit thir respective 2D satellite images, by explicitely defining the position of natural features like rivers and mountains \cite{Ketabchi2016}. Visible 3D features like vegetation and buildings can also be added in the final result as meshes affected to a single point. This leads to sketch-based applications where features are represented like topographic maps. This solution allows for the manipulation of an existing terrain, guided by a real-world satellite image, but lacks the possibility to completely generate an unseen landscape or for the terrain features to interact between them. Feature tools have been proposed to generate terrains from scratch \cite{Smelik2010a}, but usually require to define in advance the interactions between each feature like a automatically displaying a bridge when a river crosses a road.
+
 \subsubsection{Implicit modeling}
 ...
 \subsubsection{Diffusion models}
 ...
 
 \subsection{Ecosystems simulation}
-...
-\subsubsection{Environment modeling}
-...
-\subsubsection{Individual process}
-...
-\subsubsection{Multiple entity simulation process}
-...
-\subsubsection{Cellular automata}
-...
-
-Procedural terrain generation has been heavily studied for the last 40 years \cite{Galin2019}. Researches in this topic try to find new solutions to compromise between realism, user control and efficiency \cite{Gain2009}. Using fractal noise parametrized to resemble real landscape has been an important first step \cite{Musgrave1989} as it's a fast and light solution to generate procedurally the appearance of mountains. The lack of user control pushed newer works toward the use of controlled noise by including real DEM in the process through learning \cite{Kapp2020}, while the rise of deep learning technologies gave higher control to the user through sketches \cite{Guerin2017, Talgorn2018}.
-
-All the algorithms aim to reproduce plausible relief in terrestrial landscapes, mostly limited to alpine landscapes, but a lack of research can be found in almost all other biomes \cite{Smelik2014}. Underwater landscapes generation, for example, has been almost completely absent from literature for many reasons: the difficulty of accessing the area, the lack of visibility under water and the complex physics of underwater geology and biology make the algorithms adapted for this environment scarce. 
-
-While stochastic noise can be sufficient to model coarsely the ocean floor \cite{Mareschal1989}, this process won't cover areas with the biggest biomass, near shallower waters such as near coasts and islands. These areas, that represent a very small portion of the oceanic surface, are much more complex as many interactions between biolife, air and water are in action.
-
-Due to the impossibility to observe the large-scale and the small-scale of underwater environments, some works related to geology model large structures like the profile shape of the coral reef \cite{Bosscher1992}, simulate its surface growth \cite{Li2021}, or use procedural algorithms for single coral colonies' growth simulation \cite{Abela2015}. We however don't have a mix of the different scales, and neither methods take into account the environment such as the topography or the interaction of different terrain features. This is mainly due to the fact that the evolution time for each scale varies from a span of weeks to thousands of years.
-
-Recent works have been presenting "feature tools" to correct landscapes from unaccurate DEM (2.5D) using vector-based features that modifies the geometry of the ground and water bodies to fit thir respective 2D satellite images, by explicitely defining the position of natural features like rivers and mountains \cite{Ketabchi2016}. Visible 3D features like vegetation and buildings can also be added in the final result as meshes affected to a single point. This leads to sketch-based applications where features are represented like topographic maps. This solution allows for the manipulation of an existing terrain, guided by a real-world satellite image, but lacks the possibility to completely generate an unseen landscape or for the terrain features to interact between them. Feature tools have been proposed to generate terrains from scratch \cite{Smelik2010a}, but usually require to define in advance the interactions between each feature like a automatically displaying a bridge when a river crosses a road.
+The domain of ecosystem simulation is mainly focused on the simulation of plant growth, so this state of the art will be mostly based on it. 
 
 In an ecosystem, every element within the system has an impact on its surroundings, and accurately simulating physical properties like shading, heat, and humidity can require immense computational power. To address this, instead of simulating these properties individually for each object, they can be represented as scalar fields that span the entire scene. These scalar fields, which may represent temperature, humidity, or occlusion, are locally influenced by nearby objects and terrain features, such as trees casting shadows or buildings radiating heat. This approach, as described in \cite{Grosbellet2016, Guerin2016a}, allows for the environment's physical properties to be computed in a more efficient manner. By simplifying the complex interactions into these localized scalar fields, they called environmental objects, their method provides a scalable system that can handle large and detailed scenes. This system effectively renders scene details, such as snow accumulation or leaf distribution, in a way that is visually plausible, ensuring realistic results without the need for exhaustive simulations. 
 %In a similar way, other works represent the wind flow as a composition of local vector fields \cite{Wejchert1991}, avoiding complex fluid simulation while providing user control in a lightweight model. We extend these works by incorporating a time-evolution system such that the scene can be dynamic.
 In a similar approach, parallely Wejchert and Haumann \cite{Wejchert1991} and Sims \cite{Sims1990} represent wind flow as a composition of local vector fields, known as "flow primitives", which can be combined to simulate complex fluid behavior. This method simplifies the computation by avoiding full fluid simulations, instead offering a lightweight model that allows for intuitive user control over the flow dynamics.
 By combining these approaches, we can create dynamic ecosystems where environmental effects and fluid flows interact in a plausible manner, while requiring a low computation effort and preserving a high user control.
+
+\subsubsection{Vegetation modeling}
+\citep{Lane2002} Uses L-System to create a forest that then starts a self-thining process, which mean that larger and more mature vegetation will eliminate weaker species around them, simulating shadowing. The propagation of a given specie is given using a kernel, controlling whever two individuals should prefer being close to each other or far away instead. This kernel is provided for each pair of species, simulating cohabitation and competition. The simulation parameters are fine-tuned by hand to resemble to biologically coherent scenes. \\ 
+
+
+\subsubsection{Radius-based instantiation}
+\citep{Benes2003} Simulate an ecosystem as multiple agents with different behaviours \\ 
+
+\citep{Alsweis2005} Light competition for growth of trees \\ 
+
+\citep{Alsweis2006} Optimisation of the previous method with (aperiodic) Wang Tiles \\ 
+
+\citep{Weier2013} Speeds the rendering time by precomputing a Poisson Disk Distribution in Wang tiles. This method allows for an aperiodic distribution without the need to compute on the fly the position of individual trees. \\
+
+\citep{DoNascimento2018} Propose an adaptation of distance-based instantiation (initially proposed by \citep{Hammes2001}) for the GPU by classifying the vegetation in 3 classes depending on their height (L1, L2, L3). A first instantiation is done for the larger vegetation (L1) on a $N \times N$ buffer, which influence the position of the L2 elements on a $2N \times 2N$ to simulate shading, and identically the instantiation on a $4N \times 4N$ buffer for L3 elements. \\ 
+
+\citep{Emilien2015a} Focuses their work on point distribution reproduction from examples. \\ 
+
+\citep{Makowski2019}  \\ 
+\citep{Seidl2012}  \\ 
+\citep{Seidl2011}  \\ 
+...
+
+\subsubsection{Addition of abiotic factors}
+
+\citep{Gain2017} Improves the previous method by combining point distribution with terrain analysis to extract rules, meeting a balance between user control and realism. \\ 
+
+\citep{Kapp2020}  Learn the density of L1, L2 and L3 layers through deep learning, in order to avoid the use of classic statistical models that cannot capture the fine-scale complexities. Then the distribution of each species is done using the classic point distribution following an adaptability function taking into account abiotic factors. \\ 
+
+\citep{Chng2011a} and \citep{Chng2011b} Very close to our system, using rules between agents to grow/evolve. But only available for point-objects \\ 
+
+\citep{Cordonnier2017b} Consider the environment to have moisture, luminosity and temperature, then describe in each cell a density of population (Eulerian method) instead of individuals. \\ 
+
+\citep{Peytavie2024a} Continues previous methods, using abiotic factors from the map, and add the effect of the deposition of dead woods (snags, logs,humus, ...) to modify the abiotic factors. From this, the inclusion of events like fires and diseases have an indirect impact on the ecosystem. \\ 
+
+The inclusion of fauna in the process is very rare \cite{Ecormier-Nocca2021}.
+
+\midConclusion
+
 
 
 \section{Description of the method}
