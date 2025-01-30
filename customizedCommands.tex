@@ -3,6 +3,8 @@
 \LetLtxMacro\OldSubsection\subsection
 \LetLtxMacro\OldSubsubsection\subsubsection
 
+\hbadness = 99999
+
 % Define \zzcommand for conditional commands
 \def\zzcommand#1{\let#1\undefined\newcommand#1}
 
@@ -30,7 +32,8 @@
 	    \Oldincludegraphics[#1]{#2}
 	\end{adjustbox}
 }
-\newcommand{\inset}[3][0.2\linewidth]{
+% \inset{inset size}{path to main image}{path to inset image}
+\zzcommand{\inset}[3][0.2\linewidth]{
     \noindent\stackinset{r}{0.1cm}{b}{0.1cm}{
         \colorbox{white}{
             \includegraphics[width=#1]{#3}
@@ -39,13 +42,25 @@
 	{\includegraphics{#2}}
 }
 
-\newcommand{\teaser}[1]{
+\let\origfigure\figure
+\let\endorigfigure\endfigure
+
+\renewenvironment{figure}[1][tbph]{%
+    \origfigure[#1]%
+    \centering
+}{%
+    \endorigfigure
+}
+
+% \teaser{/* Inside commands of the figure* environment */}
+\zzcommand{\teaser}[1]{
     \begin{figure*}[ht]
         \centering
         #1
     \end{figure*}
 }
 
+% \minitoc
 \def\minitoc{
 	\etocsettocstyle{\section*{\contentsname}}{}
 	\localtableofcontents
@@ -59,29 +74,25 @@
 
 % \setkeys{Gin}{width=\linewidth}
 
-\renewcommand{\cellalign}{cl}
+\zzcommand{\cellalign}{cl}
 \newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
 
 \DeclareCiteCommand{\cite}[\mkbibparens]
   {\usebibmacro{prenote}\usebibmacro{cite:init}}
-  {\usebibmacro{citeindex}
-  %  \printtext[bibhyperref]{[\thefield{entrykey}] \usebibmacro{cite}}}
+  {\usebibmacro{citeindex}%
   \printtext[bibhyperref]{\usebibmacro{cite}}}
   {\multicitedelim}
   {\usebibmacro{postnote}}
 
 \newbibmacro*{citefullbody}{
-  \printnames{labelname}
-  \setunit{\addcomma\space}
-  \textit{\printfield[]{title}} % remove quotes
-  % \textit{\printfield[citetitle]{title}}
-  % \setunit{\nameyeardelim}
-  (\printfield{year})
+  \printnames{labelname}%
+  \setunit{\addcomma\space}%
+  \textit{\printfield[]{title}}~(\printfield{year})
 }
 
 \DeclareCiteCommand{\citep}
 {\usebibmacro{prenote}\usebibmacro{cite:init}}
-{\usebibmacro{citeindex}
+{\usebibmacro{citeindex}%
 \printtext[bibhyperref]{\usebibmacro{citefullbody}}}
 {\multicitedelim}
 {\usebibmacro{postnote}}
@@ -89,8 +100,7 @@
 
 \DeclareCiteCommand{\citeProgram}[\mkbibparens]
   {\usebibmacro{prenote}\usebibmacro{cite:init}}
-  {\usebibmacro{citeindex}
-   \printtext[bibhyperref]{\mkbibemph{\printfield{title}}, \printdate}}
+  {\usebibmacro{citeindex}\printtext[bibhyperref]{\mkbibemph{\printfield{title}},~\printdate}}
   {\multicitedelim}
   {\usebibmacro{postnote}}
 
@@ -101,12 +111,55 @@
 
 \setlength\bibitemsep{1.5\itemsep}
 
+\newcounter{AltTextImageCurrentSide}
 
 \newenvironment{Itemize}
-  {\begin{itemize}[label={}, leftmargin=0em, itemindent=3.0em, itemsep=0em, topsep=0em]} %, left=2em, itemsep=0.5em]} % Custom settings
-  {\end{itemize}}
+{    
+  \setcounter{AltTextImageCurrentSide}{0}
+  \begin{itemize}[label={}, leftmargin=0em, itemindent=3.0em, itemsep=0em, topsep=0em] %, left=2em, itemsep=0.5em]} % Custom settings
+}
+{\end{itemize}}
+
 % Define new command \Item that applies italics to the title only
+% \Item{text}
 \zzcommand{\Item}[1]{\item \textit{#1}}
+
+% \AltTextImageR{item content}{image path}{caption}{label}
+\zzcommand{\AltTextImageR}[4]{% 
+  \setcounter{AltTextImageCurrentSide}{1}
+  \begin{minipage}[t]{0.65\linewidth}
+    #1
+  \end{minipage}%
+  \hfill % Add horizontal space between text and image
+  \begin{minipage}[t]{0.30\linewidth}
+    \includegraphics[width=\linewidth, valign=t]{#2}
+    \captionof{figure}{#3}
+    \label{#4}
+  \end{minipage}%
+}
+% \AltTextImageL{item content}{image path}{caption}{label}
+\zzcommand{\AltTextImageL}[4]{% 
+  \setcounter{AltTextImageCurrentSide}{0}
+  \begin{minipage}[t]{0.30\linewidth}
+    \includegraphics[width=\linewidth, valign=t]{#2}
+    \captionof{figure}{#3}
+    \label{#4}
+  \end{minipage}%
+  \hfill % Add horizontal space between text and image
+  \begin{minipage}[t]{0.65\linewidth}
+      #1
+  \end{minipage}%
+}
+% \AltTextImage{item content}{image path}{caption}{label}
+\zzcommand{\AltTextImage}[4]
+{
+  \stepcounter{AltTextImageCurrentSide}  % Increment the counter
+  \ifodd\value{AltTextImageCurrentSide}  % Check if the counter is odd
+      \AltTextImageR{#1}{#2}{#3}{#4}
+  \else
+      \AltTextImageL{#1}{#2}{#3}{#4}
+  \fi
+}
 
 \lstset {
     language=C++,
@@ -135,35 +188,25 @@
 }
 
 
-
+% \gloss{entry name}
 \zzcommand{\gloss}[1]{\ifglsentryexists{gls-#1}{\glsentryname{gls-#1}\ifcsdef{inheading}{}{{\glsadd{gls-#1}}}}{[XXXX]}}
+% \glosses{entry name}
 \zzcommand{\glosses}[1]{\ifglsentryexists{gls-#1}{\glsentrylongpl{gls-#1}\ifcsdef{inheading}{}{{\glsadd{gls-#1}}}}{[XXXX]}}
+% \Gloss{entry name}
 \zzcommand{\Gloss}[1]{\ifglsentryexists{gls-#1}{\Glsentryname{gls-#1}\ifcsdef{inheading}{}{{\glsadd{gls-#1}}}}{[XXXX]}}
+% \Glosses{entry name}
 \zzcommand{\Glosses}[1]{\ifglsentryexists{gls-#1}{\Glsentrylongpl{gls-#1}\ifcsdef{inheading}{}{{\glsadd{gls-#1}}}}{[XXXX]}}
 \zzcommand{\glsnamefont}[1]{\makefirstuc{#1}}
 
-
-
-% \zzcommand{\gloss}[1]{\glsentryname{gls-#1}} % \ifcsdef{inheading}{\glsentryname{gls-#1}}{\ifglsentryexists{#1}{\gls{#1}\glsadd{gls-#1}}{\gls{gls-#1}}}}
-% \zzcommand{\glosses}[1]{\glsentrylongpl{gls-#1}} % \ifcsdef{inheading}{\glsentrylongpl{gls-#1}}{\ifglsentryexists{#1}{\glspl{#1}\glsadd{gls-#1}}{\glspl{gls-#1}}}}
-% \zzcommand{\Gloss}[1]{\Glsentryname{gls-#1}} % \ifcsdef{inheading}{\Glsentryname{gls-#1}}{\ifglsentryexists{#1}{\Gls{#1}\glsadd{gls-#1}}{\Gls{gls-#1}}}}
-% \zzcommand{\Glosses}[1]{\Glsentrylongpl{gls-#1}} % \ifcsdef{inheading}{\Glsentrylongpl{gls-#1}}{\ifglsentryexists{#1}{\Glspl{#1}\glsadd{gls-#1}}{\Glspl{gls-#1}}}}
-% \zzcommand{\glsnamefont}[1]{\makefirstuc{#1}}
-
-% \let\oldchapter\chapter
-% \renewcommand{\chapter}[1]{
-%   \begingroup
-%   \newcommand{\inheading}{}
-%   \oldchapter{#1}
-%   \endgroup
-% }
-
-\renewcommand{\eqref}[1]{\cref{#1}}
+% \eqref{label}
+\zzcommand{\eqref}[1]{\cref{#1}}
 
 \zzcommand{\to}{\mapsto}
 
 
+% \subsubsubsection{title}
 \zzcommand{\subsubsubsection}[1]{\bigskip\noindent\textit{#1}\nopagebreak\par}
+% \subsubsubsubsection{title}
 \zzcommand{\subsubsubsubsection}[1]{\bigskip\noindent\textbf{#1}~}
 
 % \wrapFig{img_path}{width}{label}{caption}
@@ -171,6 +214,7 @@
   \wrapFigL{#1}{#2}{#3}{#4}
 }
 
+% \wrapFigLR{img_path}{width}{label}{caption}{|L,R|}
 \zzcommand{\wrapFigLR}[5]{
   \def\tempwidth{#2}%
   \ifx\tempwidth\empty
@@ -184,28 +228,24 @@
   \end{wrapfigure}
 }
 
+% \wrapFigL{img_path}{width}{label}{caption}
 \zzcommand{\wrapFigL}[4]{
   \wrapFigLR{#1}{#2}{#3}{#4}{L}
 }
+% \wrapFigR{img_path}{width}{label}{caption}
 \zzcommand{\wrapFigR}[4]{
   \wrapFigLR{#1}{#2}{#3}{#4}{R}
 }
-
-% \zzcommand{\break}{
-%     % {\centering $*$~$*$~$*$ \par}
-%     \bigskip\bigskip\bigskip
-% }
 
 \zzcommand{\abstract}
 {
     \section*{Abstract}
 }
 
+% \shortAbstract{text}
 \zzcommand{\shortAbstract}[1]
 {
-  % \bigskip\noindent\textbf{Abstract} 
   \noindent
-  % \par
   \textit{#1}
   \bigskip
 }
@@ -213,9 +253,28 @@
 \zzcommand{\smallConclusion}
 {
   \bigskip
-  }
+}
   
 \zzcommand{\midConclusion}
 {
   \bigskip\bigskip\bigskip
+}
+
+\ExplSyntaxOn
+\NewDocumentCommand{\appendtographicspath}{m}
+ {
+  \tl_if_exist:cF { Ginput@path } { \tl_new:c { Ginput@path } }
+  \tl_gput_right:cn {Ginput@path} { #1 }
+ }
+\NewDocumentCommand{\prependtographicspath}{m}
+ {
+  \tl_if_exist:cF { Ginput@path } { \tl_new:c { Ginput@path } }
+  \tl_gput_left:cn {Ginput@path} { #1 }
+ }
+\ExplSyntaxOff
+
+% \resetgraphicspath
+\zzcommand{\resetgraphicspath}
+{
+  \graphicspath{}
 }
