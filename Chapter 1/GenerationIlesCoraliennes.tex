@@ -93,7 +93,7 @@ By combining user input with the adaptive power of the cGAN, our tool generates 
 
 \begin{figure}[H]
     \includegraphics[]{pipeline_full.pdf}
-    \caption{A diagram showing the pipeline of the method [TODO]}
+    \caption{Our method is splitted in three interleaved sections: the generation process (\cref{sec:coral-island_example-generation}) that create a pairs of height fields and labelled maps of an island from sketches, the model training (\cref{sec:coral-island_cGAN-training}) that use a synthetic dataset from the previous process to obtain a cGAN model that generates height fields from labelled maps to remove the constraints embedded in the initial generation process. Finally, the inference process (\cref{sec:coral-island_results}) uses the trained cGAN to generate the final height fields, including the coral generation process automatically. }
 \end{figure}
 Our system for generating coral reef islands combines user-driven sketching, procedural techniques, and deep learning to create realistic and varied island terrains. The process begins with the user sketching key features of the island, such as its overall shape and profile. This sketching process allows the user to define the layout of the island in an intuitive way, providing control over the placement of important elements like the island borders, beaches, lagoons, and coral reefs.
 
@@ -108,6 +108,7 @@ This method provides a simple and flexible approach to island generation, enabli
 
 
 \section{State of the art}
+\label{sec:coral-island_SotA}
 Procedural generation of terrain has been a well-researched area in computer graphics and simulations, where the goal is to create large, realistic landscapes with minimal manual input. Various methods have been developed over the years to generate terrains automatically, from noise-based approaches to physically-based erosion simulations, sketch-driven methods, and more recently, deep learning techniques.
 
 However, each of these techniques has its strengths and limitations, particularly when it comes to modeling coral reef islands. Coral islands present unique challenges due to the combination of long-term geological processes (such as subsidence and coral reef growth) and environmental interactions (like erosion caused by wind and waves). In this section, we review the key techniques that have been applied to terrain generation, highlight their limitations for coral island formation, and position our work as an approach that addresses these challenges.
@@ -208,11 +209,11 @@ Our approach goes beyond the randomness of noise-based generation by incorporati
 
 In recent years, deep learning has become a groundbreaking tool in computer graphics, image processing, and procedural content generation. Deep learning refers to a class of machine learning techniques that use artificial neural networks with multiple layers to model complex patterns in data. By training these networks on large datasets, deep learning models can learn to generate new, realistic data by identifying the underlying relationships between inputs and outputs.
 
-\begin{figure}
-    \includegraphics[width=0.9 \linewidth]{placeholder.pdf}
-    \caption{A GAN is able to generate a unique image that is similar to its training dataset. The cGAN takes another input $c$ that contains the additional information about the desired output.}
-    \label{fig:coral-island_GAN-example}
-\end{figure}
+% \begin{figure}
+%     \includegraphics[width=0.9 \linewidth]{placeholder.pdf}
+%     \caption{A GAN is able to generate a unique image that is similar to its training dataset. The cGAN takes another input $c$ that contains the additional information about the desired output.}
+%     \label{fig:coral-island_GAN-example}
+% \end{figure}
 
 
 In terrain generation, deep learning is particularly well-suited for tasks that require the creation of complex, natural-looking landscapes. Traditional procedural generation techniques like noise functions and erosion simulations can be powerful, but they often struggle to produce the complexity and realism of natural terrains due to their reliance on predefined rules and algorithms. In contrast, deep learning models, especially Generative Adversarial Networks (GANs), can learn from real-world data, enabling them to generate realistic terrains that mimic the diversity and complexity found in nature.
@@ -220,7 +221,7 @@ In terrain generation, deep learning is particularly well-suited for tasks that 
 GANs are a particularly effective deep learning architecture for terrain generation. A GAN consists of two neural networks: a generator, which creates new data samples, and a discriminator, which evaluates whether the generated samples are real or fake compared to a set of training data. Through this adversarial process, the generator gradually improves its ability to produce realistic examples, while the discriminator becomes better at distinguishing real from fake data. This feedback loop allows GANs to generate highly realistic and detailed terrain features by learning from large datasets of existing terrains.
 
 \begin{figure}
-    \includegraphics[width=0.9 \linewidth]{placeholder.pdf}
+    \includegraphics[width=0.9 \linewidth]{Guerin_example_cgan.png}
     \caption{\cite{Guerin2017} trains a GAN from real world data, such that a sketch drawn by the user gets transformed into a plausible height field respecting the user constraints.}
     \label{fig:coral-island_Guerin2017-example}
 \end{figure}
@@ -541,7 +542,7 @@ One of the key strengths of this method is its flexibility as the subsidence and
 
 
 \section{Conditional Generative Adversarial Networks}
-\label{sec:coral-island_cGAN}
+\label{sec:coral-island_cGAN-training}
 
 In this section, we introduce the use of a Conditional Generative Adversarial Network (cGAN), specifically the pix2pix model, to enhance the island generation process by increasing the variety and flexibility of terrains. While the initial procedural algorithm can create numerous island examples, cGAN provides additional flexibility in generating more complex terrain without the rigid constraints of the first algorithm that stem from our initial assumptions.
 
@@ -642,7 +643,9 @@ This configuration allows the process to create quickly a large quantity of data
 
 \subsubsection{Data augmentation}
 \begin{figure}
-    \includegraphics{placeholder.pdf}
+    \includegraphics[width=0.3\linewidth]{6_features.png}
+    \includegraphics[width=0.3\linewidth]{6_heightmaps.png}
+    \includegraphics[width=0.3\linewidth]{6_results.png}
     \caption{By applying our three data augmentation functions, the deep learning model learns to overcome some constraints previously set by the initial algorithm: (A) the translation removes the constraint to have an island ultimately at the center of the map, (B) the directional scaling, typical from image processing, reduces the symmety constraint on the results and (C) the copy-paste unlock the possibility to obtain more than one island per map.}
     \label{fig:coral-island_data-augmentation-examples}
 \end{figure}
@@ -650,16 +653,17 @@ This configuration allows the process to create quickly a large quantity of data
 To enhance the variety of the dataset and improve the model's ability to generalize, we apply several data augmentation techniques:
 \begin{Itemize}
     \AltTextImage{
-        \Item {Translation:} Since the original algorithm always centers the island, we translate the islands within the image to remove this constraint. This ensures that the cGAN can generate islands in any position within the frame.}
-        {placeholder.pdf}{}{fig:coral-island_data-augmentation-translation}
+        \Item {Translation:} Since the original algorithm always centers the island, we translate the islands within the image to remove this constraint. This ensures that the cGAN can generate islands in any position within the frame. }
+        {translation_example.png}{}{fig:coral-island_data-augmentation-translation}
 
     \AltTextImage{
-        \Item {Directional scaling:} By scaling the terrain in one direction, we create elongated islands that resemble corridors or archipelagos, adding another layer of diversity to the dataset.}
-        {placeholder.pdf}{}{fig:coral-island_data-augmentation-scaling}
+        \Item {Directional scaling:} By scaling the terrain in one direction, we create elongated islands that resemble corridors or archipelagos, adding another layer of diversity to the dataset. Such islands are usually found on tectonic plates convergence boundaries, creating island arcs with high density of volcanic centers like the Izu-Bonin-Mariana arc system. }
+        {Babeldaob_island.png}{Babeldaob Island, in the Caroline Islands.}{fig:coral-island_data-augmentation-scaling}
+        % {scaling_example.png}{}{fig:coral-island_data-augmentation-scaling}
 
     \AltTextImage{
         \Item {Copy-paste:} In some cases, we combine multiple islands into a single sample, ensuring they do not overlap. The regions not covered by any island are assigned the abyss ID. Although this approach ensures non-overlapping regions, future work could explore using blending techniques to position islands more closely without the risk of overlap.}
-        {placeholder.pdf}{}{fig:coral-island_data-augmentation-copy-paste}
+        {copy_paste_example.png}{}{fig:coral-island_data-augmentation-copy-paste}
 \end{Itemize}
 
 All augmentation techniques are applied both to the height field and the labeled map simultaneously to ensure consistency between the input (the labeled map) and the output (the height field).
@@ -682,40 +686,52 @@ The labeled map can be used for post-processing tasks, such as:
 % However, it's important to note that the current implementation of the cGAN does not allow for user control during the generation process itself. The model takes the labeled map as input and outputs a height field without any additional parameters that the user can adjust in real-time. While this limits user interaction, the resulting terrains are still varied and flexible thanks to the data diversity learned during training.
 
 \section{Results}
+\label{sec:coral-island_results}
 
 \subsection{Control}
 
 \begin{figure}[H]
-    \includegraphics[width=.3 \linewidth]{features_2.png}
-    \includegraphics[width=.3 \linewidth]{heightmaps_2.png}
-    \includegraphics[width=.3 \linewidth]{results_2.png}
-    \includegraphics[width=.3 \linewidth]{features_1.png}
-    \includegraphics[width=.3 \linewidth]{heightmaps_1.png}
-    \includegraphics[width=.3 \linewidth]{results_1.png}
+    \includegraphics[width=.3 \linewidth]{2_features.png}
+    \includegraphics[width=.3 \linewidth]{2_heightmaps.png}
+    \includegraphics[width=.3 \linewidth]{2_results.png} 
+    \includegraphics[width=.3 \linewidth]{1_features.png}
+    \includegraphics[width=.3 \linewidth]{1_heightmaps.png}
+    \includegraphics[width=.3 \linewidth]{1_results.png}
     \caption{An identical labelled map yield similar height fields over multiple inferences from the model, even after modifying the subsidence factor (visible in the luminosity of the input image).}
     \label{fig:coral-island_results1}
 \end{figure}
 \begin{figure}[H]
-    \includegraphics[width=.3 \linewidth]{features_3.png}
-    \includegraphics[width=.3 \linewidth]{heightmaps_3.png}
-    \includegraphics[width=.3 \linewidth]{results_3.png}
-    % \includegraphics[width=.3 \linewidth]{features_4.png}
-    % \includegraphics[width=.3 \linewidth]{heightmaps_4.png}
-    % \includegraphics[width=.3 \linewidth]{results_4.png}
+    \includegraphics[width=.3 \linewidth]{3_features.png}
+    \includegraphics[width=.3 \linewidth]{3_heightmaps.png}
+    \includegraphics[width=.3 \linewidth]{3_results.png}
+    % \includegraphics[width=.3 \linewidth]{4_features.png}
+    % \includegraphics[width=.3 \linewidth]{4_heightmaps.png}
+    % \includegraphics[width=.3 \linewidth]{4_results.png}
     \caption{Using a generative neural network allows a higher level of tolerence on the user input. Here the user used an fuzzy brush to draw the labelled map, resulting in some pixels that are inconsistent with the dataset and unlogical island layouts (some small "abyss" regions [red] are found between "beach" [green], "lagoon" [cyan] and "reef" [blue]). The model ignores the inconsistencies. }
     \label{fig:coral-island_results2}
+\end{figure}
+\begin{figure}[H]
+    \includegraphics[width=.3 \linewidth]{DinoIsland_features.png}
+    \includegraphics[width=.3 \linewidth]{DinoIsland_heightmaps.png}
+    \includegraphics[width=.3 \linewidth]{DinoIsland_results.png}
+    \caption{Without constraints on the generation, the user may use unrealistic layout and the neural network will however output a plausible result.}
+    \label{fig:coral-island_results_dino}
 \end{figure}
 
 
 \subsection{Performances}
-The inference time for a single input image of dimension $256 \times 256$ is constant whatever the complexity of the scene. Using the NVIDIA GeForce GTX 1650 Ti GPU, the inference time measured is 5ms (std 1.1ms). 
+The inference time for a single input image of dimension $256 \times 256$ is constant whatever the complexity of the scene. Using the NVIDIA GeForce GTX 1650 Ti GPU with Python 3.10 and PyTorch version 2.5.1+cu121, the inference time measured is 5ms (std 1.1ms). 
+
+The Python script for the initial island dataset generation is poorly optimized and takes about 2.5s per island of size $256 \times 256$ as the parallelization does not take place here. 
+
+We not only show that using a neural network reduces the constraints on the generation process, but also that the execution time is only dependant on the network architecture, without influence from the dataset generation algorithm. 
 
 \subsection{Validation}
 
 \begin{figure}
     \includegraphics[width = 0.45\linewidth]{Mayotte-example.png}
-    \includegraphics[width = 0.45\linewidth]{results_5.png}
-    \caption{Comparison between of real (right) and synthetic (left) islands.}
+    \includegraphics[width = 0.45\linewidth]{5_results.png}
+    \caption{Comparison between of real (right) and synthetic (left) islands of Mayotte.}
 \end{figure}
 
 
