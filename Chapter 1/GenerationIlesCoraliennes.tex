@@ -261,7 +261,7 @@ In generating synthetic coral reef islands, we adopt a set of simplifying assump
     \AltTextImage{
         \Item{Radial symmetry and radial arrangement of features:} Volcanic islands often begin as circular landmasses due to the radial uplift of magma from beneath the Earth's mantle. Erosion processes further smooth out sharp edges over time, reinforcing this initial symmetry. In our approach, we assume islands start with an approximately circular shape, providing a straightforward basis for terrain generation. 
         The key island features like the island body, beaches, lagoons, and coral reefs, are arranged in concentric regions around the island center. This radial arrangement aligns with natural geological progression from the island to the surrounding reef.}
-        {placeholder.pdf}{Aerial view of an island.}{fig:coral-island_radial-symmetry-assumption}
+        {Kauai_island.png}{Aerial view of Kauai island, Hawaii.}{fig:coral-island_radial-symmetry-assumption}
 % This assumption reflects real-world volcanic islands, such as those in the Pacific, where erosion gradually shapes the initial circular form. Starting with a radial structure simplifies the generation and serves as a solid foundation for further deformation.
 
     % \Item{Radial arrangement of features:} The key island features like the island body, beaches, lagoons, and coral reefs, are arranged in concentric regions around the island center. This radial arrangement aligns with natural geological progression from the island to the surrounding reef.
@@ -273,17 +273,17 @@ In generating synthetic coral reef islands, we adopt a set of simplifying assump
 
         \Item{Independence of islands:} In this model, each island is treated as an independent entity, meaning its terrain does not influence neighboring islands. This allows multiple islands to be generated and placed freely without concern for terrain overlap or interaction. }
 % This assumption reflects the typical formation of islands in archipelagos, where individual islands are geographically separate. It simplifies the generation of multi-island scenes by avoiding unnecessary inter-island interactions.
-        {placeholder.pdf}{Outlines deformations due to wind and waves}{fig:coral-island_wind-deformation-assumption}
+        {Mauritius_wind.png}{Mauritius is deformed. We see a deep slope on the west side while the east side has a gentle slope. The wind rose, showing in which direction the mean wind velocity is pointing to, is correlated with this deformation. }{fig:coral-island_wind-deformation-assumption}
 
-    \AltTextImage{
-        \Item{Uniform profile shape:} We assume that the vertical profile of the island remains relatively uniform, meaning that the terrain's cross-section from the center outward is similar in every direction. While not accurate, this allows for consistent scaling of the profile in all directions, ensuring that the island's shape remains coherent and plausible.}
-        {placeholder.pdf}{Typical profile of an island}{fig:coral-island_uniform-profile-assumption}
+    % \AltTextImage{
+        \Item{Uniform profile shape:} We assume that the vertical profile of the island remains relatively uniform, meaning that the terrain's cross-section from the center outward is similar in every direction. While not accurate, this allows for consistent scaling of the profile in all directions, ensuring that the island's shape remains coherent and plausible. %}
+        % {placeholder.pdf}{Typical profile of an island}{fig:coral-island_uniform-profile-assumption}
 % Although real-world islands can have local variations in their profile, this uniformity makes the generation process more manageable and produces consistent terrain features.
 
-    \AltTextImage{
+    % \AltTextImage{
         \Item{Coral growth at constant depth:} Coral reefs require sunlight to thrive, which limits their growth to depths where light penetrates the water. In our model, coral growth is constrained to this depth range, with corals maintaining their proximity to the water surface as the volcanic island subsides.
-        \Item{Subsidence and coral growth:} As the volcanic island subsides, coral reefs grow to keep pace with the sinking landmass, maintaining their height near the water surface, we call the "keep-up" strategy. In our model, the island subsides as a whole, while coral features are preserved by growing vertically. This separation allows the coral regions to remain unaffected by the subsidence of the island itself.}
-        {placeholder.pdf}{Coral colonies mainly grow in shallow waters.}{fig:coral-island_constant-depth-assumption}
+        \Item{Subsidence and coral growth:} As the volcanic island subsides, coral reefs grow to keep pace with the sinking landmass, maintaining their height near the water surface, we call the "keep-up" strategy. In our model, the island subsides as a whole, while coral features are preserved by growing vertically. This separation allows the coral regions to remain unaffected by the subsidence of the island itself. %}
+        % {placeholder.pdf}{Coral colonies mainly grow in shallow waters.}{fig:coral-island_constant-depth-assumption}
 % This assumption is based on Darwin's subsidence theory, which explains the formation of coral atolls. Modeling coral growth independently of the island's subsidence ensures the coral regions stay at the water surface as the island sinks.
 \end{Itemize}
 
@@ -348,8 +348,8 @@ Once the wind strokes are applied, the system processes the wind velocity field 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width = 0.9 \linewidth]{placeholder.pdf}
-    \caption{The user can interact directly on the island by editing (parallelly, in no specific order) (A) the top-view sketch, (B) the profile-view sketch, (C) and the wind velocity sketch.}
+    \includegraphics[width = 0.9 \linewidth]{user_interaction_generation.png}
+    \caption{The user can interact directly on the island by editing the different canvases in no specific order. This UI shows, from left to right, the top-view sketch with the different outlines of each regions, the profile-view sketch with the outlines represented in dotted lines, the wind velocity sketch drawn with strokes (last stroke is visible), and the resistance function showing here a high resistance at the top of the island and on the front reef.}
     \label{fig:coral-island_wind-from-strokes-interaction}
 \end{figure}
 
@@ -451,8 +451,8 @@ The deformation vector is scaled by the resistance function at each point $\p$, 
 This ensures that the wind deformation has the greatest impact on areas like the coastline and beach, where erosion naturally plays a larger role, while deeper regions like the abyss or stronger regions like mountains remain stable and relatively unchanged.
 
 \begin{figure}[H]
-    \includegraphics[width = 0.45\linewidth]{placeholder.pdf}
-    \includegraphics[width = 0.45\linewidth]{placeholder.pdf}
+    \includegraphics[width = 0.45\linewidth]{example_low_resistance.png}
+    \includegraphics[width = 0.45\linewidth]{example_high_resistance.png}
     \caption{(Left) Given a uniform wind velocity field and a resistance function similar as \cref{fig:coral-island_resistance-function}, the coasts are smoothly eroded while the interior of the island is almost unaffected. (Right) Modifying the resistance function to affect a strong resistance to borders simulate the effect of coast reinforcements (like the presence of mangrove forests, human constructions, or harder rocks).}
 \end{figure}
 
