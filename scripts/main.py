@@ -1,7 +1,7 @@
 import re
 
-file_path = '../references_terrain.bib'
-# file_path = "test.bib"
+# file_path = '../references_terrain.bib'
+file_path = "test.bib"
 
 with open(file_path, 'r') as file:
     bib_content = file.read()
@@ -14,3 +14,5 @@ for matchNum, match in enumerate(matches, start=1):
     ID, author, title = match.groups()
     if ID == "":
         print(f"{title}") # by {author}")
+    else:
+        print(f"{ID}")
