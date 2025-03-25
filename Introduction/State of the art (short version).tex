@@ -202,11 +202,11 @@ Density voxel grids are often used in high-fidelity simulations where detail and
 % Procedural terrain generation beginings are closely related to texture synthesis, as the height field terrain representation share the same mathematical definition as greyscale images. 
 
 % We will divide the terrain generation methods in three main categories: 
-% \begin{itemize}
-%     \item Large-scale methods, for which a the algorithm aims to define a global shape for the terrain. Noise functions, subdivision 
-%     \item Feature-scale methods, for which an algorithm is focused for a specific terrain feature,
-%     \item Enhancement methods, which is used to improve an existing synthetic terrain.
-% \end{itemize} 
+% \begin{Itemize}
+%     \Item{} Large-scale methods, for which a the algorithm aims to define a global shape for the terrain. Noise functions, subdivision 
+%     \Item{} Feature-scale methods, for which an algorithm is focused for a specific terrain feature,
+%     \Item{} Enhancement methods, which is used to improve an existing synthetic terrain.
+% \end{Itemize} 
 
 % % \subsubsection{Large-scale methods}
 
@@ -430,13 +430,13 @@ By combining these diverse techniques, procedural generation enables the creatio
 Procedural terrain generation algorithms usually take parameters into account in order to generate something that fits the user's needs. The tools that let the user interact with the different parameters are essential to include efficiently the user in the process. 
 
 The parameters that a user can play with can have many nature, and require a large varety of visual tools to interact with them. In the different nature of parameters, we can typically find: 
-\begin{itemize}
-    \item Noise parameters: Almost abstract values used in the equation ruling the noise functions. 
-    \item Physical constants: Constants that are used in physic simulations. They are often tweaked by the user to exagerate certain features, force some phenomena, etc... As they are constants, the parametrization of these values is often done inside the source code, as spinboxes, or inside a configuration file. 
-    \item Densities and distributions: Marking areas that are affected by a process, or where a seed can be used is useful to control a procedural algorithm. This is refered as "masking", but due to its binary nature, we can find sharp and unatural transitions from the use of binary masks. We often use weighted masks to provide more control about probabilities that a seed appear at one point. The control of the masks is usually done through grayscale images or by a "brush tool" that can modify the value directly on the surface of a 2D or 3D object. As virtual terrains are generally represented by a rectangular base, the use of brushes is a facade to the manipulation of a grayscale image.
-    \item Structures placement: Placing a specific terrain feature inside a terrain may be useful to finalize the generation of a landscape, or to add obstacles that will affect a physic simulation. This is usually implemented by clicking on the surface of the terrain, to provide the initial $xyz$ position, and then use translation and rotation tools to adjust the placement. If many elements are added, we usually use the previous strategy, involving masking, to add all the structures.
-    \item Manual manipulation of the terrain: In order to customize at a lower level the surface of the terrain, the user may be able to alter the surface of the terrain by using brushes. Clicking or dragging a brush on the surface usually result in the rise or lowering of the surface level around the brush. This process modifies the field representing the terrain. Procedural brushes can imply more complex behaviours, and may use the velocity of the brush stroke in its input.
-\end{itemize}
+\begin{Itemize}
+    \Item{} Noise parameters: Almost abstract values used in the equation ruling the noise functions. 
+    \Item{} Physical constants: Constants that are used in physic simulations. They are often tweaked by the user to exagerate certain features, force some phenomena, etc... As they are constants, the parametrization of these values is often done inside the source code, as spinboxes, or inside a configuration file. 
+    \Item{} Densities and distributions: Marking areas that are affected by a process, or where a seed can be used is useful to control a procedural algorithm. This is refered as "masking", but due to its binary nature, we can find sharp and unatural transitions from the use of binary masks. We often use weighted masks to provide more control about probabilities that a seed appear at one point. The control of the masks is usually done through grayscale images or by a "brush tool" that can modify the value directly on the surface of a 2D or 3D object. As virtual terrains are generally represented by a rectangular base, the use of brushes is a facade to the manipulation of a grayscale image.
+    \Item{} Structures placement: Placing a specific terrain feature inside a terrain may be useful to finalize the generation of a landscape, or to add obstacles that will affect a physic simulation. This is usually implemented by clicking on the surface of the terrain, to provide the initial $xyz$ position, and then use translation and rotation tools to adjust the placement. If many elements are added, we usually use the previous strategy, involving masking, to add all the structures.
+    \Item{} Manual manipulation of the terrain: In order to customize at a lower level the surface of the terrain, the user may be able to alter the surface of the terrain by using brushes. Clicking or dragging a brush on the surface usually result in the rise or lowering of the surface level around the brush. This process modifies the field representing the terrain. Procedural brushes can imply more complex behaviours, and may use the velocity of the brush stroke in its input.
+\end{Itemize}
 
 Each developer uses different strategies for each type of parameters as the needs or objectives of each application is different. Providing the user with too many parameters can be overwhelming, while too few can limit the output possibilities. In the meantime, providing unintuitive parameters like dimensionless values often result in trial and error strategy, requiering to run the generation algorithm many times before finding the appropriate values. This implies that the algorithms must be able to be executed fast. On an opposite side, removing some user controls to use hard-coded constants instead can greatly increase the speed. Finally, an algorithm that aims to be fast or let the user many parameters to control may reduce the realism of the output. Most algorithms try to strike a balance between realism, speed and control.
 
@@ -445,12 +445,12 @@ Each developer uses different strategies for each type of parameters as the need
 Realism refers to the extent to which generated content accurately represents real-world characteristics, such as visual details, physical processes, and natural patterns. This is especially important in simulations, visualizations, and training environments where plausibility [FIND BETTER TERM] is critical. Techniques to enhance realism include physical simulations, which model processes like erosion and sediment transport, and the integration of expert knowledge from fields such as geology and ecology. However, achieving realism can be challenging due to the complexity of detailed simulations and the need for specialized expertise, which can demand substantial computational resources and inputs. Usually, a realistic algorithm tends to have low user control and speed.
 
 On another hand, speed is about the efficiency of content generation within acceptable time constraints. While no official categorisation has been set, James Gain proposed to describe levels of speed based on response time:
-\begin{itemize}
-    \item Real-time: generation in less than 30 milliseconds, essential for interactive applications like VR environments. 
-    \item Interactive: generation in under 3 seconds, suitable for user-driven customization in games and simulations. 
-    \item Near-interactive: generation in less than 5 minutes, applicable for larger-scale simulations where some delay is acceptable. 
-    \item Long-term: generation that takes longer, often used for precomputed content or offline rendering.
-\end{itemize}
+\begin{Itemize}
+    \Item{} Real-time: generation in less than 30 milliseconds, essential for interactive applications like VR environments. 
+    \Item{} Interactive: generation in under 3 seconds, suitable for user-driven customization in games and simulations. 
+    \Item{} Near-interactive: generation in less than 5 minutes, applicable for larger-scale simulations where some delay is acceptable. 
+    \Item{} Long-term: generation that takes longer, often used for precomputed content or offline rendering.
+\end{Itemize}
 
 The execution speed of a procedural algorithm is crucial as the user will fine-tune the parameters before being satisfied.
 Optimizing speed involves using efficient algorithms and parallel processing. Almost all recent works achieve fast execution time thanks to high parallelisation on GPU. Other types of algorithm may rely on a refinement paradigm, generating a coarse result at first and then iteratively adding finer details, such that the global output shape is available long time before the real final result.
@@ -466,10 +466,10 @@ Managing diverse and sometimes conflicting user expectations, such as balancing 
 % Users can manually start the regeneration process to refresh or update a model. This allows the content to reflect new parameters or conditions as specified by the user. The generation speed has a strong influence on the possibility for the user to fine tune parameters as algorithms that can be executed in real-time or interactive-time keep the user active in his work. Longer execution times force him to find optimal parameters beforehand in order to create a satisfying model faster than if it was hand-made, which, when the model is not completely explicit, may feel impossible. 
 
 % The fine-tuning speed can be improved by different strategies:
-% \begin{itemize}
-%     \item Modifications that have a local incidence on the resulting model requires only a local regeneration of the output. Limiting the spatial scope of an interaction is an efficient mean to keep at the same time a way to explore the \gloss{ParamSpace} of the algorithm while keeping the predictability of the outcome by avoiding global changes from a local edition.
-%     \item Live preview of the outcome can be displayed in a coarse computation, allowing to have a rough idea of the result without the full computation. This strategy is easier to develop with algorithms using refinement paradigms.
-% \end{itemize}
+% \begin{Itemize}
+%     \Item{} Modifications that have a local incidence on the resulting model requires only a local regeneration of the output. Limiting the spatial scope of an interaction is an efficient mean to keep at the same time a way to explore the \gloss{ParamSpace} of the algorithm while keeping the predictability of the outcome by avoiding global changes from a local edition.
+%     \Item{} Live preview of the outcome can be displayed in a coarse computation, allowing to have a rough idea of the result without the full computation. This strategy is easier to develop with algorithms using refinement paradigms.
+% \end{Itemize}
 
 % [TODO]
 % Interface controls: various tools and options in the user interface enable users to initiate regeneration. 

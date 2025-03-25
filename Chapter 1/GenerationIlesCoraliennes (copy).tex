@@ -224,13 +224,13 @@ In order for neural networks to be trained, a large amount of data have to be av
 \label{sec:coral-island_example-generation}
 Generating synthetic data for the training of a neural network introduce a bias in the dataset. We use observations from old and recent expeditions in order to define in advance the biases that are being introduced. First, we will take advantage of the different characteristics that are commonly found in coral reef island. The assumptions we will use are listed below:
 \begin{enumerate}
-    \item Islands have a relatively round shape: the heat under Earth's mantel comes usually from a single point, making the uplifting force of volcanic islands radial around the epicenter. Plus, see erosion has the effect of smoothering corners.
-    \item Coral grows to a constant height around the island: coral polyps have to have access to sunlight to survive, resulting in a band of living corals starting from the water level to a certain depth of about 30m where coral colonies become much scarcer. 
-    \item All features are radial: the main features we want to create , that are island, beaches, lagoon and coral reef, are always in this order and are highly correlated to the shape of the island. We can place the assumption that the interface between each of these regions are radial around the island center.
-    \item Islands deformations are caused by winds and waves: the main natural phenomenon that morph an island into a shape is the effect of aerial and coastal erosion on its borders. We can leverage this idea by using a wind velocity field to apply domain wraping for the final height field. This operation allows the result to have non-radial and concave regions, removing the limitations listed above.
-    \item Islands are independent of each other: an island has no notable influence on another's elevation characteristics. We can then consider having multiple islands created with an algorithm and translated next to each other without finding notable incoherencies as long as the islands are not overlapping.
-    \item The profile is relatively identical all around the island: resulting from the point 3, as the regions of interest are in consecutive order, the profile in any direction of the island have similar shape, except for their scale.
-    \item The subsidence only affects the ground, but not the coral reefs.
+    \Item{} Islands have a relatively round shape: the heat under Earth's mantel comes usually from a single point, making the uplifting force of volcanic islands radial around the epicenter. Plus, see erosion has the effect of smoothering corners.
+    \Item{} Coral grows to a constant height around the island: coral polyps have to have access to sunlight to survive, resulting in a band of living corals starting from the water level to a certain depth of about 30m where coral colonies become much scarcer. 
+    \Item{} All features are radial: the main features we want to create , that are island, beaches, lagoon and coral reef, are always in this order and are highly correlated to the shape of the island. We can place the assumption that the interface between each of these regions are radial around the island center.
+    \Item{} Islands deformations are caused by winds and waves: the main natural phenomenon that morph an island into a shape is the effect of aerial and coastal erosion on its borders. We can leverage this idea by using a wind velocity field to apply domain wraping for the final height field. This operation allows the result to have non-radial and concave regions, removing the limitations listed above.
+    \Item{} Islands are independent of each other: an island has no notable influence on another's elevation characteristics. We can then consider having multiple islands created with an algorithm and translated next to each other without finding notable incoherencies as long as the islands are not overlapping.
+    \Item{} The profile is relatively identical all around the island: resulting from the point 3, as the regions of interest are in consecutive order, the profile in any direction of the island have similar shape, except for their scale.
+    \Item{} The subsidence only affects the ground, but not the coral reefs.
 \end{enumerate}
 
 These assumptions are not completely exact, but provide a simplified model of the coral formation following Darwin's theory.
@@ -278,14 +278,14 @@ The lifespan of volcanic islands being multiple orders of magnitude higher than 
 Let's investigate on the common shape of a coral reef. From the open sea to the island borders, we have the fore reef zone, the reef crest, and the reef flat zone. We focus our reef model around the crest as it remains close to the water level. Behind it, we find a small slope then a lagoon (respectively the back reef and lagoon zone, composing the reef flat zone) and in front of the reef, a stronger slope then a wall (respectively the buttress zone and the deep fore reef, composing the fore reef zone). We will model each of these parts individually, then blend them with the initial height field.
 
 We can place all these limits in the field with:
-\begin{itemize}
-    \item Crest min are at $\height_0 = \coralMax$,
-    \item Crest max are at $\height_0 = \coralMin$,
-    \item Lagoon min are at current island borders $\heightSubsid = \Wlevel$,
-    \item Lagoon max are at Crest min - back reef width,
-    \item Deep fore reef min at Crest max + buttress width,
-    \item Deep fore reef max at Crest max + buttress width + fore reef width
-\end{itemize}
+\begin{Itemize}
+    \Item{} Crest min are at $\height_0 = \coralMax$,
+    \Item{} Crest max are at $\height_0 = \coralMin$,
+    \Item{} Lagoon min are at current island borders $\heightSubsid = \Wlevel$,
+    \Item{} Lagoon max are at Crest min - back reef width,
+    \Item{} Deep fore reef min at Crest max + buttress width,
+    \Item{} Deep fore reef max at Crest max + buttress width + fore reef width
+\end{Itemize}
 
 Fixing a depth for the lagoon, reef crest, buttress end and abysses, we now have constraint heights that partially cover the terrain. We connect the missing parts using the cubic rational smoothstep function $\smooth(t) = \frac{x^3}{3x^3 - 3x + 1}$ proposed by Inigo Quilez.
 
@@ -309,11 +309,11 @@ One can modify the filling by defining a height and slope constraint at each lim
 
 \subsubsection{Output}
 We obtain as output a height field of a simplified coral reef island. The main importance of this method is to conserve the semantic of the terrain, as we can always know the location of the island, lagoons, reefs, etc. Keeping track of the semantic has multiple advantages:
-\begin{itemize}
-    \item Texturing the surface with respect to the terrain features is easily done.
-    \item Terrain augmentation is eased as we can add multiple post-processing methods like the creation of passes, the addition of spurs and grooves patterns, etc.
-    \item Subsurface ground material is available, even while working on 2D height fields.
-\end{itemize}
+\begin{Itemize}
+    \Item{} Texturing the surface with respect to the terrain features is easily done.
+    \Item{} Terrain augmentation is eased as we can add multiple post-processing methods like the creation of passes, the addition of spurs and grooves patterns, etc.
+    \Item{} Subsurface ground material is available, even while working on 2D height fields.
+\end{Itemize}
 % - Height map of the island's surface \\
 % - Island zones and coral zones \\
 % - Possibility to recalculate ground height and coral height \\
@@ -336,10 +336,10 @@ We obtain as output a height field of a simplified coral reef island. The main i
 
 \subsection{Labeling of the map}
 The feature map paints the pixels corresponding to each of the regions instead of only containing the demarkation lines. Multiple reasons leads to this decision :
-\begin{itemize}
-    \item In the case of two demarkation lines too close to each other, an overlapping can appear at pixel scale, leading to the loss of information of the undelying line.
-    \item While this problem is often resolved by using as input an image with $n$ channels, with each of the channel being a binary map of the $n$-th feature. This decision results in needing to modify the cGAN architecture, inducing the need for a full training of the new model as it may not be compatible with an available pretrained model.
-\end{itemize}
+\begin{Itemize}
+    \Item{} In the case of two demarkation lines too close to each other, an overlapping can appear at pixel scale, leading to the loss of information of the undelying line.
+    \Item{} While this problem is often resolved by using as input an image with $n$ channels, with each of the channel being a binary map of the $n$-th feature. This decision results in needing to modify the cGAN architecture, inducing the need for a full training of the new model as it may not be compatible with an available pretrained model.
+\end{Itemize}
 
 In order to label the map, we first rasterize the map using polar coordinates and the 1D functions that represents each features border. 
 With the center of the island at the coordinates $(0, 0)$, we get the polar coordinates for any point $(x, y)$ as $\radius = \sqrt{x^2 + y^2}$ and $\angl = \arctan2 (y, x)$. We can then use the label $l \in \N$ with $l = \arg \min_i \left( \radius \leq \radius_{i}(\angl) \right)$. This operation is very fast and completely parallelizable.

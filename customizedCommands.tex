@@ -10,10 +10,12 @@
 
 % \tensor{expression}
 \zzcommand{\tensor}[1]{\mathbf{#1}}
-% \mtrx{matrix name}
+% \mtrx{matrix_name}
 \zzcommand{\mtrx}[1]{\mathbf{#1}}
-% \field{field name}
+% \field{field_name}
 \zzcommand{\field}[1]{\mathbf{#1}}
+
+\captionsetup{width=\linewidth}
 
 % \WarningFilter{hyperref}{Token not allowed in a PDF string} % Remove the warnings about \gls in titles or math functions in titles.
 
@@ -32,6 +34,9 @@
   \fi
 }
 
+% \Bar{expression}
+\zzcommand{\Bar}[1]{\overline{#1}}
+
 
 \LetLtxMacro{\Oldincludegraphics}{\includegraphics}
 \RenewDocumentCommand{\includegraphics}{O{} m}{%
@@ -39,7 +44,7 @@
 	    \Oldincludegraphics[#1]{#2}
 	\end{adjustbox}
 }
-% \inset{inset size}{path to main image}{path to inset image}
+% \inset{inset_size}{path_to_main_image}{path_to_inset_image}
 \zzcommand{\inset}[3][0.2\linewidth]{
     \noindent\stackinset{r}{0.1cm}{b}{0.1cm}{
         \colorbox{white}{
@@ -116,10 +121,16 @@
 \newtotcounter{citenum}
 \AtEveryBibitem{\stepcounter{citenum}}
 
+
+
+
 \setlength\bibitemsep{1.5\itemsep}
 
 \newcounter{AltTextImageCurrentSide}
 
+% \begin{Itemize}
+%     \Item{$1} $2
+% \end{Itemize}
 \newenvironment{Itemize}
 {    
   \setcounter{AltTextImageCurrentSide}{0}
@@ -129,41 +140,56 @@
 
 % Define new command \Item that applies italics to the title only
 % \Item{text}
-\zzcommand{\Item}[1]{\item \textit{#1}}
+\zzcommand{\Item}[1]{%
+  \ifblank{#1}%
+    {\item $\bullet$ }% Case when #1 is empty
+    {\item \textit{#1}}% Case when #1 is not empty
+}
 
-% \AltTextImageR{item content}{image path}{caption}{label}
+\newlength{\currentparindent}
+% \AltTextImageR{item_content}{image_path}{caption}{label}
 \zzcommand{\AltTextImageR}[4]{% 
   \setcounter{AltTextImageCurrentSide}{1}
+  \setlength{\currentparindent}{\parindent}
+  \noindent
   \begin{minipage}[t]{0.65\linewidth}
+    \setlength{\parindent}{\currentparindent}
     #1
   \end{minipage}%
   \hfill % Add horizontal space between text and image
   \begin{minipage}[t]{0.30\linewidth}
     \includegraphics[width=\linewidth, valign=t]{#2}
+    \captionsetup{font=footnotesize}
+    \captionsetup{width=\linewidth}
     \captionof{figure}{#3}
     \label{#4}
   \end{minipage}%
 }
-% \AltTextImageL{item content}{image path}{caption}{label}
+% \AltTextImageL{item_content}{image_path}{caption}{label}
 \zzcommand{\AltTextImageL}[4]{% 
   \setcounter{AltTextImageCurrentSide}{0}
+  \setlength{\currentparindent}{\parindent}
+  \noindent
   \begin{minipage}[t]{0.30\linewidth}
     \includegraphics[width=\linewidth, valign=t]{#2}
+    \captionsetup{font=footnotesize}
+    \captionsetup{width=\linewidth}
     \captionof{figure}{#3}
     \label{#4}
   \end{minipage}%
   \hfill % Add horizontal space between text and image
   \begin{minipage}[t]{0.65\linewidth}
-      #1
+    \setlength{\parindent}{\currentparindent}
+    #1
   \end{minipage}%
 }
-% \AltTextImage{item content}{image path}{caption}{label}
+% \AltTextImage{item_content}{image_path}{caption}{label}
 \zzcommand{\AltTextImage}[4]
 {
   \stepcounter{AltTextImageCurrentSide}  % Increment the counter
   \ifodd\value{AltTextImageCurrentSide}  % Check if the counter is odd
       \AltTextImageR{#1}{#2}{#3}{#4}
-  \else
+  \else%
       \AltTextImageL{#1}{#2}{#3}{#4}
   \fi
 }
@@ -195,13 +221,13 @@
 }
 
 
-% \gloss{entry name}
+% \gloss{entry_name}
 \zzcommand{\gloss}[1]{\ifglsentryexists{gls-#1}{\glsentryname{gls-#1}\ifcsdef{inheading}{}{{\glsadd{gls-#1}}}}{[XXXX]}}
-% \glosses{entry name}
+% \glosses{entry_name}
 \zzcommand{\glosses}[1]{\ifglsentryexists{gls-#1}{\glsentrylongpl{gls-#1}\ifcsdef{inheading}{}{{\glsadd{gls-#1}}}}{[XXXX]}}
-% \Gloss{entry name}
+% \Gloss{entry_name}
 \zzcommand{\Gloss}[1]{\ifglsentryexists{gls-#1}{\Glsentryname{gls-#1}\ifcsdef{inheading}{}{{\glsadd{gls-#1}}}}{[XXXX]}}
-% \Glosses{entry name}
+% \Glosses{entry_name}
 \zzcommand{\Glosses}[1]{\ifglsentryexists{gls-#1}{\Glsentrylongpl{gls-#1}\ifcsdef{inheading}{}{{\glsadd{gls-#1}}}}{[XXXX]}}
 \zzcommand{\glsnamefont}[1]{\makefirstuc{#1}}
 
@@ -285,3 +311,6 @@
 {
   \graphicspath{}
 }
+
+% \comment{text}
+\zzcommand{\comment}[1] {}

@@ -376,13 +376,13 @@ Each point's height is determined by the profile function $\heightProfile(\distR
 where $i$ is the index of the nearest lower region boundary. This method allows for smooth transitions between regions, even when the spacing between boundaries varies. 
 
 % The system first identifies which region the point $\p$ falls into by comparing $\radius_\p$ with the radial boundaries defined by the milestones. These milestones divide the terrain into sections, such as:
-% \begin{itemize}
-%     \item Island: $\radius_\p \leq \radius_{\text{island}}$,
-%     \item Beach: $\radius_{\text{island}} < \radius_\p \leq \radius_{\text{beach}}$,
-%     \item Lagoon: $\radius_{\text{beach}} < \radius_\p \leq \radius_{\text{lagoon}}$,
-%     \item Reef: $\radius_{\text{lagoon}} < \radius_\p \leq \radius_{\text{max}}$,
-%     \item Abyss: $\radius_{\text{max}} < \radius_\p$.
-% \end{itemize}
+% \begin{Itemize}
+%     \Item{} Island: $\radius_\p \leq \radius_{\text{island}}$,
+%     \Item{} Beach: $\radius_{\text{island}} < \radius_\p \leq \radius_{\text{beach}}$,
+%     \Item{} Lagoon: $\radius_{\text{beach}} < \radius_\p \leq \radius_{\text{lagoon}}$,
+%     \Item{} Reef: $\radius_{\text{lagoon}} < \radius_\p \leq \radius_{\text{max}}$,
+%     \Item{} Abyss: $\radius_{\text{max}} < \radius_\p$.
+% \end{Itemize}
 
 % Once the correct value of $\distRegions_\p$ is determined, the height of the point $h(\p)$ is computed directly using the profile function $\heightProfile(\distRegions)$, which smoothly defines the height for any given value of $\distRegions$. The height function $\heightProfile(\distRegions)$ is continuous across all regions, ensuring that transitions between the island, beach, lagoon, and abyss are smooth.
 
@@ -503,11 +503,11 @@ In our model, coral reef growth is entirely independent of the subsided terrain.
 
 % \AltTextImageR{
     The coral reef height field is generated using depth values specific for the various coral regions:
-    \begin{itemize}
-        \item The reef crest is modeled near the water surface, typically just below sea level, at $h_\text{crest} = -2$m,
-        \item The back reef and lagoon are slightly deeper but remain within the range where corals can grow at $h_\text{back} = -20$m,
-        \item The fore reef slopes downward into the deep ocean, transitioning into the abyss with $h_\text{abyss} = -100$m.
-    \end{itemize}
+    \begin{Itemize}
+        \Item{} The reef crest is modeled near the water surface, typically just below sea level, at $h_\text{crest} = -2$m,
+        \Item{} The back reef and lagoon are slightly deeper but remain within the range where corals can grow at $h_\text{back} = -20$m,
+        \Item{} The fore reef slopes downward into the deep ocean, transitioning into the abyss with $h_\text{abyss} = -100$m.
+    \end{Itemize}
 % }{placeholder.pdf}{}{fig:coral-island_reef-profile}
 
 In our coral growth model, we interpolate between the different regions by applying a smoothstep operator $\smooth: x \in \R$ defined as:
@@ -518,11 +518,11 @@ In our coral growth model, we interpolate between the different regions by apply
 For conciseness, we will note the interpolating function of a value from $a$ to $b$ for $x$ clamped between $x_0$ and $x_1$ $S(a, b, x_0, x_1, x) = a + (b-a) \smooth\left(\frac{x - x_0}{x_1 - x_0}\right)$.
 
 We arbitrarily define the delimitation of each of the subregions of the reef with $(x_{i|0}, x_{i|1}) \in [0, 1]^2, x_{i|0} < x_{i|1}$ with $x_i = 0$ signifying the begining of the reef and $x_i = 1$ the end of the reef:
-\begin{itemize}
-    \item The back reef is defined from $x_{\text{back}|0} = 0.5, x_{\text{back}|1} = 0.5$,
-    \item The reef crest spans between $x_{\text{crest}|0} = 0.75, x_{\text{crest}|1} = 0.8$,
-    \item And the abyss is defined at $x_{\text{abyss}|0} = 1$,
-\end{itemize}
+\begin{Itemize}
+    \Item{} The back reef is defined from $x_{\text{back}|0} = 0.5, x_{\text{back}|1} = 0.5$,
+    \Item{} The reef crest spans between $x_{\text{crest}|0} = 0.75, x_{\text{crest}|1} = 0.8$,
+    \Item{} And the abyss is defined at $x_{\text{abyss}|0} = 1$,
+\end{Itemize}
 Any other subregion is defined as the transition area between two subregions.
 
 We obtain the piecewise function as shown in \cref{fig:coral-island_reef-function}:

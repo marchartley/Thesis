@@ -5,6 +5,15 @@ import os
 # Define the path to your LaTeX file and settings.json
 custom_commands_paths = ['./customizedCommands.tex', './glossary.tex']
 settings_json_path = os.path.expanduser('~/.config/VSCodium/User/settings.json')
+
+
+
+def extract_arguments(name, example_line):
+    # Regex to match the command/environment followed by its arguments
+    pattern = re.compile(r'%\s*\\' + re.escape(name) + r'\s*' + r'({[^}]*})' * 100)  # 100 is arbitrary high number to capture many args
+    match = pattern.search(example_line)
+    return match.groups() if match else None
+
 # Parse LaTeX file for \zzcommand definitions, capturing preceding comments with arguments
 def parse_latex_commands(file_path):
     with open(file_path, 'r') as file:
@@ -12,11 +21,14 @@ def parse_latex_commands(file_path):
 
     commands = {}
     cmd_pattern = re.compile(r'\\zzcommand{\\(\w+)}(?:\[(\d+)\])?', re.DOTALL)
+    env_pattern = re.compile(r'\\newenvironment{(\w+)}')
 
     for i, line in enumerate(lines):
-        if cmd_pattern.search(line):
-            match = cmd_pattern.search(line)
-            cmd_name, num_args = match.groups()
+        env_match = env_pattern.search(line)
+        cmd_match = cmd_pattern.search(line)
+
+        if cmd_match:
+            cmd_name, num_args = cmd_match.groups()
             example_args = []
 
             # Prepare regex to find example usage with arguments in the preceding comment
@@ -37,6 +49,17 @@ def parse_latex_commands(file_path):
                 args_template = "" if num_args is None else "{" + "}{".join(f"${i}" for i in range(1, int(num_args) + 1)) + "}"
                 snippet = f"{cmd_name}{args_template}"
             commands[cmd_name] = snippet
+        
+        if env_match:
+            env_name = env_match.group(1)
+            # Collect multiple preceding comment lines
+            j = i - 1
+            example_lines = []
+            while j >= 0 and lines[j].strip().startswith('%'):
+                example_lines.insert(0, lines[j].replace('% ', '') )#.replace("\\\\", ""))
+                j -= 1
+            example_lines[0] = example_lines[0].lstrip("\\") # Don't know why but I need to remove the initial "\" from begin
+            commands[env_name] = "".join(example_lines)  # Join all gathered comment lines as the example
 
     # exit(0)
     return commands
