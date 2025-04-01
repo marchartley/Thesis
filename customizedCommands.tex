@@ -1,12 +1,73 @@
-\LetLtxMacro\OldChapter\chapter
-\LetLtxMacro\OldSection\section
-\LetLtxMacro\OldSubsection\subsection
-\LetLtxMacro\OldSubsubsection\subsubsection
-
 \hbadness = 99999
 
 % Define \zzcommand for conditional commands
 \def\zzcommand#1{\let#1\undefined\newcommand#1}
+
+% Macros to hold current titles
+% \currentsection
+\zzcommand{\currentsection}{}
+% \currentsubsection
+\zzcommand{\currentsubsection}{}
+% \currentsubsubsection
+\zzcommand{\currentsubsubsection}{}
+\makeatletter
+
+% Save original commands
+\let\oldsection\section
+\let\oldsubsection\subsection
+\let\oldsubsubsection\subsubsection
+
+\makeatletter
+\gdef\currentsection{}
+\gdef\currentsubsection{}
+\gdef\currentsubsubsection{}
+\zzcommand{\section}[1]{
+  \gdef\currentsection{}
+  \gdef\currentsubsection{}
+  \gdef\currentsubsubsection{}
+  \ifthenelse{\equal{#1}{*}}%
+  {\@sectionstar}%
+  {\@sectionnostar{#1}}%
+  % \@ifstar{\@sectionstar}{\@sectionnostar}
+}
+\zzcommand{\@sectionnostar}[1]{%
+  \gdef\currentsection{#1}%
+  \oldsection{#1}%
+}
+\zzcommand{\@sectionstar}[1]{%
+  \gdef\currentsection{#1}
+  \oldsection*{#1}%
+}
+\zzcommand{\subsection}[1]{
+  \gdef\currentsubsection{}
+  \gdef\currentsubsubsection{}
+  \ifthenelse{\equal{#1}{*}}%
+  {\@subsectionstar}
+  {\@subsectionnostar{#1}}
+}
+\zzcommand{\@subsectionnostar}[1]{%
+  \gdef\currentsubsection{#1}%
+  \oldsubsection{#1}%
+}
+\zzcommand{\@subsectionstar}[1]{%
+  \gdef\currentsubsection{#1}%
+  \oldsubsection*{#1}%
+}
+\zzcommand{\subsubsection}[1]{
+  \gdef\currentsubsubsection{}
+  \ifthenelse{\equal{#1}{*}}%
+  {\@subsubsectionstar}
+  {\@subsubsectionnostar{#1}}
+}
+\zzcommand{\@subsubsectionnostar}[1]{%
+  \gdef\currentsubsubsection{#1}%
+  \oldsubsubsection{#1}%
+}
+\zzcommand{\@subsubsectionstar}[1]{%
+  \gdef\currentsubsubsection{#1}%
+  \oldsubsubsection*{#1}%
+}
+\makeatother
 
 % \tensor{expression}
 \zzcommand{\tensor}[1]{\mathbf{#1}}
@@ -90,29 +151,29 @@
 \newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
 
 \DeclareCiteCommand{\cite}[\mkbibparens]
-  {\usebibmacro{prenote}\usebibmacro{cite:init}}
-  {\usebibmacro{citeindex}%
-  \printtext[bibhyperref]{\usebibmacro{cite}}}
-  {\multicitedelim}
+  {\usebibmacro{prenote}\usebibmacro{cite:init}}%
+  {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}%
+  \printtext[bibhyperref]{\usebibmacro{cite}}}%
+  {\multicitedelim}%
   {\usebibmacro{postnote}}
 
 \newbibmacro*{citefullbody}{
   \printnames{labelname}%
   \setunit{\addcomma\space}%
-  \textit{\printfield[]{title}}~(\printfield{year})
+  \textit{\printfield[]{title}}~(\printfield{year})%
 }
 
 \DeclareCiteCommand{\citep}
-{\usebibmacro{prenote}\usebibmacro{cite:init}}
-{\usebibmacro{citeindex}%
-\printtext[bibhyperref]{\usebibmacro{citefullbody}}}
-{\multicitedelim}
+{\usebibmacro{prenote}\usebibmacro{cite:init}}%
+{\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}%
+\printtext[bibhyperref]{\usebibmacro{citefullbody}}}%
+{\multicitedelim}%
 {\usebibmacro{postnote}}
 
 
 \DeclareCiteCommand{\citeProgram}[\mkbibparens]
   {\usebibmacro{prenote}\usebibmacro{cite:init}}
-  {\usebibmacro{citeindex}\printtext[bibhyperref]{\mkbibemph{\printfield{title}},~\printdate}}
+  {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}\printtext[bibhyperref]{\mkbibemph{\printfield{title}},~\printdate}}
   {\multicitedelim}
   {\usebibmacro{postnote}}
 
@@ -124,7 +185,7 @@
 
 
 
-\setlength\bibitemsep{1.5\itemsep}
+\setlength\bibitemsep{1.2\itemsep}
 
 \newcounter{AltTextImageCurrentSide}
 
@@ -134,11 +195,11 @@
 \newenvironment{Itemize}
 {    
   \setcounter{AltTextImageCurrentSide}{0}
-  \begin{itemize}[label={}, leftmargin=0em, itemindent=3.0em, itemsep=0em, topsep=0em] %, left=2em, itemsep=0.5em]} % Custom settings
+  \begin{itemize}[label={}, leftmargin=\parindent, itemindent=1.0em, itemsep=0em, topsep=0em] %, left=2em, itemsep=0.5em]} % Custom settings
 }
-{\end{itemize}}
+{\end{itemize}\bigbreak}
 
-% Define new command \Item that applies italics to the title only
+% Define new command \Itemthat applies italics to the title only
 % \Item{text}
 \zzcommand{\Item}[1]{%
   \ifblank{#1}%
@@ -314,3 +375,87 @@
 
 % \comment{text}
 \zzcommand{\comment}[1] {}
+
+
+
+
+% Counter for citations per section
+\newcounter{sectioncites}
+\newcounter{subsectioncites}
+\newcounter{subsubsectioncites}
+
+% Macro to store list of citation keys used in current section
+\zzcommand{\sectioncitedkeyslist}{,} % Start with a leading comma
+\zzcommand{\subsectioncitedkeyslist}{,} % Start with a leading comma
+\zzcommand{\subsubsectioncitedkeyslist}{,} % Start with a leading comma
+
+% Reset at each section
+\zzcommand{\resetsectioncites}{%
+  \setcounter{sectioncites}{0}%
+  \zzcommand{\sectioncitedkeyslist}{,}%
+  \resetsubsectioncites
+}
+\zzcommand{\resetsubsectioncites}{%
+  \setcounter{subsectioncites}{0}%
+  \zzcommand{\subsectioncitedkeyslist}{,}%
+  \resetsubsubsectioncites
+}
+\zzcommand{\resetsubsubsectioncites}{%
+  \setcounter{subsubsectioncites}{0}%
+  \zzcommand{\subsubsectioncitedkeyslist}{,}%
+}
+% Helper: checks if key is in the list, and adds if not
+\zzcommand{\adduniquecite}[1]{%
+  \def\currentkey{#1}%
+  \IfSubStr{\sectioncitedkeyslist}{,\currentkey,}{\def\foundkey{1}}{\def\foundkey{0}}%
+  \ifnum\foundkey=0
+    \stepcounter{sectioncites}%
+    \xappto{\sectioncitedkeyslist}{,\currentkey,}%
+  \fi%
+  \IfSubStr{\subsectioncitedkeyslist}{,\currentkey,}{\def\foundkey{1}}{\def\foundkey{0}}%
+  \ifnum\foundkey=0
+    \stepcounter{subsectioncites}%
+    \xappto{\subsectioncitedkeyslist}{,\currentkey,}%
+  \fi%
+  \IfSubStr{\subsubsectioncitedkeyslist}{,\currentkey,}{\def\foundkey{1}}{\def\foundkey{0}}%
+  \ifnum\foundkey=0
+    \stepcounter{subsubsectioncites}%
+    \xappto{\subsubsectioncitedkeyslist}{,\currentkey,}%
+  \fi
+}
+
+% Custom bibmacro to do the tracking per entry
+\newbibmacro*{countcite}[1]{%
+  \adduniquecite{#1}%
+}
+\zzcommand{\showsectioncites}{%
+  \notblank{\currentsection}{%
+  \ifdef{\thesectioncites}{%
+    \ifnum\thesectioncites=0%
+    \else%
+      \textcolor{white}{\texttransparent{0.0}{~\thesectioncites~(\currentsection)}}%
+    \fi%
+  }{}}{}%
+}
+\zzcommand{\showsubsectioncites}{%
+  \notblank{\currentsubsection}{%
+  \ifdef{\thesubsectioncites}{%
+    \ifnum\thesubsectioncites=0%
+    \else%
+      \textcolor{white}{\texttransparent{0.0}{~\thesubsectioncites~(\currentsubsection)}}%
+    \fi%
+  }{}}{}%
+}
+\zzcommand{\showsubsubsectioncites}{%
+  \notblank{\currentsubsubsection}{%
+  \ifdef{\thesubsubsectioncites}{%
+    \ifnum\thesubsubsectioncites=0%
+    \else%
+      \textcolor{white}{\texttransparent{0.0}{~\thesubsubsectioncites~(\currentsubsubsection)}}%
+    \fi%
+  }{}}{}%
+}
+
+\pretocmd{\section}{\showsubsubsectioncites\showsubsectioncites\showsectioncites\resetsectioncites}{}{}
+\pretocmd{\subsection}{\showsubsubsectioncites\showsubsectioncites\resetsubsectioncites}{}{}
+\pretocmd{\subsubsection}{\showsubsubsectioncites\resetsubsubsectioncites}{}{}

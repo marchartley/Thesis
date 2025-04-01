@@ -124,7 +124,10 @@ Because many geographical terms and computer science terms are deceptive cognate
 \section{State of the art}
 \label{sec:semantic-representation_related-works}
 
-Our work is highly ispired by the modeling of ecosystems, in which we consider abiological elements on the same level as biological organisms. 
+% Our work is highly ispired by the modeling of ecosystems, in which we consider abiological elements on the same level as biological organisms. 
+Simulating ecosystems involves a range of modeling approaches, each balancing biological realism and computational efficiency. Broadly, models can treat populations as continuous fields using reaction-diffusion equations, or simulate each organism individually through agent-based methods. Site-based models discretize space to model local interactions efficiently. In contrast, individual-based models (IBMs) capture fine-scale behaviors and heterogeneity, often using spatial interaction rules like fixed-radius, zone of influence, or field-based methods. Ecological Field Models (EFMs) bridge these approaches by representing environmental properties as continuous fields influenced by organisms, enabling dynamic feedback between species and their surroundings. These diverse frameworks provide flexible tools for capturing complex ecological processes at varying scales and resolutions.
+
+Our work aims to extend the Environmental Objects framework proposed by \citep{Grosbellet2016}, whose work is related to ecological fields. Bridging the gap between the ecological domain and graphics domain allows us to generalize the Environmental Objects to biologic and abiologic elements of an ecosystem by focusing the generation and simulation of scenes through the spectre of ecosystem services.
 
 \subsection{Ecosystem simulation}
 
@@ -159,7 +162,7 @@ Mathematically, grid-based ecological dynamics are commonly described using disc
 \end{align}
 where $N_t(x, y)$ is the state variable ar cell coordinates $(x, y)$ at time $t$, $\Bar{N}(x, y)$ is the neighborhood of the cell at coordinates $(x, y)$, $E_t(x, y)$ is the explicit environmental factors like precipitation and soil nutrients, and $f$ is the update function that describe the biological changes given a current state, the neighborhood and the environment factors around a cell.
 
-Grid-based models are particularly suited for simulations involving diffusion-like processes or phenomena with clear spatial boundaries. Classic examples in ecology include modeling vegetation dynamics in arid ecosystems, spatially explicit predator-prey interactions, forest-fire spread, and habitat fragmentation effects. Additionally, grid-based representations form the basis for Cellular Automata models, where cells exhibit discrete states (e.g., occupied, empty, burning), updated synchronously according to predefined state-transition rules .
+Grid-based models are particularly suited for simulations involving diffusion-like processes or phenomena with clear spatial boundaries. Classic examples in ecology include modeling vegetation dynamics in arid ecosystems, spatially explicit predator-prey interactions, forest-fire spread, and habitat fragmentation effects. Additionally, grid-based representations form the basis for Cellular Automata models, where cells exhibit discrete states (e.g., occupied, empty, burning), updated synchronously according to predefined state-transition rules.
 
 Grid-based models are commonly used due to computational simplicity, easy integration with geographic information systems (GIS), and suitability for parallel computing. They facilitate large-scale ecological modeling by clearly defining spatial relationships and boundary conditions, thus making them practical for exploring broad-scale ecological hypotheses or management scenarios.
 
@@ -190,14 +193,13 @@ However, Voronoi-Delaunay models also present several limitations and challenges
     \Item{} Voronoi models implicitly assume isotropic interactions (competition or resource usage is equal in all directions) and strictly distance-based territories, neglecting directional biases like prevailing winds, slopes, or anisotropic resource gradients.
 \end{Itemize}
 
-As with grids, boundary effects can significantly impact ecological interpretations unless carefully managed or buffered.
 
 
+% \subsubsubsection{Generalized topological maps}
+Generalized topological maps represent ecosystems using abstract spatial relationships and connectivity structures, emphasizing the importance of spatial relationships or interactions rather than explicit geometric positions or shapes \cite{Urban2009}. Unlike grid-based or Voronoi-Delaunay tessellation models, generalized topological maps prioritize topological relationships over exact geometric distances or spatial coordinates (\cref{fig:env-obj_grid-based-models}, right). Formally, these maps can be defined as graphs or networks $G = (V, E)$, where vertices $V$ represent spatial entities (e.g., habitat patches, resources, individuals, or territories), and edges $E$ define ecological interactions, such as connectivity, dispersal pathways, competitive influence, or predator-prey relations \cite{Hamonic2021,Minor2008,Peterson2024}.
 
-\subsubsubsection{Generalized topological maps}
-Generalized topological maps represent ecosystems using abstract spatial relationships and connectivity structures, emphasizing the importance of spatial relationships or interactions rather than explicit geometric positions or shapes. Unlike grid-based or Voronoi-Delaunay tessellation models, generalized topological maps prioritize topological relationships over exact geometric distances or spatial coordinates (\cref{fig:env-obj_grid-based-models}, right). Formally, these maps can be defined as graphs or networks $G = (V, E)$, where vertices $V$ represent spatial entities (e.g., habitat patches, resources, individuals, or territories), and edges $E$ define ecological interactions, such as connectivity, dispersal pathways, competitive influence, or predator-prey relations.
-
-In ecological modeling, generalized topological maps have notable advantages. By abstracting space into relational networks, these maps enable efficient representation and analysis of ecological processes in scenarios where exact geometry may be unknown, less relevant, or overly complex. They are particularly valuable in modeling metapopulation dynamics, habitat connectivity, or animal movement patterns, where the critical ecological factor is the presence or absence of connectivity rather than explicit spatial positions. Furthermore, generalized topological approaches facilitate integration with network theory, providing tools to analyze ecological resilience, robustness, fragmentation, and connectivity dynamics directly through graph-based metrics (e.g., connectivity indices, centrality measures, or modularity analyses) \cite{Lemiere2023}.
+% In ecological modeling, generalized topological maps have notable advantages. 
+By abstracting space into relational networks, these maps enable efficient representation and analysis of ecological processes in scenarios where exact geometry may be unknown, less relevant, or overly complex. They are particularly valuable in modeling metapopulation dynamics, habitat connectivity, or animal movement patterns, where the critical ecological factor is the presence or absence of connectivity rather than explicit spatial positions. Furthermore, generalized topological approaches facilitate integration with network theory, providing tools to analyze ecological resilience, robustness, fragmentation, and connectivity dynamics directly through graph-based metrics (e.g., connectivity indices, centrality measures, or modularity analyses) \cite{Lemiere2023,Gaucherel2012}.
 
 However, the use of generalized topological maps also presents several limitations and ecological assumptions:
 \begin{Itemize}
@@ -206,7 +208,8 @@ However, the use of generalized topological maps also presents several limitatio
     \Item{} Empirical calibration or validation may be difficult, as topological maps represent abstract ecological relationships rather than measurable spatial distances or tangible boundaries.
 \end{Itemize}
 
-Despite these limitations, generalized topological maps remain valuable tools, especially when combined with explicit spatial approaches (such as hybrid Voronoi-topological methods) or when explicit geometry is unavailable or unneeded. Examples of applications include modeling animal migration networks, habitat corridors, species dispersal networks, or the spread of invasive species through interconnected habitats.
+Despite these limitations, generalized topological maps remain valuable tools, especially when combined with explicit spatial approaches \cite{Ecormier-Nocca2021} or when explicit geometry is unavailable or unneeded \cite{Duflot2018,Boussange2022}. 
+% Examples of applications include modeling animal migration networks, habitat corridors, species dispersal networks, or the spread of invasive species through interconnected habitats.
 
 % The grid-based models represent a density of a population in a discrete space. The interaction of each cell is usually limited to its direct neighbors.
 
@@ -226,13 +229,13 @@ Despite these limitations, generalized topological maps remain valuable tools, e
     \label{fig:env-obj_individual-based-models}    
 \end{figure}
 
-In contrast to aggregated or spatially discrete models like grid-based and cellular automata methods, Individual-Based Models (IBM) explicitly represent each organism or ecological entity as a distinct unit. Fueled by increased computational power, IBMs have gained popularity due to their ability to capture individual variability, spatial heterogeneity, and detailed ecological dynamics. In IBMs, each organism is modeled independently, enabling fine-grained representation of processes such as birth, growth, reproduction, mortality, dispersal, and competition, each potentially influenced by local environmental conditions or interactions with neighboring individuals.
+In contrast to aggregated or spatially discrete models like grid-based and cellular automata methods, Individual-Based Models (IBM) explicitly represent each organism or ecological entity as a distinct unit \cite{Crooks2017}. Thanks to increased computational power, IBMs have gained popularity due to their ability to capture individual variability, spatial heterogeneity, and detailed ecological dynamics. In IBMs, each organism is modeled independently, enabling fine-grained representation of processes such as birth, growth, reproduction, mortality, dispersal, and competition, each potentially influenced by local environmental conditions or interactions with neighboring individuals \cite{Chng2013,Peytavie2024a}.
 
-IBM inherently captures the variability and heterogeneity of natural ecosystems, thus providing ecological realism by explicitly modeling individual variability in life histories, behavior, and spatial positioning. As such, IBMs are particularly effective for simulating complex ecological processes, including species interactions, competition, predation, dispersal, and responses to spatially heterogeneous environments  (\cref{fig:env-obj_individual-based-models}, right).
+IBM inherently captures the variability and heterogeneity of natural ecosystems, thus providing ecological realism by explicitly modeling individual variability in life histories, behavior, and spatial positioning \cite{McLane2011,Zhang2020}. As such, IBMs are particularly effective for simulating complex ecological processes, including species interactions, competition, predation, dispersal, and responses to spatially heterogeneous environments  (\cref{fig:env-obj_individual-based-models}, right).
 
 To reduce computational costs while maintaining ecological realism, IBMs frequently employ approximations such as distance-based competition methods (e.g., FRN, ZOI, FON), or stochastic processes capturing probabilistic interactions among individuals. Moreover, recent advances have improved the scalability and realism of IBMs by leveraging parallel computing and GPU-based simulations, facilitating large-scale applications.
 
-Hybrid approaches are also common, combining IBM with grid-based or tessellation models to balance computational efficiency and ecological detail. Such hybrids may represent environmental conditions through spatial grids or tessellations (Voronoi diagrams) while explicitly modeling organism-level behaviors and interactions individually.
+Hybrid approaches are also common, combining IBM with grid-based or tessellation models to balance computational efficiency and ecological detail. Such hybrids may represent environmental conditions through spatial grids or tessellations (Voronoi diagrams) while explicitly modeling organism-level behaviors and interactions individually \cite{Chng2011a}.
 
 % In opposition with the grid-based models, and in response to the increase of computer power, the research about ecosystem simulation leaned towards a new kind of model in which each individual of the system is represented independantly. The Individual-Based Models (IBM) sees each element of the system as an entity that spawn, grow, die, and possibly transport itself depending on its surroundings. 
 
@@ -245,7 +248,7 @@ In the Fixed-Radius Neighborhood (FRN) method, the first appearance of a distanc
 
     The computer graphics community represents the FRN constraint by using Poisson Disk Sampling or blue noise approximations \cite{Deussen2000} to generate entities as points that does not fall inside any other radius. The algorithm can be accelerated by using a regular grid structure as proposed by \citep{Bridson2007b}: each cell of the grid has a width of $\frac{\radius}{\sqrt{n}}$ with $n$ the number of dimensions (usually $n = 2$). Each point sampled is encoded by the grid cell in which it resides. A cell can only contain a unique point, making it a fast spatial structure for distance computation with other points. Each point added in the grid recursively instantiate new random samples in a spherical annulus of between radius $\radius$ and $2 \radius$. While this method is fast and simple, other methods propose variations on it to add the guarantee of maximal coverage \cite{Ebeida2011} or GPU parallelisation \cite{Wei2008}. However, in the presence of at least two species of different radius, the circle packing problem becomes more complicated and require a larger amount of collision detection, while keeping the spatial indexing method from Bridson's algorithm.
 
-    }{Poisson_disk_sampling.png}{Poisson Disk Sampling iteratively add points in space and checks whether the new points fall inside one of the previously instanciated points and radii. }{fig:env-obj_poisson-example}
+}{Poisson_disk_sampling.png}{Poisson Disk Sampling iteratively add points in space and checks whether the new points fall inside one of the previously instanciated points and radii. }{fig:env-obj_poisson-example}
 
 \subsubsubsection{Zone of Influence}
 \AltTextImage{
@@ -320,9 +323,21 @@ Empirical studies across diverse forest ecosystems have demonstrated that the ZO
     Unlike the ZOI method, the FON model does not assume a hard boundary around each tree, instead explicitly capturing a smooth decline in competitive impact with increasing distance. It also inherently accommodates asymmetric competition, since larger and closer neighbors exert disproportionately stronger competitive influences than smaller or more distant trees.
 }{FON-scheme-Berger2000.png}{The evaluation of the FON value at any point is the simple accumulation of individual fields.}{fig:env-obj_fon-compute-scheme}
 
-The FON method does not rely explicitly on geometric overlap and is thus flexible and particularly useful in heterogeneous forests or in situations where directional or asymmetric competition dominates. Its major strength lies in explicitly accounting for differences in tree size, spatial distribution, and the diminishing influence of neighbors with distance.
+The FON method does not rely explicitly on geometric overlap and is thus flexible and particularly useful in heterogeneous forests. However, in order to capture the self-thinning property of silviculture \cite{Makowski2019} satisfying $ W = c N^{-\frac{3}{2}} $ (with $W$ the average biomass of an individual, $N$ the density and $c$ a constant) \cite{Westoby1984}, the generation of the ecosystem should be iteratively simulated with small time steps \cite{Alsweis2005}, which is computationally expensive. Instead of simulating the full growth model of vegetation, most ecosystem generation algorithms focus on the distribution of the elements of the terrain, abstracting the competion into distance function deformations or statistical optimization. 
 
-While the FON model provides a biologically detailed representation of competition, its computational complexity makes it significantly more challenging to implement in large-scale simulations. Unlike the ZOI model, which relies on predefined geometric overlaps that can be calculated efficiently, the FON approach requires integrating a continuously decaying competition function over an arbitrary area of influence. This necessitates evaluating the function at multiple points across overlapping zones, increasing computational demand. Moreover, the additive nature of FON, where each tree contributes to the total competition field at every spatial point, further exacerbates the cost, scaling poorly in dense forest stands. The necessity of numerical integration or spatial discretization makes FON computationally expensive compared to ZOI, which only requires simple geometric calculations. Consequently, while FON is useful for small-scale or highly detailed ecological studies, it is generally impractical for large-scale forest simulations. 
+\AltTextImage{
+    By designing non-monotonous field functions around trees, an emergence of different behaviour can appear. \cite{Lane2002} proposed to apply a "deformation kernel" on the distance function, resulting in a larger variety of patterns like the clustering of bushes and the competition of larger trees (\cref{fig:env-obj_kernels-Lane2002}, top left). From this idea, the definition of deformation kernels for each pair of species (\cref{fig:env-obj_kernels-Lane2002}, top right, with kernels for two species) allows the system to include the ecological interaction between the different species in the terrain. As a result, the simulation of the ecosystem can introduce intra-species clumping while keeping inter-species segregation.
+
+}{kernel-matrices-Lane2002.png}{The deformation of neighborhood kernels enables the modelling of different behaviour for species and inter-species interactions}{fig:env-obj_kernels-Lane2002}
+
+\AltTextImage{
+    On the other hand, learning the spatial distribution of distances between individuals from examples can be used as a statistical metric to introduce interactive tools for ecosystem generation \citep{Emilien2015a}. In this work, given a user-provided example, the system learns the parameters such as the histogram of distances inter- and intra-species from one region and reproduce these distribution in another regions. This method then does not limit to trees, but may include any scene element like houses and roads, as well as the integration of other metrics than distances such as the terrain slope.
+}{worldbrush-Emilien2015.png}{Using statistical distribution from an input terrain, \cite{Emilien2015a} resynthesize a different terrain with similar distributions. }{fig:env-obj_worldbrush-Emilien2015}
+
+While the FON model provides a biologically detailed representation of competition, its computational complexity makes it significantly more challenging to implement in large-scale simulations. Unlike the ZOI model, which relies on predefined geometric overlaps that can be calculated efficiently, the FON approach requires integrating a continuously decaying competition function over an arbitrary area of influence. This necessitates evaluating the function at multiple points across overlapping zones, increasing computational demand. Moreover, the additive nature of FON, where each tree contributes to the total competition field at every spatial point, further exacerbates the cost, scaling poorly in dense forest stands. The necessity of numerical integration or spatial discretization makes FON computationally expensive compared to ZOI, which only requires simple geometric calculations. Consequently, while FON is useful for small-scale or highly detailed ecological studies, it is generally impractical for large-scale forest simulations.
+
+
+
 % To address these challenges, computational approximations such as discretized grids, kernel density estimations, or hybrid models combining FON for local interactions and ZOI for broader simulations may offer viable alternatives. Nonetheless, ZOI remains the preferred approach for efficiency and scalability in large-scale forest dynamics modeling.
 
 % However, the FON model also has assumptions and limitations: notably, it assumes the effects of neighbors accumulate additively, often ignoring possible interactive or nonlinear competition effects, and typically relies on empirically tuning the $FON_i$ functions, which require extensive field data for accurate calibration.
@@ -349,7 +364,7 @@ Site-Based Models discretize the environment into discrete regions, making them 
 
 While these approaches have been successfully used in various ecological studies, many real-world ecological processes do not fit neatly into a discrete grid or a set of independent agents. Instead, they operate in a continuous spatial domain, where organisms interact with smooth environmental gradients rather than discrete neighbors. For example, the competition for light and nutrients is not limited to the direct neighbors.
 
-To address these challenges, Ecological Field Models (EFMs) provide an alternative framework where environmental properties are represented as continuous spatially explicit fields \cite{Wu1985}. Rather than defining interactions through direct contact (as in IBMs) or discrete adjacency (as in SBMs), EFMs describe how organisms modify and respond to smooth environmental gradients.
+To address these challenges, Ecological Field Models (EFMs) provide an alternative framework where environmental properties are represented as continuous spatially explicit fields \cite{Wu1985}. Rather than defining interactions through direct contact (as in IBMs) or discrete adjacency (as in SBMs), EFMs describe how organisms modify and respond to smooth environmental gradients \cite{Chng2011b}.
 
 From a computer graphics perspective, EFMs share similarities with techniques used in Signed Distance Fields (SDFs). Just as SDFs encode geometric influences in a continuous field, EFMs encode ecological influences, allowing for more realistic ecosystem simulations.
 
@@ -393,9 +408,9 @@ The primary challenge in computer graphics is how to efficiently store, sample, 
 
 Several methods exist for implementing spatially explicit fields in graphics:
 \begin{Itemize}
-    \Item A common approach is to discretize the environment into a regular 2D or 3D grid, where each cell stores a value corresponding to an ecological property, such as soil moisture, nutrient concentration, or shading intensity. This approach has the advantage of efficient lookup and updates, and GPU compatibility at the cost of memory usage and precision loss. 
+    \Item{} A common approach is to discretize the environment into a regular 2D or 3D grid, where each cell stores a value corresponding to an ecological property, such as soil moisture, nutrient concentration, or shading intensity. This approach has the advantage of efficient lookup and updates, and GPU compatibility at the cost of memory usage and precision loss. 
 
-    \Item Rather than storing explicit values at discrete locations, ecological fields can be defined using procedural functions that are evaluated dynamically. This approach is particularly relevant in procedural terrain and vegetation generation, where continuous field functions determine environmental parameters. A Signed Distance Field (SDF), frequently used in raymarching and volumetric rendering, can be adapted for EFMs by encoding environmental influence functions. This approach enables a theoretical infinite precision for a compact memory footprint at the expense of high computational demand.
+    \Item{} Rather than storing explicit values at discrete locations, ecological fields can be defined using procedural functions that are evaluated dynamically. This approach is particularly relevant in procedural terrain and vegetation generation, where continuous field functions determine environmental parameters. A Signed Distance Field (SDF), frequently used in raymarching and volumetric rendering, can be adapted for EFMs by encoding environmental influence functions. This approach enables a theoretical infinite precision for a compact memory footprint at the expense of high computational demand.
 \end{Itemize}
 
 
@@ -432,7 +447,7 @@ and the occlusion field $\alpha$ as the product of all objects' occlusion fields
 assuming $\theta_0$ and $\alpha_0$ to be global scalar fields for temperature and shade, symbolising the baseline environmental state in the ecological domain.
 
 \AltTextImage{
-    Using the field values, the system instantiates small details like leaves by sampling the space with candidate "anchor positions". If the field values satisfy certain conditions at the anchor position $\p_i$, the small scale objects can be instantiated at this position (for example, for leaves: $\alpha(\p_i) l(\p_i) < d_i$ using the occlusion field $\alpha$, the leaves deposition field $l$ and the distance of the anchor position to the depositing surface $d_i$). This method can then be easily extended to modify the geometry or texture of the object based on the field values like the heat field or the humidity field, or to manually move or rotate each of the objects.
+    Using the field values, the system instantiates small details like leaves by sampling the space with candidate "anchor positions". If the field values satisfy certain conditions at the anchor position $\p_i$, the small scale objects can be instantiated at this position (for example, for leaves: $\alpha(\p_i) l(\p_i) < d_i$ using the occlusion field $\alpha$, the leaves deposition field $l$ and the distance of the anchor position to the depositing surface $d_i$). This method can then be easily extended to modify the geometry or texture of the object based on the field values like the heat field or the humidity field, to manually move or rotate each of the objects, or even integrate user-defined density fields to populate entangled details on the ground \cite{Guerin2016}. 
 }{EnvObjs-leaves-instances-Grosbellet2016.png}{Leaves are instanced if the fields are sufficient and the geometry and texture are altered depending on the environment}{fig:env-obj_leaves-instances}
 
 \AltTextImage{
@@ -443,15 +458,18 @@ assuming $\theta_0$ and $\alpha_0$ to be global scalar fields for temperature an
     with $s$ the "snow field", and $g$ a snow elevation function based on the distance between the original vertex and the border of the mesh.
 }{EnvObjs-snow-Grosbellet2016.png}{Snow deposition is a displacement of vertices along the normals of the mesh}{fig:env-obj_snow-Grosbellet2016}
 
+\AltTextImage{
+    In addition to the EFM framework, the environmental effects from environmental objects are not limited by points geometry as the scalar functions may use a spline primitive or be extended to volume primitives. Translated to the ecological domain, this methodology extends the EFM as the inclusion of water bodies, essential for realistic vegetation simulation, can be taken into account by considering environmental effects from rivers and lakes which are often modeled as splines and regions in 3D modeling \cite{Emilien2015,Genevaux2013,Genevaux2015}.
+}{env-obj-fields-heat-Grosbellet2016.png}{The heat field produced by a pipe uses a distance function from a line instead than a single point in space.}{fig:env-obj_heat-field-effect}
 
-The Environmental Objects method can be seen as a variant of the EFM due to their high reliance on the idea of fields and environmental effects of each element on the environment, even if the purposes of each method are opposed: one tend to model the environment properties given the elements present while the other aims at altering the geometry of a scene given the elements in the scene, regardless to their biological nature. However, the convergence of these approaches suggests intriguing possibilities for cross-disciplinary innovation. The integration of ecological dynamics into procedural modeling could lead to more adaptive virtual environments that respond realistically to environmental changes, while procedural techniques could enhance ecological simulations by improving scalability and visualization.
+The Environmental Objects method can be seen as a variant of the EFM due to their high reliance on the idea of fields and environmental effects of each element on the environment, even if the purposes of each method are opposed: one tend to model the environment properties given the elements present while the other aims at altering the geometry of a scene given the elements in the scene, regardless to their biological nature. However, the convergence of these approaches suggests possibilities for cross-disciplinary innovation. The integration of ecological dynamics into procedural modeling could lead to more adaptive virtual environments that respond realistically to environmental changes, while procedural techniques could enhance ecological simulations by improving scalability and visualization.
 
 The conceptual parallels between these models suggest potential areas for cross-disciplinary application. Insights from EFM could inform procedural content generation, enabling more realistic and adaptive virtual ecosystems by incorporating agent-based dynamics, ecosystem succession models, and time-dependent environmental changes. Conversely, procedural modeling techniques from computer graphics could enhance ecological simulations, improving visualization, scalability, and user interactivity in landscape ecology and biodiversity modeling. 
 
 
 % Modern application of EFM include the notion of diffusion in order to depict the dynamic evolution of nutrients with respect to external boundaries such as a scene with different soil porosity or topography. 
 
-The original EFMs work effectively for static environmental conditions, but many real-world ecological processes involve dynamic, time-dependent changes. For instance, soil moisture depletes over time, plant growth alters shading conditions, and chemical scent trails decay. By integrating biologically inspired feedback loops, procedural generation could extend beyond static environmental effects, enabling simulations of growth, decay, and species interactions \cite{Okubo2001}. To extend Environmental Objects beyond static environmental representations, we turn to reaction-diffusion models, which provide a mathematical foundation for modeling time-dependent field interactions used in ecological simulations. 
+The original EFMs work effectively for static environmental conditions, but many real-world ecological processes involve dynamic, time-dependent changes. For instance, soil moisture depletes over time, plant growth alters shading conditions, and chemical scent trails decay. By integrating biologically inspired feedback loops, procedural generation could extend beyond static environmental effects, enabling simulations of growth, decay, and species interactions \cite{Okubo2001,Wojtek2022}. To extend Environmental Objects beyond static environmental representations, we turn to reaction-diffusion models, which provide a mathematical foundation for modeling time-dependent field interactions used in ecological simulations. 
 
 
 
@@ -540,20 +558,14 @@ The original EFMs work effectively for static environmental conditions, but many
     \label{fig:diffusion-model-teaser}    
 \end{figure}
 
-Reaction-diffusion models are fundamental tools in mathematical biology and ecology, providing insights into the complex patterns observed in natural ecosystems. These models combine chemical or biological reactions (reaction) with movement through space (diffusion) to describe processes such as population dynamics, infectious disease spread, and ecological invasions.
+Reaction-diffusion models are fundamental tools in mathematical biology and ecology, providing insights into the complex patterns observed in natural ecosystems. These models combine chemical or biological reactions (reaction) with movement through space (diffusion) to describe processes such as population dynamics, infectious disease spread, and ecological invasions \cite{Cosner2008}.
 
 Initially developed to explain phenomena in chemistry and physics, reaction-diffusion models have been adapted to ecological contexts to simulate scenarios where organisms interact with each other and their environment over space and time. The application of these models in ecology helps in understanding how patterns of distribution and abundance arise, how they persist, and how they might change under various environmental pressures.
 
 The concept of reaction-diffusion was initially introduced in the early 20th century by mathematician Alan Turing explored how non-uniform patterns emerge through mechanisms of chemical reaction and diffusion in \citep{Turing1952}. Turing's theories laid the groundwork for understanding pattern formation in biological systems, including those seen in animal coats and developmental processes.
 
-The adaptation of reaction-diffusion models to ecological contexts began in earnest several decades later as ecologists sought to explain spatial phenomena such as the spread of invasive species, the maintenance of species diversity, and the formation of vegetation patterns. These models provided a mathematical framework to simulate and predict the dynamics of complex biological systems influenced by both local interactions and spatial movement.
+The adaptation of reaction-diffusion models to ecological contexts began several decades later as ecologists camne to explain spatial phenomena such as the spread of invasive species, the maintenance of species diversity, and the formation of vegetation patterns. These models provided a mathematical framework to simulate and predict the dynamics of complex biological systems influenced by both local interactions and spatial movement.
 
-Over the years, the application of reaction-diffusion models has expanded with advancements in computational power and mathematical techniques, allowing for more detailed and accurate simulations of ecological processes. This historical progression not only reflects the increasing complexity and applicability of the models but also underscores their integral role in modern ecological research and management.
-
-
-
-
-% \subsubsection{Mathematical model}
 Reaction-diffusion models describe the spatial and temporal evolution of populations, chemicals, or other ecological entities that interact (reaction) and spread (diffusion) through a medium. These models are widely used in ecosystem simulations to understand population dynamics, species dispersal, disease spread, and spatial pattern formation in ecological systems.
 
 In the context of ecology, a reaction-diffusion model typically represents:
@@ -577,48 +589,47 @@ Diffusion is a fundamental process in ecological modeling that describes how ind
 
 In mathematical models, diffusion is typically represented as a term in partial differential equations that governs how population densities change over time and space. While many ecological models assume isotropic diffusion (movement occurs equally in all directions), anisotropic diffusion provides a more realistic representation of species movement in structured or heterogeneous landscapes.
 
-However, when diffusion is anisotropic, the diffusion coefficient varies depending on direction, and we must generalize the equation (\cref{eq:env-obj_classic-reaction-diffusion}) by introducing a diffusion tensor $\tensor{D}$:
+However, when diffusion is anisotropic, the diffusion coefficient varies depending on direction, and we must generalize the equation (\cref{eq:env-obj_classic-reaction-diffusion}) by introducing a diffusion tensor $\tensor{D}$ \cite{Ramos2024}:
 \begin{align}
     \label{eq:env-obj_reaction-diffusion}
     \frac{\partial u (x, t)}{\partial t} = \nabla \cdot (\tensor{D} \nabla u(x, t)) + R(u)
 \end{align}
 
-The tensor $\tensor{D}$ can now encompass the effect of relief and environmental factors like wind and currents in the spread of a species.
-
-When diffusion is isotropic, $\tensor{D} = D\tensor{I}$, reducing the equation to the classic isotropic form.
+The tensor $\tensor{D}$ can now encompass the effect of relief and environmental factors like wind and currents in the spread of a species. When diffusion is isotropic, $\tensor{D} = D\tensor{I}$, reducing the equation to the classic isotropic form.
 
 Anisotropic diffusion is particularly useful in ecological modeling where movement rates are not uniform due to environmental structures or organism behavior. For example, wind influences the spread of pollen, seeds, and insect populations, leading to anisotropic diffusion. Similarly, marine organisms or pollutants diffuse anisotropically in ocean currents.
 Invasive species may spread preferentially along corridors such as rivers or roads, causing asymmetric diffusion. In ecosystems where microorganisms move in response to chemical gradients (chemotaxis), anisotropic diffusion better models movement patterns.
 
-We may generalize the reaction-diffusion equation to account for both internal (density, species interaction, ...) and external (environmental factor, relief, seasonality, ...) influences on diffusion by writing:
+We may generalize the reaction-diffusion equation to account for both internal (density, species interaction, ...) and external (environmental factor, relief, seasonality, ...) influences on diffusion by slightly rewriting \cref{eq:env-obj_reaction-diffusion}:
 \begin{align}
     \frac{\partial u}{\partial t} = \nabla \cdot (\tensor{D(*)} \nabla u) + R(u)
 \end{align}
 where $\tensor{D(*)}$  is a diffusion tensor dynamically defined by any relevant internal or external property of the system. For example:
 \begin{Itemize}
-    \Item A density-dependent diffusion can be expressed as $\tensor{D(*)} = \tensor{D} u^m$, allowing for crowding or dispersal-limited movement.
-    \Item A seasonal dispersal effect can be incorporated as $\tensor{D(*)} = \tensor{D} (1 + A cos(\omega t) )$, where dispersal varies cyclically over time.
-    \Item A spatially varying diffusion may be defined as $\tensor{D(*)} = \tensor{D} f(x)$, such as the patchy diffusion formulation used in metapopulation models:
+    \Item{} A density-dependent diffusion can be expressed as $\tensor{D(*)} = \tensor{D} u^m$, allowing for crowding or dispersal-limited movement \cite{Zhu2023}.
+    \Item{} A seasonal dispersal effect can be incorporated as $\tensor{D(*)} = \tensor{D} (1 + A cos(\omega t) )$, where dispersal varies cyclically over time \cite{Katriel2021}.
+    \Item{} A spatially varying diffusion may be defined as $\tensor{D(*)} = \tensor{D} f(x)$, such as the patchy diffusion formulation used in metapopulation models \cite{Czaran1998}:
     \begin{align}
         \tensor{D(*)} = \tensor{D} \begin{dcases}
             D_1, & x \in \text{habitable patch} \\
             D_2, & x \in \text{hostile patch}
         \end{dcases}
     \end{align}
-    \Item An anomalous diffusion (subdiffusive or superdiffusive) like the inclusion of Lévy flight term, incorporating random long distance jumps can be expressed as $\tensor{D(*)} = \tensor{D} u^m + \noise L(t)$.
+    \Item{} An anomalous diffusion like the inclusion of Lévy flight term, incorporating random long distance jumps can be expressed as $\tensor{D(*)} = \tensor{D} u^m + \noise L(t)$ \cite{Humphries2014,Chechkin2008}.
 \end{Itemize}
+
 This generalized form enables the integration of anisotropic effects, landscape heterogeneity, and adaptive movement behaviors within reaction-diffusion models, making it highly applicable to ecological and biological systems.
 
 \subsubsection{Reaction term}
 In physics and chemistry, the reaction $R(u)$ term describes how substances are produced or consumed in a system. Some common reaction formulations include:
 
 \begin{Itemize}
-    \Item Linear reaction terms (exponential growth with $\lambda > 0$ or decay $\lambda < 0$) as in the radioactive decay formulation:
+    \Item{} Linear reaction terms (exponential growth with $\lambda > 0$ or decay $\lambda < 0$) as in the radioactive decay formulation:
     $$ R(u) = \lambda u $$
-    \Item Second-order reactions, usually found in chemical reactions between two molecules:
+    \Item{} Second-order reactions, usually found in chemical reactions between two molecules:
     $$ R(u, v) = \alpha u v$$
     \AltTextImage{
-        \Item Turing pattern-forming systems proposed by Alan Turing to explain stripe and spot formations in animal coat patterns and chemical reactions
+        \Item{} Turing pattern-forming systems proposed by Alan Turing to explain stripe and spot formations in animal coat patterns and chemical reactions \cite{Turing1952,Shoji2002}
         $$ R(u, v) = \begin{dcases}
             f(u, v) & \text{(Activator)} \\
             g(u, v) & \text{(Inhibitor)}
@@ -626,11 +637,11 @@ In physics and chemistry, the reaction $R(u)$ term describes how substances are 
     }{turing_patterns.png}{Turing patterns on animals}{fig:env-obj_turing-pattern}
 \end{Itemize}
 
-On the other hand, in ecology, the reaction term models population growth, competition, predation, and ecosystem interactions. Some of the most important ecological reaction terms are:
+On the other hand, in ecology, the reaction term models population growth, competition, predation, and ecosystem interactions \cite{Brauer2012}. Some of the most important ecological reaction terms are:
 \begin{Itemize}
-    \Item The logistic growth, that describes a single species population growth in a limited-resource environment, is defined with a growth rate $r$ and a carrying capacity $K$:
+    \Item{} The logistic growth, that describes a single species population growth in a limited-resource environment, is defined with a growth rate $r$ and a carrying capacity $K$ \cite{Verhulst1844}:
     $$ R(u) = r u \left( 1 - \frac{u}{K} \right)$$
-    \Item The Lotka-Volterra competition model, that describe the trophic interactions between two or more species, for which the reaction-diffusion equations take into account each other species:
+    \Item{} The Lotka-Volterra competition model, that describe the trophic interactions between two or more species, for which the reaction-diffusion equations take into account each other species:
     \begin{align}
         \frac{\partial u_i}{\partial t} = r_i u_i \left( 1 - \frac{\sum_{j=1}^N a_{ij} u_j}{K_i} \right)
     \end{align}
@@ -650,7 +661,7 @@ On the other hand, in ecology, the reaction term models population growth, compe
 
 
 \subsubsection{Convection}
-In vegetation ecosystem modeling, convection refers to the directed transport of biological or environmental variables under the influence of external forces such as wind, water flow, or slope. Unlike diffusion, which describes random movement, convection introduces a preferred direction of transport, significantly influencing ecosystem dynamics.
+In vegetation ecosystem modeling, convection refers to the directed transport of biological or environmental variables under the influence of external forces such as wind, water flow, or slope. Unlike diffusion, which describes random movement, convection introduces a preferred direction of transport, significantly influencing ecosystem dynamics \cite{Burger2020}.
 
 Mathematically, the convection-diffusion-reaction equation (or "scalar transport equations" \cite{Baukal2000}) extends the classical reaction-diffusion model by adding a velocity field $\field{v}$ that governs directed movement:
 \begin{align}
@@ -667,21 +678,21 @@ with $S(x, t)$ the seed density at position $x$ and time $t$ and $\lambda$ a mor
 
 A stochastic modelling of turbulent regime could be added to the velocity field with a stochastic noise term:
 \begin{align}
-    \frac{\partial S}{\partial t} + (\field{v} + \sigma W(x, t)) \cdot \nabla S = \nabla \cdot (\tensor{D}_s \nabla S) - \lambda S
+    \frac{\partial S}{\partial t} + (\field{v} + \sigma(x, t)) \cdot \nabla S = \nabla \cdot (\tensor{D}_s \nabla S) - \lambda S
 \end{align}
 
 
 On another hand, soil moisture distribution is essential for vegetation survival and ecosystem stability. The movement of water through soil is governed by surface runoff, subsurface infiltration, and capillary action, which are affected by slope, soil texture, and plant uptake rates. In hilly or mountainous regions, gravity-driven water flow dominates soil moisture distribution, creating hydrological gradients that shape vegetation structure.
 
-The movement of soil moisture can be described by a modified form of the Richards equation:
+The movement of soil moisture can be approximated by the Soil Moisture Velocity Equation \cite{Ogden2017}, a modified form of the Richards equation:
 \begin{align}
-    \frac{\partial W}{\partial t} + \field{v} \cdot \nabla W = \nabla \cdot (D_W \nabla W ) - \beta B W
+    \frac{\partial W}{\partial t} + \field{v} \cdot \nabla W = \nabla \cdot (D_W \nabla W ) - S
 \end{align}
-with $W(x, t)$ the water concentration at position $x$ and time $t$, $D_W$ the water diffusion coefficient, $\beta B W$ the plant water uptake (the amount of water absorbed or transpired, mainly by the roots of vegetation), and $\field{v} = -g \nabla h$ a simplified velocity field provided by the slope.
+with $W(x, t)$ the water concentration at position $x$ and time $t$, $D_W$ the water diffusion coefficient, $S$ the plant water uptake (the amount of water absorbed or transpired, mainly by the roots of vegetation \cite{Peters2020,Shanin2015}), and $\field{v} = - K g \hat z$ a simplified velocity field provided by the slope hindered by the hydraulic conductivity $K$.
 
 Steeper slopes enhance runoff, reducing soil water retention and increasing drought susceptibility in these regions. Conversely, water accumulates in lowland areas, promoting denser vegetation and the formation of wetlands or riparian ecosystems. As a result, topography directly influences plant distribution, with drought-resistant species dominating slopes and water-demanding species thriving in valleys.
 
-
+We find in the convection-reaction-diffusion equation a general way to represent a multitude of natural phenomena: from the propagation of bacteria, prey and predators, to the spread of nutrients, of water, or even of fire \cite{Hadrich2021}. 
 
 
 
