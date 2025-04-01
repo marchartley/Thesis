@@ -157,7 +157,7 @@
   {\multicitedelim}%
   {\usebibmacro{postnote}}
 
-\newbibmacro*{citefullbody}{
+\newbibmacro*{citefullbody}{%
   \printnames{labelname}%
   \setunit{\addcomma\space}%
   \textit{\printfield[]{title}}~(\printfield{year})%
@@ -408,20 +408,20 @@
 \zzcommand{\adduniquecite}[1]{%
   \def\currentkey{#1}%
   \IfSubStr{\sectioncitedkeyslist}{,\currentkey,}{\def\foundkey{1}}{\def\foundkey{0}}%
-  \ifnum\foundkey=0
+  \ifnum\foundkey=0%
     \stepcounter{sectioncites}%
     \xappto{\sectioncitedkeyslist}{,\currentkey,}%
   \fi%
   \IfSubStr{\subsectioncitedkeyslist}{,\currentkey,}{\def\foundkey{1}}{\def\foundkey{0}}%
-  \ifnum\foundkey=0
+  \ifnum\foundkey=0%
     \stepcounter{subsectioncites}%
     \xappto{\subsectioncitedkeyslist}{,\currentkey,}%
   \fi%
   \IfSubStr{\subsubsectioncitedkeyslist}{,\currentkey,}{\def\foundkey{1}}{\def\foundkey{0}}%
-  \ifnum\foundkey=0
+  \ifnum\foundkey=0%
     \stepcounter{subsubsectioncites}%
     \xappto{\subsubsectioncitedkeyslist}{,\currentkey,}%
-  \fi
+  \fi%
 }
 
 % Custom bibmacro to do the tracking per entry
