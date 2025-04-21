@@ -145,8 +145,6 @@
 
 \emergencystretch=1em
 
-% \setkeys{Gin}{width=\linewidth}
-
 \zzcommand{\cellalign}{cl}
 \newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
 
@@ -208,31 +206,43 @@
 }
 
 \newlength{\currentparindent}
-% \AltTextImageR{item_content}{image_path}{caption}{label}
+\newlength{\contentheightofalttextimage}
+\newsavebox{\alttextbox}
+
+% \AltTextImageR{item_content}{placeholder.pdf}{caption}{label}
 \zzcommand{\AltTextImageR}[4]{% 
   \setcounter{AltTextImageCurrentSide}{1}
-  \setlength{\currentparindent}{\parindent}
+  \setlength{\currentparindent}{\parindent}%
+  % \newsavebox{\alttextbox}
+    \sbox{\alttextbox}{\vbox{\hsize=0.65\linewidth #1}}%
+    \setlength{\contentheightofalttextimage}{\ht\alttextbox}%
   \noindent
   \begin{minipage}[t]{0.65\linewidth}
     \setlength{\parindent}{\currentparindent}
     #1
   \end{minipage}%
   \hfill % Add horizontal space between text and image
-  \begin{minipage}[t]{0.30\linewidth}
-    \includegraphics[width=\linewidth, valign=t]{#2}
+  \begin{minipage}[t]{0.30\linewidth}    
+    \centering
+    \includegraphics[width=\linewidth, 
+    height=\contentheightofalttextimage, keepaspectratio,
+    valign=t]{#2}
     \captionsetup{font=footnotesize}
     \captionsetup{width=\linewidth}
     \captionof{figure}{#3}
     \label{#4}
   \end{minipage}%
 }
-% \AltTextImageL{item_content}{image_path}{caption}{label}
+% \AltTextImageL{item_content}{placeholder.pdf}{caption}{label}
 \zzcommand{\AltTextImageL}[4]{% 
   \setcounter{AltTextImageCurrentSide}{0}
-  \setlength{\currentparindent}{\parindent}
+  \setlength{\currentparindent}{\parindent}%
+    \sbox{\alttextbox}{\vbox{\hsize=0.65\linewidth #1}}%
+    \setlength{\contentheightofalttextimage}{\ht\alttextbox}%
   \noindent
   \begin{minipage}[t]{0.30\linewidth}
-    \includegraphics[width=\linewidth, valign=t]{#2}
+    \centering
+    \includegraphics[width=\linewidth, height=\contentheightofalttextimage, keepaspectratio, valign=t]{#2}
     \captionsetup{font=footnotesize}
     \captionsetup{width=\linewidth}
     \captionof{figure}{#3}
@@ -244,7 +254,7 @@
     #1
   \end{minipage}%
 }
-% \AltTextImage{item_content}{image_path}{caption}{label}
+% \AltTextImage{item_content}{placeholder.pdf}{caption}{label}
 \zzcommand{\AltTextImage}[4]
 {
   \stepcounter{AltTextImageCurrentSide}  % Increment the counter
@@ -294,7 +304,7 @@
 
 % \eqref{label}
 \zzcommand{\eqref}[1]{\cref{#1}}
-
+% \to 
 \zzcommand{\to}{\mapsto}
 
 
@@ -459,3 +469,82 @@
 \pretocmd{\section}{\showsubsubsectioncites\showsubsectioncites\showsectioncites\resetsectioncites}{}{}
 \pretocmd{\subsection}{\showsubsubsectioncites\showsubsectioncites\resetsubsectioncites}{}{}
 \pretocmd{\subsubsection}{\showsubsubsectioncites\resetsubsubsectioncites}{}{}
+
+
+
+
+
+
+
+
+
+% === User-facing macro ===
+% Holds user-defined row width
+\newcommand{\fitrowwidth}{\linewidth}
+\newcommand{\fitimageoptions}{}
+
+% autofitgraphics with [options]{img1,img2,...}
+\makeatletter
+\NewDocumentCommand{\autofitgraphics}{O{} m}{%
+  \renewcommand{\fitrowwidth}{\linewidth}%
+  \def\fitimageoptions{}%
+  \def\cleanopts{}%
+
+  \def\tempa{#1}%
+  \@for\opt:=\tempa\do{%
+    \IfBeginWith{\opt}{width=}%
+      {\StrBehind{\opt}{=}[{\tempwidth}]\renewcommand{\fitrowwidth}{\tempwidth}}%
+      {\ifx\cleanopts\@empty
+         \edef\cleanopts{\opt}%
+       \else
+         \edef\cleanopts{\cleanopts,\opt}%
+       \fi
+      }%
+  }%
+  \edef\fitimageoptions{\cleanopts}%
+  \fitNimages{#2}%
+}
+\makeatother
+
+\newcounter{fitImgCount}%
+\newcounter{fitImgIndex}%
+\newcommand{\fitNimages}[1]{%
+  \setcounter{fitImgCount}{0}
+  \setcounter{fitImgIndex}{0}
+  \begingroup
+  
+  \def\fitTotalRatio{0}%
+  \global\let\fitWidths\empty
+  \def\fitImgList{}%
+
+  % Copy input to a clean list for repeated processing
+  \renewcommand{\do}[1]{%
+    \edef\fitImgList{\fitImgList,##1}%
+  }%
+  \docsvlist{#1}%
+
+  % First pass: calculate total aspect ratio and store individual ratios
+  \renewcommand{\do}[1]{%
+    \stepcounter{fitImgCount}%
+    \sbox0{\includegraphics{##1}}%
+    \edef\imgWidth{\the\wd0}%
+    \edef\imgHeight{\the\ht0}%
+    \pgfmathsetmacro{\imgRatio}{\imgWidth/\imgHeight}%
+    \pgfmathparse{\fitTotalRatio + \imgRatio}%
+    \xdef\fitTotalRatio{\pgfmathresult}%
+    \expandafter\xdef\csname fitRatio\thefitImgCount\endcsname{\imgRatio}%
+  }%
+  \docsvlist{#1}%
+
+  % Second pass: output images with proportional widths
+  \setcounter{fitImgIndex}{0}%
+  \begin{adjustbox}{width=\fitrowwidth}%
+  \renewcommand{\do}[1]{%
+    \stepcounter{fitImgIndex}%
+    \pgfmathsetmacro{\relwidth}{\csname fitRatio\thefitImgIndex\endcsname / \fitTotalRatio}%
+    \expandafter\includegraphics\expandafter[\fitimageoptions, width=\relwidth\linewidth]{##1}%
+  }%
+  \docsvlist{#1}%
+  \end{adjustbox}%
+  \endgroup
+}

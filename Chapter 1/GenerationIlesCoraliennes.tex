@@ -9,8 +9,9 @@
 \label{chap:coral-island}
 \teaser{
 	\centering
-	\includegraphics[width=0.6\linewidth]{terrainGAN.png}
-	\includegraphics[width=0.3\linewidth]{terrainGAN_result.png}
+    \autofitgraphics[]{terrainGAN.png, terrainGAN_result.png}
+	% \includegraphics[width=0.6\linewidth]{terrainGAN.png}
+	% \includegraphics[width=0.3\linewidth]{terrainGAN_result.png}
 	\caption{Caption.}
 	\label{fig:teaser_cGAN}
 }
@@ -296,8 +297,9 @@ The generation of coral reef islands in this system begins with two intuitive sk
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.45 \linewidth]{Cicia_island.png}
-	\includegraphics[width=0.45 \linewidth]{Cicia_island-outlines.png}
+    \autofitgraphics[]{Cicia_island.png, Cicia_island-outlines.png}
+	% \includegraphics[width=0.45 \linewidth]{Cicia_island.png}
+	% \includegraphics[width=0.45 \linewidth]{Cicia_island-outlines.png}
 	\includegraphics[width=0.90 \linewidth]{Cicia_island-3D.png}
     \caption{(Left) A real world example of aerial image of an island (Cicia Island) may be segmented in regions. (Right) We can represent the different regions by the boundaries they form. (Bottom)  }
     \label{fig:coral-island_top-view-sketch}
@@ -313,8 +315,9 @@ In this sketch, the user defines the overall horizontal layout of the island, in
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.45 \linewidth]{profileFunction.pdf}
-	\includegraphics[width=0.45 \linewidth]{schema_profile.jpg}
+    \autofitgraphics[]{profileFunction.pdf, schema_profile.jpg}
+	% \includegraphics[width=0.45 \linewidth]{profileFunction.pdf}
+	% \includegraphics[width=0.45 \linewidth]{schema_profile.jpg}
     \caption{(Left) A profile function $\heightProfile$ is defined as a 1D function and represents the surface from the center of the island to the abysses. (Right) The cross-section representation of an island is often represented as a 1D function defined using terrain features as landmarks. }
     \label{fig:coral-island_profile-function}
 \end{figure}
@@ -449,8 +452,9 @@ The deformation vector is scaled by the resistance function at each point $\p$, 
 This ensures that the wind deformation has the greatest impact on areas like the coastline and beach, where erosion naturally plays a larger role, while deeper regions like the abyss or stronger regions like mountains remain stable and relatively unchanged.
 
 \begin{figure}[H]
-    \includegraphics[width = 0.45\linewidth]{result_low_resistance.png}
-    \includegraphics[width = 0.45\linewidth]{result_high_resistance.png}
+    \autofitgraphics[]{result_low_resistance.png, result_high_resistance.png}
+    % \includegraphics[width = 0.45\linewidth]{result_low_resistance.png}
+    % \includegraphics[width = 0.45\linewidth]{result_high_resistance.png}
     \caption{(Left) Given a uniform wind velocity field and a resistance function similar as \cref{fig:coral-island_resistance-function}, the coasts are smoothly eroded while the interior of the island is almost unaffected. (Right) Modifying the resistance function to affect a strong resistance to borders simulate the effect of coast reinforcements.}
 \end{figure}
 
@@ -548,22 +552,26 @@ We obtain the piecewise function as shown in \cref{fig:coral-island_reef-functio
 \subsubsection{Blending the height fields}
 
 \begin{figure}[H]
-    \includegraphics[width=0.45\linewidth]{blend_function_low_approx.png}
-    \includegraphics[width=0.45\linewidth]{blend_function_high_approx.png}
+    \autofitgraphics[]{blend_function_low_approx.png, blend_function_high_approx.png}
+    % \includegraphics[width=0.45\linewidth]{blend_function_low_approx.png}
+    % \includegraphics[width=0.45\linewidth]{blend_function_high_approx.png}
 
-    \includegraphics[width=0.45\linewidth]{blend_compare_closeup_low.png}
-    \includegraphics[width=0.45\linewidth]{blend_compare_closeup_high.png}
+    \autofitgraphics[]{blend_compare_closeup_low.png, blend_compare_closeup_high.png}
+    % \includegraphics[width=0.45\linewidth]{blend_compare_closeup_low.png}
+    % \includegraphics[width=0.45\linewidth]{blend_compare_closeup_high.png}
     \caption{Blending two functions $f: \R \to \R$ (black) and $g: \R \to \R$ (blue) with the $\max$ operator (red), causing a discontinuity, and with the $\smoothmax$ operator (green), resolving the issue at the cost of slight underestimations with low values of $k$. Left: $k=5$, right: $k=50$}
     \label{fig:coral-island_blend-function-island}
 \end{figure}
 
 \begin{figure}[H]
-    \includegraphics[width=0.45\linewidth]{blend_function_with_upper_low.png}
-    \includegraphics[width=0.45\linewidth]{blend_function_with_upper_high.png}
+    \autofitgraphics[]{blend_function_with_upper_low.png, blend_function_with_upper_high.png}
+    % \includegraphics[width=0.45\linewidth]{blend_function_with_upper_low.png}
+    % \includegraphics[width=0.45\linewidth]{blend_function_with_upper_high.png}
 
-    \includegraphics[width=0.3\linewidth]{blend_closeup_k_5.png}
-    \includegraphics[width=0.3\linewidth]{blend_closeup_k_10.png}
-    \includegraphics[width=0.3\linewidth]{blend_closeup_k_50.png}
+    \autofitgraphics[]{blend_closeup_k_5.png, blend_closeup_k_10.png, blend_closeup_k_50.png}
+    % \includegraphics[width=0.3\linewidth]{blend_closeup_k_5.png}
+    % \includegraphics[width=0.3\linewidth]{blend_closeup_k_10.png}
+    % \includegraphics[width=0.3\linewidth]{blend_closeup_k_50.png}
     \caption{The $\smoothmax^+$ operator is a function that use to overestimate the maximum value of two functions, especially when the difference between the two functions is small. Taking the average of $\smoothmax$ and $\smoothmax^+$ creates a much more precise blending, even with lower values of $k$ (Left: $k=5$, center: $k=10$, right: $k=50$). However, the $\smoothmax^+$ function is undefined at $g(x) = h(x)$.}
     \label{fig:coral-island_blend-function-island-with-upper}
 \end{figure}
@@ -701,9 +709,10 @@ This configuration allows the process to create quickly a large quantity of data
 
 \subsubsection{Data augmentation}
 \begin{figure}
-    \includegraphics[width=0.3\linewidth]{6_features.png}
-    \includegraphics[width=0.3\linewidth]{6_heightmaps.png}
-    \includegraphics[width=0.3\linewidth]{6_results.png}
+    \autofitgraphics[]{6_features.png, 6_heightmaps.png, 6_results.png}
+    % \includegraphics[width=0.3\linewidth]{6_features.png}
+    % \includegraphics[width=0.3\linewidth]{6_heightmaps.png}
+    % \includegraphics[width=0.3\linewidth]{6_results.png}
     \caption{By applying our three data augmentation functions, the deep learning model learns to overcome some constraints previously set by the initial algorithm: (A) the translation removes the constraint to have an island ultimately at the center of the map, (B) the directional scaling, typical from image processing, reduces the symmety constraint on the results and (C) the copy-paste unlock the possibility to obtain more than one island per map.}
     \label{fig:coral-island_data-augmentation-examples}
 \end{figure}
@@ -749,19 +758,23 @@ The labeled map can be used for post-processing tasks, such as:
 \subsection{Control}
 
 \begin{figure}[H]
-    \includegraphics[width=.3 \linewidth]{2_features.png}
-    \includegraphics[width=.3 \linewidth]{2_heightmaps.png}
-    \includegraphics[width=.3 \linewidth]{2_results.png} 
-    \includegraphics[width=.3 \linewidth]{1_features.png}
-    \includegraphics[width=.3 \linewidth]{1_heightmaps.png}
-    \includegraphics[width=.3 \linewidth]{1_results.png}
+    \autofitgraphics[]{2_features.png, 2_heightmaps.png, 2_results.png}
+    % \includegraphics[width=.3 \linewidth]{2_features.png}
+    % \includegraphics[width=.3 \linewidth]{2_heightmaps.png}
+    % \includegraphics[width=.3 \linewidth]{2_results.png} 
+    \autofitgraphics[]{1_features.png, 1_heightmaps.png, 1_results.png}
+    % \includegraphics[width=.3 \linewidth]{1_features.png}
+    % \includegraphics[width=.3 \linewidth]{1_heightmaps.png}
+    % \includegraphics[width=.3 \linewidth]{1_results.png}
     \caption{An identical labelled map yield similar height fields over multiple inferences from the model, even after modifying the subsidence factor (visible in the luminosity of the input image).}
     \label{fig:coral-island_results1}
 \end{figure}
 \begin{figure}[H]
-    \includegraphics[width=.3 \linewidth]{3_features.png}
-    \includegraphics[width=.3 \linewidth]{3_heightmaps.png}
-    \includegraphics[width=.3 \linewidth]{3_results.png}
+    \autofitgraphics[]{3_features.png, 3_heightmaps.png, 3_results.png}
+    % \includegraphics[width=.3 \linewidth]{3_features.png}
+    % \includegraphics[width=.3 \linewidth]{3_heightmaps.png}
+    % \includegraphics[width=.3 \linewidth]{3_results.png}
+    % \autofitgraphics[]{4_features.png, 4_heightmaps.png, 4_results.png}
     % \includegraphics[width=.3 \linewidth]{4_features.png}
     % \includegraphics[width=.3 \linewidth]{4_heightmaps.png}
     % \includegraphics[width=.3 \linewidth]{4_results.png}
@@ -769,9 +782,10 @@ The labeled map can be used for post-processing tasks, such as:
     \label{fig:coral-island_results2}
 \end{figure}
 \begin{figure}[H]
-    \includegraphics[width=.3 \linewidth]{DinoIsland_features.png}
-    \includegraphics[width=.3 \linewidth]{DinoIsland_heightmaps.png}
-    \includegraphics[width=.3 \linewidth]{DinoIsland_results.png}
+    \autofitgraphics[]{DinoIsland_features.png, DinoIsland_heightmaps.png, DinoIsland_results.png}
+    % \includegraphics[width=.3 \linewidth]{DinoIsland_features.png}
+    % \includegraphics[width=.3 \linewidth]{DinoIsland_heightmaps.png}
+    % \includegraphics[width=.3 \linewidth]{DinoIsland_results.png}
     \caption{Without constraints on the generation, the user may use unrealistic layout and the neural network will however output a plausible result.}
     \label{fig:coral-island_results_dino}
 \end{figure}
@@ -788,8 +802,9 @@ We not only show that using a neural network reduces the constraints on the gene
 % \subsection{Validation}
 
 \begin{figure}
-    \includegraphics[width = 0.45\linewidth]{Mayotte-example.png}
-    \includegraphics[width = 0.45\linewidth]{5_results.png}
+    \autofitgraphics[]{Mayotte-example.png, 5_results.png}
+    % \includegraphics[width = 0.45\linewidth]{Mayotte-example.png}
+    % \includegraphics[width = 0.45\linewidth]{5_results.png}
     \caption{Comparison between of real (right) and synthetic (left) islands of Mayotte.}
 \end{figure}
 
