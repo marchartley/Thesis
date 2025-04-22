@@ -494,7 +494,7 @@ The original EFMs work effectively for static environmental conditions, but many
 
 % Although Grosbellet et al.’s procedural model was developed within the domain of computer graphics, it shares significant conceptual similarities with Wu’s Ecological Fields Model (1985). Wu’s framework describes ecological fields as spatially distributed influences that govern organismal interactions with their environment, shaping patterns of species distribution and community dynamics. In this approach, organisms respond to variations in ecological fields, which can represent factors such as resource availability, competition, and environmental constraints.
 
-% Similarly, Grosbellet et al. employ scalar fields to define environmental influences on objects within a virtual scene. These fields dictate changes in appearance, determining the extent of environmental effects such as the accumulation of snow, the growth of grass, or the placement of fallen leaves. The fields act as local, distributed parameters that influence an object’s properties based on its surroundings. Both models conceptualize their respective domains in terms of spatial gradients, emphasizing how entities—whether living organisms or computer-generated objects—are influenced by their spatial context.
+% Similarly, Grosbellet et al. employ scalar fields to define environmental influences on objects within a virtual scene. These fields dictate changes in appearance, determining the extent of environmental effects such as the accumulation of snow, the growth of grass, or the placement of fallen leaves. The fields act as local, distributed parameters that influence an object’s properties based on its surroundings. Both models conceptualize their respective domains in terms of spatial gradients, emphasizing how entities whether living organisms or computer-generated objects are influenced by their spatial context.
 
 % Another point of similarity between the two models is their hierarchical structure. Wu’s model applies to multiple scales of ecological organization, ranging from individual organisms to entire ecosystems. It accounts for local-level interactions, such as how an individual plant experiences resource competition, while also considering broader landscape-scale patterns. Similarly, Grosbellet et al.’s procedural framework structures virtual environments using a hierarchical composition of environmental objects. These objects can be grouped together to optimize computation, and the influence of environmental fields can be controlled at various levels of the hierarchy. This allows for efficient and scalable scene generation while maintaining fine control over localized details.
 
@@ -516,7 +516,7 @@ The original EFMs work effectively for static environmental conditions, but many
 
 % One promising direction is the development of dynamic procedural environments where environmental objects evolve over time based on real-world ecological principles. By integrating biologically inspired feedback loops, procedural generation could extend beyond static environmental effects, enabling simulations of growth, decay, and species interactions.
 
-% While originating from distinct domains, Wu’s Ecological Fields Model (1985) and Grosbellet et al.'s Procedural Modeling Framework share fundamental structural similarities in their use of spatially explicit field-based approaches. Both models conceptualize environmental influences as continuous fields that govern how entities interact with their surroundings. However, they diverge in their functional objectives, temporal dynamics, and mathematical underpinnings—one serving ecological science and the other computer-generated realism.
+% While originating from distinct domains, Wu’s Ecological Fields Model (1985) and Grosbellet et al.'s Procedural Modeling Framework share fundamental structural similarities in their use of spatially explicit field-based approaches. Both models conceptualize environmental influences as continuous fields that govern how entities interact with their surroundings. However, they diverge in their functional objectives, temporal dynamics, and mathematical underpinnings (one serving ecological science and the other computer-generated realism).
 
 % This analysis highlights the potential for cross-disciplinary innovation, where ecological models could inform procedural scene generation and procedural graphics could enhance ecological modeling and visualization. By integrating these approaches, future research could develop adaptive virtual environments that reflect both ecological principles and artistic flexibility, bridging the gap between scientific accuracy and interactive realism.
 
@@ -1083,20 +1083,45 @@ The final altitude is computed as
 
 \subsection{Influence on water currents}
 \label{sec:env-obj_water-currents}
-We define our water currents as a vector field defined as 
-\begin{align*}
+
+We define the global water current as a vector field composed of three components:
+\begin{align}
     \Water(\p) = \Wuser(\p) + \Wsimu(\p) + \Wobj(\p)
-\end{align*}
-With $\Wuser$ a user-defined vector field, $\Wsimu$ an analytical solution directly inspired by a wind flow simulation \cite{Paris2019b}, and $\Wobj$ the water flow alteration computed from the \glosses{EnvObj}. 
-The component $\Wsimu$ is influenced by terrain surface level. Starting with an initial flow direction $a$, the vector field is adjusted by applying a warp influenced by the terrain gradient at various scales:
-\begin{align*}
-    \Wsimu(\p) = \sum_{i=0}^{i=n}{c_i \warp_i \cdot v}
-\end{align*}
-Here, $v$ is calculated as $v = a \left(1 + k_w \abs{\height(\p)} \right)$, where $\abs{\height(\p)}$ represents the distance to water level at point $\p$, and $k_w$ is a scaling factor that accounts for Venturi effects. The term $\warp_i \cdot v$ denotes the warping process at scale $i$, with $c_i$ as the associated coefficient, defined as follows:
-\begin{align*}
-& \warp_i \cdot v = (1 - \alpha) v + \alpha k_i \nabla \Tilde{\height_i}^{\perp}(\p) & \alpha = \norm{ \nabla \Tilde{\height_i}(\p) }
-\end{align*}
-In this formulation, $k_i$ serves as the deviation coefficient, $\alpha$ represents the gradient of the smoothed terrain, and $\nabla \Tilde{\height_i}^{\perp}(\p)$ is the vector orthogonal to the smoothed terrain. Consistent with the original paper, two scaling levels were employed ($n = 2$) using Gaussian kernels with radii of 200 m and 50 m. The weights were set to 0.8 and 0.2, with corresponding deviation coefficients $k_0 = 30$ and $k_1 = 5$.
+\end{align}
+Here, $\Wuser(\p)$ is a user-defined vector field that provides direct control over the flow direction and intensity. The term $\Wsimu(\p)$ is an analytically defined component inspired by the terrain-aware wind simulation approach introduced in \citep{Paris2019b}, adapted to model the influence of terrain geometry on water flow. Finally, $\Wobj(\p)$ represents the deformation introduced by environment objects.
+
+The simulated component $\Wsimu$ captures how water flow is diverted and shaped by the underlying terrain. It starts from a uniform flow direction $a$ and introduces warping based on the terrain gradient evaluated at multiple spatial scales. The resulting vector field is expressed as:
+
+\begin{align}
+    \Wsimu(\p) = \sum_{i=0}^{n}{c_i \warp_i \cdot v}
+\end{align}
+
+In this formulation, $v$ is a base velocity vector adjusted according to the terrain elevation:
+
+\begin{align}
+    v = a \left(1 + k_w \abs{\height(\p)} \right)
+\end{align}
+where $\abs{\height(\p)}$ is the vertical distance from the terrain to the water level at point $\p$, and $k_w$ is a scaling factor simulating the Venturi effect, which increases velocity in regions of compression.
+
+Each $\warp_i \cdot v$ term represents the warping of $v$ at scale $i$, defined as:
+\begin{align}
+    \warp_i \cdot v = (1 - \alpha) v + \alpha k_i \nabla \Tilde{\height_i}^{\perp}(\p) \quad \text{with} \quad \alpha = \norm{ \nabla \Tilde{\height_i}(\p) }
+\end{align}
+Here, $\Tilde{\height_i}$ denotes the smoothed terrain elevation at scale $i$, and $\nabla \Tilde{\height_i}^{\perp}(\p)$ is the vector orthogonal to the terrain gradient, directing flow along paths that curve around elevation changes. The blending coefficient $\alpha$ controls the interpolation between the original flow and the deviated flow, based on the steepness of the terrain. The deviation coefficient $k_i$ determines the strength of the flow deflection at each scale.
+
+In accordance with the original method, we employ two spatial scales ($n = 2$), using Gaussian smoothing kernels with radii of 200~m and 50~m. The associated weights are set to $c_0 = 0.8$ and $c_1 = 0.2$, with deviation coefficients $k_0 = 30$ and $k_1 = 5$, respectively. This multi-scale formulation enables the simulation to account for both large topographic features and finer terrain details, resulting in a more nuanced and plausible flow field.
+
+The terrain-based simulation component $\Wsimu$ is designed to model large-scale water current behavior by leveraging an analytical approximation of flow deviation due to terrain. This solver is inspired by the work of \cite{Paris2019b}, originally developed for wind field simulation, and has been adapted here to capture how elevation changes influence the direction and intensity of surface water flow.
+
+One of the principal motivations for this formulation is its ability to incorporate terrain-awareness directly into the water current model. In natural environments, the underlying topography is the dominant factor determining flow direction, especially in the absence of dynamic fluid interactions. By analyzing the terrain gradient at multiple spatial scales, the solver accounts for both broad elevation patterns and finer landform features. This leads to a more nuanced and plausible flow field that conforms to hills, valleys, and river paths without requiring a full physical simulation.
+
+This approach offers significant advantages in terms of controllability and procedural integration. Unlike black-box physics-based solvers (presented more deeply in \cref{chap:erosion}), the analytical formulation of $\Wsimu$ exposes intuitive parameters such as flow direction, elevation sensitivity, and gradient deviation that can be tuned directly by designers or procedural rules. This makes the method especially suited for terrain generation pipelines where user intent or artistic direction needs to be encoded into the environment.
+
+Furthermore, the solver is computationally efficient and supports on-demand evaluation, allowing the vector field to be queried at any position without precomputing or storing dense data structures. This is particularly beneficial for large or streaming terrains, and aligns with the demands of real-time systems, interactive editors, and games.
+
+The model assumes steady-state flow, focusing on static representations of water movement that are sufficient for many applications in procedural worldbuilding. Dynamic effects such as rainfall response, flooding, or erosion are beyond the scope of this solver but can be layered on top of the static flow if needed. This simplification allows the system to remain lightweight while still conveying a physically plausible behavior of water across terrain.
+
+Finally, the solver is intentionally designed to handle only the large-scale structure of the flow. Small-scale variations, such as localized turbulence, vortices, or flow redirection around discrete features, are handled separately by the $\Wobj$ term. This separation of concerns allows the model to remain modular and efficient, with each component addressing flow phenomena at its relevant scale.
 
 \subsubsection{Vector field deformation through Kelvinlets}
 
@@ -1120,18 +1145,38 @@ In this formulation, $k_i$ serves as the deviation coefficient, $\alpha$ represe
     \label{fig:env-obj_peytavie-river-primitives}
 \end{figure}
 
-$\Wobj$ is a deformation field defined as the accumulation of flow primitives \cite{Wejchert1991}. Kelvinlets are applied on each \glosses{EnvObj} to deflect the water flow. We use the scale and grab formulations of the regularized Kelvinlets brushes \cite{DeGoes2017}, denoted as $s_\eps(r)$ and $g_\eps(r)$ respectively to simulate obstruction and diversion, are defined as
+$\Wobj$ is a deformation field defined as the accumulation of flow primitives \cite{Wejchert1991}. %Kelvinlets are applied on each \glosses{EnvObj} to deflect the water flow. 
+
+
+To model the localized influence of environment objects on water currents, we adopt Kelvinlets, a family of closed-form, continuous deformation functions derived from the fundamental solutions to the equations of linear elasticity in an infinite medium.
+
+Kelvinlets were introduced to computer graphics by De Goes et al. \cite{DeGoes2017} as an efficient means of producing physically plausible and interactive deformations. In our context, they provide a smooth and compact representation of flow alterations, ideal for integrating environmental features into vector field modeling.
+
+Kelvinlets originate from the Kelvin solution to the Navier-Cauchy equations of linear elasticity, which describe the displacement $\tensor{u}(\p)$ at a point $\p \in \R^3$ caused by a unit force applied at $\q$, in an isotropic, homogeneous elastic material:
+\begin{align}
+    \mu \nabla^2 \tensor{u} + (\lambda + \mu) \nabla(\nabla \cdot \tensor{u}) + \delta(\p - \q) \force = 0
+\end{align}
+where $\mu$ is the shear modulus, $\lambda$ is the first Lamé parameter, and $\force$ is the force vector.
+
+To regularize the singularity at $\p = \q$, \cite{DeGoes2017} introduced a smoothed form known as the regularized Kelvinlets, which allow deformation effects to fall off smoothly with distance, and prevent numerical instabilities.
+
+Given a center $\q$, an evaluation point $\p$, and a regularization $\eps$, we define $r = \p - \q$ and the regularized distand $r_{\eps} = \sqrt{\|r\|^2 + \eps^2}$.
+
+We use the scale and grab formulations of the regularized Kelvinlets brushes, denoted as $s_\eps(r)$ and $g_\eps(r)$ respectively to simulate obstruction and diversion, are defined as
 \begin{align*}
     s_\eps(r) &= (2b - a) \left( \frac{1}{r_\eps^3} + \frac{1}{2r_\eps^5} \right)(s r) \\
     g_\eps(r) &= \left[ \frac{a - b)}{r_\eps}I + \frac{b}{r_\eps^3} r r^t + 
 \frac{a \eps^2}{2 r_\eps^3} \identity \right] \force
 \end{align*}
-with $a = \frac{1}{4 \pi \mu}$ and $b = \frac{a}{4 (1 - \upsilon)}$ provided $\mu$ a shear modulus and $\upsilon$ a Poisson ratio provided for each Kelvinlet, $r = \p - \q$ for $\p$ the evaluation position and $\q$ the center point of the Kelvinlet, $r_\eps = \sqrt{\norm{r}^2 + \eps^2}$ the regularized distance, $\eps$ a radial scale for the deformation field, $s$ a scaling factor and $\force$ the force vector of the grab operation.
+with $a = \frac{1}{4 \pi \mu}$ and $b = \frac{a}{4 (1 - \upsilon)}$ provided $\mu$ a shear modulus and $\upsilon$ a Poisson ratio provided for each Kelvinlet, $s$ a scaling factor and $\force$ the force vector of the grab operation. These values are tunable per object to simulate different material or flow resistance behaviors.
+
 Deformations defined on curves use $\q = \closestCp$ with $\closestCp$ the closest point on the curve from the point $\p$ and $f = C'(\p)$. We can then define $u_o(\p) = s_\eps(\q - \p) + g_\eps(\p - \q)$.
 Finally, we can retrieve the velocity field from the objects:
 \begin{align*}
     \Wobj(\p) = \sum_{o \in \objects}^{}{\lambda_o u_o(\p)}
 \end{align*}
+
+The use of regularized Kelvinlets is well-suited to our model. They offer a compact representation thanks to their closed-form definition, which allows each deformation to be described analytically without the need for precomputed data or large simulation grids. They maintain continuity, ensuring that the resulting vector field is smooth and free of visual or numerical artifacts, which is crucial when blending influences from multiple environment objects. Their behavior is physically plausible, as they are derived from fundamental solutions to elasticity equations, and can convincingly simulate natural flow behaviors such as deflection around obstacles or local flow obstruction. They are also computationally efficient, since their evaluation is lightweight and independent of the size or complexity of the terrain, making them particularly suitable for integration into large-scale procedural generation pipelines and real-time interactive applications.
 
 
 \subsection{Environment stability}
