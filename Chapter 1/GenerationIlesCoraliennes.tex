@@ -550,6 +550,7 @@ We obtain the piecewise function as shown in \cref{fig:coral-island_reef-functio
 % The system uses these predefined regions to assign heights to coral reef points based on their proximity to the reef crest. For example, the height of a point in the fore reef is interpolated between the reef crest height and the deeper abyss regions.
 
 \subsubsection{Blending the height fields}
+\label{subsubsec:height-functions-blending}
 
 \begin{figure}[H]
     \autofitgraphics[]{blend_function_low_approx.png, blend_function_high_approx.png}
@@ -572,7 +573,7 @@ We obtain the piecewise function as shown in \cref{fig:coral-island_reef-functio
     % \includegraphics[width=0.3\linewidth]{blend_closeup_k_5.png}
     % \includegraphics[width=0.3\linewidth]{blend_closeup_k_10.png}
     % \includegraphics[width=0.3\linewidth]{blend_closeup_k_50.png}
-    \caption{The $\smoothmax^+$ operator is a function that use to overestimate the maximum value of two functions, especially when the difference between the two functions is small. Taking the average of $\smoothmax$ and $\smoothmax^+$ creates a much more precise blending, even with lower values of $k$ (Left: $k=5$, center: $k=10$, right: $k=50$). However, the $\smoothmax^+$ function is undefined at $g(x) = h(x)$.}
+    \caption{The $\smoothmax^+$ operator(orange) is a function that use to overestimate the maximum value of two functions, especially when the difference between the two functions is small, while the $\smoothmax^-$ function (green) tends to underestimate the $\max$ operator. Taking $\smoothmax$ (red) as the average of $\smoothmax^-$ and $\smoothmax^+$ creates a much more precise blending, even with lower values of $k$ (Left: $k=5$, center: $k=10$, right: $k=50$).}
     \label{fig:coral-island_blend-function-island-with-upper}
 \end{figure}
 
@@ -580,21 +581,36 @@ The final step is to blend the subsided height field $\heightSubsid(\p)$ with th
 
 To achieve this, the system uses a smooth max function, which smoothly blends the two height fields. The smooth max function ensures that the coral regions dominate where coral growth is present, while the subsided island terrain dominates in other regions. This blending method ensures that the transition between the coral and subsided regions is smooth and visually consistent.
 
-We define our smooth max function $\smoothmax: a, b \in \R^2$, adapted from Ingo Quilez's smooth min function, as:
+We define our smooth max function $\smoothmax: a, b \in \R^2$ as the mean of two functions, $\smoothmax^-$ and $\smoothmax^+$, adapted from Ingo Quilez's smooth min function, that respectively underestimate and overestimate the function $\max$:
 
 \begin{align}
-    \smoothmax(a, b) = a + \frac{(b - a)}{1 + \exp\left(-k \cdot (b - a)\right)}
+    \smoothmax^-(a, b) &= a + \frac{b - a}{1 + \exp\left(-k \cdot (b - a) \right)} \\
+    \smoothmax^+(a, b) &= a + \frac{b - a}{1 - \exp\left(-k \cdot (b - a) \right)} \\
+    \smoothmax(a, b)   &= a + \frac{\smoothmax^-(a, b) + \smoothmax^+(a, b)}{2} %}{2}
 \end{align}
 
 Here, $a = \heightSubsid(\p)$ is the height from the subsided island, $b = \heightCoral(\p)$ is the height from the coral reef feature, and $k$ controls the smoothness of the transition. Higher values of $k$ brings the $\smoothmax$ function closer to the $\max$ function (\cref{fig:coral-island_blend-function-island}).
 
 This smooth max function guarantees visual continuity by preventing abrupt height differences between the coral regions and the subsided terrain, creating a smooth, gradual transition that mimics the natural blending of coral reefs with deeper areas. The coral feature height field takes precedence where coral can grow, typically in shallow regions. In deeper regions, such as the abyss, the subsided height field naturally dominates, ensuring that the final terrain accurately reflects both subsidence and coral growth processes.
 
-We proposed another smooth max function $\smoothmax^+: a, b \in \R^2 | a \neq b$ that overestimate the $\max$ operator:
+Note that the $\smoothmax$ function is undefined for $a = b$, however, a proof of continuity is provided in \cref{chap:smoothmax-proof} resulting in 
 \begin{align}
-    \smoothmax^+(a, b) = a + \frac{1}{k} \frac{(b - a) k}{1 - \exp\left(-k (b - a)\right)}
+    \smoothmax(a, b) = \begin{dcases}
+        a + \frac{1}{2k} & \text{ if } a = b, \\
+        \frac{\smoothmax^-(a, b) + \smoothmax^+(a, b)}{2} & \text{otherwise}
+    \end{dcases}    
 \end{align}
-A close approximation of $\max$ is achievable with $\frac{\smoothmax + \smoothmax^+}{2}$ (\cref{fig:coral-island_blend-function-island-with-upper}), but this function breaks at $a = b$. For this reason, we stick on the initial $\smoothmax$ function proposed.
+and $\smoothmax \in C^\infty$.
+
+
+
+
+
+% We proposed another smooth max function $\smoothmax^+: a, b \in \R^2 | a \neq b$ that overestimate the $\max$ operator:
+% \begin{align}
+%     \smoothmax^+(a, b) = a + \frac{1}{k} \frac{(b - a) k}{1 - \exp\left(-k (b - a)\right)}
+% \end{align}
+% A close approximation of $\max$ is achievable with $\frac{\smoothmax + \smoothmax^+}{2}$ (\cref{fig:coral-island_blend-function-island-with-upper}), but this function breaks at $a = b$. For this reason, we stick on the initial $\smoothmax$ function proposed.
 
 \subsubsection{Output}
 

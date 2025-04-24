@@ -209,6 +209,7 @@
 \newlength{\contentheightofalttextimage}
 \newsavebox{\alttextbox}
 
+\ExplSyntaxOn
 % \AltTextImageR{item_content}{placeholder.pdf}{caption}{label}
 \zzcommand{\AltTextImageR}[4]{% 
   \setcounter{AltTextImageCurrentSide}{1}
@@ -224,9 +225,14 @@
   \hfill % Add horizontal space between text and image
   \begin{minipage}[t]{0.30\linewidth}    
     \centering
-    \includegraphics[width=\linewidth, 
-    height=\contentheightofalttextimage, keepaspectratio,
-    valign=t]{#2}
+    % Parse comma-separated images and stack them
+    \seq_set_split:Nnn \l_tmpa_seq { , } { #2 }%
+    \int_set:Nn \l_tmpa_int { \seq_count:N \l_tmpa_seq }%
+    \dim_set:Nn \l_tmpa_dim { \contentheightofalttextimage / \l_tmpa_int }%
+    \seq_map_inline:Nn \l_tmpa_seq {%
+      \includegraphics[width=\linewidth, height=\l_tmpa_dim, keepaspectratio, valign=t]{##1}\\%
+    }%
+    % \includegraphics[width=\linewidth, height=\contentheightofalttextimage, keepaspectratio, valign=t]{#2}
     \captionsetup{font=footnotesize}
     \captionsetup{width=\linewidth}
     \captionof{figure}{#3}
@@ -242,7 +248,14 @@
   \noindent
   \begin{minipage}[t]{0.30\linewidth}
     \centering
-    \includegraphics[width=\linewidth, height=\contentheightofalttextimage, keepaspectratio, valign=t]{#2}
+    % Parse comma-separated images and stack them
+    \seq_set_split:Nnn \l_tmpa_seq { , } { #2 }%
+    \int_set:Nn \l_tmpa_int { \seq_count:N \l_tmpa_seq }%
+    \dim_set:Nn \l_tmpa_dim { \contentheightofalttextimage / \l_tmpa_int }%
+    \seq_map_inline:Nn \l_tmpa_seq {%
+      \includegraphics[width=\linewidth, height=\l_tmpa_dim, keepaspectratio, valign=t]{##1}\\%
+    }%
+    % \includegraphics[width=\linewidth, height=\contentheightofalttextimage, keepaspectratio, valign=t]{#2}
     \captionsetup{font=footnotesize}
     \captionsetup{width=\linewidth}
     \captionof{figure}{#3}
@@ -254,6 +267,19 @@
     #1
   \end{minipage}%
 }
+\ExplSyntaxOff
+% \AltTextImage{item_content}{placeholder.pdf}{caption}{label}
+\zzcommand{\AltTextImage}[4]
+{
+  \stepcounter{AltTextImageCurrentSide}  % Increment the counter
+  \ifodd\value{AltTextImageCurrentSide}  % Check if the counter is odd
+      \AltTextImageR{#1}{#2}{#3}{#4}
+  \else%
+      \AltTextImageL{#1}{#2}{#3}{#4}
+  \fi
+}
+\ExplSyntaxOff
+
 % \AltTextImage{item_content}{placeholder.pdf}{caption}{label}
 \zzcommand{\AltTextImage}[4]
 {

@@ -1125,55 +1125,63 @@ Finally, the solver is intentionally designed to handle only the large-scale str
 
 \subsubsection{Vector field deformation through Kelvinlets}
 
-\begin{figure}
-    \autofitgraphics[]{aerodynamics-primitives-Wejchert1991.png, aerodynamics-addition-Wejchert1991.png}
-    % \includegraphics[width = .8\linewidth]{aerodynamics-primitives-Wejchert1991.png}
-    % \includegraphics[width = .15\linewidth]{aerodynamics-addition-Wejchert1991.png}
-    \caption{\cite{Wejchert1991} propose to describe the flowfield of the environment by a combination of primitives, resulting in a simulation of wind field controllable by the user at very small memory cost. }
-    \label{fig:env-obj_wejchert-flow}
-\end{figure}
+% \begin{figure}
+%     \autofitgraphics[]{aerodynamics-primitives-Wejchert1991.png, aerodynamics-addition-Wejchert1991.png}
+%     % \includegraphics[width = .8\linewidth]{aerodynamics-primitives-Wejchert1991.png}
+%     % \includegraphics[width = .15\linewidth]{aerodynamics-addition-Wejchert1991.png}
+%     \caption{\cite{Wejchert1991} propose to describe the flowfield of the environment by a combination of primitives, resulting in a simulation of wind field controllable by the user at very small memory cost. }
+%     \label{fig:env-obj_wejchert-flow}
+% \end{figure}
 
-\begin{figure}
-    \autofitgraphics[]{kelvinlets-grab-demo-DeGoes2017.png, kelvinlets-demo-DeGoes2017.png}
-    \caption{\cite{DeGoes2017} presents four types of deformations using Kelvinets, resulting in organic pinch-like interaction with the original field. From left to right: a grab on a \textcopyright Disney/Pixar character, a twist, a scale and a pinch operation. }
-    \label{fig:env-obj_kelvinlets-demo}
-\end{figure}
+% \begin{figure}
+%     \autofitgraphics[]{riverscape-primitives-Peytavie2019.png, riverscape-result-Peytavie2019.png}
+%     \caption{\cite{Peytavie2019} uses a sparse representation of a river surface to include details at the water surface.}
+%     \label{fig:env-obj_peytavie-river-primitives}
+% \end{figure}
 
-\begin{figure}
-    \autofitgraphics[]{riverscape-primitives-Peytavie2019.png, riverscape-result-Peytavie2019.png}
-    \caption{\cite{Peytavie2019} uses a sparse representation of a river surface to include details at the water surface.}
-    \label{fig:env-obj_peytavie-river-primitives}
-\end{figure}
+\AltTextImage{
+    $\Wobj$ is a deformation field defined as the accumulation of flow primitives. The use of analytical primitives to represent localized variations within large-scale scenes has been explored in various contexts such as the edition of wind fields (\cite{Wejchert1991}, \cref{fig:env-obj_wejchert-flow}) and authoring of rivers' water surface geometry (\cite{Peytavie2019}, \cref{fig:env-obj_peytavie-river-primitives}). In the latter, flow primitives are primarily used to generate the geometry of the water surface, but the same primitives can also be reused to produce a flow field, enabling effects such as floating debris or leaves drifting along the surface. Because geometry is sensitive to overlapping influences, the authors. organize primitives into a blending tree, where merge and replace operations control how individual contributions interact. 
+}{riverscape-primitives-Peytavie2019.png, riverscape-result-Peytavie2019.png}{\cite{Peytavie2019} uses a sparse representation of a river surface to include details at the water surface.}{fig:env-obj_peytavie-river-primitives}
+\AltTextImage{
+    On the other hand, \cite{Wejchert1991} showed that simply summing flow primitives generates velocity fields that approximate Navier-Stokes dynamics. Because their method affects motion rather than visible geometry, this additive approach offers a good trade-off between plausibility, user control and computation time.
 
-$\Wobj$ is a deformation field defined as the accumulation of flow primitives \cite{Wejchert1991}. %Kelvinlets are applied on each \glosses{EnvObj} to deflect the water flow. 
+    In our method, we adopt a similar additive approach to combine Kelvinlet-based primitives. Our goal is to define a deformation field and as such, summation offers an effective and intuitive way to accumulate the influence of multiple localized deformations at various scales, without requiring additional structure to resolve overlaps.
+}{aerodynamics-primitives-Wejchert1991.png, aerodynamics-addition-Wejchert1991.png}{\cite{Wejchert1991} propose to describe the flowfield of the environment by a combination of primitives, resulting in a simulation of wind field controllable by the user at very small memory cost.}{fig:env-obj_wejchert-flow}
+% To model the localized influence of environment objects on water currents, we adopt Kelvinlets, a family of closed-form, continuous deformation functions derived from the fundamental solutions to the equations of linear elasticity in an infinite medium.
 
 
-To model the localized influence of environment objects on water currents, we adopt Kelvinlets, a family of closed-form, continuous deformation functions derived from the fundamental solutions to the equations of linear elasticity in an infinite medium.
+% \begin{figure}
+%     \autofitgraphics[]{kelvinlets-grab-demo-DeGoes2017.png, kelvinlets-demo-DeGoes2017.png}
+%     \caption{\cite{DeGoes2017} presents four types of deformations using Kelvinets, resulting in organic pinch-like interaction with the original field. From left to right: a grab on a \textcopyright Disney/Pixar character, a twist, a scale and a pinch operation. }
+%     \label{fig:env-obj_kelvinlets-demo}
+% \end{figure}
 
-Kelvinlets were introduced to computer graphics by De Goes et al. \cite{DeGoes2017} as an efficient means of producing physically plausible and interactive deformations. In our context, they provide a smooth and compact representation of flow alterations, ideal for integrating environmental features into vector field modeling.
+Kelvinlets were introduced to computer graphics as an efficient means of producing physically plausible and interactive deformations \cite{DeGoes2017}. In our context, they provide a smooth and compact representation of flow alterations, ideal for integrating environmental features into vector field modeling.
 
-Kelvinlets originate from the Kelvin solution to the Navier-Cauchy equations of linear elasticity, which describe the displacement $\tensor{u}(\p)$ at a point $\p \in \R^3$ caused by a unit force applied at $\q$, in an isotropic, homogeneous elastic material:
+Kelvinlets are based on the Kelvin solution, which is the Green's function of the Navier-Cauchy equations of linear elasticity. It describes the displacement $\tensor{u}(\p)$ at a point $\p \in \R^3$ caused by a force applied at $\q$, in an isotropic, homogeneous elastic material:
 \begin{align}
     \mu \nabla^2 \tensor{u} + (\lambda + \mu) \nabla(\nabla \cdot \tensor{u}) + \delta(\p - \q) \force = 0
 \end{align}
-where $\mu$ is the shear modulus, $\lambda$ is the first Lamé parameter, and $\force$ is the force vector.
+where $\lambda$ and $\mu$ are the Lamé parameters, with $\mu$ also known as the shear modulus, and $\force$ is the force vector applied at a single point $\q$ via the Dirac delta function $\delta(\p - \q)$.
 
-To regularize the singularity at $\p = \q$, \cite{DeGoes2017} introduced a smoothed form known as the regularized Kelvinlets, which allow deformation effects to fall off smoothly with distance, and prevent numerical instabilities.
+\AltTextImage{
+    To regularize the singularity at $\p = \q$, \cite{DeGoes2017} introduced a smoothed form known as the regularized Kelvinlets, which allow deformation effects to fall off smoothly with distance, and prevent numerical instabilities.
 
-Given a center $\q$, an evaluation point $\p$, and a regularization $\eps$, we define $r = \p - \q$ and the regularized distand $r_{\eps} = \sqrt{\|r\|^2 + \eps^2}$.
+    Given a center $\q$, an evaluation point $\p$, and a regularization $\eps$, we define $\tensor{r} = \p - \q$ and the regularized distand $r_{\eps} = \sqrt{\|\tensor{r}\|^2 + \eps^2}$.
 
-We use the scale and grab formulations of the regularized Kelvinlets brushes, denoted as $s_\eps(r)$ and $g_\eps(r)$ respectively to simulate obstruction and diversion, are defined as
-\begin{align*}
-    s_\eps(r) &= (2b - a) \left( \frac{1}{r_\eps^3} + \frac{1}{2r_\eps^5} \right)(s r) \\
-    g_\eps(r) &= \left[ \frac{a - b)}{r_\eps}I + \frac{b}{r_\eps^3} r r^t + 
-\frac{a \eps^2}{2 r_\eps^3} \identity \right] \force
-\end{align*}
-with $a = \frac{1}{4 \pi \mu}$ and $b = \frac{a}{4 (1 - \upsilon)}$ provided $\mu$ a shear modulus and $\upsilon$ a Poisson ratio provided for each Kelvinlet, $s$ a scaling factor and $\force$ the force vector of the grab operation. These values are tunable per object to simulate different material or flow resistance behaviors.
+    We use the scale and grab formulations of the regularized Kelvinlets brushes (\cref{fig:env-obj_kelvinlets-demo}), denoted as $s_\eps(\tensor{r})$ and $g_\eps(\tensor{r})$ respectively to simulate obstruction and diversion, are defined as
+    \begin{align*}
+        s_\eps(\tensor{r}) &= (2b - a) \left( \frac{1}{r_\eps^3} + \frac{1}{2r_\eps^5} \right)(s \tensor{r}) \\
+        g_\eps(\tensor{r}) &= \left[ \frac{a - b}{r_\eps} \identity + \frac{b}{r_\eps^3} \tensor{r} \tensor{r}^t + 
+    \frac{a \eps^2}{2 r_\eps^3} \identity \right] \force
+    \end{align*}
+    with $a = \frac{1}{4 \pi \mu}$ and $b = \frac{a}{4 (1 - \upsilon)}$ provided $\mu$ a shear modulus and $\upsilon$ a Poisson ratio provided for each Kelvinlet, $s$ a scaling factor and $\force$ the force vector of the grab operation. These values are tunable per object to simulate different material or flow resistance behaviors.
+}{kelvinlets-grab-demo-DeGoes2017.png, kelvinlets-demo-DeGoes2017.png}{\cite{DeGoes2017} presents four types of deformations using Kelvinets, resulting in organic pinch-like interaction with the original field. Top: a grab on a \textcopyright Disney/Pixar character. From left to right: a twist, a scale and a pinch operation. }{fig:env-obj_kelvinlets-demo}
 
-Deformations defined on curves use $\q = \closestCp$ with $\closestCp$ the closest point on the curve from the point $\p$ and $f = C'(\p)$. We can then define $u_o(\p) = s_\eps(\q - \p) + g_\eps(\p - \q)$.
+Deformations defined on curves use $\q = \closestCp$ with $\closestCp$ the closest point on the curve from the point $\p$ and $\force = C'(\p)$. We can then define $\tensor{u}_o(\p) = s_\eps(\q - \p) + g_\eps(\p - \q)$.
 Finally, we can retrieve the velocity field from the objects:
 \begin{align*}
-    \Wobj(\p) = \sum_{o \in \objects}^{}{\lambda_o u_o(\p)}
+    \Wobj(\p) = \sum_{o \in \objects}^{}{\lambda_o \tensor{u}_o(\p)}
 \end{align*}
 
 The use of regularized Kelvinlets is well-suited to our model. They offer a compact representation thanks to their closed-form definition, which allows each deformation to be described analytically without the need for precomputed data or large simulation grids. They maintain continuity, ensuring that the resulting vector field is smooth and free of visual or numerical artifacts, which is crucial when blending influences from multiple environment objects. Their behavior is physically plausible, as they are derived from fundamental solutions to elasticity equations, and can convincingly simulate natural flow behaviors such as deflection around obstacles or local flow obstruction. They are also computationally efficient, since their evaluation is lightweight and independent of the size or complexity of the terrain, making them particularly suitable for integration into large-scale procedural generation pipelines and real-time interactive applications.
@@ -1268,7 +1276,7 @@ Subsidence and uplift are the main \glosses{GeoEvent} that create or destroy isl
 \end{align*}
 with $G(x)$ the Gaussian function
 \begin{align*}
-    G(x) = \exp \left(-\frac {x^{2}}{2 \std ^{2}}\right)
+    G(x) = \frac{1}{\std \sqrt{2\pi}} \exp \left(-\frac {x^{2}}{2 \std ^{2}}\right)
 \end{align*}
 
 \begin{figure}
@@ -1282,7 +1290,7 @@ with $G(x)$ the Gaussian function
 
 Storms are factors of the geomorphology of coral reefs \cite{VilaConcejo2016, Oron2023} and coasts \cite{Dominguez2005, Cowart2010}. Due to the extreme wind and wave velocities coasts are highly eroded in a short time period and the more fragile corals near the water surface are broken, possibly causing breaches in the reefs and spreading polyps in the currents direction. While there are many factors at play to understand the apparition of storms and the hydrodynamics affecting it, we simplified the model of storms to the user as a single epicenter $\q$ with a wind velocity $\windVelocity$ and a standard deviation $\std$ representing the spread around the epicenter (\cref{fig:env-obj_storm-event}). The computation of water currents are then computed as 
 \begin{align*}
-    \Wuser(\p) = \Wuser^*(\p) + \sum_{e \in \events} {\windVelocity \frac{G(\norm{\p - \q}}{G(0)}}
+    \Wuser(\p) = \Wuser^*(\p) + \sum_{e \in \events} {\windVelocity G(\norm{\p - \q})}
 \end{align*}
 In this case, we did not include the linear factor $\tEvent$ as storms are usually conserving a constant force for the time of the few weeks or months of their occurrence. 
 
