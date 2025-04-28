@@ -5,116 +5,131 @@
     Boolean operations such as union, intersection, and difference are fundamental in logic and have been widely adopted in computer graphics, particularly in Constructive Solid Geometry (CSG). In this context, they are used to combine geometric primitives into complex shapes. However, while Boolean functions are naturally discontinuous, modern rendering pipelines typically favor smoothness to enable effects like anti-aliasing, gradient shading, and physical simulation. This has led to the development of *smooth operators*: continuous, differentiable approximations of Boolean functions. The ideal objective is to construct operators that are not only smooth but infinitely differentiable, also known as functions belonging to the class $C^\infty$.
 }
 
-% \section{Definition of the Smoothmax function $\smoothmax$}
+\section{Definition of the Smoothmax function $\smoothmax$}
 
-% In \cref{subsubsec:height-functions-blending}, we introduced the operator $\smoothmax: \R^2 \to \R$ as a smooth approximation of the $\max$ operator, defined with the smoothness parameter $k \gt 0$ as:
+In \cref{subsubsec:height-functions-blending}, we introduced the operator $\smoothmax: \R^2 \to \R$ as a smooth approximation of the $\max$ operator, defined with the sharpness parameter $k > 0$ as:
 
-% \begin{align}
-%     \smoothmax(a, b) = a + \frac{1}{2} \cdot \frac{b - a}{1 + e^{-k(b - a)}} + \frac{1}{2} \cdot \frac{b - a}{1 - e^{-k(b - a)}}
-% \end{align}
+\begin{align}
+    \smoothmax(a, b) = a + \frac{1}{2} \cdot \frac{b - a}{1 + e^{-k(b - a)}} + \frac{1}{2} \cdot \frac{b - a}{1 - e^{-k(b - a)}}
+\end{align}
 
-% We observe that for $a = b$, the final term becomes undefined due to a removable singularity in the expression $\frac{b - a}{1 - e^{-k(b - a)}}$, potentially introducing a discontinuity. In this section, we demonstrate that this function is in fact continuous on $\R^2$ and is infinitely differentiable, i.e., $\smoothmax \in C^\infty$.
+We observe that for $a = b$, the final term becomes undefined due to a removable singularity in the expression $\frac{b - a}{1 - e^{-k(b - a)}}$, potentially introducing a discontinuity. In this section, we demonstrate that this function is in fact continuous on $\R^2$ and is infinitely differentiable, i.e., $\smoothmax \in C^\infty$.
 
-% It is evident that the only potentially problematic term in $\smoothmax$ is $\frac{b - a}{1 - e^{-k(b - a)}}$, as the rest of the expression is composed of standard smooth ($C^\infty$) functions.
+It is evident that the only potentially problematic term in $\smoothmax$ is $\frac{b - a}{1 - e^{-k(b - a)}}$, as the rest of the expression is composed of standard smooth ($C^\infty$) functions.
 
-% To simplify our analysis, define the auxiliary function:
+To simplify our analysis, define the auxiliary function:
 
-% \begin{align}
-%     f(x) = \frac{x}{1 - e^{-kx}}
-% \end{align}
+\begin{align}
+    f(x) = \frac{x}{1 - e^{-kx}}
+\end{align}
 
-% Then we may express:
+Then we may express:
 
-% \begin{align}
-%     \smoothmax(a, b) = a + \frac{1}{2} \cdot \frac{b - a}{1 + e^{-k(b - a)}} + \frac{1}{2} f(b - a)
-% \end{align}
+\begin{align}
+    \smoothmax(a, b) = a + \frac{1}{2} \cdot \frac{b - a}{1 + e^{-k(b - a)}} + \frac{1}{2} f(b - a)
+\end{align}
 
-% To assess the continuity and differentiability of $\smoothmax$, it suffices to analyze $f$ in a neighborhood of $x = 0$, where the apparent singularity arises.
+To assess the continuity and differentiability of $\smoothmax$, it suffices to analyze $f$ in a neighborhood of $x = 0$, where the apparent singularity arises.
 
-% \begin{figure}
-%     % \insertgraphics[width=\linewidth]{}
-%     % [INSERT GRAPH OF f(x)]
-%     \caption{Plotting the function $f(x)$ suggests continuity, although it is initially undefined at $x = 0$.}
-%     \label{fig:smoothmax-f-plot}
-% \end{figure}
+\begin{figure}
+    % \insertgraphics[width=\linewidth]{}
+    % [INSERT GRAPH OF f(x)]
+    \caption{Plotting the function $f(x)$ suggests continuity, although it is initially undefined at $x = 0$.}
+    \label{fig:smoothmax-f-plot}
+\end{figure}
 
-% \section{Continuity: $C^0$}
+\section{Continuity: $C^0$}
 
-% From \cref{fig:smoothmax-f-plot}, we observe that $f$ appears continuous at $x = 0$. However, directly evaluating $f(0)$ yields the indeterminate form $\frac{0}{0}$. To resolve this, we apply L’Hôpital’s Rule:
+From \cref{fig:smoothmax-f-plot}, we observe that $f$ appears continuous at $x = 0$. However, directly evaluating $f(0)$ yields the indeterminate form $\frac{0}{0}$. To resolve this, we apply L’Hôpital’s Rule:
 
-% \begin{align}
-%     \lim_{x \to 0} f(x) = \lim_{x \to 0} \frac{x}{1 - e^{-kx}} = \frac{g'(x)}{h'(x)}
-% \end{align}
-% where
-% \begin{align}
-%     g(x) = x, \quad & \quad g'(x) = 1 \\
-%     h(x) = 1 - e^{-kx}, \quad & \quad h'(x) = k e^{-kx}
-% \end{align}
+\begin{align}
+    \lim_{x \to 0} f(x) = \lim_{x \to 0} \frac{x}{1 - e^{-kx}} = \frac{g'(x)}{h'(x)}
+\end{align}
+where
+\begin{align}
+    g(x) = x, \quad & \quad g'(x) = 1 \\
+    h(x) = 1 - e^{-kx}, \quad & \quad h'(x) = k e^{-kx}
+\end{align}
 
-% Thus,
-% \begin{align}
-%     \lim_{x \to 0} \frac{g'(x)}{h'(x)} = \lim_{x \to 0} \frac{1}{k e^{-kx}} = \frac{1}{k}
-% \end{align}
+Thus,
+\begin{align}
+    \lim_{x \to 0} \frac{g'(x)}{h'(x)} = \lim_{x \to 0} \frac{1}{k e^{-kx}} = \frac{1}{k}
+\end{align}
 
-% Since the limit exists and equals $\frac{1}{k}$, we define:
+Since the limit exists and equals $\frac{1}{k}$, we define:
 
-% \begin{align}
-%     f(0) := \frac{1}{k}
-% \end{align}
+\begin{align}
+    f(0) := \frac{1}{k}
+\end{align}
 
-% This definition removes the singularity and ensures that $f$ is continuous on $\R$. For the case $a = b$, we then have:
+This definition removes the singularity and ensures that $f$ is continuous on $\R$. For the case $a = b$, we then have:
 
-% \begin{align}
-%     \smoothmax(a, b) = a + \frac{1}{2k}
-% \end{align}
+\begin{align}
+    \smoothmax(a, b) = a + \frac{1}{2k}
+\end{align}
 
-% The complete definitions of the functions are:
+The complete definitions of the functions are:
 
-% \begin{align}
-%     f(x) &= \begin{dcases}
-%         \frac{x}{1 - e^{-kx}}, & x \neq 0 \\
-%         \frac{1}{k}, & x = 0
-%     \end{dcases} \\
-%     \smoothmax(a, b) &= \begin{dcases}
-%         a + \frac{1}{2} \cdot \frac{b - a}{1 + e^{-k(b - a)}} + \frac{1}{2} \cdot \frac{b - a}{1 - e^{-k(b - a)}}, & a \neq b \\
-%         a + \frac{1}{2k}, & a = b
-%     \end{dcases}
-% \end{align}
+\begin{align}
+    f(x) &= \begin{dcases}
+        \frac{x}{1 - e^{-kx}}, & x \neq 0 \\
+        \frac{1}{k}, & x = 0
+    \end{dcases} \\
+    \smoothmax(a, b) &= \begin{dcases}
+        a + \frac{1}{2} \cdot \frac{b - a}{1 + e^{-k(b - a)}} + \frac{1}{2} \cdot \frac{b - a}{1 - e^{-k(b - a)}}, & a \neq b \\
+        a + \frac{1}{2k}, & a = b
+    \end{dcases}
+\end{align}
 
-% We have shown that $f$ is continuous on $\R$, and thus $\smoothmax$ is continuous on $\R^2$, meaning $\smoothmax \in C^0$.
+We have shown that $f$ is continuous on $\R$, and thus $\smoothmax$ is continuous on $\R^2$, meaning $\smoothmax \in C^0$.
 
-% \section{Smoothness: $C^\infty$}
+\section{Smoothness: $C^\infty$}
 
-% In this section, we prove that $\smoothmax$ is infinitely differentiable. Since it is composed of standard smooth functions and the auxiliary function $f$, we need only verify that $f \in C^\infty$. This suffices to conclude that $\smoothmax \in C^\infty$.
+In this section, we prove that $\smoothmax$ is infinitely differentiable. Since it is composed of standard smooth functions and the auxiliary function $f$, we need only verify that $f \in C^\infty$. This suffices to conclude that $\smoothmax \in C^\infty$.
 
-% We proceed by induction to prove that $f$ is infinitely differentiable on $\R$.
+We proceed by induction to prove that $f$ is infinitely differentiable on $\R$.
 
-% \begin{Itemize}
-%     \Item{$\bullet$} Base case: $f \in C^0$, already shown above.
-%     \Item{$\bullet$} Inductive step:
+\begin{Itemize}
+    \Item{$\bullet$} Base case: $f \in C^0$, already shown above.
+    \Item{$\bullet$} Inductive step:
     
-%     Assume that $f^{(n)}$ exists and is continuous on $\R$, and that any singularity at $x = 0$ is removable. Then the $(n+1)$-th derivative is defined by:
+    Assume that $f^{(n)}$ exists and is continuous on $\R$, and that any singularity at $x = 0$ is removable. Then the $(n+1)$-th derivative is defined by:
     
-%     \begin{align}
-%         f^{(n+1)}(x) := \lim_{h \to 0} \frac{f^{(n)}(x + h) - f^{(n)}(x)}{h}
-%     \end{align}
+    \begin{align}
+        f^{(n+1)}(x) := \lim_{h \to 0} \frac{f^{(n)}(x + h) - f^{(n)}(x)}{h}
+    \end{align}
     
-%     Each $f^{(n)}(x)$ can be expressed in the form:
+    Each $f^{(n)}(x)$ can be expressed in the form:
     
-%     \begin{align}
-%         f^{(n)}(x) = \frac{P_n(x, e^{-kx})}{Q_n(x, e^{-kx})}
-%     \end{align}
+    \begin{align}
+        f^{(n)}(x) = \frac{P_n(x, e^{-kx})}{Q_n(x, e^{-kx})}
+    \end{align}
     
-%     where $P_n$ and $Q_n$ are smooth functions of their arguments. Both numerator and denominator vanish at $x = 0$, but their orders of vanishing match, and the singularity is removable.
-% \end{Itemize}
+    where $P_n$ and $Q_n$ are smooth functions of their arguments. Both numerator and denominator vanish at $x = 0$, but their orders of vanishing match, and the singularity is removable.
+\end{Itemize}
 
-% Hence, $f^{(n+1)}$ exists and is continuous on $\R$. By induction, we conclude that $f \in C^\infty$ on $\R$, and consequently, $\smoothmax \in C^\infty$ on $\R^2$.
+Hence, $f^{(n+1)}$ exists and is continuous on $\R$. By induction, we conclude that $f \in C^\infty$ on $\R$, and consequently, $\smoothmax \in C^\infty$ on $\R^2$.
 
-% \smallConclusion
+\smallConclusion
 
-% Additionally, The function $f(x) = \frac{x}{1 - e^{-kx}}$ is constructed from compositions and ratios of analytic functions, and its singularity at $x = 0$ is removable. Therefore, $f$ is real-analytic on $\R$. Since $\smoothmax$ is composed of analytic functions (including $f$), and piecewise-defined extensions that are analytic at their boundaries, we conclude that $\smoothmax$ is real-analytic on $\R^2$.
+Additionally, The function $f(x) = \frac{x}{1 - e^{-kx}}$ is constructed from compositions and ratios of analytic functions, and its singularity at $x = 0$ is removable. Therefore, $f$ is real-analytic on $\R$. Since $\smoothmax$ is composed of analytic functions (including $f$), and piecewise-defined extensions that are analytic at their boundaries, we conclude that $\smoothmax$ is real-analytic on $\R^2$.
+
+\section{Comparison with other smooth functions}
+
+Any smooth maximum function does induce a loss of precision compared to the real value of $\max(x_0, \max(x_1, \max(x_2, ...)))$. The difference from the real value is controlled by the sharpness parameter $k$. We will show numerically that our operator is able to reduce the error for high values of $k$ at a fast rate by comparing it with  Softmax, usually used in machine learning, and defined as
+\begin{align}
+    Softplus(a, b) = a + \frac{1}{k} \log \left(1 + e^{k(b - a)} \right)
+\end{align}
 
 
+
+
+
+
+The $smoothmax$ operator may be used to define the $\smoothmin$ operator, which is defined as:
+\begin{align}
+    \smoothmin(a, b) = -\smoothmax(-a, -b)
+\end{align}
 
 
 

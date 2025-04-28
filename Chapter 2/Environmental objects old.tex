@@ -39,107 +39,85 @@ This chapter introduces a novel method for procedural terrain generation, which 
 % \end{figure}
 
 % Slight introduction
-Virtual terrain generators often deliver raw geometry or grids, but field experts need the symbolic cues they draw on topographic or bathymetric maps (canyon heads, reef crests, dune ridges). Topographic maps are indispensable tools for biologists, geologists, or oceanologists (who refer to their sub-sea equivalents as "bathymetric charts"). These maps are displayed in 2D but provide 3D information about elevation (or depth). They can also use symbology to represent multi-scale elements that must remain legible. In cartography, map symbols are defined as geometric primitives such as points, polylines, polygons, and (more rarely) polyhedrons. Map symbols are essential compression devices: they strip away geometric detail while preserving the relationships that matter.
+Topographic maps are very useful tools for biologists, geologists or even oceanologists (which would call them "bathymetric charts"). These maps are displayed in 2D but provide 3D information about the altitude (or depth), but can also use symbology to represent the elements of different scale order need to be visible for interpreting correctly the context of a map. In cartography, map symbols are defined as geometric primitives such as points, polylines, polygons, and (more rarely) polyhedrons. Map symbols are important in order to extract as much information as possible while being an extreme simplification of the content of an environment, or an abstraction of the 3D nature of the terrain features. 
 
-This abstraction helps us grasp the relationship between different features, and can therefore enable the deduction of physical rules in the evolution of a terrain through the process of observation. In fields where full mechanistic modelling is out of reach (earth science, biology, urbanism, ...), the deduction of rules through observation plays an important role in the understanding of phenomena and explication of situations. Consequently, symbolic maps act as a cognitive bridge: they let experts infer governing processes and develop testable hypotheses even when full mechanistic simulation or controlled experiments are impossible. 
+This abstraction is useful to understand the relationship between the different features, which may enable to deduce physical rules in the evolution of a terrain through the process of observation. In fields where systemism is out of reach (earth science, biology, urbanism, ...), the deduction of rules through observation plays an important role in the understanding of phenomena and explication of situations. [A REDIRE VITE]
 
-In this way, geologists can study the distribution of peaks in a mountain range or the location of soil types in an area (\cref{fig:env-obj_topo-madagascar}), which in turn helps them infer the probable locations of karst networks (\cref{fig:env-obj_topo-karst}), for example. Using the same abstraction tools, a biologist may study the effect of natural or artificial reefs on coastal erosion (\cref{fig:env-obj_topo-coasts}), or understand more clearly the interactions inside an ecosystem. Oceanologists may also deduce, in a similar manner, the formation of canyons and fans from old river systems (\cref{fig:env-obj_topo-canyon}). In short, the same minimalist notation empowers diverse fields to reason about terrain. This cross-disciplinary utility is the key inspiration for the \glosses{EnvObj} representation introduced in this chapter.
+In such way, geologists can study the distribution of peaks in a mountain range, the location of soil types in an area (\cref{fig:env-obj_topo-madagascar}), which in turn allow to deduce possible locations of karst networks (\cref{fig:env-obj_topo-karst}), for example. Using the same abstraction tools, a biologist may interpret the effect of natural or artificial reefs on coastal erosion (\cref{fig:env-obj_topo-coasts}), or understand more clearly the interactions inside an ecosystem. Oceanologists may also deduce, using the same strategy, the formation of canyons and fans from old river systems (\cref{fig:env-obj_topo-canyon}). [A REDIRE]
 
-%--- AltTextImage R (coastlines) ------------------------------------ 
-\AltTextImageR{%
-The use of parametric lines representing coasts of islands or continents is common because it is intuitive to understand the concept of interaction using curves. It also shows an easy way to present the evolution of this interaction with respect to time, as the continuous change of shape can be interpreted by our mind as a moving shape, providing a sense of velocity of change (\cref{fig:env-obj_topo-coasts}). While real coastlines are fractal, a representation using a continuous line is sufficient to be able to imagine the real scene. A more detailed representation would however be harder to read, without any significant improvement in interpretability, and would age quickly as the coast evolves. 
+\AltTextImageR{
+The use of parametric lines representing coasts of islands or continents is heavily used as it is easy to understand the concept of interaction using curves. It also shows an easy way to present the evolution of this interaction with respect to time, as the continuous change of shape can be interpreted by our mind as a moving shape, providing a sense of velocity of change (\cref{fig:env-obj_topo-coasts}). While real coastlines are fractal, a representation using a continuous line is sufficient to be able to imagine the real scene. A complex representation would be, on the other hand, difficult to read, without any significant improvement on the possibility to understand the reality, harder to draw and edit, and much more subject to change with time and become obsolete.
 
-Any element, like a coastline, then has an organic evolution over time, just like biological elements that can grow, shrink, and morph continuously. We see that one of the main differences between the evolution of organic elements, like the borders of a forest, and non-organic elements, like the borders of an island, lies in the time scale.
-}{./CliffErosionBidefordAndScalby.jpg}{Evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}}{fig:env-obj_topo-coasts} 
+Any element, like a coastline, then have an organic evolution over time, just like biologic elements as they can grow, shrink, and morph continuously. We see that one of the main differences of the evolution of organic elements, like the borders of a forest, and non-organic elements, like the borders of an island, reside in the time scale.
+}{./CliffErosionBidefordAndScalby.jpg}{Evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}}{fig:env-obj_topo-coasts}
 
-%--- AltTextImage L (Madagascar soils) -------------------------------- 
-\AltTextImageL{%
-Symbology can be used to represent simultaneously large elements like regions with a specific type of soil, and very small and sparse elements like volcanic peaks or buildings from \cref{fig:env-obj_topo-madagascar}. We can find, on a single map, elements represented in 0D (sparse points, like volcanos and buildings), 1D (curves like plate boundaries and shear zones) and 2D (regions like the sedimentary cover and tectonic plates). 
+\AltTextImageL{
+Symbology can be used to represent at the same time large elements like regions with a specific type of soil, and very small and sparse elements like the peak of volcanos or buildings from \cref{fig:env-obj_topo-madagascar}. We can find, on a single map, elements described as 0D (sparse points, like volcanos and buildings), 1D (curves like the plate boundaries and shear zones) and 2D (regions like the sedimentary cover and tectonic plates).
 
-The geometric shape used to describe an element may vary depending on the scale at which the cartographer wishes to represent it, or depending on the focus of the map. Observatories are presented as single points (0D) in an island-scale map, but could appear as regions (2D) on city-scale maps. Beaches may be represented as curves, points or regions if the objective is to present their distribution, position, or shapes.
-}{./geologyMadagascar.jpeg}{Sedimentary distribution over Madagascar island \cite{Pratt2017}}{fig:env-obj_topo-madagascar} 
+The geometric shape used to describe an element may vary depending on the scale at which the topographist wishes to represent it, or depending on the work focus of the map. The observatories are presented as single points (0D) in an island-scale map, but could be found as regions (2D) on city-scale maps. Beaches may be represented as curves, points or regions if the objective is to present their distribution, position, or shapes.
+}{./geologyMadagascar.jpeg}{Sedimentary distribution over Madagascar island \cite{Pratt2017}}{fig:env-obj_topo-madagascar}
 
-%--- AltTextImage R (karst) ------------------------------------------- 
-\AltTextImageR{%
-A combination of multiple disciplines can be represented in a single topographic map to provide context about an area. We can find examples of representations with urbanism, geology, hydrology, and topography mixed together. Every discipline is linked with all others with relative strength. Urban regions are strongly affected by geology and topography, while hydrology is directly impacted by topography. In this example, the karst geology is influenced by hydrology and geology, because karst features develop where limestone and underground drainage coincide. This also means that the presence of karst features can imply the presence (or a high probability of presence) of limestone and underground water flows, without the need to display them on a map. 
+\AltTextImageR{
+A combination of multiple disciplines can be represented in a single topographic map to provide context about an area. We can find examples of representations with urbanism, geology, hydraulogy, and topography mixed together. Every discipline is linked with all others with relative strength. Urban regions are strongly affected by the geology and topography, while hydraulogy is directly impacted by topography. In this example, the karst geology is influenced by hydraulogy and geology, given that the presence of certain karst features are present in limestone areas with underground river networks. This also means that the presence of karst features can imply the presence (or a high probability of presence) of limestone and underground water flows, without the need to display them on a map. 
 
 Without its 3D representation, a karst expert may be able to visualize in 3D from \cref{fig:env-obj_topo-karst} a possible ground surface around dolines and lapies without additional information.
-}{./QasrLibya.jpg}{Geological features distribution of karstic landscape at Qasr Libya, Libya \cite{ElAmawy2009}}{fig:env-obj_topo-karst} 
+}{./QasrLibya.jpg}{Geological features distribution of karstic landscape at Qasr Lybia, Libya \cite{ElAmawy2009}}{fig:env-obj_topo-karst}
 
-%--- AltTextImage L (canyon) ------------------------------------------ 
-\AltTextImageL{%
-The presence of symbols in a topographic map does not imply the presence of an element in the real world. We often encounter indicative symbols like the head and foot of a canyon, or the area affected by an element, which have no real geometry. However, the presence of these symbols bring useful information. The head buffer displayed in \cref{fig:env-obj_topo-canyon} helps explain the deformation of the shelf break line. Looking from the other side, the deformation on the shelf break implies the presence of a canyon head.
-}{./PerthCanyon.jpg}{Localization of key parameters of Perth Submarine Canyon, Australia \cite{Huang2014}}{fig:env-obj_topo-canyon} 
-
-Parallelly, terrain artists typically sketch the global shape of the terrain they will model beforehand, such that they can check, before the modeling stage, that the consistency and plausibility of the terrain will hold. Looking at a simplified map before starting the modeling step allows the designer to modify the overall shape of the terrain at a large scale, before the 3D geometry comes into play, generating too many control points or vertices to deal with. Our goal is to offer that same "sketch-first, refine-later" experience in a procedural setting: users should be able to draft a coarse landscape, evaluate its plausibility, then zoom in and iteratively refine features, from a mountain ridge down to an individual boulder, without ever losing global coherence.
-
-As seen in the previous examples, by simplifying surface details we can concentrate more effectively on gaining a deep understanding of the underlying processes that shape the terrain. This deeper understanding allows us to apply the insights to a wide variety of terrain types, facilitating broader and more versatile applications of our knowledge. 
-
-In the context of generation of underwater environments, the elements to consider span several orders of magnitude in size. From a single coral colony to a volcanic island, the use of topographic map lets biologists, geomorphologists, and hydrologists study the evolution of an area. The procedural construction of such landscapes should match the tools that experts use already to stay intuitive. 
-
-The question which leads to our solution is one of multi-scale user interaction: Is it possible to provide an interaction mean for terrain generation allowing the user to interact with a small structure like a rock in the same manner as with a large structure like a mountain?
-
-In this work, we seek a large-scale representation of the terrain to generate a landscape that satisfies their needs while keeping the possibility to apply large modifications. Robotician users need first to create a large landscape that can contain interesting configurations, select a smaller region that has features in a disposition that fits their requirements and then refine it again. In the optic of generating a large scale terrain in which we could focus the generation effort in a certain region, we wished to be able to see a coarse representation that can be computed quickly.
-
-Starting from an initial configuration or imposing conditions on the desired output terrain, the algorithm we propose lets the different terrain features evolve as a multi-agent system in which the user can apply modifications or new constraints on the state of the environment. The resulting configuration is an environment conforming to the constraints given by the user over the distribution of features present in the scene. 
-
-We design our terrain generation method so that it is versatile enough to handle both terrestrial and aquatic environments. This dual capability will allow the method to apply to landscapes above the water level, such as mountains and valleys, as well as to submerged terrains, such as oceanic canyons and coral landscapes. 
-
-Because many geographical terms and computer science terms are deceptive cognates, we therefore try to find middle ground in the naming of our introduced structures to avoid, as much as possible, any ambiguity between the research fields. 
-
-Building on these observations, this chapter contributes:  
-\begin{Itemize}
-    \Item{\Gloss{EnvObj} formalism:} We introduce a sparse, domain-agnostic symbol set (points, curves, regions) that both read continuous environmental fields and write local modifications back to them, creating a closed feedback loop.
-
-    \Item{Lightweight, analytic field coupling:} A decay-stabilised reaction-diffusion solver for scalar "materials" and analytical deformation of the vector-flow field yield interactive, steady-state updates without heavy fluid or erosion simulation.
-
-    \Item{Multi-scale authoring workflow:} A focus-and-refine pipeline lets users jump from kilometre-scale planning to sub-metre edits while preserving global coherence. We demonstrate this on both coral-reef islands and terrestrial mountain/canyon scenes.
-\end{Itemize}
+\AltTextImageL{
+The presence of symbols in a topographic map does not imply the presence of an element in the real world. We can commonly find indicative symbols like the head and foot of a canyon, or the area affected by an element, which have no real geometry. However, the presence of these symbols bring useful information. The head buffer displayed in \cref{fig:env-obj_topo-canyon} add an explication on the deformation of the shelf break line. Looking at it in the other direction, the deformation on the shelf break with the canyon implies the presence of a canyon head.
+}{./PerthCanyon.jpg}{Localization of key parameters of Perth Submarine Canyon, Autralia \cite{Huang2014}}{fig:env-obj_topo-canyon}
 
 
+Parallelly, terrain artists most of the time sketch the global shape of the terrain they will model beforehand, such that they can check, before the modeling part, that the consistency and plausibility of the terrain will be valid. Looking at a simplified map before starting the modeling step allows the designer to modify the overall shape of the terrain, at a large scale, before the 3D geometry comes into play, generating too much control points or vertices to be able to deal with. [TO CONTINUE]
 
 
+As seen in the previous examples, by simplifying the surface details in maps or models we can concentrate more effectively on gaining a deep understanding of the underlying processes that shape the terrain. This focused understanding allows us to apply the insights we gain to a wide variety of terrain types. Essentially, this approach enables us to generalize our findings and apply them across diverse geographical landscapes, facilitating broader and more versatile applications of our knowledge.
 
+In the use case of the generation of underwater environments, the elements to consider in a terrain vary greatly in size. Going from a single coral colony to a volcanic island, the use of topologic map enables biologists, geomorphologists, and hydrologists to study and understand the evolution of an area. The procedural construction of such landscape should fit the tools that the fields expert use in order to be coherent. 
 
+The question which led to our solution is the multi-scale user interaction: "Is it possible to provide an interaction mean for terrain generation allowing the user to interact with a small structure like a rock in the same manner as with a large structure like a mountain?". 
+In this work, we want the user to be able to have a large scale representation of the terrain in order to generate a landscape that satisfies his needs while keeping the possibility to apply large modifications.
+In discussion with robotician users, we realise that we want to create a large landscape that can contain interesting configurations, select a smaller region that may have features in a disposition that fits its requirements and then refine again the given region.
+In the optic of generating a large scale terrain in which we could focus the generation effort in a certain region, we wished to be able to see a coarse representation that can be computed quickly.
 
+Starting from an initial configuration or providing conditions on the desired output terrain, the algorithm we propose will let the different terrain features evolve as a multi-agent system in which the user can apply modifications or new constraints on the state of the environment. The resulting configuration is an environment conform to the constraints given by the user over the distribution of features present in the scene.
 
+We aim for our terrain generation method to be versatile enough to handle both terrestrial and aquatic environments. This dual capability would allow the method to be applicable to landscapes above the water level, such as mountains and valleys, as well as to submerged terrains, such as oceanic canyons and coral landscapes.
 
-
-
+Because many geographical terms and computer science terms are deceptive cognates, we will try to find middle ground in the naming of our introduced structures to avoid as much as possible any ambiguity between the research fields.
 
 \section{State of the art}
 \label{sec:env-obj_related-works}
 
-Simulating ecosystems involves a range of modelling approaches, each balancing biological realism and computational efficiency. Broadly, models can treat populations as continuous fields using reaction--diffusion equations, or model each organism individually through agent-based methods. For clarity we discuss existing work in three conceptual families: site-based (grid or tessellation) models, individual-based models, and continuous field models—each emphasising a different balance between local detail and scalability. Site-based models discretise space to model local interactions efficiently. In contrast, individual-based models (IBMs) capture fine-scale behaviours and heterogeneity, often using spatial interaction rules such as fixed-radius, zone-of-influence, or field-based methods. Ecological Field Models (EFMs) bridge these approaches by representing environmental properties as continuous fields influenced by organisms, enabling dynamic feedback between species and their surroundings. These diverse frameworks provide flexible tools for capturing complex ecological processes at varying scales and resolutions.
+% Our work is highly ispired by the modeling of ecosystems, in which we consider abiological elements on the same level as biological organisms. 
+Simulating ecosystems involves a range of modeling approaches, each balancing biological realism and computational efficiency. Broadly, models can treat populations as continuous fields using reaction-diffusion equations, or simulate each organism individually through agent-based methods. Site-based models discretize space to model local interactions efficiently. In contrast, individual-based models (IBMs) capture fine-scale behaviors and heterogeneity, often using spatial interaction rules like fixed-radius, zone of influence, or field-based methods. Ecological Field Models (EFMs) bridge these approaches by representing environmental properties as continuous fields influenced by organisms, enabling dynamic feedback between species and their surroundings. These diverse frameworks provide flexible tools for capturing complex ecological processes at varying scales and resolutions.
 
-Our method extends the Environmental Objects framework of \citep{Grosbellet2016}. We lift it from an urban-scene dressing tool to a scale-agnostic ecosystem engine that treats abiotic and biotic entities uniformly and supports user-guided "zoom-and-refine" workflows.
+Our work aims to extend the Environmental Objects framework proposed by \citep{Grosbellet2016}, whose work is related to ecological fields. Bridging the gap between the ecological domain and graphics domain allows us to generalize the Environmental Objects to biologic and abiologic elements of an ecosystem by focusing the generation and simulation of scenes through the spectre of ecosystem services.
 
-% --------------------------------------------------------------------
 \subsection{Ecosystem simulation}
 
-Two main philosophies emerge in the literature: modelling dense populations as continuous media \cite{Turing1952} or representing each individual explicitly \cite{Czaran1998}. The former excels in broad predictions; the latter in local realism.
+% Modeling of ecosystem extremely important in many fields. 
 
-From a large-scale perspective, where billions of individuals are indistinguishable (e.g. grass shoots, bacteria, whole populations), we treat species as continua and borrow reaction-diffusion models from physics and chemistry.
+% Simulations study how a population grows and spread or moves over time. 
 
-Conversely, when the number of individuals is smaller or the density is low enough, Individual-Based Models become appropriate. These methods treat organisms as agents that sense and interact with neighbours, making decisions such as spawning, growth, and death.
+Two main philosophies can be extracted from the litterature: looking at population of species as continuous spaces, or studying each individual one by one \cite{Czaran1998}.
 
-A hybrid family, the Ecological Field Models \cite{Wu1985}, describes how each individual modifies the state of its surrounding environment. Borrowing field theory from physics, they let organisms deposit or absorb continuous "influence fields", creating explicit feedback loops with the environment.
+From a large scale observation, where billions of individuals are indicernable from one another (like grass sproot, bacteria, whole population, ...), we consider the species as a continuum and borrow diffusion-reaction models from physics and chemistry \cite{Turing1952}. 
 
-Below, we review the three modelling families (site-based, individual-based, field-based) because our method borrows the sparse symbolic control of IBMs yet retains the continuous feedback of EFMs. We then discuss diffusion models, the mathematical backbone for our environmental fields.
+On the other hand, when the number of individual becomes smaller or the density is low enough that we need to study individual one by one, the Individual-Based Models (IBM) become handy. This methods focus on the individuals as agents of a system, usually using sensing and interaction between agents to drive decisions, like spawning, growing and dying, in case of vegetation.
 
-% --------------------------------------------------------------------
+An hybrid method family, the ecological field models \cite{Wu1985}, proposed to describe how each individual modifies the state of its surrounding environment. These models represent the effect of each individual as spatial interferences, borrowing the field theory concept from physics. while itself being affected by the environment for decision making. Environment factors are intrinsicly includable in these models.
+
 \subsubsection{Site-based models}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.8\linewidth]{grid-based-modeling-teaser.png}
-    \caption{Site-based models partition the environment into discrete regions with locally uniform properties. Examples include regular grids, Voronoi cells, and generalised topological maps \cite{Nelson2012,Lemiere2023}.}
-    \label{fig:env-obj_grid-based-models}
+    % \includegraphics[width= .8 \linewidth]{placeholder.pdf}
+    \includegraphics[width = .8 \linewidth]{grid-based-modeling-teaser.png}
+    \caption{The grid-based models represent the environment as small discrete regions with uniform properties, providing interaction with each direct neighbors. This notion may be extended to regions organised in grid cells \cite{Nelson2012}, Voronoi cells \cite{Nelson2012}, or even generalized topological maps \cite{Lemiere2023}. }
+    \label{fig:env-obj_grid-based-models}    
 \end{figure}
 
-Site-based models represent the environment as discrete regions with uniform properties, interacting primarily with their immediate neighbours (Fig.~\ref{fig:env-obj_grid-based-models}). The concept generalises to other tessellations such as Voronoi diagrams or arbitrary graphs.
-
-% ..........................................................
 \subsubsubsection{Grid-based models}
 Grid-based models represent ecosystems by discretizing continuous space into a regular arrangement of cells, typically squares or rectangles, each containing uniform environmental properties and ecological conditions (\cref{fig:env-obj_grid-based-models}, left). In this approach, each cell represents a spatially explicit patch hosting one or multiple populations, with interactions primarily occurring between neighboring cells. The central ecological rationale for employing grid-based models is their conceptual simplicity, computational efficiency, and ease of representing spatial processes such as diffusion, dispersal, competition, or predation.
 
@@ -181,8 +159,11 @@ However, Voronoi-Delaunay models also present several limitations and challenges
 \end{Itemize}
 
 
+
+% \subsubsubsection{Generalized topological maps}
 Generalized topological maps represent ecosystems using abstract spatial relationships and connectivity structures, emphasizing the importance of spatial relationships or interactions rather than explicit geometric positions or shapes \cite{Urban2009}. Unlike grid-based or Voronoi-Delaunay tessellation models, generalized topological maps prioritize topological relationships over exact geometric distances or spatial coordinates (\cref{fig:env-obj_grid-based-models}, right). Formally, these maps can be defined as graphs or networks $G = (V, E)$, where vertices $V$ represent spatial entities (e.g., habitat patches, resources, individuals, or territories), and edges $E$ define ecological interactions, such as connectivity, dispersal pathways, competitive influence, or predator-prey relations \cite{Hamonic2021,Minor2008,Peterson2024}.
 
+% In ecological modeling, generalized topological maps have notable advantages. 
 By abstracting space into relational networks, these maps enable efficient representation and analysis of ecological processes in scenarios where exact geometry may be unknown, less relevant, or overly complex. They are particularly valuable in modeling metapopulation dynamics, habitat connectivity, or animal movement patterns, where the critical ecological factor is the presence or absence of connectivity rather than explicit spatial positions. Furthermore, generalized topological approaches facilitate integration with network theory, providing tools to analyze ecological resilience, robustness, fragmentation, and connectivity dynamics directly through graph-based metrics (e.g., connectivity indices, centrality measures, or modularity analyses) \cite{Lemiere2023,Gaucherel2012}.
 
 However, the use of generalized topological maps also presents several limitations and ecological assumptions:
@@ -193,11 +174,21 @@ However, the use of generalized topological maps also presents several limitatio
 \end{Itemize}
 
 Despite these limitations, generalized topological maps remain valuable tools, especially when combined with explicit spatial approaches \cite{Ecormier-Nocca2021} or when explicit geometry is unavailable or unneeded \cite{Duflot2018,Boussange2022}. 
+% Examples of applications include modeling animal migration networks, habitat corridors, species dispersal networks, or the spread of invasive species through interconnected habitats.
+
+% The grid-based models represent a density of a population in a discrete space. The interaction of each cell is usually limited to its direct neighbors.
+
+% This models can be generalized to what could be called "Tesselation models", or "Site-based neighborhood models" \cite{Czaran1998}. The grid is a specialization with each region being a unit square sharing adjacency with its direct neighbors. However, the use of Voronoi diagrams (or "Thiessen polygon" in the biological field) and its duality, the Delaunay triangulation, may be used. As such, each vertex in the Delaunay graph is a small area with uniform properties and the influence between two regions is defined using the graphs edges. 
+
+% The use of generalized topological maps furthermore dissociate the geometry to focus on the topological aspect of the ecosystem \cite{Lemiere2023}.
+
+% Considering small regions to simulate the evolution of the ecosystem enables the use of cellular automata theory.
 
 \subsubsection{Individual-based models}
 
 \begin{figure}[H]
     \centering
+    % \includegraphics[width= .8 \linewidth]{placeholder.pdf}
     \includegraphics[width= .8 \linewidth]{individual-based-modeling-teaser.png}
     \caption{The individual-based models focus the attention on each element of the scene, with interaction with the neighboring entities. Choosing this point of view allows for more precision on the positionning of each tree \cite{Alsweis2006}, but also on the life cycle and geometry of the individuals \cite{Peytavie2024a}. }
     \label{fig:env-obj_individual-based-models}    
@@ -210,6 +201,10 @@ IBM inherently captures the variability and heterogeneity of natural ecosystems,
 To reduce computational costs while maintaining ecological realism, IBMs frequently employ approximations such as distance-based competition methods (e.g., FRN, ZOI, FON), or stochastic processes capturing probabilistic interactions among individuals. Moreover, recent advances have improved the scalability and realism of IBMs by leveraging parallel computing and GPU-based simulations, facilitating large-scale applications.
 
 Hybrid approaches are also common, combining IBM with grid-based or tessellation models to balance computational efficiency and ecological detail. Such hybrids may represent environmental conditions through spatial grids or tessellations (Voronoi diagrams) while explicitly modeling organism-level behaviors and interactions individually \cite{Chng2011a}.
+
+% In opposition with the grid-based models, and in response to the increase of computer power, the research about ecosystem simulation leaned towards a new kind of model in which each individual of the system is represented independantly. The Individual-Based Models (IBM) sees each element of the system as an entity that spawn, grow, die, and possibly transport itself depending on its surroundings. 
+
+% In order to simulate ecosystems with these models, the behaviour of single individuals with respect to the environment properties must be modeled. The main environmental factor being sunlight, the exact computation of shading for estimating the rate of growth of trees was expensive without the use of parallel computing and the use of GPU. In response to this constraint, the most common approximations accepted are "distance-based models". 
 
 \subsubsubsection{Fixed-Radius Neighborhood}
 In the Fixed-Radius Neighborhood (FRN) method, the first appearance of a distance-based method, each tree has a radius inside which we consider that there is shade and competition of nutrients. It two trees' radii intersect, a competition let the strongest tree live while the weakest die (\cref{fig:env-obj_individual-based-models}, left). 
@@ -310,11 +305,22 @@ While the FON model provides a biologically detailed representation of competiti
 
 
 
+% To address these challenges, computational approximations such as discretized grids, kernel density estimations, or hybrid models combining FON for local interactions and ZOI for broader simulations may offer viable alternatives. Nonetheless, ZOI remains the preferred approach for efficiency and scalability in large-scale forest dynamics modeling.
+
+% However, the FON model also has assumptions and limitations: notably, it assumes the effects of neighbors accumulate additively, often ignoring possible interactive or nonlinear competition effects, and typically relies on empirically tuning the $FON_i$ functions, which require extensive field data for accurate calibration.
+% Introducing kernel functions instead of binary radii, representing a distance weight around each tree allows two radii to overlap without having to remove an entity, and even consider a different kernel for different pairs of species (see: a tree-tree kernel is highly different than a bush-tree kernel). Another advantage of the introduction of a kernel is to simulate multiple factors at once, like the importance of roots, the shade provide, the drainage of water, etc... \cite{Berger2000} This Field of Neighborhood (FON) method is a generalisation of the Fixed-Radius Neighborhood method since the later is simply the use of binary kernels for each tree.
+
+
+
+
 \subsubsection{Ecological Field models}
 
 \begin{figure}[H]
     \centering
     \autofitgraphics[width = .8\linewidth]{ecological-fields-example-shade-Wu1985.png, ecological-fields-example-water-Wu1985.png, ecological-fields-example-nutrients-Wu1985.png}
+    % \includegraphics[width = .25 \linewidth]{ecological-fields-example-shade-Wu1985.png}
+    % \includegraphics[width = .25 \linewidth]{ecological-fields-example-water-Wu1985.png}
+    % \includegraphics[width = .25 \linewidth]{ecological-fields-example-nutrients-Wu1985.png}
     \caption{Ecological Field models represents the environment as a mathematical function where environmental properties like humidity, shade and nutrients are seen as distinct fields (in the figure, respectively from left to right). }
     \label{fig:env-obj_ecological-field-models}    
 \end{figure}
@@ -374,6 +380,8 @@ Several methods exist for implementing spatially explicit fields in graphics:
     \Item{} Rather than storing explicit values at discrete locations, ecological fields can be defined using procedural functions that are evaluated dynamically. This approach is particularly relevant in procedural terrain and vegetation generation, where continuous field functions determine environmental parameters. A Signed Distance Field (SDF), frequently used in raymarching and volumetric rendering, can be adapted for EFMs by encoding environmental influence functions. This approach enables a theoretical infinite precision for a compact memory footprint at the expense of high computational demand.
 \end{Itemize}
 
+
+
 \subsubsubsection{Environmental Objects}
 
 \begin{figure}[H]
@@ -383,9 +391,9 @@ Several methods exist for implementing spatially explicit fields in graphics:
     \label{fig:env-obj_teaser-grosbellet2016}
 \end{figure}
 
-The Environmental Objects system of \citep{Grosbellet2016} attaches scalar fields (heat, humidity, occlusion, ...) to scene assets so that snow, leaves or soot accumulate plausibly. Although conceived for urban set dressing, the idea is strikingly similar to EFMs: objects emit and sense continuous fields and update geometry accordingly.
+\citep{Grosbellet2016} proposed an application of Ecological Fields for the generation of outdoor scenes by associating the elements of the scene to scalar fields representing, for example, humidity, occlusion, heat, or even leaves fields. The presence of these fields allows each object to modify their geometry in order to integrate chages such as the deposition of snow, icicles, leaves piles, or grass. 
 
-Our work adopts the same "fields-attached-to-objects" view but turns it into a bi-directional simulator: objects do not only read fields to change appearance, they also decide where and whether they should exist, creating an emergent distribution of terrain features.
+Despite its origins in computer graphics, this model shares conceptual similarities with EFM, which describes how spatially distributed ecological influences shape organism behavior and ecosystem dynamics. EFM operates within the domain of spatial ecology, defining ecological fields that influence species distributions and interactions. While these models have distinct applications, they both employ spatially explicit field-based approaches to describe how entities interact with their environment.
 
 
 The Environmental Objects' method presents a hierarchical framework for authoring procedural scenes by extending objects (assets) with environmental fields that control their appearance and interaction with the virtual environment (\cref{fig:env-obj_teaser-grosbellet2016}). This work tackle the main problem with the modeling an urban scene, which is finding a balance between generating and editing a large scene in interactive time and the integration of small-scale details in coherence with the global environment: 
@@ -425,30 +433,105 @@ The Environmental Objects method can be seen as a variant of the EFM due to thei
 
 The conceptual parallels between these models suggest potential areas for cross-disciplinary application. Insights from EFM could inform procedural content generation, enabling more realistic and adaptive virtual ecosystems by incorporating agent-based dynamics, ecosystem succession models, and time-dependent environmental changes. Conversely, procedural modeling techniques from computer graphics could enhance ecological simulations, improving visualization, scalability, and user interactivity in landscape ecology and biodiversity modeling. 
 
+
+% Modern application of EFM include the notion of diffusion in order to depict the dynamic evolution of nutrients with respect to external boundaries such as a scene with different soil porosity or topography. 
+
 The original EFMs work effectively for static environmental conditions, but many real-world ecological processes involve dynamic, time-dependent changes. For instance, soil moisture depletes over time, plant growth alters shading conditions, and chemical scent trails decay. By integrating biologically inspired feedback loops, procedural generation could extend beyond static environmental effects, enabling simulations of growth, decay, and species interactions \cite{Okubo2001,Wojtek2022}. To extend Environmental Objects beyond static environmental representations, we turn to reaction-diffusion models, which provide a mathematical foundation for modeling time-dependent field interactions used in ecological simulations. 
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% Although Grosbellet et al.’s procedural model was developed within the domain of computer graphics, it shares significant conceptual similarities with Wu’s Ecological Fields Model (1985). Wu’s framework describes ecological fields as spatially distributed influences that govern organismal interactions with their environment, shaping patterns of species distribution and community dynamics. In this approach, organisms respond to variations in ecological fields, which can represent factors such as resource availability, competition, and environmental constraints.
+
+% Similarly, Grosbellet et al. employ scalar fields to define environmental influences on objects within a virtual scene. These fields dictate changes in appearance, determining the extent of environmental effects such as the accumulation of snow, the growth of grass, or the placement of fallen leaves. The fields act as local, distributed parameters that influence an object’s properties based on its surroundings. Both models conceptualize their respective domains in terms of spatial gradients, emphasizing how entities whether living organisms or computer-generated objects are influenced by their spatial context.
+
+% Another point of similarity between the two models is their hierarchical structure. Wu’s model applies to multiple scales of ecological organization, ranging from individual organisms to entire ecosystems. It accounts for local-level interactions, such as how an individual plant experiences resource competition, while also considering broader landscape-scale patterns. Similarly, Grosbellet et al.’s procedural framework structures virtual environments using a hierarchical composition of environmental objects. These objects can be grouped together to optimize computation, and the influence of environmental fields can be controlled at various levels of the hierarchy. This allows for efficient and scalable scene generation while maintaining fine control over localized details.
+
+% Despite these similarities, the models differ in their intended applications. Wu’s framework is designed for ecological analysis and predictive modeling, aiming to describe and explain real-world ecological patterns. In contrast, Grosbellet et al.’s model is intended for aesthetic and interactive purposes within computer graphics, focusing on visual realism and user control rather than ecological accuracy. Nevertheless, both models offer a field-based perspective on how spatially distributed influences shape system-level outcomes, making them conceptually related despite their distinct disciplinary origins.
+
+
+% The fundamental similarity between Wu’s Ecological Fields Model and Grosbellet et al.’s procedural modeling framework lies in their shared reliance on spatially distributed fields as a mechanism for mediating interactions. Both models define spatial gradients that influence entities within an environment, allowing for context-dependent interactions. In Wu’s framework, organisms respond dynamically to environmental gradients, which may influence their movement, resource consumption, and reproductive success. Similarly, in Grosbellet et al.’s model, objects within a virtual scene react to environmental scalar fields, altering their appearance in response to predefined environmental conditions such as temperature and humidity.
+
+% Despite this shared structural foundation, the two models differ significantly in their underlying mathematical formulations and computational implementations. Wu’s model is rooted in ecological theory and often employs differential equations and statistical spatial models to describe species-environment interactions. These methods allow for the prediction of ecological dynamics over time, incorporating feedback mechanisms and stochastic variation. In contrast, Grosbellet et al. utilize procedural techniques, such as skeletal implicit primitives and rule-based field blending, to generate visually plausible but computationally efficient environmental effects. Rather than predicting real-world dynamics, their model aims to create aesthetically realistic simulations that can be adjusted interactively by users.
+
+% Another key difference between the models is the role of temporal evolution. Wu’s model explicitly incorporates time as a variable, recognizing that ecological fields are dynamic and subject to change due to both biological and environmental processes. Organisms respond to shifting resource distributions, climatic variations, and competitive pressures, leading to temporal feedback loops that drive ecological change. In contrast, Grosbellet et al.’s model is primarily static, designed to generate procedural environments at a given moment rather than simulate their evolution over time. While the model allows for interactive updates, these modifications are made manually by the user rather than emerging from natural system dynamics.
+
+% Additionally, the two models differ in their scale of analysis. Wu’s framework is designed to operate at multiple ecological scales, from individual-level processes to ecosystem-wide patterns. This multi-scale approach is essential for understanding how local interactions scale up to influence broader ecological outcomes. In contrast, Grosbellet et al. primarily focus on object-level interactions within a localized scene. Their approach is optimized for real-time scene generation, prioritizing computational efficiency over large-scale system modeling.
+
+% Ultimately, while these models share a common conceptual foundation in spatial field theory, they serve fundamentally different purposes. Wu’s model seeks to explain and predict ecological phenomena, whereas Grosbellet et al.’s model is designed for scene composition and artistic realism. However, the convergence of these approaches suggests intriguing possibilities for cross-disciplinary innovation. The integration of ecological dynamics into procedural modeling could lead to more adaptive virtual environments that respond realistically to environmental changes, while procedural techniques could enhance ecological simulations by improving scalability and visualization.
+
+
+% The conceptual parallels between these models suggest potential areas for cross-disciplinary application. Insights from Wu’s ecological modeling could inform procedural content generation, enabling more realistic and adaptive virtual ecosystems by incorporating agent-based dynamics, ecosystem succession models, and time-dependent environmental changes. Conversely, procedural modeling techniques from computer graphics could enhance ecological simulations, improving visualization, scalability, and user interactivity in landscape ecology and biodiversity modeling.
+
+% One promising direction is the development of dynamic procedural environments where environmental objects evolve over time based on real-world ecological principles. By integrating biologically inspired feedback loops, procedural generation could extend beyond static environmental effects, enabling simulations of growth, decay, and species interactions.
+
+% While originating from distinct domains, Wu’s Ecological Fields Model (1985) and Grosbellet et al.'s Procedural Modeling Framework share fundamental structural similarities in their use of spatially explicit field-based approaches. Both models conceptualize environmental influences as continuous fields that govern how entities interact with their surroundings. However, they diverge in their functional objectives, temporal dynamics, and mathematical underpinnings (one serving ecological science and the other computer-generated realism).
+
+% This analysis highlights the potential for cross-disciplinary innovation, where ecological models could inform procedural scene generation and procedural graphics could enhance ecological modeling and visualization. By integrating these approaches, future research could develop adaptive virtual environments that reflect both ecological principles and artistic flexibility, bridging the gap between scientific accuracy and interactive realism.
+
+
+
+
+
+
+
+
+
+
+
+
+
+% One of the primary limitations of EFMs in computer graphics is the computational expense associated with evaluating field values at arbitrary points in space. Since EFMs define environmental properties continuously over a domain, real-time applications require efficient field sampling techniques. Unlike grid-based models, which allow for fast, direct memory access, field functions in EFMs often require complex mathematical evaluations at each query point.
+
+
+
+
+
+
+% The idea of using fields around each individual is not born from the Field of Neighborhood method. A third ideology, focused on the modeling of the effects caused by each individual on the ecological properties instead of the individual by themselves, rose from the mathematical field theory \cite{Wu1985}.
+
+% In this method, each individual vegetal element of the scene has a set of influence functions. The water, nutrients and light availability are influenced around each individual by kernel functions for the stem, the crown and the roots of each species. The terrain can then be seen as multiple continuous fields to represent each resource.
+
+% This type of implicit representation has recently resurfaced with the apparition of GPUs and high performance CPUs (see Signed Distance Fields in 3D modeling).
+
+% An analogy of Ecological Fields can be found in \citep{Grosbellet2016}. In this work, some objects in the 3D scene can influence the environmental properties such as shade, heat, humidity, or the possible presence of small elements like icicles, leaves, etc... In response to these changes, the geometry of the objects are affected by adding leaves, snow, icicles, grass, melted snow, and more, on them.
+
+% Our method tend to generalize this idea of Environmental Objects by merging the idea of Ecological Fields. 
+
+
 \subsection{Diffusion models}
 
 \begin{figure}[H]
     \centering
+    % \includegraphics[width= .8 \linewidth]{placeholder.pdf}
     \includegraphics[width= .8 \linewidth]{diffusion-example-Okubo2001.png}
     \caption{The diffusion model describe the spread, motion, and evolution of a chemical, population or physical property over time. \cite{Okubo2001}.}
     \label{fig:diffusion-model-teaser}    
 \end{figure}
 
-Reaction-diffusion equations, popularised by Turing \cite{Turing1952}, combine local growth/decay with spatial spread. They underpin models of vegetation patterns, invasive species fronts, or nutrient flows \cite{Cosner2008}. For our purpose they serve as analytic update rules whose steady state can be reached without time-marching every intermediate step.
+Reaction-diffusion models are fundamental tools in mathematical biology and ecology, providing insights into the complex patterns observed in natural ecosystems. These models combine chemical or biological reactions (reaction) with movement through space (diffusion) to describe processes such as population dynamics, infectious disease spread, and ecological invasions \cite{Cosner2008}.
 
-% Reaction-diffusion models are fundamental tools in mathematical biology and ecology, providing insights into the complex patterns observed in natural ecosystems. These models combine chemical or biological reactions (reaction) with movement through space (diffusion) to describe processes such as population dynamics, infectious disease spread, and ecological invasions \cite{Cosner2008}.
+Initially developed to explain phenomena in chemistry and physics, reaction-diffusion models have been adapted to ecological contexts to simulate scenarios where organisms interact with each other and their environment over space and time. The application of these models in ecology helps in understanding how patterns of distribution and abundance arise, how they persist, and how they might change under various environmental pressures.
 
-% Initially developed to explain phenomena in chemistry and physics, reaction-diffusion models have been adapted to ecological contexts to simulate scenarios where organisms interact with each other and their environment over space and time. The application of these models in ecology helps in understanding how patterns of distribution and abundance arise, how they persist, and how they might change under various environmental pressures.
+The concept of reaction-diffusion was initially introduced in the early 20th century by mathematician Alan Turing explored how non-uniform patterns emerge through mechanisms of chemical reaction and diffusion in \citep{Turing1952}. Turing's theories laid the groundwork for understanding pattern formation in biological systems, including those seen in animal coats and developmental processes.
 
-% The concept of reaction-diffusion was initially introduced in the early 20th century by mathematician Alan Turing explored how non-uniform patterns emerge through mechanisms of chemical reaction and diffusion in \citep{Turing1952}. Turing's theories laid the groundwork for understanding pattern formation in biological systems, including those seen in animal coats and developmental processes.
-
-% The adaptation of reaction-diffusion models to ecological contexts began several decades later as ecologists camne to explain spatial phenomena such as the spread of invasive species, the maintenance of species diversity, and the formation of vegetation patterns. These models provided a mathematical framework to simulate and predict the dynamics of complex biological systems influenced by both local interactions and spatial movement.
+The adaptation of reaction-diffusion models to ecological contexts began several decades later as ecologists camne to explain spatial phenomena such as the spread of invasive species, the maintenance of species diversity, and the formation of vegetation patterns. These models provided a mathematical framework to simulate and predict the dynamics of complex biological systems influenced by both local interactions and spatial movement.
 
 Reaction-diffusion models describe the spatial and temporal evolution of populations, chemicals, or other ecological entities that interact (reaction) and spread (diffusion) through a medium. These models are widely used in ecosystem simulations to understand population dynamics, species dispersal, disease spread, and spatial pattern formation in ecological systems.
 
@@ -580,80 +663,73 @@ Steeper slopes enhance runoff, reducing soil water retention and increasing drou
 
 We find in the advection-reaction-diffusion equation a general way to represent a multitude of natural phenomena: from the propagation of bacteria, prey and predators, to the spread of nutrients, of water, or even of fire \cite{Hadrich2021}. 
 
-\midConclusion
-
-In summary, the literature offers a spectrum of discrete and continuous approaches. Our method borrows the field coupling of EFMs, the sparse symbolic efficiency of Environmental Objects, and analytic steady-state solvers from reaction-diffusion theory, combining them into a multi-scale, interactive generator suited for both underwater and terrestrial scenes.
 
 
 
 
 
+% The domain of ecosystem simulation is mainly focused on the simulation of plant growth, so this state of the art will be mostly based on it. 
 
+% In an ecosystem, every element within the system has an impact on its surroundings, and accurately simulating physical properties like shading, heat, and humidity can require immense computational power. To address this, instead of simulating these properties individually for each object, they can be represented as scalar fields that span the entire scene. These scalar fields, which may represent temperature, humidity, or occlusion, are locally influenced by nearby objects and terrain features, such as trees casting shadows or buildings radiating heat. This approach, as described in \cite{Grosbellet2016, Guerin2016a}, allows for the environment's physical properties to be computed in a more efficient manner. By simplifying the complex interactions into these localized scalar fields, they called environmental objects, their method provides a scalable system that can handle large and detailed scenes. This system effectively renders scene details, such as snow accumulation or leaf distribution, in a way that is visually plausible, ensuring realistic results without the need for exhaustive simulations. 
+% %In a similar way, other works represent the wind flow as a composition of local vector fields \cite{Wejchert1991}, avoiding complex fluid simulation while providing user control in a lightweight model. We extend these works by incorporating a time-evolution system such that the scene can be dynamic.
+% In a similar approach, parallely Wejchert and Haumann \cite{Wejchert1991} and Sims \cite{Sims1990} represent wind flow as a composition of local vector fields, known as "flow primitives", which can be combined to simulate complex fluid behavior. This method simplifies the computation by avoiding full fluid simulations, instead offering a lightweight model that allows for intuitive user control over the flow dynamics.
+% By combining these approaches, we can create dynamic ecosystems where environmental effects and fluid flows interact in a plausible manner, while requiring a low computation effort and preserving a high user control.
+
+% % \subsubsection{Vegetation modeling}
+% % \citep{Lane2002} Uses L-System to create a forest that then starts a self-thining process, which mean that larger and more mature vegetation will eliminate weaker species around them, simulating shadowing. The propagation of a given species is given using a kernel, controlling whever two individuals should prefer being close to each other or far away instead. This kernel is provided for each pair of species, simulating cohabitation and competition. The simulation parameters are fine-tuned by hand to resemble to biologically coherent scenes. \\ 
+
+
+
+
+% \subsubsection{Distance-based instantiation}
+% Most methods for ecosystem modeling consider the distance between each entity to spawn a new entity, without considering other environmental factors. This method is efficient and creates realistic results in a small scale scene, where the environment properties are almost identical in the whole terrain. Silviology, the study of forests, is often encompassed by this methodology as there are few variations inside the habitat due to the protection of the forest itself against wind, humidity and storms. 
+
+% The grid-based approach of forest generation, 
+% These models often used a grid-based approach, dividing space into discrete cells that represented the smallest spatial unit of interest. Each cell could house a plant or community and interact with its neighbors. This era saw the use of cellular automata and other grid-based systems which allowed for the simulation of spatial processes and interactions at various scales.
+
+% % \citep{Benes2003} Simulate an ecosystem as multiple agents with different behaviours take care of plants to simulate cultivated areas \\ 
+
+% In grid-based models, space is divided into discrete cells. Each cell is treated as a homogeneous unit within which certain properties are assumed to be uniform. The model defines how these cells interact with each other based on their proximity and shared boundaries. Each cell can hold different data values representing these attributes, allowing the model to simulate how spatial heterogeneity influences ecological dynamics. This type of model share a high similarity with cellular automata to simulate local interactions as each cell usually influence its direct neighbor cells. Through this method, the simulation of disturbances that spreads (like fire or disease) \cite{Wojtek2022}.
+
+% On the other hand, the individual-based modeling (IBM) principle is that the system's behavior emerges from the actions and interactions of its individual components rather than from overarching equations that govern system-level changes. Each individual (or "agent") in an IBM can represent an organism, such as a plant or an animal, and is modeled with unique traits and decision-making rules that determine its behavior. Since each agent can be uniquely defined, IBMs are particularly suited to exploring how heterogeneity among individuals affects the dynamics of the entire system. The agents in this model may evolve in a discrete or continuous space. This method has been used for representing mobile agents (like gardeners in \cite{Benes2003}), but also plants \cite{Deussen1998}, in which each individual is spawn randomly in a landscape and with a Zone of Influence (ZOI) described by a disk of radius randomly affected depending on its species. When two individuals' ZOI are intersecting, one of the individuals is removed.
+
+% Effectively, a tree growing too close to another one may not be able to survive due to lack of light or ressources from the ground. In the Field of Neihborhood method (FON) \cite{Berger2000}, the introduction of fields fills a gap between IBM methods that looks at each individual and grid-based methods that affect the space around each individual. The radius-based instanciation incrementally add new entities in the scene by introducing a radius around each tree dependant on its height. \cite{Alsweis2005} simulates the growth of each tree, with multiple species which have different effect radius. At each simulation step, a new tree is spawn, allowing for a continuous evolution of the ecosystem in a competition for space and light. 
+
+% \citep{Alsweis2006} Optimisation of the previous method with (aperiodic) Wang Tiles \\ 
+
+% \citep{Weier2013} Speeds the rendering time by precomputing a Poisson Disk Distribution in Wang tiles. This method allows for an aperiodic distribution without the need to compute on the fly the position of individual trees. \\
+
+% \citep{DoNascimento2018} Propose an adaptation of distance-based instantiation (initially proposed by \citep{Hammes2001}) for the GPU by classifying the vegetation in 3 classes depending on their height (L1, L2, L3). A first instantiation is done for the larger vegetation (L1) on a $N \times N$ buffer, which influence the position of the L2 elements on a $2N \times 2N$ to simulate shading, and identically the instantiation on a $4N \times 4N$ buffer for L3 elements. \\ 
+
+% \citep{Emilien2015a} Focuses their work on point distribution reproduction from examples. \\ 
+
+% \citep{Makowski2019}  \\ 
+% \citep{Seidl2012}  \\ 
+% \citep{Seidl2011}  \\ 
+% ...
+
+% \subsubsection{Addition of abiotic factors}
+
+% \citep{Gain2017} Improves the previous method by combining point distribution with terrain analysis to extract rules, meeting a balance between user control and realism. \\ 
+
+% \citep{Kapp2020}  Learn the density of L1, L2 and L3 layers through deep learning, in order to avoid the use of classic statistical models that cannot capture the fine-scale complexities. Then the distribution of each species is done using the classic point distribution following an adaptability function taking into account abiotic factors. \\ 
+
+% \citep{Chng2011a} and \citep{Chng2011b} Very close to our system, using rules between agents to grow/evolve. But only available for point-objects \\ 
+
+% \citep{Cordonnier2017b} Consider the environment to have moisture, luminosity and temperature, then describe in each cell a density of population (Eulerian method) instead of individuals. \\ 
+
+% \citep{Peytavie2024a} Continues previous methods, using abiotic factors from the map, and add the effect of the deposition of dead woods (snags, logs,humus, ...) to modify the abiotic factors. From this, the inclusion of events like fires and diseases have an indirect impact on the ecosystem. \\ 
+
+% The inclusion of fauna in the process is very rare \cite{Ecormier-Nocca2021}.
+
+% \midConclusion
 
 
 
 \section{Description of the method}
 \label{sec:env-obj_pipeline}
 
-In this section, we present the pipeline that underpins our method. 
-We first introduce the continuous environmental fields (\glosses{EnvVal}), then the discrete actors that percieve and affect those fields (\glosses{EnvObj}), before detailing how they modify the fields (\glosses{EnvModif}) and how the full pipeline orchestrates their interaction.
-
-Our approach introduces the concept of \glosses{EnvObj}, simplified, scale-agnostic, terrain features that interact with their surroundings to simulate complex ecosystem dynamics. These \glosses{EnvObj}, which can represent natural features such as trees, rivers, or rocks, influence and are influenced by scalar fields such as temperature, humidity, and elevation. The method is structured into three key phases: initialization, which sets up the foundational terrain elements and \glosses{EnvObj} definitions; an iterative generation process that instantiates \glosses{EnvObj} and lets them interact with their environment; and finally, an output stage that yields a sparse representation of the scene's features. This section details each phase and explains how the system dynamically adapts to user input and environmental changes.
-
-\subsection{\Glosses{EnvVal}}
-\label{sec:env-obj_communication}
-
-In geography, and in the Ecological Field Models reviewed earlier, a "field" is a spatially continuous variable defined at every point of the domain.  
-It may be a scalar (elevation, temperature) or a vector (wind, current). We follow the geographic usage of "field" as a spatially continuous attribute (scalar or vector). To avoid clashing with algebraic "field" or computer graphics jargon, we call every such quantity an \gloss{EnvVal}.
-
-In an ecosystem simulation, each actor of the ecosystem has an impact on all other actors, which results in an exponentially growing computation effort as the number of elements of the terrain increase. Direct pairwise interaction between $n$ organisms scales as $\mathcal{O}(n^{2})$.  
-Instead, we adopt the standard EFM strategy: every \gloss{EnvObj} writes to local \glosses{EnvVal} through its \gloss{EnvModif}.  
-Each objects then read those values later, turning the global complexity into a linear complexity per simulation step and thus remaining interactive even for thousands of objects.
-
-We bundle the currently supported fields under the unified term "environment", denoted as $\environment = (\height,\; \Water,\; \Wlevel,\; \material)$,  
-where $\height$ (height) and $\Wlevel$ (water level) are scalars, $\Water$ (water currents) is a 2D vector field, and $\material$ (\glosses{EnvMat}) is a vector of per-point resource stocks (sand, salt, moisture, limestone, ...). 
-
-These \glosses{EnvMat} are conceptual reservoirs used by rule sets. They need not be visualised nor stored as layered textures.
-
-\subsection{\Glosses{EnvObj}}
-\label{sec:env-obj_environmental-objects}
-
-\begin{figure}
-    \includegraphics{assets-demo.pdf}
-    \caption{\Glosses{EnvObj} can be visualized by 3D triangular meshes. From left to right: rocks, trees, corals, arches.}
-    \label{fig:env-obj_assets}
-\end{figure}
-
-A geographical feature, also called object or entity, is defined as a discrete phenomenon located at or near the Earth's surface, relevant in geography and geographic information science (GIScience). It represents geographic information that can be depicted in maps, geographic information systems (GIS), and other forms of geographic media. This term includes both natural and human-made objects, ranging from tangible items like buildings or trees to intangible concepts like neighborhoods or savanna. Features are distinct entities with defined boundaries, differentiating them from continuous geographic masses or processes occurring over time. They can be categorized as natural features, such as ecosystems, biomes, water bodies, and landforms, or artificial features, such as settlements, administrative regions, and engineered constructs. As the term "feature" is overused in computer science, we will use the term \gloss{EnvObj} in this work.
-
-\AltTextImage{
-Each \gloss{EnvObj} is anchored by a skeleton (a point, curve, or region in the cartographic sense) which captures its footprint while postponing heavy geometry generation.  
-\begin{Itemize}
-    \Item{Point-based}: isolated boulders, individual trees, individual corals, ...
-    \Item{Curve-based}: river, coral reefs, fault scarps, ...
-    \Item{Region-based}: islands, forests, sediment patches, ... 
-\end{Itemize}
-Via its prescribed \glosses{EnvModif}, an \gloss{EnvObj} locally deposits, removes, or diverts \glosses{EnvMat}, thereby updating the surrounding \glosses{EnvVal}.  Conversely, its viability is re-evaluated through a user-defined \gloss{FitnessFunc} that samples those same fields.  If viable, a \gloss{FittingFunc} refines the skeleton (e.g. a river streams downhill, and seagrass meadow patches are limited to luminous areas).
-}{Env-obj-scheme1.png}{Environmental objects, from 2D (left) to their 3D geometry (right)}{fig:env-objs_example-scheme1}
-
-
-
-\subsection{\Glosses{EnvModif}}
-
-The environment determines if a \gloss{EnvObj} belongs at a certain position. 
-When a \gloss{EnvObj} is placed, its surrounding \glosses{EnvVal} can be affected though \glosses{EnvModif} ($\,\environmentModif = (\heightModif, \waterModif, \nothing, \materialModif)\,$) define a change of height~$\heightModif$, modifications of the water current field~$\waterModif$, and \gloss{EnvMat} alterations~$\materialModif$.
-
-\Glosses{EnvObj} are subject to altitude constraints. 
-However, to maintain a clear distinction between semantic modeling and 3D modeling, we do not compute the exact physical shape or detailed height field of each \gloss{EnvObj}. 
-Instead, we define a \gloss{CoarseHeight}~$\heightModif$, a parametric surface derived from the \gloss{Skeleton}, that provides a coarse estimate of local elevation changes. This coarse proxy lets us evaluate altitude-dependent rules without the cost of globally computing the height field.
-
-Altering the vector field~$\Water$ is performed by composing the individual contributions $\waterModif$ of each object at position~$\p$, following \citep{Wejchert1991}. For efficiency we adopt an analytical deformation kernel inspired by Kelvinlet solutions \cite{DeGoes2017} to aggregate these local disturbances.
-
-Each \gloss{EnvObj} possesses intrinsic \glosses{EnvMat} that both spread and are absorbed around its skeleton over time. For example, a coral colony deposits limestone while simultaneously slowing currents; the reef then uptakes that limestone for growth.  
-In our model the colony contributes a deposition term $\materialModif_{\text{limestone}}$, and the reef absorbs it. No direct object-object message passing is required.
-
-Scalar \glosses{EnvVal} are updated by adding or removing mass around the \gloss{Skeleton} and then diffusing it, biased by $\Water$. 
-We assume a \gloss{SteadyState} regime, guaranteed by a decay rate~$0 < \decay < 1$ that prevents unbounded accumulation during advection-diffusion.
+In this section, we present the pipeline and processes that underpin our method. Our approach introduces the concept of \glosses{EnvObj}, simplified terrain features that interact with their surroundings to simulate complex ecosystem dynamics. These \glosses{EnvObj}, which can represent natural features such as trees, rivers, or rocks, influence and are influenced by scalar fields like temperature, humidity, and elevation. The method is structured into several key phases: initialization, where the foundational elements of the terrain and \glosses{EnvObj} are set up; an iterative generation process, where these \glosses{EnvObj} are instantiated and interact with their environment; and finally, the production of a sparse representation of the scene's features. This section details each of these phases, explaining how the system dynamically adapts to user input and environmental changes.
 
 \subsection{Pipeline}
 
@@ -665,119 +741,164 @@ We assume a \gloss{SteadyState} regime, guaranteed by a decay rate~$0 < \decay <
 
 \subsubsection{Initialization}
 
-We initialise the terrain with a height-field $h$ and a water-level $\Wlevel$. During this chapter we will include many \glosses{EnvObj} depending on altitude or depth, so we will use the shorthand notations $\height = h-\Wlevel$ (signed height above water) and $\depth=-\height$ (signed depth below water). The height field provides variation on the altitude, which can influence the generation process of the scene.
+The generation of the terrain is initialized using an initial height field $h$ and an initial water level $\Wlevel$. 
+During this chapter we will include many features depending on altitude or depth, so we will use the shorthand notations $\height = h - \Wlevel$ and $\depth = -\height$. The height field provides variation on the altitude, which can influence the generation process of the scene.
 
-A catalogue of available \glosses{EnvObj} $\availableObjects$ is supplied, as well as an optional target list of \glosses{EnvObj} $\targetObjects$ used as a stop condition of the process.
+The list of available \glosses{EnvObj} $\availableObjects$, representing the different features that can be present in the scene, are provided with their properties: type, size, \glosses{GenRule} and effects on the \glosses{EnvVal} (\cref{sec:env-obj_environmental-objects}). A target list of \glosses{EnvObj} $\targetObjects$ can be defined to control the final result of the generation.
 
-Finally, different \glosses{EnvMat} are defined with properties such as diffusivity, density, decay-rate, and advection sensitivity. These parameters are chosen with field experts to reflect plausible physical behaviour.
+Finally, different \glosses{EnvMat} are defined with their properties such as diffusion speed, mass, decay rate and influence from the water currents. An initial environment configuration resulting from the initial height field $\height$ and water level $\Wlevel$, the \glosses{EnvMat} distribution $\material$ (represented as scalar fields $\material: \R^2 \to \R$) and water currents $\Water$ (as a vector field $\Water: \R^2 \to \R^2$) will be used by the \glosses{EnvObj} of the scene to simulate their growth and spawn at the most probable position. The \glosses{EnvVal} are noted $\environment = (\depth, \Water, \Wlevel, \material)$ (\cref{sec:env-obj_communication}).
 
-An initial environment configuration, resulting from the initial height field $h$ and water level $\Wlevel$, the \glosses{EnvMat} distribution $\material$ (represented as scalar fields $\material: \R^2 \to \R$) and water currents $\Water$ (as a vector field $\Water: \R^2 \to \R^2$), is then available for all \glosses{EnvObj} to evaluate growth and spawning. The \glosses{EnvVal} is noted $\environment = (\height, \Water, \Wlevel, \material)$ (\cref{sec:env-obj_communication}).
+The definition of \glosses{EnvObj}' properties and \glosses{EnvVal} is done with field experts, providing the pertinent parameters required to model the evolution of the terrain features using expert knowledge (\cref{sec:state-of-the-art_biology}). 
 
-The definition of \glosses{EnvObj}' properties and \glosses{EnvVal} is done with field experts, who first decide which \glosses{EnvMat} layers are relevant for the target biome and then anchor the corresponding parameters in the system.
-The generation phase starts from this environment plus an optional seed set of \glosses{EnvObj}.
+The generation phase starts with an initial set of \glosses{EnvObj} present in the scene, which can optionally be pre-filled.
 
-
-\subsubsection{Generation process}
+\subsubsection{Generation process} 
 
 %- Main loop
-After initialization the system enters an incremental loop with two stages: 
-\begin{Itemize}
-    \Item{-} instantiate candidate \glosses{EnvObj}, then  
-    \Item{-} update the environment.  
-\end{Itemize}
-The loop terminates when user-defined criteria are met (e.g.\ an iteration count threshold, the target set of \glosses{EnvObj} $\targetObjects$, or manual approval).
+Once the initialization phase is done, the generation begins. The generation process is incremental and its main loop is composed of two different steps: the instantiation of new \glosses{EnvObj} then the update of the environment. This loop is repeated until the user is satisfied with the look of his environment or following rules like a number of features threshold or a targeted list of \glosses{EnvObj} as described in the layout planner defined in \citep{Tutenel2009}.
 
-% -------------------------------------------------------------------
+
 \subsubsubsection{Instantiation}
+% - Object instantiation
+At each iteration, new \glosses{EnvObj} can be created at their most fitting locations if possible. The \glosses{GenRule} provided in the initialization phase are used to find an optimal position from stochastic sampling (\cref{sec:env-obj_generation-rules}). 
+All \glosses{EnvObj} are evaluating their state analytically using a \gloss{FitnessFunc} and a \gloss{FittingFunc} provided as input (\cref{sec:env-obj_generation-rules}).
 
-Each iteration proposes new \glosses{EnvObj} at locations sampled stochastically and ranked by their \glosses{GenRule} (\cref{sec:env-obj_generation-rules}).  
-Every instantiated object immediately evaluates its own viability through the user-supplied \gloss{FitnessFunc} and adjusts shape and pose with the \gloss{FittingFunc}.
-
-% -------------------------------------------------------------------
 \subsubsubsection{Environment update}
-After instantiation, every \gloss{EnvObj} applies its \glosses{EnvModif}: perturbing the flow field $\Water$ (\cref{sec:env-obj_water-currents}), and deforming the coarse height field $\height$, then depositing or absorbing \glosses{EnvMat} $\material$ (\cref{sec:env-obj_materials}) as an advection-diffusion solver relaxes \glosses{EnvMat} under current-driven transport and gravity until a local steady state is reached.
+% Once the new objects are instantiated, the process can continue.
+% - Environment update
+Once the instantiation step is done, the \glosses{EnvVal} are updated by each \gloss{EnvObj} through \glosses{EnvModif}, which depose and absorb some of the \glosses{EnvMat} $\material$ (\cref{sec:env-obj_materials}) while modifying the water currents $\Water$ (\cref{sec:env-obj_water-currents}) and the height field $\height$ around them. Finally, water currents and terrain slope displace \glosses{EnvMat} of the terrain until reaching a dynamic equilibrium in the environment at each iteration.
 
-At any iteration the user may edit individual \glosses{EnvObj} interactively (\cref{sec:env-obj_manual-interaction}) or schedule \glosses{GeoEvent}, such as storms or ground subsidence, that modify \glosses{EnvVal} globally (\cref{sec:env-obj_events}).
+% We consider the water currents to be a steady-state flow, allowing us to remove the variation from time in the flow equations.
+% The water currents are updated locally by each \gloss{EnvObj} using an analytical form $W^*(\p) = W(\p) + \omega(\p)$.
+During the generation process, the user can alter directly the distribution and shapes of the \glosses{EnvObj} (\cref{sec:env-obj_manual-interaction}) and perturb the generation process by planning \glosses{GeoEvent} that have impacts on the \glosses{EnvVal} (\cref{sec:env-obj_events}).
+
 
 \subsubsection{Output}
 % - Output result
-The output of our system is a set of \glosses{EnvObj} stored as 2D skeletons in the plane. We deliberately stop at this sparse, symbolic level; meshing, texturing, and final rendering are left to downstream tools chosen by the end-user. For each object, we export its skeleton geometry, semantic class, and environment-modifier parameters, enough to drive terrain synthesis or placement of assets in a game engine or simulator. Figures in this chapter illustrate possible renderings generated with a mix of implicit surfaces and triangular meshes.
+The output of our system is a set of \glosses{EnvObj} disposed in the plane. We do not provide the 3D representation of the \glosses{EnvObj} in this chapter, letting the user define the rendering method. The figures used in the chapter use a mix of implicit surfaces and triangular meshes.
+
+\subsection{\Glosses{EnvObj} }
+\label{sec:env-obj_environmental-objects}
+
+\begin{figure}
+    \includegraphics{assets-demo.pdf}
+    \caption{\Glosses{EnvObj} can be visualized by 3D triangular meshes. From left to right: rocks, trees, corals, arches.}
+    \label{fig:env-obj_assets}
+\end{figure}
+A geographical feature, also called object or entity, is defined as a discrete phenomenon located at or near the Earth's surface, relevant in geography and geographic information science (GIScience). It represents geographic information that can be depicted in maps, geographic information systems (GIS), and other forms of geographic media. This term includes both natural and human-made objects, ranging from tangible items like buildings or trees to intangible concepts like neighborhoods or savana. Features are distinct entities with defined boundaries, differentiating them from continuous geographic masses or processes occurring over time. They can be categorized as natural features, such as ecosystems, biomes, water bodies, and landforms, or artificial features, such as settlements, administrative regions, and engineered constructs. Geographic features are described by characteristics including identity, existence, classification, relationships with other features, location, attributes, and temporal aspects. Information about these features is stored in geographic databases using models like GIS datasets, which organize and represent these features in structured formats. As the term "feature" is overused in computer science, we will use the term \gloss{EnvObj} in this work.
+
+\AltTextImage{
+Each \gloss{EnvObj} is shaped with a simple geometric shape called a "skeleton" that defines where it is located and how it fits into the environment. The \gloss{Skeleton} can either be, as used in cartography, a point, a curve or a region. We will then refer to our \glosses{EnvObj} as point-based, curve-based or region-based, respectively.  
+These \glosses{EnvObj} interact with the environment $\environment$ by changing local conditions using the \glosses{EnvModif}. For example, the presence of a river might increase the moisture in the surrounding area, while a mountain might induce more rockiness in the soil composition. They can also absorb changes from the environment, such as a forest taking in humidity from the air.
+The placement of \gloss{EnvObj} is determined by a \gloss{FitnessFunc} $\fitnessFunc$, which evaluates how suitable a location is based on the \glosses{EnvVal}. Once a suitable location is found, the \gloss{FittingFunc} optimizes the shape and position of the entity to fit as best as possible into the environment $\fittingFunc$.
+}{Env-obj-scheme1.png}{Environmental objects, from 2D (left) to their 3D geometry (right)}{fig:env-objs_example-scheme1}
+
+%This approach allows us to "spawn" new entities based on rough altitude estimates, ensuring that their placement is contextually appropriate while deferring the detailed computation of their final shape to a later stage, if required by the user.
+% The coarse height function thus acts as a middle between the semantic modeling of terrain and the precise 3D modeling. It provides enough information to make informed decisions about \glosses{EnvObj} placement and \glosses{EnvMat} while preserving the flexibility to integrate more detailed modeling techniques. This method ensures that the terrain generation remains interactive and scalable, allowing for the dynamic and realistic placement of entities in complex landscapes without being tied to the immediate computation of detailed topography.
+
+% \Glosses{EnvObj} are rule-based objects following rules depending on their local environment for evaluation their state in their life cycle. We can see them as a life form in the way that they are created and eroded with time. During their lifetime, they influence their local environment by depositing and absorbing \glosses{EnvMat} around them and influencing the water currents. The environment objects are described spatially as a single point, a parametric curve or a region.
+
+
+\subsection{\Glosses{EnvVal} }
+\label{sec:env-obj_communication}
+
+In geography, a "field" refers to a continuous spatial phenomenon across a region where each point has a specific value of a variable, unlike discrete objects with distinct boundaries. Fields can be scalar, representing a single value at every point (like temperature or elevation), or vector, representing quantities with magnitude and direction (like wind velocity). Examples include topographic fields for elevation, climatic fields for temperature or precipitation, and magnetic fields for magnetic forces. Because of the ambiguous nature of the term "field" with mathematics and computer science, we will define the geographic fields as \gloss{EnvVal}.
+
+In an ecosystem simulation, each actor of the ecosystem has an impact on all other actors, which results in an exponentially growing computation effort as the number of elements of the terrain increase. We avoid this problem by considering the \glosses{EnvVal} as a proxy to allow any \gloss{EnvObj} to interact with any other one. Each of the \gloss{EnvObj} have a local impact on the \glosses{EnvVal} without knowledge of neighboring \glosses{EnvObj}. This modification of the \glosses{EnvVal} are presented as the effect of \glosses{EnvModif} defined for each \gloss{EnvObj}. % can be due to an absorption and deposition of some material $\material$ or an influence on the water currents.
+
+In this work, we have integrated vector \glosses{EnvVal} (e.g., water currents $\Water$) and scalar \glosses{EnvVal} (e.g., altitude $\height$, water level $\Wlevel$, and various material properties $\material$) under the unified term "environment," denoted as $\environment = \left( \height, \Water, \Wlevel, \material \right)$. The \glosses{EnvMat} represent abstract quantities such as the availability of sand, salt, moisture, or rocks at each point. It is important to emphasize that these materials are not to be visualized as physical layers stacked on the terrain surface. Instead, they should be understood as conceptual resource distributions that influence the environment and the behavior of \glosses{EnvObj}, rather than as something directly observable in the scene.
+
+\subsubsection{\Glosses{EnvModif} $\environmentModif$}
+The environment determine if a \gloss{EnvObj} does belong at a certain position. When a \gloss{EnvObj} is placed, its surrounding \glosses{EnvVal} can be affected though \glosses{EnvModif} noted $\environmentModif = (\heightModif, \waterModif, \nothing, \materialModif)$ defining a change of height $\heightModif$, changes in the water currents $\waterModif$ and \gloss{EnvMat} alteration $\materialModif$. 
+
+\Glosses{EnvObj} are subject to altitude conditions. However, to maintain a clear distinction between semantic modeling and 3D modeling, we do not compute the exact physical shape or detailed height field of each \gloss{EnvObj}. Instead, we define a \gloss{CoarseHeight}, a parametric representation derived from the \gloss{Skeleton} to provide a rough estimate of the changes in elevation around it. This simplified model of how the \gloss{EnvObj} influences the surrounding terrain's altitude allows us to cheaply evaluate the potential presence of new entities that have altitude-dependent conditions without the need to perform expensive computations to generate a detailed height map of the entire terrain. 
+
+Altering the vector field of the water currents $\Water$ is done by the composition of the effect $\waterModif$ of each object at a position $\p$ as introduced in \citep{Wejchert1991}, while we use the formulation of Kelvinlets \cite{DeGoes2017} in the computation of effect of each \gloss{EnvObj}.
+
+Each \gloss{EnvObj} has intrinsic \glosses{EnvMat} that can be seen as "spreading" and "absorbed" around its skeleton over time. A coral reef may produce coral polyps and at the same time reduce the water currents. It grows thanks to the deposition of limestone from coral colonies. In our model, the colonies affect the \glosses{EnvVal} through the deposition of \gloss{EnvMat} $\materialModif_\text{limestone}$, which in turn, is absorbed by the coral reef, without a direct exchange between the two \glosses{EnvObj}.
+
+The alteration of a scalar \gloss{EnvVal} is done by adding or removing some amount around the \gloss{Skeleton} of the \gloss{EnvObj} and diffusing it in the space, influenced by the water currents. We consider the system to be \gloss{SteadyState}, garantied by the introduction of a decay rate $\decay > 0$ in the computation of the diffusion and advection.
 
 
 
 \section{Placement of \glosses{EnvObj} in an environment}
 \label{sec:env-obj_generation-rules}
-At each iteration of our algorithm, we aim to place new \glosses{EnvObj} at plausible locations. Because we do not enforce physical time continuity, our goal is to progressively enrich the scene according to user intent while maintaining ecological and geological plausibility.
-Because each \gloss{EnvObj} modifies the environment when instantiated, potentially destabilizing previous placements, the goal is to insert new elements where they minimally disturb the existing scene.
 
-Our placement algorithm proceeds in two steps: first, it identifies the globally most suitable position using the \gloss{FitnessFunc} $\fitnessFunc: \environment \to \R$, which depends on environmental factors such as altitude $\height(\p)$, water flow $\Water(\p)$, water level $\Wlevel(\p)$, and material availability $\material(\p)$. Second, it refines the object's shape and pose using its \gloss{FittingFunc} $\fittingFunc: \environment \to \R$.
+At each iteration of our algorithm, we want our \glosses{EnvObj} to be at plausible positions. We do not guaranty a temporal continuity between iterations as in \citep{Ecormier-Nocca2021}, so the objective is to add new \gloss{EnvObj} in order to satisfy the users wishes, while conserving the plausibility of the scene. Rather than "forming" these \glosses{EnvObj}, our method "reveals" them, much like a paleontologist uncovers fossils during an excavation. A paleontologist does not dig randomly across the Earth to find fossils; instead, they analyze the geological context to identify the most likely locations. Similarly, our method observes the environment and estimates where certain elements are likely to exist. For example, in hydrology, if a river appears to originate from nowhere, it might suggest the presence of a karstic river system upstream. In urban planning, if many roads converge at a certain point, it is reasonable to expect that a city is located there. This approach ensures that Semantic Terrain Entities are revealed in positions that are contextually appropriate and coherent within the landscape.
 
-For notational simplicity, we abbreviate $\fitnessFunc(\environment(\p))$ and $\fittingFunc(\environment(\p))$ as $\fitnessFunc(\p)$ and $\fittingFunc(\p)$, respectively.
+We will follow the same intuition using a \gloss{FitnessFunc} for each of the \gloss{EnvObj} that may be spawn in the terrain. The \gloss{FitnessFunc} defined $\fitnessFunc: \environment \to \R$ provides a score indicating how well the \gloss{EnvObj} may fit in this position. Evaluating this function at multiple position results in an approximation of the fitness map of the entity. Once the most probable position is found, we can find the most plausible shape of the \gloss{EnvObj} using the \gloss{FittingFunc} $\fittingFunc$.
+
+For this task, we place a new elements required at the most plausible position using the analysis of the \gloss{FitnessFunc} of each \gloss{EnvObj}. We know that each \gloss{EnvObj} will modify the environment surrounding, which may make previously instantiated \glosses{EnvObj} unfitted. Knowing this,the goal is to add the new element at the position that will change the least the stability of the system. 
+
+Genetic algorithms or Depth First Search algorithms could be used to try many possibilities until a local or global minimum could be found, but this would require a large processing power. Naive genetic algorithms would place a \gloss{EnvObj} at a certain position at each iteration and evaluate the stability of the environment, repreating this operation while varying slightly the position of the \glosses{EnvObj} or the type of \gloss{EnvObj} instantiated at each iteration, resulting in way too much computation to stay interactive. The Depth First Seach algorithms would require to compute all the possible combinations of \glosses{EnvObj} and positions which, given the fact that we want a continuous position in order to work multi-scale, would require to compute an incredibly high amount of possible configurations in order to find a plausible situation, on average. We will work with an evolutionary algorithm to find a compromise between fast computation and a satisfying result.
+
+Our placing algorithm is done in two steps: first, it identifies the global location where a \gloss{EnvObj} best fits within the environment $\environment$ using its \gloss{FitnessFunc} $\fitnessFunc$, which evaluates the suitability of each point $\p$ based on the \glosses{EnvVal} $\environment_p$, including factors such as altitude $\height(\p)$, water current velocity and direction $\Water(\p)$, water level $\Wlevel(\p)$, and the availability of \gloss{EnvMat} $\material(\p)$. Second, once the most suitable location is identified, the algorithm determines the most plausible shape of the \gloss{EnvObj} using the \gloss{FittingFunc} $\fittingFunc$.
+
+To ease the reading the functions $\fitnessFunc(\environment(\p))$ and $\fittingFunc(\environment(\p))$ with $\environment(\p)$ the \glosses{EnvVal} at the point $\p$ of the terrain are simplified to $\fitnessFunc(\p)$ and $\fittingFunc(\p)$ respectively.
+
+% Our placing algorithm is done in two steps: first we estimate at which global location the \gloss{EnvObj} fits the most given an environment $\environment$ using its \gloss{FitnessFunc} $\fitnessFunc$, secondly we estimate the shape of the skeleton of this \gloss{EnvObj} should take given a \gloss{FittingFunc} $\fittingFunc$.
+
+% \Glosses{GenRule} provides, for each \gloss{EnvObj}, a \gloss{FitnessFunc} $\fitnessFunc$ defining the most probable location for an \gloss{EnvObj} to be found. \Glosses{FitnessFunc}' parameters contains, for every point $\p$, the \glosses{EnvVal} $\environment_p$ (the altitude $\height(\p)$, the velocity and direction of the water currents $\Water(\p)$, the water level $\Wlevel(\p)$ and the amount of each \gloss{EnvMat} available $\material(\p)$).
 
 \subsection{\Gloss{FitnessFunc} }
 
 \begin{figure}
     \autofitgraphics[]{coral-erosion-example.pdf, rock-erosion-example.pdf}
+    % \includegraphics[width=.45\linewidth]{coral-erosion-example.pdf}
+    % \includegraphics[width=.45\linewidth]{rock-erosion-example.pdf}
     \caption{While the \gloss{FitnessFunc} guides the position of the \glosses{EnvObj}, the \gloss{FittingFunc} provide an indication of the suitability of the \gloss{EnvObj} in its surroundings. This information is used to determine if the \gloss{EnvObj} should be removed, but may also be used for visual purposes to indicate unhealthy corals or eroded rocks. }
 \end{figure}
 
-
 "Darwinian fitness" refers to an organism's ability to survive and reproduce in its environment. It is a measure of how well-suited an organism is to its surroundings, and those with higher fitness are more likely to pass on their genes to the next generation. In a similar vein, the \gloss{FitnessFunc} of a \gloss{EnvObj} evaluates its suitability at a location in the terrain, extending the meaning to living features like forests and corals and non-living elements such as rivers, mountains, karsts, etc.
 
-The fitness function $\fitnessFunc$ quantitatively evaluates how well a given environment location satisfies the requirements of an environment object (\gloss{EnvObj}). In other words, $\fitnessFunc$ returns a numeric score representing the suitability of local environmental conditions for that object. This function considers various environmental variables such as altitude, the presence of specific materials, water current strength, and their respective gradients. Crucially, $\fitnessFunc$ is defined separately for each \gloss{EnvObj} class, allowing it to be tailored to the unique needs and tolerances of different object types. Higher $\fitnessFunc$ values indicate more favorable sites for the object, while lower values correspond to less suitable or inhospitable locations. 
+The fitness function is constructed by evaluating several environmental variables at a given location $\p$. These include altitude ($\height(\p)$) and its gradient ($\nabla \height(\p)$), the availability and gradient of various materials ($\material_i(\p)$ and $\nabla \material_i(\p)$), water current characteristics ($\Water(\p)$), and water level ($\Wlevel(\p)$). Altitude and its gradient can influence the placement of objects like rivers, which may prefer lower elevations, or forests, which might thrive on slopes. Each material, such as limestone, sand, or clay, is considered separately, and their availability and gradients at a location are crucial for determining the suitability of different \glosses{EnvObj}, such as a coral reef requiring specific substrates. The velocity and direction of water currents are essential for placing aquatic features or determining where erosion might occur, while the proximity to water influences the likelihood of placing wetlands, lakes, or other hydrological features.
 
+% These environmental variables are typically combined in the fitness function, often expressed as a weighted sum, but not restricted to this form:
+
+% \begin{align*}
+%     \fitnessFunc(\p) = w_1 \cdot \height(\p) + w_2 \cdot \nabla \height(\p) + \sum_{i} \left( w_{3,i} \cdot \material_i(\p) + w_{4,i} \cdot \nabla \material_i(\p) \right) + w_5 \cdot \Water(\p) + w_6 \cdot \Wlevel(\p)
+% \end{align*}
+
+% Here, $w_1, w_2, w_{3,i}, w_{4,i}, w_5, w_6$ are weights that reflect the relative importance of each factor for the specific \gloss{EnvObj} being considered.
 
 Different types of \glosses{EnvObj} require different criteria for their fitness evaluation. For example, a river might prioritize lower altitude and proximity to water currents, while a forest might prioritize higher altitude and specific material availability. The flexibility of the fitness function allows it to be customized for each \gloss{EnvObj}, ensuring that the generated terrain remains coherent and realistic.
 
-% For example, a mining facility \gloss{EnvObj} might achieve a high fitness only in locations where the targeted mineral is abundant in the ground (reflecting a material presence requirement). If that resource is absent, the mining facility's $\fitnessFunc$ value at that site would be near zero regardless of other conditions. By contrast, a heavy building structure prefers flat, stable terrain. Its fitness function peaks on low-gradient ground underlain by solid bedrock, and it drops off on steep slopes or soft soil where stability is poor. Similarly, an aquatic organism (or installation) thrives within a specific range of water flow: its $\fitnessFunc$ is maximized at an optimal current speed and declines in either stagnant waters or excessively strong currents. These examples illustrate how different environment variables contribute to $\fitnessFunc$ in distinct ways depending on the object class, with each fitness function capturing the particular environmental needs of that object type. 
+\subsection{\Gloss{FittingFunc} }
+The seed point of a spawning \gloss{EnvObj} is defined at the point $\p$ satisfying $\arg \max_\p \fitnessFunc(\p) $.
+% a stochastic sampling of the plane. We propose different optimization means to find the optimal fitting position, depending on the \gloss{EnvObj} shape.
 
-In practice, to find suitable locations for an object, we evaluate its $\fitnessFunc$ across the environment's spatial domain. This typically involves sampling $\fitnessFunc$ values on a grid or at numerous candidate points covering the area of interest, effectively producing a fitness map for that object class. If an object occupies an area (rather than being point-like), the fitness of a proposed placement can be obtained by aggregating $\fitnessFunc$ over that area by averaging the fitness values at multiple sample points within the object's footprint. The outcome is a field of fitness values where peaks indicate highly suitable locations. Each object class thus yields its own fitness landscape. These fitness landscapes serve as a crucial input to the placement algorithm: the subsequent \gloss{FittingFunc} uses them to guide and optimize the configuration of objects in the environment.
-
-
-
-
-
-
-
-
-
-\subsection{\Gloss{FittingFunc}}
-
-A candidate object is first seeded at the point $\p_s=\arg\!\max_\p \fitnessFunc(\p)$, i.e.\ the global maximum of the fitness map.  This seed acts as the initial guess for the subsequent shape optimisation described below. Moreover, this two-steps optimisation allows a coarse approximation of the global maximum of the \gloss{FitnessFunc} with few samples, reducing its computational demand, as the \gloss{FittingFunc} optimization is focused on a single seed.
-
-%--------------------------------------------------------------------
 \subsubsection{Point-based \gloss{Skeleton}}
-For objects whose skeleton reduces to a single point (boulders, solitary corals, etc.) we refine the seed by hill-climbing on a (possibly different) fitting field $\fittingFunc$. In most cases we simply set $\fittingFunc=\fitnessFunc$, but the user may supply a sharper or multi-objective field when needed. Optimisation proceeds by gradient ascent on $\nabla\fittingFunc$ with a small step size and terminates when $\|\nabla \fittingFunc\|<\varepsilon$.
+The spawning position of a punctual \gloss{EnvObj} is found at the local maxima of the \gloss{FittingFunc} from the seed point. While the \gloss{FittingFunc} doesn't have to be identical to the \gloss{FitnessFunc}, we usually use $\fittingFunc = \fitnessFunc$ for point-based \glosses{EnvObj}. If the two functions are different, the optimisation process simply follows the field's gradient $\nabla \fittingFunc$ until the local maxima is reached.
 
-%--------------------------------------------------------------------
 \subsubsection{Curve-based \gloss{Skeleton}}
+% A curve can have different \glosses{GenRule}, making the definition of the functions easier depending if the \gloss{EnvObj}'s \gloss{Skeleton} has a notion of direction. It can either:
+% \begin{Itemize}
+%     \Item{} follow the gradient of the \gloss{FittingFunc} $\nabla \fittingFunc$, useful when the direction of the \gloss{Skeleton} has an importance like a river that has to run downhill,
+%     % \Item{} follow the isocontour $\nabla \fittingFunc^\perp$, [WAIT, IS THAT NEEDED?]
+%     \Item{} or optimize the energy of the function over its curve, like a coral reef that has to cover as much coral colonies as possible. % follow the heat points.
+% \end{Itemize}
+
+% \subsubsubsection{Following the gradient}
+% Following the gradient of the \gloss{FittingFunc} $\nabla \fittingFunc$ is done by extending a curve from the seed point towards $\nabla \fittingFunc$ until reaching a local maximum while also following $-\nabla \fittingFunc$ until finding a local minimum. We stop the building process when our curve reaches a length limit $\Length$. 
+
+% This \gloss{FittingFunc} strategy is efficient to describe rivers as we can set $\fittingFunc(\p) = \height(\p)$ to force it to always run downstream. 
+
+% \subsubsubsection{Energy optimization}
 The skeleton of a curve-based \gloss{EnvObj} is determined by the shape that fits the most given the environment it is added to. 
-Using an Active-Contour ("snake") formulation \cite{Kass1988}, we seek a parametric curve $C(s)\!:\![0,1]\!\to\!\R^{2}$ that minimises the composite energy  
-\begin{align}
-    \energy(\curve) = \Einternal + \Eexternal + \Eshape + \Egradient
-\end{align}
-with
+Using a modified version the Active Contours algorithm \cite{Kass1988}, we can minimize the energy $\energy$ for the parametric curve $\curve$ given $\energy(\curve) = \Einternal + \Eexternal + \Eshape + \Egradient$ with  
 \begin{align}
     \label{eq:internal-energy-equation}
     \Einternal &= \Ainternal \left( \int_{\curve}{ \norm{\curve'(s)}^2 \, ds} + \int_{\curve}{ \norm{\curve''(s)}^2 \, ds}  \right) \\
-    \Eexternal &= -\Aexternal \int_{\curve}{ \fittingFunc(\curve(s)) \, ds } \\
+    \Eexternal &= \Aexternal \int_{\curve}{ \fittingFunc(\curve(s)) \, ds } \\
     \Eshape    &= \Ashape \left( \Length - \int_{\curve}{ \, ds } \right)^2 \\
-    % \Egradient &= \Agradient \int_{C}{ \dot{C'(s)}{\Delta \fittingFunc(C(s))} \, ds }
-    \Egradient &= \Agradient \int_{C}{\bigl\langle C'(s),\nabla^{\perp}\fittingFunc\left(C(s)\right)\bigr\rangle ds}
+    \Egradient &= \Agradient \int_{C}{ \dot{C'(s)}{\Delta \fittingFunc(C(s))} \, ds }
 \end{align}
-Here $\alpha_{\bullet}$ are user-tunable weights, $\ell_0$ is an optional target length, and $\nabla^{\perp}f$ denotes the 90°-rotated gradient, encouraging the curve to cut orthogonally across isolines. The minus sign in $E_{\mathrm{ext}}$ converts the integrand into an attraction term (high $\fittingFunc$ lowers the energy).
-
 In this configuration, $\Einternal$ induce a smooth continuity of the curve by reducing the spacing of each point while reducing the curvature. Another energy, $\Eexternal$ integrate the \gloss{FittingFunc} over the curve, often seen as an attractor of the points, that tries to descent the gradient to find local minima. At the same time, $\Eshape$ apply constraints on the curve shape, which, in this case, is to target a specific length $\Length$. As such, the curve search for an optimized shape given constraints in $\Eshape$ for minimizing $\Eexternal$. We introduced a new term $\Egradient$ in the energy computation that push the points of the curve in the direction of the slope of the \gloss{FittingFunc}, also providing an orientation for the curve.
 
 If a steep coast can be found where the terrain slope is important near the water level, we can define $\fittingFunc = \abs{\height + 1} / \norm{\Delta \height}$, but no orientation is needed, thus we set $\Agradient = 0$. In this case, the curve will follow a path at the water level and spread its extremities over areas with a steep slope. A river may also be symbolized as a parametric curve, but we need to add information about the direction and magnitude of the slope.  As such, we can use $\fittingFunc = \height$ which forces the direction of the curve to fit with the terrain slope. The introduction of the gradient component provides also an orientation to shapes.
 
-
 \AltTextImage{
     \subsubsubsection{Internal energy}
-    \begin{align}
-        \label{eq:internal-energy-equation-internal}
-        \Einternal &= \Ainternal \left( \int_{\curve}{ \norm{\curve'(s)}^2 \, ds} + \int_{\curve}{ \norm{\curve''(s)}^2 \, ds}  \right)
-    \end{align}
     The internal energy, already introduced in \citep{Kass1988} is composed of two components imposing penalities on the local properties of the points of the curve. The first derivative forces the points along the curve to be evenly spaced by minimizing the curve tension, while the second derivative restrict it from forming sharp corners. As our aim is to represent natural elements, we rarely find sharp elements and thus, keep the original definition from the Snake formulation.
 
     In \cref{fig:env-obj_snake-internal} we see the two different components of this energy minimisation: averaging the vector formed by the previous segment with the vector formed by the next segment, we can move the vertex to a position for which the two new segments equal in length. On the other hand, translating the vertex toward its projection minimizes the curvature at this vertex.
@@ -785,10 +906,6 @@ If a steep coast can be found where the terrain slope is important near the wate
 
 \AltTextImage{
     \subsubsubsection{External energy}
-    \begin{align}
-        \label{eq:internal-energy-equation-external}
-        \Eexternal &= -\Aexternal \int_{\curve}{ \fittingFunc(\curve(s)) \, ds }
-    \end{align}
     The external energy is also present in the original work. Using an external scalar field, each point of the curve is forced to follow the steepest slope of the field. The external field can be seen as an attractor for the curve.
 
     The energy is minimized when the vertex is positionned at the global maximum of the scalar field.
@@ -796,19 +913,11 @@ If a steep coast can be found where the terrain slope is important near the wate
 
 \AltTextImage{
     \subsubsubsection{Shape energy}
-    \begin{align}
-        \label{eq:internal-energy-equation-shape}
-        \Eshape    &= \Ashape \left( \Length - \int_{\curve}{ \, ds } \right)^2
-    \end{align}
     We introduced the shape energy, an energy defined on the whole curve to apply constraints on its final shape. As many natural features have a given dimension, we may add a constraint on the length of the \gloss{Skeleton}. 
 }{snake_algorithm_shape.png}{The shape energy is minimized when the arc length of the curve $\curve$ is equal to a parameter $\Length$, obtainable by towards or in opposition of its neighbors. }{fig:env-obj_snake-shape}
 
 \AltTextImage{
     \subsubsubsection{Gradient energy}
-    \begin{align}
-        \label{eq:internal-energy-equation-gradient}
-        \Egradient &= \Agradient \int_{C}{\bigl\langle C'(s),\nabla^{\perp}\fittingFunc\left(C(s)\right)\bigr\rangle ds}
-    \end{align}
     In our application, having information about the orientation of \glosses{EnvObj} may be essential. For this purpose, we introduced a gradient energy component in the formulation. The equation impose that the direction of the curve at any point should be directed towards the gradient of the scalar field. As the external energy pushes points toward the lowest point of the scalar field, the gradient field restrict the gradient descent for the global curve into a specific way, which may feel more natural.
     
     During the optimization process, the gradient of the scalar field is already evaluated by the external energy optimization, so the addition of the gradient component is almost free.
@@ -816,23 +925,32 @@ If a steep coast can be found where the terrain slope is important near the wate
 }{snake_algorithm_gradient.png}{The gradient energy is minimize when the curve cross perpendicularly the gradient function. Black: the initial curve, Blue: a possible curve crossing the gradient. The scalar field is stylized to display isolines that the optimal curve has to cross.}{fig:env-obj_snake-gradient}
 
 
+% \subsubsubsection{Position constraint}
+% As the curve minimize its energy, it may fly far away from the initial seed point. We added a last constraint about the positioning of the curve such that the distance between t
 
+% The internal energy $\Einternal$ force the shape continuity while the shape energy $\Eshape$ force the shape into a specific target length $\Length$, and finally $\Eimage$ that use the definition of the \gloss{FittingFunc} to attract the points of the curve toward a local minimum.
 
+% While the first two possibilities are trivial, the later can also be optimized using the Active Contours algorithm by optimizing the energy $\energy = \Einternal + \Eshape$ with \eqref{eq:internal-energy-equation}. We applied a length constraint on the curves : 
+% \begin{align*}
+%     \Eshape = \left( \Length - \length \right)^2
+% \end{align*}
+% with $\length$ the curve's length and $\Length$ the target length. This algorithm is sensible to the initial shape of the curve, so we start with a straight line following the isolevel at the seed point.
 
-
-%--------------------------------------------------------------------
 \subsubsection{Region-based \gloss{Skeleton}}
 
-When the skeleton is a closed boundary (island, forest patch, lagoon) we adapt Chan-Vese segmentation \cite{Chan2001}: the gradient term vanishes and the external energy integrates over the enclosed domain.
+Region-based \glosses{EnvObj} follows the same process than curve-based \glosses{EnvObj} to define their \gloss{Skeleton}, at the exception of the gradient energy $\Egradient$ which have null value on closed shapes. 
 
 The resulting energy $\energy$ to minimize for a closed region whose borders are defined by the curve $\curve$ can then be expressed as $\energy(\curve) = \Einternal + \Eexternal + \Eshape$.
 
 The internal energy is expressed identically as for curve-based \glosses{EnvObj}. The extenal energy however, has to be modified to take into account the interior of the region instead of only the borders. We will use the idea of the Chan-Vese algorithm, differentiating the energy value for the inside $\domain$ and the borders $\curve$ of the region \cite{Chan2001, Getreuer2012}.
+
+By adding a factor for the inside $\lambda_1$ and a factor for the borders $\lambda_2$, we can add weight depending on the required optimization. We can then define the external energy component $\Eexternal$ as:
 \begin{align}
     \Eexternal = \lambda_1 \int_{\domain}{ \fittingFunc(s) \, ds } + \lambda_2 \int_{\curve}{ \fittingFunc(\curve(s)) \, ds }
 \end{align}
+We see that the definition of the energy formulation of the curve-based \glosses{EnvObj} is a specialization of the region-based, with $\lambda_1 = 0$ and $\lambda_2 = \Aexternal$
 
-$\lambda_1$ emphasises interior homogeneity (e.g.\ constant humidity for a forest), while $\lambda_2$ attracts the boundary to strong gradients (reef rim at the lagoon edge).%  Parameter tuning follows \cite{Getreuer2012}.
+The use of external forces on the \gloss{Skeleton} can be useful as some landscape features are easier to define by what they contain, while other by what they separate. For example, a lagoon is formed by coral reefs surrounding it, while a forest is formed by the climatic conditions inside it that are propice for trees. A lagoon may then be defined with $\lambda_1 = 0$ and $\fittingFunc_{\text{lagoon}} = -\material_{\text{coral limestone}}$ while a forest sets $\lambda_2 = 0$ and $\fittingFunc_{\text{forest}} = -\material_{\text{humidity}} + \material_{\text{shade}} + \abs{\material_{temperature} - 10}^2$.
 
 Finally, the shape constraint energy $\Eshape$ can target an area $\Area$, for example.
 \begin{align}
@@ -841,66 +959,55 @@ Finally, the shape constraint energy $\Eshape$ can target an area $\Area$, for e
 
 In our implementation, each \gloss{EnvObj}'s \gloss{Skeleton} is a connected component as we define the boundaries by the connected curve $\curve$, but can be convex or concave. An infinite penality is added for the curve self-intersection.
 
-%--------------------------------------------------------------------
-At every global iteration each object re-evaluates $\fitnessFunc$.  If $\fitnessFunc(\,C\,)<T_{\mathrm{fit}}$ the object is removed; otherwise we can take advantage of the rafinable nature of the Snake algorithm and improve the shape of the \gloss{Skeleton} by minimizing again their \gloss{FittingFunc} multiple global iterations after their instantiation. As the number of \glosses{EnvObj} become important in the scene, reajusting all \glosses{Skeleton} becomes time consuming, so we may use this process for the most recent \glosses{EnvObj} in the scene.
 
-% \subsubsection{Region-based \gloss{Skeleton}}
-
-% Region-based \glosses{EnvObj} follows the same process than curve-based \glosses{EnvObj} to define their \gloss{Skeleton}, at the exception of the gradient energy $\Egradient$ which have null value on closed shapes. 
-
-% The resulting energy $\energy$ to minimize for a closed region whose borders are defined by the curve $\curve$ can then be expressed as $\energy(\curve) = \Einternal + \Eexternal + \Eshape$.
-
-% The internal energy is expressed identically as for curve-based \glosses{EnvObj}. The extenal energy however, has to be modified to take into account the interior of the region instead of only the borders. We will use the idea of the Chan-Vese algorithm, differentiating the energy value for the inside $\domain$ and the borders $\curve$ of the region \cite{Chan2001, Getreuer2012}.
-
-% By adding a factor for the inside $\lambda_1$ and a factor for the borders $\lambda_2$, we can add weight depending on the required optimization. We can then define the external energy component $\Eexternal$ as:
+% A region is defined as an isocontour of the field for which the target area $\Area$ is found. From the seed point, we follow the isolevel of the \gloss{FitnessFunc} $\nabla \fittingFunc^\perp$ until a loop is created to define the initial condition of the shape. Using the Active Contours algorithm, we can optimize the region's energy defined as $\energy = \Einternal + \gamma \Eshape$ with  
 % \begin{align}
-%     \Eexternal = \lambda_1 \int_{\domain}{ \fittingFunc(s) \, ds } + \lambda_2 \int_{\curve}{ \fittingFunc(\curve(s)) \, ds }
+%     \label{eq:internal-energy-equation}
+%     \Einternal = \frac{1}{2} \left( \alpha(t) \norm{\frac{d v}{d t}(t)}^2 + \beta(t) \norm{\frac{d^2 v}{d t^2}(t)}^2  \right).
 % \end{align}
-% We see that the definition of the energy formulation of the curve-based \glosses{EnvObj} is a specialization of the region-based, with $\lambda_1 = 0$ and $\lambda_2 = \Aexternal$
-
-% The use of external forces on the \gloss{Skeleton} can be useful as some landscape features are easier to define by what they contain, while other by what they separate. For example, a lagoon is formed by coral reefs surrounding it, while a forest is formed by the climatic conditions inside it that are propice for trees. A lagoon may then be defined with $\lambda_1 = 0$ and $\fittingFunc_{\text{lagoon}} = -\material_{\text{coral limestone}}$ while a forest sets $\lambda_2 = 0$ and $\fittingFunc_{\text{forest}} = -\material_{\text{humidity}} + \material_{\text{shade}} + \abs{\material_{temperature} - 10}^2$.
-
-% Finally, the shape constraint energy $\Eshape$ can target an area $\Area$, for example.
+% The internal energy $\Einternal$ force the shape continuity while the shape energy $\Eshape$ force the shape into a specific target. For the \glosses{EnvObj} generated in the following examples, we used a constraint on a target area.
 % \begin{align}
-%     \Eshape = \left( \Area - \int_{\domain}{ \, ds } \right)^2
+%     \label{eq:area-target-equation}
+%     \Eshape = \left( \Area - \area \right)^2
 % \end{align}
+% with $a$ the current area of the shape and $\Area$ the target area, provided by the user for each shape, with some randomness.
 
-% In our implementation, each \gloss{EnvObj}'s \gloss{Skeleton} is a connected component as we define the boundaries by the connected curve $\curve$, but can be convex or concave. An infinite penality is added for the curve self-intersection.
+At each iteration, \glosses{EnvObj} are interrogated to verify if they are still fitted to belong at their position. We first check that the fitness is above a given threshold  $\fitnessFunc > T_{\fitnessFunc}$. If not, we remove the \gloss{EnvObj} from the scene. On the other case, we can improve the shape of the \gloss{Skeleton} by minimizing again their \gloss{FittingFunc}. As the number of \glosses{EnvObj} become important in the scene, the reajustment time for the \glosses{Skeleton} becomes important. For \glosses{EnvObj} that have been present for multiple iterations, we consider less iterations and an increased convergence threshold up to a point where the features are static.
 
-% At each iteration, \glosses{EnvObj} are interrogated to verify if they are still fitted to belong at their position. We first check that the fitness is above a given threshold  $\fitnessFunc > T_{\fitnessFunc}$. If not, we remove the \gloss{EnvObj} from the scene. On the other case, we can improve the shape of the \gloss{Skeleton} by minimizing again their \gloss{FittingFunc}. As the number of \glosses{EnvObj} become important in the scene, the reajustment time for the \glosses{Skeleton} becomes important. For \glosses{EnvObj} that have been present for multiple iterations, we consider less iterations and an increased convergence threshold up to a point where the features are static.
+% \section{Life cycle of \gloss{EnvObj}}
+% We consider that all \glosses{EnvObj} follow a life cycle of spawning, growing and dying. While many \glosses{EnvObj} of a terrain is not a living being, we assume that evolution of relief, for example, starts at one point in time, grow as the geological factors force it to and is eroded until a point where this \gloss{EnvObj} can not be distinguished from the rest of the environment. 
 
-% ---------- Environment modifiers -------------------------------------------
+% \Glosses{EnvObj} are spawn stochastically in the terrain at the optimal fitting position. This position is determined from a \gloss{GenRule} given by the user for each of the \glosses{EnvObj}, which is dependant on the environment state.
+% Once the \gloss{EnvObj} is present in the scene, it will continuously evaluate its \gloss{FitnessFunc} to determine its state in the life cycle. If the evaluation results as less than zero, the \gloss{EnvObj} dies and it is removed from the list of \glosses{EnvObj} present in the scene. While the \gloss{EnvObj} remains, it will continue influencing its environment, by absorbing and depositing material around it and by influencing the water currents. 
+
+
+% \subsection{Hard constraints vs. soft constraints}
+% - ... 
+
+
 \section{\Glosses{EnvModif}}
 \label{sec:env-obj_materials}
+Each \gloss{EnvObj} once present in the scene has an impact on the environment $\environment$ through their modifiers $\environmentModif$. We list three types of influence, which are the \gloss{EnvMat} modifiers $\materialModif$, the height modifiers $\heightModif$ and the water modifiers $\waterModif$. These modifiers are direct impact and can be computed as 
+\begin{align*}
+    \environment^* = \environment + \sum_{o \in \objects}{ \environmentModif_o }
+\end{align*}
 
-Every instantiated \gloss{EnvObj} contributes a local \gloss{EnvModif} tuple $\environmentModif_o=(\heightModif_o,\;\waterModif_o,\;\materialModif_o)$, affecting elevation, flow, and resource fields, respectively. At the end of each iteration we assemble the provisional environment
-\begin{align}
-  \environment^{\star} = \environment + {\sum_{o\in\objects}}\environmentModif_o,
-\end{align}
-before advection-diffusion relaxation and viability tests.
-
-% ---------------------------------------------------------------------------
 \subsection{\Gloss{EnvMat} modifiers}
-For every material layer $m \in \material$ (sand, limestone, nutrients, ...), we store a scalar availability field $\material_m(\p,t)$ defined on the plane. This is not a volumetric thickness, merely a stock or probability used by the placement rules (Sec.~\ref{sec:env-obj_communication}).
+The environment is composed of a scalar field for each of the possible material that can be found in the terrain. The scalar fields represents the availability of the material at any point, but not a height field. Each material is defined with a mass $\mass$, a fluid velocity factor $\velFactor$, a diffusion rate $\diffusion$ and finally a decay rate $\decay$.
 
-Each material has four transport parameters $(\mass,\,\velFactor,\,\diffusion,\,\decay)$: mass density $\mass$, flow-coupling factor $\velFactor$, molecular diffusivity $\diffusion$, and first-order decay rate $\decay$.
+Each \gloss{EnvObj} in the terrain is a source and a sink of \glosses{EnvMat}. It is the main mean of communication between \glosses{EnvObj} as it allows them to interact with their surrounding environment. We define the amount of deposed material with $\deposition_\material$ and $\absorption_\material$ the amount of material deposed and absorbed by the \gloss{EnvObj} and $\growthRate(t) \in [0, 1]$ a factor related with the current state of the \gloss{EnvObj}, which state that more material will be displaced when the \gloss{EnvObj} is fully formed than when it was just spawn:
+\begin{align*}
+    \int_{0}^{t} {\growthRate(t) \left( \deposition_\material - \absorption_\material \right) \,dt}
+\end{align*} 
+The deposition and absorption around an \gloss{EnvObj} is defined using the Gaussian kernel distance computation from the skeleton.
 
-% ................ source & sink ............................................
-A living or abiotic object can deposit (positive source) or absorb (negative source) material, thereby mediating indirect interaction with its neighbours.  For object $o$ we denote the net source term $S_{m,o}(\p)$:
-\begin{align}
-    S_{m,o}(\p) = \left(\deposition_{m,o} - \absorption_{m,o}\right) G(d(\p,\curve_o)),
-\end{align}
-where $G$ is a Gaussian kernel centred on the skeleton and $d(\cdot)$ is the planar distance from the skeleton.
-
-% ................ transport PDE ............................................
-% \comment{Correct PDE: advective term & notation.}
-% \replace{The scalar field for the material $\material$ is displaced by using a warp operator $\warp$, taking into account the water flow $\Water$ and the terrain slope $\nabla \height$. We unified the warp with $\mass$ the mass of the material and $\velFactor$ a influence factor of the fluid on the material:}{%
-Material advection combines gravity-driven downslope drift and water-borne transport.  We approximate the velocity field
-\begin{align}
+The scalar field for the material $\material$ is displaced by using a warp operator $\warp$, taking into account the water flow $\Water$ and the terrain slope $\nabla \height$. We unified the warp with $\mass$ the mass of the material and $\velFactor$ a influence factor of the fluid on the material: 
+\begin{align*}
     \warp(\p, t) = \mass \nabla \height(\p, t) + \velFactor \Water(\p, t)
-\end{align}
-
-The \glosses{EnvMat} are also dispersed at a diffusion rate $\diffusion$, for which we can use the advection-diffusion-reaction equation to evaluate the distribution over time $t$
+\end{align*}
+ 
+% \Glosses{EnvMat} are not seen as particles but more as a probabilistic distribution, so we allowed us to simplify the transport rate equations in this simpler version.
+The \glosses{EnvMat} are also dispersed at a diffusion rate $\diffusion$, for which we can use the advection-diffusion-reaction equation to evaluate the distribution after a time $t$
 \begin{align} 
 	\label{eq:material-displacement-equation}
     \frac{\partial \material}{\partial t} \warp \nabla \material = \diffusion \nabla^2 \material - \decay \material
@@ -911,129 +1018,33 @@ We solve \eqref{eq:material-displacement-equation} numerically using Euler integ
     \material(\p, t + dt) &= \material(\p, t) + dt ( \diffusion \nabla^2 \material(\p, t) - \decay \material(\p, t) \\ & - \warp(\p, t) \nabla \material(\p, t) ) \nonumber
 \end{align}
 
-The linear decay $\decay$ avoids indefinite mass build-up and ensures a steady state when sources balance sinks (\cref{fig:env-obj_stability-examples}), following the practice of ecological field models \cite{Seidl2012}.
+The introduction of the decay rate $\decay \in ]0; 1]$ in the equation allows for the reach of a steady-state, where we can consider the simulation stable. As the user updates the state of the simulation manually, we observe the reach of this steady state before continuing the iterative steps.
 
-\begin{figure}[H]
-    \centering
-    \autofitgraphics[]{diffusion_no_decay_no_wind.pdf, diffusion_decay_0-05_no_wind.pdf}
-    % \autofitgraphics[]{diffusion_no_decay_linear_wind.pdf, diffusion_decay_0-05_linear_wind.pdf}
-    \autofitgraphics[]{diffusion_no_decay_circular_wind.pdf, diffusion_decay_0-05_circular_wind.pdf}
-    \caption{The addition of a decay term in the advection-diffusion-reaction equation, the spread of the \glosses{EnvMat} tends to a stability after few iterations (right) while the total mass would constantly increase without decay (left) (concentration value is clamped to 1 for visual purposes). This is also true when a flow field is present (bottom). Moreover, thanks to the decay, we see less instabilities regarding the boundary conditions (bottom left uses a zero-gradient boundary condition, resulting in a simulation explosion from the borders). }
-    \label{fig:env-obj_stability-examples}
-\end{figure}
-
-
-
-% ---------------------------------------------------------------------------
 \subsection{Height modifiers}
-Terrain elevation is updated by blending the \gloss{CoarseHeight} functions of all objects that overlap a query point $\p$. We can then simplify the shape of \glosses{EnvObj} to analytical functions such of a mountain to a cone, a reef as a curved cylinder or a coral boulder as a sphere, enabling fast, on-demand, and multi-scale computation of the altitude at any point. Because we work with a DEM, overhangs are ignored.
+The computation of the height $\height(\p)$ is done using the \gloss{CoarseHeight} of each \gloss{EnvObj} affecting a point $\p$. We can then simplify the shape of a mountain to a cone, a reef as a curved cylinder or a coral boulder as a sphere. As we consider surface height and not surface volume, we use the top-view height field projection, which ignore overhangs and cavities.
 
-To preserve ordering constraints we partition objects into three mutually exclusive groups:
+The \gloss{CoarseHeight} is an implicit height field that is used for estimating the shape of the \gloss{EnvObj} while providing a hint of the surface normal at each point. Using implicit surfaces allows us to evaluate the altitude and the slope at any point analytically, without requiring the computation of the whole field. The analytical solution induce the multi-scale aspect of the method. 
+
+We divide the \glosses{CoarseHeight} in three categories: 
 \begin{Itemize}
-  \Item{\( \mathcal G \)} global datums (e.g.\ sea floor patches) defined from the absolute zero level,
-  \Item{\( \mathcal A \)} altitude-relative shapes (depth-constrained corals, tidal flats),
-  \Item{\( \mathcal F \)} fine surface details that sit on the current terrain, that can be seen as bumps or carves from an aerial view. 
+    \Item{} $\mathcal{G}$: \glosses{EnvObj} whose shape is defined from an absolute zero of the terrain,
+    \Item{} $\mathcal{A}$: \glosses{EnvObj} whose shape is defined using a notion of altitude, typical of coral-related elements as the depth from the water surface is prevalent,
+    \Item{} $\mathcal{F}$: \glosses{EnvObj} that are defined at the terrain surface. They represent objects that can be seen as bumps or carves from an aerial view. 
 \end{Itemize}
 
-Groups $\mathcal G$ and $\mathcal A$ are combined with our smooth maximum/minimum operators as presented in the previous chapter to avoid $C^{0}$
-discontinuities, while surface details in $\mathcal F$ are simply summed:
+% The implicit surface formulation defines a binary tree whose leaves are primitives and nodes are operators \cite{Wyvill1999,Bernhardt2010}. In our implementation, we use the associative property of addition, minimum and maximum binary functions to flatten the trees and bypass the binary restriction that deepen the tree. 
+
+We compute the depth change given for each category:
+\begin{align*}
+    \heightModif_{\mathcal{G}} (\p) = \smoothmax_{o \in \mathcal{G}}{ \heightModif_o(\p) } \\
+    \heightModif_{\mathcal{A}} (\p) = \smoothmin_{o \in \mathcal{A}}{ \heightModif_o(\p) } \\
+    \heightModif_{\mathcal{F}} (\p) = \sum_{o \in \mathcal{F}}{ \heightModif_o(\p) }
+\end{align*}
+
+The final altitude is computed as
 \begin{align}
-  \heightModif_{\mathcal G}(\p) &=
-    \smoothmax_{o\in\mathcal G}\heightModif_o(\p),\\
-  \heightModif_{\mathcal A}(\p) &=
-    \smoothmin_{o\in\mathcal A}\heightModif_o(\p),\\
-  \heightModif_{\mathcal F}(\p) &=
-    \sum_{o\in\mathcal F}\heightModif_o(\p).
+    \heightModif = \max(\heightModif_{\mathcal{G}}, \heightModif_{\mathcal{A}}) + \heightModif_{\mathcal{F}}
 \end{align}
-
-The final coarse elevation and its analytic gradient (for slope queries) are then
-\begin{align}
-    \height^{\star}(\p)=
-    \smoothmax \left(\heightModif_{\mathcal G},\;\heightModif_{\mathcal A}\right) + \heightModif_{\mathcal F}.
-\end{align}
-The gradient $\nabla\height^{\star}$ is used by fitness rules that depend
-on slope.
-
-
-
-
-
-
-
-
-
-
-
-
-% \section{\Glosses{EnvModif}}
-% \label{sec:env-obj_materials}
-% Each \gloss{EnvObj} once present in the scene has an impact on the environment $\environment$ through their modifiers $\environmentModif$. We list three types of influence, which are the \gloss{EnvMat} modifiers $\materialModif$, the height modifiers $\heightModif$ and the water modifiers $\waterModif$. These modifiers are direct impact and can be computed as 
-% \begin{align*}
-%     \environment^* = \environment + \sum_{o \in \objects}{ \environmentModif_o }
-% \end{align*}
-
-% \subsection{\Gloss{EnvMat} modifiers}
-% The environment is composed of a scalar field for each of the possible material that can be found in the terrain. The scalar fields represents the availability of the material at any point, but not a height field. Each material is defined with a mass $\mass$, a fluid velocity factor $\velFactor$, a diffusion rate $\diffusion$ and finally a decay rate $\decay$.
-
-% Each \gloss{EnvObj} in the terrain is a source and a sink of \glosses{EnvMat}. It is the main mean of communication between \glosses{EnvObj} as it allows them to interact with their surrounding environment. We define the amount of deposed material with $\deposition_\material$ and $\absorption_\material$ the amount of material deposed and absorbed by the \gloss{EnvObj} and $\growthRate(t) \in [0, 1]$ a factor related with the current state of the \gloss{EnvObj}, which state that more material will be displaced when the \gloss{EnvObj} is fully formed than when it was just spawn:
-% \begin{align*}
-%     \int_{0}^{t} {\growthRate(t) \left( \deposition_\material - \absorption_\material \right) \,dt}
-% \end{align*} 
-% The deposition and absorption around an \gloss{EnvObj} is defined using the Gaussian kernel distance computation from the skeleton.
-
-% The scalar field for the material $\material$ is displaced by using a warp operator $\warp$, taking into account the water flow $\Water$ and the terrain slope $\nabla \height$. We unified the warp with $\mass$ the mass of the material and $\velFactor$ a influence factor of the fluid on the material: 
-% \begin{align*}
-%     \warp(\p, t) = \mass \nabla \height(\p, t) + \velFactor \Water(\p, t)
-% \end{align*}
- 
-% % \Glosses{EnvMat} are not seen as particles but more as a probabilistic distribution, so we allowed us to simplify the transport rate equations in this simpler version.
-% The \glosses{EnvMat} are also dispersed at a diffusion rate $\diffusion$, for which we can use the advection-diffusion-reaction equation to evaluate the distribution after a time $t$
-% \begin{align} 
-% 	\label{eq:material-displacement-equation}
-%     \frac{\partial \material}{\partial t} \warp \nabla \material = \diffusion \nabla^2 \material - \decay \material
-% \end{align}
-
-% We solve \eqref{eq:material-displacement-equation} numerically using Euler integration
-% \begin{align}
-%     \material(\p, t + dt) &= \material(\p, t) + dt ( \diffusion \nabla^2 \material(\p, t) - \decay \material(\p, t) \\ & - \warp(\p, t) \nabla \material(\p, t) ) \nonumber
-% \end{align}
-
-% The introduction of the decay rate $\decay \in ]0; 1]$ in the equation allows for the reach of a steady-state, where we can consider the simulation stable. As the user updates the state of the simulation manually, we observe the reach of this steady state before continuing the iterative steps (\cref{fig:env-obj_stability-examples}).
-
-% \begin{figure}[H]
-%     \centering
-%     \autofitgraphics[]{diffusion_no_decay_no_wind.pdf, diffusion_decay_0-05_no_wind.pdf}
-%     % \autofitgraphics[]{diffusion_no_decay_linear_wind.pdf, diffusion_decay_0-05_linear_wind.pdf}
-%     \autofitgraphics[]{diffusion_no_decay_circular_wind.pdf, diffusion_decay_0-05_circular_wind.pdf}
-%     \caption{The addition of a decay term in the advection-diffusion-reaction equation, the spread of the \glosses{EnvMat} tends to a stability after few iterations (right) while the total mass would constantly increase without decay (left) (concentration value is clamped to 1 for visual purposes). This is also true when a flow field is present (bottom). Moreover, thanks to the decay, we see less instabilities regarding the boundary conditions (bottom left uses a zero-gradient boundary condition, resulting in a simulation explosion from the borders). }
-%     \label{fig:env-obj_stability-examples}
-% \end{figure}
-
-% \subsection{Height modifiers}
-% The computation of the height $\height(\p)$ is done using the \gloss{CoarseHeight} of each \gloss{EnvObj} affecting a point $\p$. We can then simplify the shape of a mountain to a cone, a reef as a curved cylinder or a coral boulder as a sphere. As we consider surface height and not surface volume, we use the top-view height field projection, which ignore overhangs and cavities.
-
-% The \gloss{CoarseHeight} is an implicit height field that is used for estimating the shape of the \gloss{EnvObj} while providing a hint of the surface normal at each point. Using implicit surfaces allows us to evaluate the altitude and the slope at any point analytically, without requiring the computation of the whole field. The analytical solution induce the multi-scale aspect of the method. 
-
-% We divide the \glosses{CoarseHeight} in three categories: 
-% \begin{Itemize}
-%     \Item{} $\mathcal{G}$: \glosses{EnvObj} whose shape is defined from an absolute zero of the terrain,
-%     \Item{} $\mathcal{A}$: \glosses{EnvObj} whose shape is defined using a notion of altitude, typical of coral-related elements as the depth from the water surface is prevalent,
-%     \Item{} $\mathcal{F}$: \glosses{EnvObj} that are defined at the terrain surface. They represent objects that can be seen as bumps or carves from an aerial view. 
-% \end{Itemize}
-
-% % The implicit surface formulation defines a binary tree whose leaves are primitives and nodes are operators \cite{Wyvill1999,Bernhardt2010}. In our implementation, we use the associative property of addition, minimum and maximum binary functions to flatten the trees and bypass the binary restriction that deepen the tree. 
-
-% We compute the depth change given for each category:
-% \begin{align*}
-%     \heightModif_{\mathcal{G}} (\p) = \smoothmax_{o \in \mathcal{G}}{ \heightModif_o(\p) } \\
-%     \heightModif_{\mathcal{A}} (\p) = \smoothmin_{o \in \mathcal{A}}{ \heightModif_o(\p) } \\
-%     \heightModif_{\mathcal{F}} (\p) = \sum_{o \in \mathcal{F}}{ \heightModif_o(\p) }
-% \end{align*}
-
-% The final altitude is computed as
-% \begin{align}
-%     \heightModif = \max(\heightModif_{\mathcal{G}}, \heightModif_{\mathcal{A}}) + \heightModif_{\mathcal{F}}
-% \end{align}
 
 \subsection{Influence on water currents}
 \label{sec:env-obj_water-currents}
@@ -1042,8 +1053,7 @@ We define the global water current as a vector field composed of three component
 \begin{align}
     \Water(\p) = \Wuser(\p) + \Wsimu(\p) + \Wobj(\p)
 \end{align}
-
-Here, $\Wuser(\p)$ is a user-defined vector field that provides direct control over the flow direction and intensity using stroke paths, as presented in the previous chapter. The term $\Wsimu(\p)$ is an analytically defined component inspired by the terrain-aware wind simulation approach introduced in \citep{Paris2019b} that we can use for large water bodies fluid simulation. Finally, $\Wobj(\p)$ represents the deformation introduced by environment objects.
+Here, $\Wuser(\p)$ is a user-defined vector field that provides direct control over the flow direction and intensity. The term $\Wsimu(\p)$ is an analytically defined component inspired by the terrain-aware wind simulation approach introduced in \citep{Paris2019b}, adapted to model the influence of terrain geometry on water flow. Finally, $\Wobj(\p)$ represents the deformation introduced by environment objects.
 
 The simulated component $\Wsimu$ captures how water flow is diverted and shaped by the underlying terrain. It starts from a uniform flow direction $a$ and introduces warping based on the terrain gradient evaluated at multiple spatial scales. The resulting vector field is expressed as:
 
@@ -1056,7 +1066,7 @@ In this formulation, $v$ is a base velocity vector adjusted according to the ter
 \begin{align}
     v = a \left(1 + k_w \abs{\height(\p)} \right)
 \end{align}
-where $a$ is the global flow direction and velocity, $\abs{\height(\p)}$ is the vertical distance from the terrain to the water level at point $\p$, and $k_w$ is a scaling factor simulating the Venturi effect, which increases velocity in regions of compression.
+where $\abs{\height(\p)}$ is the vertical distance from the terrain to the water level at point $\p$, and $k_w$ is a scaling factor simulating the Venturi effect, which increases velocity in regions of compression.
 
 Each $\warp_i \cdot v$ term represents the warping of $v$ at scale $i$, defined as:
 \begin{align}
@@ -1142,21 +1152,27 @@ Finally, we can retrieve the velocity field from the objects, with a per-object 
 The use of regularized Kelvinlets is well-suited to our model. They offer a compact representation thanks to their closed-form definition, which allows each deformation to be described analytically without the need for precomputed data or large simulation grids. They maintain continuity, ensuring that the resulting vector field is smooth and free of visual or numerical artifacts, which is crucial when blending influences from multiple environment objects. Their behavior is physically plausible, as they are derived from fundamental solutions to elasticity equations, and can convincingly simulate natural flow behaviors such as deflection around obstacles or local flow obstruction. They are also computationally efficient, since their evaluation is lightweight and independent of the size or complexity of the terrain, making them particularly suitable for integration into large-scale procedural generation pipelines and real-time interactive applications.
 
 
-% \subsection{Environment stability}
-% \begin{figure}[H]
-%     \centering
-%     \autofitgraphics[]{diffusion_no_decay_no_wind.pdf, diffusion_decay_0-05_no_wind.pdf}
-%     % \autofitgraphics[]{diffusion_no_decay_linear_wind.pdf, diffusion_decay_0-05_linear_wind.pdf}
-%     \autofitgraphics[]{diffusion_no_decay_circular_wind.pdf, diffusion_decay_0-05_circular_wind.pdf}
-%     \caption{The addition of a decay term in the advection-diffusion-reaction equation, the spread of the \glosses{EnvMat} tends to a stability after few iterations (right) while the total mass would constantly increase without decay (left) (concentration value is clamped to 1 for visual purposes). This is also true when a flow field is present (bottom). Moreover, thanks to the decay, we see less instabilities regarding the boundary conditions (bottom left uses a zero-gradient boundary condition, resulting in a simulation explosion from the borders). }
-%     \label{fig:env-obj_stability-examples}
-% \end{figure}
+\subsection{Environment stability}
+\begin{figure}[H]
+    \centering
+    \autofitgraphics[]{diffusion_no_decay_no_wind.pdf, diffusion_decay_0-05_no_wind.pdf}
+    % \includegraphics[width=.45\linewidth]{diffusion_no_decay_no_wind.pdf}
+    % \includegraphics[width=.45\linewidth]{diffusion_decay_0-05_no_wind.pdf}
+    % \autofitgraphics[]{diffusion_no_decay_linear_wind.pdf, diffusion_decay_0-05_linear_wind.pdf}
+    % \includegraphics[width=.45\linewidth]{diffusion_no_decay_linear_wind.pdf}
+    % \includegraphics[width=.45\linewidth]{diffusion_decay_0-05_linear_wind.pdf}
+    \autofitgraphics[]{diffusion_no_decay_circular_wind.pdf, diffusion_decay_0-05_circular_wind.pdf}
+    % \includegraphics[width=.45\linewidth]{diffusion_no_decay_circular_wind.pdf}
+    % \includegraphics[width=.45\linewidth]{diffusion_decay_0-05_circular_wind.pdf} 
+    \caption{The addition of a decay term in the advection-diffusion-reaction equation, the spread of the \glosses{EnvMat} tends to a stability after few iterations (right) while the total mass would constantly increase without decay (left) (concentration value is clamped to 1 for visual purposes). This is also true when a flow field is present (bottom). Moreover, thanks to the decay, we see less instabilities regarding the boundary conditions (bottom left uses a zero-gradient boundary condition, resulting in a simulation explosion from the borders). }
+    \label{fig:env-obj_stability-examples}
+\end{figure}
 
-% \Glosses{EnvObj} and \glosses{EnvMat} are inspired by the ecological concept of biogeocoenosis, which describes the relationship between living organisms (biotic) and their non-living environment (abiotic). These interactions closely mirror the processes observed in natural ecosystems, where biotic and abiotic components continuously influence each other, leading to a balanced and stable environment. Gubanov and Degermendzhy [CITATION] describe biogeocoenosis as almost-closed systems, with many parallels possible with thermodynamics such as the concept of dynamic equilibrium. In a biogeocoenosis, the various processes, such as the spread of nutrients, the growth of vegetation, or the erosion of soil, tend toward a state of balance. 
+\Glosses{EnvObj} and \glosses{EnvMat} are inspired by the ecological concept of biogeocoenosis, which describes the relationship between living organisms (biotic) and their non-living environment (abiotic). These interactions closely mirror the processes observed in natural ecosystems, where biotic and abiotic components continuously influence each other, leading to a balanced and stable environment. Gubanov and Degermendzhy [CITATION] describe biogeocoenosis as almost-closed systems, with many parallels possible with thermodynamics such as the concept of dynamic equilibrium. In a biogeocoenosis, the various processes, such as the spread of nutrients, the growth of vegetation, or the erosion of soil, tend toward a state of balance. 
 
-% Similarly, in our method, the interaction between \glosses{EnvObj} and \glosses{EnvMat} is modeled using a reaction-diffusion-advection framework. This model captures how \glosses{EnvMat} are spread and absorbed within the terrain. Thanks to the decay rate of the \glosses{EnvMat}, the system progresses toward a dynamic equilibrium, where the distribution of \glosses{EnvMat} stabilizes. This stabilization reflects a state of balance where the rates of spreading and absorption and decay are equal, and the \glosses{EnvVal} become coherent across the landscape. For example, a river might spread sediments downstream, which are gradually absorbed by the surrounding terrain, leading to a stable sediment distribution over time. Similarly, moisture emitted by a forest will eventually reach a balance with the surrounding soil and atmosphere, creating a stable, humid environment.
+Similarly, in our method, the interaction between \glosses{EnvObj} and \glosses{EnvMat} is modeled using a reaction-diffusion-advection framework. This model captures how \glosses{EnvMat} are spread and absorbed within the terrain. Thanks to the decay rate of the \glosses{EnvMat}, the system progresses toward a dynamic equilibrium, where the distribution of \glosses{EnvMat} stabilizes. This stabilization reflects a state of balance where the rates of spreading and absorption and decay are equal, and the \glosses{EnvVal} become coherent across the landscape. For example, a river might spread sediments downstream, which are gradually absorbed by the surrounding terrain, leading to a stable sediment distribution over time. Similarly, moisture emitted by a forest will eventually reach a balance with the surrounding soil and atmosphere, creating a stable, humid environment.
 
-% The only factor that can disrupt this equilibrium is a change in the \glosses{EnvVal}. Changes such as an increase in temperature, a shift in wind patterns, or the introduction of a new \gloss{EnvObj} can alter the balance, leading to a new phase of interaction and stabilization.
+The only factor that can disrupt this equilibrium is a change in the \glosses{EnvVal}. Changes such as an increase in temperature, a shift in wind patterns, or the introduction of a new \gloss{EnvObj} can alter the balance, leading to a new phase of interaction and stabilization.
 
 
 \section{User interactions}
