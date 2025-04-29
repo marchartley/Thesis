@@ -495,8 +495,8 @@ where $\tensor{D(*)}$  is a diffusion tensor dynamically defined by any relevant
     \Item{} A spatially varying diffusion may be defined as $\tensor{D(*)} = \tensor{D} f(x)$, such as the patchy diffusion formulation used in metapopulation models \cite{Czaran1998}:
     \begin{align}
         \tensor{D(*)} = \tensor{D} \begin{dcases}
-            D_1, & x \in \text{habitable patch} \\
-            D_2, & x \in \text{hostile patch}
+            D_1&, x \in \text{habitable patch} \\
+            D_2&, x \in \text{hostile patch}
         \end{dcases}
     \end{align}
     \Item{} An anomalous diffusion like the inclusion of Lévy flight term, incorporating random long distance jumps can be expressed as $\tensor{D(*)} = \tensor{D} u^m + \noise L(t)$ \cite{Humphries2014,Chechkin2008}.
@@ -766,9 +766,9 @@ with
     \Eshape    &= \Ashape \left( \Length - \int_{\curve}{ \, ds } \right)^2 \\
     \label{eq:env-obj_snake-energy-equation-gradient}
     % \Egradient &= \Agradient \int_{\curve}{ \dot{\curve'(s)}{\Delta \fittingFunc(\curve(s))} \, ds }
-    \Egradient &= \Agradient \int_{\curve}{\bigl\langle \curve'(s),\nabla^{\perp}\fittingFunc\left(\curve(s)\right)\bigr\rangle ds}
+    \Egradient &= \Agradient \int_{\curve}{\bigl\langle \curve'(s),\nabla\fittingFunc\left(\curve(s)\right)\bigr\rangle ds}
 \end{align}
-Here $\alpha_{\bullet}$ are user-tunable weights, $\Length$ is an optional target length, and $\nabla^{\perp}f$ denotes the 90°-rotated gradient, encouraging the curve to cut orthogonally across isolines. The minus sign in $\Eexternal$ converts the integrand into an attraction term (high $\fittingFunc$ lowers the energy).
+Here $\alpha_{\bullet}$ are user-tunable weights and $\Length$ is an optional target length. The minus sign in $\Eexternal$ converts the integrand into an attraction term (high $\fittingFunc$ lowers the energy).
 
 In this configuration, $\Einternal$ induce a smooth continuity of the curve by reducing the spacing of each point while reducing the curvature. Another energy, $\Eexternal$ integrate the \gloss{FittingFunc} over the curve, often seen as an attractor of the points, that tries to descent the gradient to find local minima. At the same time, $\Eshape$ apply constraints on the curve shape, which, in this case, is to target a specific length $\Length$. As such, the curve search for an optimized shape given constraints in $\Eshape$ for minimizing $\Eexternal$. We introduced a new term $\Egradient$ in the energy computation that push the points of the curve in the direction of the slope of the \gloss{FittingFunc}, also providing an orientation for the curve.
 
@@ -801,12 +801,14 @@ If a steep coast can be found where the terrain slope is important near the wate
         \Eshape    &= \Ashape \left( \Length - \int_{\curve}{ \, ds } \right)^2 \nonumber
     \end{align}
     We introduced the shape energy, an energy defined on the whole curve to apply constraints on its final shape. As many natural features have a given dimension, we may add a constraint on the length of the \gloss{Skeleton}. 
+
+    The original Snake algorithm is biased, forcing the curve to shrink as the internal forces attracts the vertices towards their neighbors. The introduction of a target length cancels this effect.
 }{snake_algorithm_shape.png}{The shape energy is minimized when the arc length of the curve $\curve$ is equal to a parameter $\Length$, obtainable by towards or in opposition of its neighbors. }{fig:env-obj_snake-shape}
 
 \AltTextImage{
     \subsubsubsection{Gradient energy}
     \begin{align}
-        \Egradient &= \Agradient \int_{\curve}{\bigl\langle \curve'(s),\nabla^{\perp}\fittingFunc\left(\curve(s)\right)\bigr\rangle ds} \nonumber
+        \Egradient &= \Agradient \int_{\curve}{\bigl\langle \curve'(s),\nabla\fittingFunc\left(\curve(s)\right)\bigr\rangle ds} \nonumber
     \end{align}
     In our application, having information about the orientation of \glosses{EnvObj} may be essential. For this purpose, we introduced a gradient energy component in the formulation. The equation impose that the direction of the curve at any point should be directed towards the gradient of the scalar field. As the external energy pushes points toward the lowest point of the scalar field, the gradient field restrict the gradient descent for the global curve into a specific way, which may feel more natural.
     
@@ -889,7 +891,7 @@ A living or abiotic object can deposit (positive source) or absorb (negative sou
 \begin{align}
     S_{m,o}(\p) = \left(\deposition_{m,o} - \absorption_{m,o}\right) G(d(\p,\curve_o)),
 \end{align}
-where $G$ is a Gaussian kernel centred on the skeleton and $d(\cdot)$ is the planar distance from the skeleton.
+where $G$ is a Gaussian kernel centred on the skeleton and $d(\cdot)$ is the distance from the skeleton.
 
 
 Material advection combines gravity-driven downslope drift and water-borne transport.  We approximate the velocity field
@@ -1067,15 +1069,18 @@ In accordance with the original method, we employ two spatial scales ($n = 2$), 
 
 The terrain-based simulation component $\Wsimu$ is designed to model large-scale water current behavior by leveraging an analytical approximation of flow deviation due to terrain. This solver is inspired by the work of \cite{Paris2019b}, originally developed for wind field simulation, and has been adapted here to capture how elevation changes influence the direction and intensity of surface water flow.
 
-One of the principal motivations for this formulation is its ability to incorporate terrain-awareness directly into the water current model. In natural environments, the underlying topography is the dominant factor determining flow direction, especially in the absence of dynamic fluid interactions. By analyzing the terrain gradient at multiple spatial scales, the solver accounts for both broad elevation patterns and finer landform features. This leads to a more nuanced and plausible flow field that conforms to hills, valleys, and river paths without requiring a full physical simulation.
 
-This approach offers significant advantages in terms of controllability and procedural integration. Unlike black-box physics-based solvers (presented more deeply in \cref{chap:erosion}), the analytical formulation of $\Wsimu$ exposes intuitive parameters such as flow direction, elevation sensitivity, and gradient deviation that can be tuned directly by designers or procedural rules. This makes the method especially suited for terrain generation pipelines where user intent or artistic direction needs to be encoded into the environment.
+The proposed formulation offers a terrain-aware approach to modeling water currents, recognizing that topography is the dominant influence on flow direction in natural environments, particularly in the absence of dynamic fluid interactions. By analyzing terrain gradients at multiple spatial scales, the solver captures both broad elevation patterns and fine landform features, resulting in a plausible, nuanced flow field that naturally conforms to hills, valleys, and river paths without requiring a full physical simulation. Unlike black-box physics-based solvers (discussed further in \cref{chap:erosion}), the analytical formulation of $\Wsimu$ exposes intuitive parameters such as flow direction, elevation sensitivity, and gradient deviation, that can be directly adjusted by the user, making it especially suitable for terrain generation pipelines where user intent or artistic direction must be encoded. The solver is also computationally efficient and supports on-demand evaluation, avoiding the need for dense precomputed data and aligning well with the requirements of real-time systems, streaming terrains, and interactive editors. While the model assumes steady-state flow and does not simulate dynamic phenomena like rainfall, flooding, or erosion, these effects can be layered atop the static flow if needed, preserving a lightweight design that still conveys physically plausible behavior. Finally, our system is purposefully modular: $\Wsimu$ addresses large-scale flow patterns, while small-scale variations such as turbulence, vortices, or flow deviations caused by discrete features, are handled separately by the $\Wobj$ term, allowing each component to specialize in its relevant spatial scale.
 
-Furthermore, the solver is computationally efficient and supports on-demand evaluation, allowing the vector field to be queried at any position without precomputing or storing dense data structures. This is particularly beneficial for large or streaming terrains, and aligns with the demands of real-time systems, interactive editors, and games.
+% One of the principal motivations for this formulation is its ability to incorporate terrain-awareness directly into the water current model. In natural environments, the underlying topography is the dominant factor determining flow direction, especially in the absence of dynamic fluid interactions. By analyzing the terrain gradient at multiple spatial scales, the solver accounts for both broad elevation patterns and finer landform features. This leads to a more nuanced and plausible flow field that conforms to hills, valleys, and river paths without requiring a full physical simulation.
 
-The model assumes steady-state flow, focusing on static representations of water movement that are sufficient for many applications in procedural worldbuilding. Dynamic effects such as rainfall response, flooding, or erosion are beyond the scope of this solver but can be layered on top of the static flow if needed. This simplification allows the system to remain lightweight while still conveying a physically plausible behavior of water across terrain.
+% This approach offers significant advantages in terms of controllability and procedural integration. Unlike black-box physics-based solvers (presented more deeply in \cref{chap:erosion}), the analytical formulation of $\Wsimu$ exposes intuitive parameters such as flow direction, elevation sensitivity, and gradient deviation that can be tuned directly by designers or procedural rules. This makes the method especially suited for terrain generation pipelines where user intent or artistic direction needs to be encoded into the environment.
 
-Finally, the solver is intentionally designed to handle only the large-scale structure of the flow. Small-scale variations, such as localized turbulence, vortices, or flow redirection around discrete features, are handled separately by the $\Wobj$ term. This separation of concerns allows the model to remain modular and efficient, with each component addressing flow phenomena at its relevant scale.
+% Furthermore, the solver is computationally efficient and supports on-demand evaluation, allowing the vector field to be queried at any position without precomputing or storing dense data structures. This is particularly beneficial for large or streaming terrains, and aligns with the demands of real-time systems, interactive editors, and games.
+
+% The model assumes steady-state flow, focusing on static representations of water movement that are sufficient for many applications in procedural worldbuilding. Dynamic effects such as rainfall response, flooding, or erosion are beyond the scope of this solver but can be layered on top of the static flow if needed. This simplification allows the system to remain lightweight while still conveying a physically plausible behavior of water across terrain.
+
+% Finally, the solver is intentionally designed to handle only the large-scale structure of the flow. Small-scale variations, such as localized turbulence, vortices, or flow redirection around discrete features, are handled separately by the $\Wobj$ term. This separation of concerns allows the model to remain modular and efficient, with each component addressing flow phenomena at its relevant scale.
 
 \subsubsection{Vector field deformation through Kelvinlets}
 
