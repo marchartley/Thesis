@@ -5,7 +5,7 @@
 \teaser{
     \includegraphics[width=0.9\linewidth]{figureTeaser.png}
 	%  % \centering
-    \caption{Our method can produce different scenes including coral reef islands and canyons at multiple scales using \glosses{EnvObj} to represent terrain features.}
+    % \caption{Our method can produce different scenes including coral reef islands and canyons at multiple scales using \glosses{EnvObj} to represent terrain features.}
 	\label{fig:env-obj_teaser}
 }
 \abstract
@@ -91,9 +91,9 @@ Building on these observations, this chapter contributes:
 \begin{Itemize}
     \Item{\Gloss{EnvObj} formalism:} We introduce a sparse, domain-agnostic symbol set (points, curves, regions) that both read continuous environmental fields and write local modifications back to them, creating a closed feedback loop.
 
-    \Item{Lightweight, analytic field coupling:} A decay-stabilised reaction-diffusion solver for scalar "materials" and analytical deformation of the vector-flow field yield interactive, steady-state updates without heavy fluid or erosion simulation.
+    \Item{Analytic field coupling:} A decay-stabilised reaction-diffusion solver for scalar "materials" and analytical deformation of the vector-flow field yield interactive, steady-state updates without heavy fluid or erosion simulation.
 
-    \Item{Multi-scale authoring workflow:} A focus-and-refine pipeline lets users jump from kilometre-scale planning to sub-metre edits while preserving global coherence. We demonstrate this on both coral-reef islands and terrestrial mountain/canyon scenes.
+    \Item{Multi-scale authoring:} A focus-and-refine pipeline lets users jump from kilometre-scale planning to sub-metre edits while preserving global coherence. We demonstrate this on both coral-reef islands and terrestrial mountain scenes.
 \end{Itemize}
 
 
@@ -216,12 +216,12 @@ In the Fixed-Radius Neighborhood (FRN) method, the first appearance of a distanc
 
 \AltTextImage{
 
-    The computer graphics community represents the FRN constraint by using Poisson Disk Sampling or blue noise approximations \cite{Deussen2000} to generate entities as points that does not fall inside any other radius. The algorithm can be accelerated by using a regular grid structure as proposed by \citep{Bridson2007b}: each cell of the grid has a width of $\frac{\radius}{\sqrt{n}}$ with $n$ the number of dimensions (usually $n = 2$). Each point sampled is encoded by the grid cell in which it resides. A cell can only contain a unique point, making it a fast spatial structure for distance computation with other points. Each point added in the grid recursively instantiate new random samples in a spherical annulus of between radius $\radius$ and $2 \radius$. While this method is fast and simple, other methods propose variations on it to add the guarantee of maximal coverage \cite{Ebeida2011} or GPU parallelisation \cite{Wei2008}. However, in the presence of at least two species of different radius, the circle packing problem becomes more complicated and require a larger amount of collision detection, while keeping the spatial indexing method from Bridson's algorithm.
+    The computer graphics community represents the FRN constraint by using Poisson Disk Sampling (\cref{fig:env-obj_poisson-example}) or blue noise approximations \cite{Deussen2000} to generate entities as points that does not fall inside any other radius. The algorithm can be accelerated by using a regular grid structure as proposed by \citep{Bridson2007b}: each cell of the grid has a width of $\frac{\radius}{\sqrt{n}}$ with $n$ the number of dimensions (usually $n = 2$). Each point sampled is encoded by the grid cell in which it resides. A cell can only contain a unique point, making it a fast spatial structure for distance computation with other points. Each point added in the grid recursively instantiate new random samples in a spherical annulus of between radius $\radius$ and $2 \radius$. While this method is fast and simple, other methods propose variations on it to add the guarantee of maximal coverage \cite{Ebeida2011} or GPU parallelisation \cite{Wei2008}. However, in the presence of at least two species of different radius, the circle packing problem becomes more complicated and require a larger amount of collision detection, while keeping the spatial indexing method from Bridson's algorithm.
 
 }{Poisson_disk_sampling.png}{Poisson Disk Sampling iteratively add points in space and checks whether the new points fall inside one of the previously instanciated points and radii. }{fig:env-obj_poisson-example}
 
-\subsubsubsection{Zone of Influence}
 \AltTextImage{
+    \subsubsubsection{Zone of Influence}
 
     The Zone of Influence (ZOI) model is an ecological method designed to quantify competition among trees by modeling their interactions as gradual rather than binary processes \cite{Czaran1998}. In contrast to simpler binary approaches such as Fixed Radius Neighborhood (FRN), the ZOI model assigns each tree a circular influence zone, typically defined based on measurable attributes like diameter at breast height (DBH), crown dimensions, or species-specific ecological characteristics.
 
@@ -255,20 +255,20 @@ with $G_i$ the growth of the tree and $G_{\text{max}, i}$ the maximal potential 
     \end{align}
     with $f(DBH_i, DBH_j)$ a function that introduce asymmetry due to a difference in the diameter at breast height (DBH) of the two different trees, modeling the stronger drainage of resources by larger trees, or using $f(h_i, h_j)$ to add model light competition between trees with different heights.
     
-}{FON-asymmetric-field-Peters2020.png}{The main inconvenient of methods using individual-based models is that the influence of each entity is supposed isotropic, without taking into account the environmental factors. (from \cite{Peters2020}) }{fig:env-obj_fon-asymmetric-scheme}
+}{FON-asymmetric-field-Peters2020.png}{The main inconvenient of methods using individual-based models is that the influence of each entity is supposed isotropic, without taking into account the environmental factors. \hide{(from \cite{Peters2020})} }{fig:env-obj_fon-asymmetric-scheme}
 
-The ZOI model is theoretically rooted in the understanding that trees compete gradually and continuously, rather than abruptly. However, it does rely on simplifying assumptions, such as circular, isotropic zones, homogeneous environmental conditions, and static radii within measurement intervals, which can limit its applicability to certain ecological scenarios involving directional resource gradients or heterogeneous environments.
+The ZOI model is theoretically rooted in the understanding that trees compete gradually and continuously, rather than abruptly. However, it does rely on simplifying assumptions, such as circular, isotropic zones, homogeneous environmental conditions, and static radii within measurement intervals, which can limit its applicability to certain ecological scenarios involving directional resource gradients or heterogeneous environments (\cref{fig:env-obj_fon-asymmetric-scheme}).
 
 Empirical studies across diverse forest ecosystems have demonstrated that the ZOI approach significantly improves predictions of tree growth, survival, and mortality compared to simpler binary models like FRN. The nuanced representation of competition offered by ZOI models better captures complex ecological dynamics, particularly in mixed-species stands, uneven-aged forests, or structurally diverse ecosystems.
 
-\subsubsubsection{Field Of Neighborhood}
 
 \AltTextImage{
+    \subsubsubsection{Field Of Neighborhood}
 
     The Field of Neighborhood (FON) approach provides an alternative method to quantify tree competition by explicitly incorporating distance-dependent and size-dependent effects of neighboring trees on a focal tree's growth or survival \cite{Berger2000}. Unlike the ZOI model, which uses circular zones and geometric overlaps, FON models typically rely on explicit indices that incorporate both the distance and the relative sizes of neighboring trees, without necessarily defining explicit geometric overlap areas.
 
-    In the FON approach, competition intensity affecting a given focal tree is calculated by summing the competitive effects of neighboring trees, typically as a weighted function of their size and distance. 
-}{FON-Peters2020.png}{The FON model proposed a smoother version of the ZOI, such that the intersection between the two radii also take into account the distance from the tree trunk. (from \cite{Peters2020})}{fig:env-obj_fon-scheme}
+    In the FON approach, competition intensity affecting a given focal tree is calculated by summing the competitive effects of neighboring trees, typically as a weighted function of their size and distance (\cref{fig:env-obj_fon-scheme}). 
+}{FON-Peters2020.png}{The FON model proposed a smoother version of the ZOI, such that the intersection between the two radii also take into account the distance from the tree trunk. \hide{(from \cite{Peters2020})}}{fig:env-obj_fon-scheme}
 
 A commonly used formulation of competition intensity $FON_i$ for a tree $i$ at the distance $r$ from the trunk is expressed as 
 \begin{align}
@@ -293,7 +293,7 @@ with RBH the radius at breast height (half of the DBH) and $R$ the radius of inf
     \end{align}
 
 }{FON-scheme-Berger2000.png}{The evaluation of the FON value at any point is the simple accumulation of individual fields.}{fig:env-obj_fon-compute-scheme}
-Unlike the ZOI method, the FON model does not assume a hard boundary around each tree, instead explicitly capturing a smooth decline in competitive impact with increasing distance. It also inherently accommodates asymmetric competition, since larger and closer neighbors exert disproportionately stronger competitive influences than smaller or more distant trees.
+Unlike the ZOI method, the FON model does not assume a hard boundary around each tree, instead explicitly capturing a smooth decline in competitive impact with increasing distance. It also inherently accommodates asymmetric competition, since larger and closer neighbors exert disproportionately stronger competitive influences than smaller or more distant trees (\cref{fig:env-obj_fon-compute-scheme}).
 
 The FON method does not rely explicitly on geometric overlap and is thus flexible and particularly useful in heterogeneous forests. However, in order to capture the self-thinning property of silviculture \cite{Makowski2019} satisfying $ W = \curve N^{-\frac{3}{2}} $ (with $W$ the average biomass of an individual, $N$ the density and $\curve$ a constant) \cite{Westoby1984}, the generation of the ecosystem should be iteratively simulated with small time steps \cite{Alsweis2005}, which is computationally expensive. Instead of simulating the full growth model of vegetation, most ecosystem generation algorithms focus on the distribution of the elements of the terrain, abstracting the competion into distance function deformations or statistical optimization. 
 
@@ -303,7 +303,7 @@ The FON method does not rely explicitly on geometric overlap and is thus flexibl
 }{kernel-matrices-Lane2002.png}{The deformation of neighborhood kernels enables the modelling of different behaviour for species and inter-species interactions}{fig:env-obj_kernels-Lane2002}
 
 \AltTextImage{
-    On the other hand, learning the spatial distribution of distances between individuals from examples can be used as a statistical metric to introduce interactive tools for ecosystem generation \citep{Emilien2015a}. In this work, given a user-provided example, the system learns the parameters such as the histogram of distances inter- and intra-species from one region and reproduce these distribution in another regions. This method then does not limit to trees, but may include any scene element like houses and roads, as well as the integration of other metrics than distances such as the terrain slope.
+    On the other hand, learning the spatial distribution of distances between individuals from examples can be used as a statistical metric to introduce interactive tools for ecosystem generation \citep{Emilien2015a} (\cref{fig:env-obj_worldbrush-Emilien2015}). In this work, given a user-provided example, the system learns the parameters such as the histogram of distances inter- and intra-species from one region and reproduce these distribution in another regions. This method then does not limit to trees, but may include any scene element like houses and roads, as well as the integration of other metrics than distances such as the terrain slope.
 }{worldbrush-Emilien2015.png}{Using statistical distribution from an input terrain, \cite{Emilien2015a} resynthesize a different terrain with similar distributions. }{fig:env-obj_worldbrush-Emilien2015}
 
 While the FON model provides a biologically detailed representation of competition, its computational complexity makes it significantly more challenging to implement in large-scale simulations. Unlike the ZOI model, which relies on predefined geometric overlaps that can be calculated efficiently, the FON approach requires integrating a continuously decaying competition function over an arbitrary area of influence. This necessitates evaluating the function at multiple points across overlapping zones, increasing computational demand. Moreover, the additive nature of FON, where each tree contributes to the total competition field at every spatial point, further exacerbates the cost, scaling poorly in dense forest stands. The necessity of numerical integration or spatial discretization makes FON computationally expensive compared to ZOI, which only requires simple geometric calculations. Consequently, while FON is useful for small-scale or highly detailed ecological studies, it is generally impractical for large-scale forest simulations.
@@ -329,7 +329,7 @@ To address these challenges, Ecological Field Models (EFMs) provide an alternati
 
 From a computer graphics perspective, EFMs share similarities with techniques used in Signed Distance Fields (SDFs). Just as SDFs encode geometric influences in a continuous field, EFMs encode ecological influences, allowing for more realistic ecosystem simulations.
 
-EFMs are based on the fundamental idea that organisms are not isolated agents but rather integral components of their environment, influencing and being influenced by it in a spatially explicit manner. The core ecological principles behind EFMs include two keypoints:
+EFMs are based on the fundamental idea that organisms are not isolated agents but rather integral components of their environment, influencing and being influenced by it in a spatially explicit manner (\cref{fig:env-obj_ecological-field-models} represent the effect of multiple vegetation entities on the humidity, shade and nurtient fields of the environment). The core ecological principles behind EFMs include two keypoints:
 \begin{Itemize}
     \Item{The continuous organism-environment interactions:} Organisms modify their surroundings in ways that extend beyond their immediate location.    Environmental factors such as soil nutrients, water availability, light exposure, and chemical signals influence other species gradually across space.
     \Item{The environmental fields influence the organism's growth and behaviour:} Species respond to spatially varying gradients rather than direct neighbor-based interactions, which we can see with phototropism guiding the growth of plants towards higher light availability areas \cite{Pirk2012} or the foraging strategy that develop roots of trees toward nutrient-rich soils \cite{Li2023}. 
@@ -406,11 +406,11 @@ and the occlusion field $\alpha$ as the product of all objects' occlusion fields
 assuming $\theta_0$ and $\alpha_0$ to be global scalar fields for temperature and shade, symbolising the baseline environmental state in the ecological domain.
 
 \AltTextImage{
-    Using the field values, the system instantiates small details like leaves by sampling the space with candidate "anchor positions". If the field values satisfy certain conditions at the anchor position $\p_i$, the small scale objects can be instantiated at this position (for example, for leaves: $\alpha(\p_i) l(\p_i) < d_i$ using the occlusion field $\alpha$, the leaves deposition field $l$ and the distance of the anchor position to the depositing surface $d_i$). This method can then be easily extended to modify the geometry or texture of the object based on the field values like the heat field or the humidity field, to manually move or rotate each of the objects, or even integrate user-defined density fields to populate entangled details on the ground \cite{Guerin2016}. 
+    Using the field values, the system instantiates small details like leaves by sampling the space with candidate "anchor positions". If the field values satisfy certain conditions at the anchor position $\p_i$, the small scale objects can be instantiated at this position (for example, for leaves: $\alpha(\p_i) l(\p_i) < d_i$ using the occlusion field $\alpha$, the leaves deposition field $l$ and the distance of the anchor position to the depositing surface $d_i$ as shown in \cref{fig:env-obj_leaves-instances}). This method can then be easily extended to modify the geometry or texture of the object based on the field values like the heat field or the humidity field, to manually move or rotate each of the objects, or even integrate user-defined density fields to populate entangled details on the ground \cite{Guerin2016}. 
 }{EnvObjs-leaves-instances-Grosbellet2016.png}{Leaves are instanced if the fields are sufficient and the geometry and texture are altered depending on the environment}{fig:env-obj_leaves-instances}
 
 \AltTextImage{
-    On the other hand, the geometry of large objects can be altered using the scalar fields. The authors present a simulation of snow deposition on the objects by displacing the vertices $i$ in the direction of the normals $\vec n_i$ by an amount depending on the environment:
+    On the other hand, the geometry of large objects can be altered using the scalar fields. The authors present a simulation of snow deposition on the objects by displacing the vertices $i$ in the direction of the normals $\vec n_i$ by an amount depending on the environment (\cref{fig:env-obj_snow-Grosbellet2016}):
     \begin{align}
         \p_i' = \p_i + \left( \alpha(\p_i) s(\p_i) g(d(\p_i)) - \theta(\p_i) \right) \vec n_i
     \end{align}
@@ -418,7 +418,7 @@ assuming $\theta_0$ and $\alpha_0$ to be global scalar fields for temperature an
 }{EnvObjs-snow-Grosbellet2016.png}{Snow deposition is a displacement of vertices along the normals of the mesh}{fig:env-obj_snow-Grosbellet2016}
 
 \AltTextImage{
-    In addition to the EFM framework, the environmental effects from environmental objects are not limited by points geometry as the scalar functions may use a spline primitive or be extended to volume primitives. Translated to the ecological domain, this methodology extends the EFM as the inclusion of water bodies, essential for realistic vegetation simulation, can be taken into account by considering environmental effects from rivers and lakes which are often modeled as splines and regions in 3D modeling \cite{Emilien2015,Genevaux2013,Genevaux2015}.
+    In addition to the EFM framework, the environmental effects from environmental objects are not limited by points geometry as the scalar functions may use a spline primitive or be extended to volume primitives (\cref{fig:env-obj_heat-field-effect}). Translated to the ecological domain, this methodology extends the EFM as the inclusion of water bodies, essential for realistic vegetation simulation, can be taken into account by considering environmental effects from rivers and lakes which are often modeled as splines and regions in 3D modeling \cite{Emilien2015,Genevaux2013,Genevaux2015}.
 }{env-obj-fields-heat-Grosbellet2016.png}{The heat field produced by a pipe uses a distance function from a line instead than a single point in space.}{fig:env-obj_heat-field-effect}
 
 The Environmental Objects method can be seen as a variant of the EFM due to their high reliance on the idea of fields and environmental effects of each element on the environment, even if the purposes of each method are opposed: one tend to model the environment properties given the elements present while the other aims at altering the geometry of a scene given the elements in the scene, regardless to their biological nature. However, the convergence of these approaches suggests possibilities for cross-disciplinary innovation. The integration of ecological dynamics into procedural modeling could lead to more adaptive virtual environments that respond realistically to environmental changes, while procedural techniques could enhance ecological simulations by improving scalability and visualization.
@@ -450,7 +450,7 @@ Reaction-diffusion equations, popularised by Turing \cite{Turing1952}, combine l
 
 % The adaptation of reaction-diffusion models to ecological contexts began several decades later as ecologists camne to explain spatial phenomena such as the spread of invasive species, the maintenance of species diversity, and the formation of vegetation patterns. These models provided a mathematical framework to simulate and predict the dynamics of complex biological systems influenced by both local interactions and spatial movement.
 
-Reaction-diffusion models describe the spatial and temporal evolution of populations, chemicals, or other ecological entities that interact (reaction) and spread (diffusion) through a medium. These models are widely used in ecosystem simulations to understand population dynamics, species dispersal, disease spread, and spatial pattern formation in ecological systems.
+Reaction-diffusion models describe the spatial and temporal evolution of populations, chemicals, or other ecological entities that interact (reaction) and spread (diffusion) through a medium (\cref{fig:diffusion-model-teaser}). These models are widely used in ecosystem simulations to understand population dynamics, species dispersal, disease spread, and spatial pattern formation in ecological systems.
 
 In the context of ecology, a reaction-diffusion model typically represents:
 \begin{Itemize}
@@ -627,14 +627,14 @@ These \glosses{EnvMat} are conceptual reservoirs used by rule sets. They need no
 A geographical feature, also called object or entity, is defined as a discrete phenomenon located at or near the Earth's surface, relevant in geography and geographic information science (GIScience). It represents geographic information that can be depicted in maps, geographic information systems (GIS), and other forms of geographic media. This term includes both natural and human-made objects, ranging from tangible items like buildings or trees to intangible concepts like neighborhoods or savanna. Features are distinct entities with defined boundaries, differentiating them from continuous geographic masses or processes occurring over time. They can be categorized as natural features, such as ecosystems, biomes, water bodies, and landforms, or artificial features, such as settlements, administrative regions, and engineered constructs. As the term "feature" is overused in computer science, we will use the term \gloss{EnvObj} in this work.
 
 \AltTextImage{
-Each \gloss{EnvObj} is anchored by a skeleton (a point, curve, or region in the cartographic sense) which captures its footprint while postponing heavy geometry generation.  
+Each \gloss{EnvObj} is anchored by a skeleton (a point, curve, or region in the cartographic sense) which captures its footprint while postponing heavy geometry generation (\cref{fig:env-objs_example-scheme1}).  
 \begin{Itemize}
     \Item{Point-based}: isolated boulders, individual trees, individual corals, ...
     \Item{Curve-based}: river, coral reefs, fault scarps, ...
     \Item{Region-based}: islands, forests, sediment patches, ... 
 \end{Itemize}
 Via its prescribed \glosses{EnvModif}, an \gloss{EnvObj} locally deposits, removes, or diverts \glosses{EnvMat}, thereby updating the surrounding \glosses{EnvVal}.  Conversely, its viability is re-evaluated through a user-defined \gloss{FitnessFunc} that samples those same fields.  If viable, a \gloss{FittingFunc} refines the skeleton (e.g. a river streams downhill, and seagrass meadow patches are limited to luminous areas).
-}{Env-obj-scheme1.png}{Environmental objects, from 2D (left) to their 3D geometry (right)}{fig:env-objs_example-scheme1}
+}{Env-obj-scheme1.png}{Environmental objects, from 2D (top) to their 3D geometry (bottom)}{fig:env-objs_example-scheme1}
 
 
 
@@ -653,7 +653,7 @@ Each \gloss{EnvObj} possesses intrinsic \glosses{EnvMat} that both spread and ar
 In our model the colony contributes a deposition term $\materialModif_{\text{limestone}}$, and the reef absorbs it. No direct object-object message passing is required.
 
 Scalar \glosses{EnvVal} are updated by adding or removing mass around the \gloss{Skeleton} and then diffusing it, biased by $\Water$. 
-We assume a \gloss{SteadyState} regime, guaranteed by a decay rate~$0 < \decay < 1$ that prevents unbounded accumulation during advection-diffusion.
+We assume a \gloss{SteadyState} regime, guaranteed by a decay rate~$\decay \in\;]0; 1[$ that prevents unbounded accumulation during advection-diffusion.
 
 \subsection{Pipeline}
 
@@ -701,7 +701,7 @@ At any iteration the user may edit individual \glosses{EnvObj} interactively (\c
 
 \subsubsection{Output}
 % - Output result
-The output of our system is a set of \glosses{EnvObj} stored as 2D skeletons in the plane. We deliberately stop at this sparse, symbolic level; meshing, texturing, and final rendering are left to downstream tools chosen by the end-user. For each object, we export its skeleton geometry, semantic class, and environment-modifier parameters, enough to drive terrain synthesis or placement of assets in a game engine or simulator. Figures in this chapter illustrate possible renderings generated with a mix of implicit surfaces and triangular meshes.
+The output of our system is a set of \glosses{EnvObj} stored as 2D skeletons in the plane. We deliberately stop at this sparse, symbolic level; meshing, texturing, and final rendering are left to downstream tools chosen by the end-user. For each object, we export its skeleton geometry, semantic class, and environment-modifier parameters, enough to drive terrain synthesis or placement of assets in a game engine or simulator. Figures in this chapter illustrate possible renderings generated with a mix of implicit surfaces and triangular meshes (\cref{fig:env-obj_assets}).
 
 
 
@@ -719,6 +719,7 @@ For notational simplicity, we abbreviate $\fitnessFunc(\environment(\p))$ and $\
 \begin{figure}
     \autofitgraphics[]{coral-erosion-example.pdf, rock-erosion-example.pdf}
     \caption{While the \gloss{FitnessFunc} guides the position of the \glosses{EnvObj}, the \gloss{FittingFunc} provide an indication of the suitability of the \gloss{EnvObj} in its surroundings. This information is used to determine if the \gloss{EnvObj} should be removed, but may also be used for visual purposes to indicate unhealthy corals or eroded rocks. }
+    \label{fig:env-obj_procedural-erosion}
 \end{figure}
 
 
@@ -732,6 +733,8 @@ Different types of \glosses{EnvObj} require different criteria for their fitness
 % For example, a mining facility \gloss{EnvObj} might achieve a high fitness only in locations where the targeted mineral is abundant in the ground (reflecting a material presence requirement). If that resource is absent, the mining facility's $\fitnessFunc$ value at that site would be near zero regardless of other conditions. By contrast, a heavy building structure prefers flat, stable terrain. Its fitness function peaks on low-gradient ground underlain by solid bedrock, and it drops off on steep slopes or soft soil where stability is poor. Similarly, an aquatic organism (or installation) thrives within a specific range of water flow: its $\fitnessFunc$ is maximized at an optimal current speed and declines in either stagnant waters or excessively strong currents. These examples illustrate how different environment variables contribute to $\fitnessFunc$ in distinct ways depending on the object class, with each fitness function capturing the particular environmental needs of that object type. 
 
 In practice, to find suitable locations for an object, we evaluate its $\fitnessFunc$ across the environment's spatial domain. This typically involves sampling $\fitnessFunc$ values on a grid or at numerous candidate points covering the area of interest, effectively producing a fitness map for that object class. If an object occupies an area (rather than being point-like), the fitness of a proposed placement can be obtained by aggregating $\fitnessFunc$ over that area by averaging the fitness values at multiple sample points within the object's footprint. The outcome is a field of fitness values where peaks indicate highly suitable locations. Each object class thus yields its own fitness landscape. These fitness landscapes serve as a crucial input to the placement algorithm: the subsequent \gloss{FittingFunc} uses them to guide and optimize the configuration of objects in the environment.
+
+The value of the \gloss{FitnessFunc} can be used later on to modify the geometric representation or the aspect of the \gloss{EnvObj} to appear more eroded (\cref{fig:env-obj_procedural-erosion}).
 
 
 
@@ -790,7 +793,7 @@ If a steep coast can be found where the terrain slope is important near the wate
     \begin{align}
         \Eexternal &= -\Aexternal \int_{\curve}{ \fittingFunc(\curve(s)) \, ds } \nonumber
     \end{align}
-    The external energy is also present in the original work. Using an external scalar field, each point of the curve is forced to follow the steepest slope of the field. The external field can be seen as an attractor for the curve.
+    The external energy is also present in the original work. Using an external scalar field, each point of the curve is forced to follow the steepest slope of the field. The external field can be seen as an attractor for the curve (\cref{fig:env-obj_snake-external}).
 
     The energy is minimized when the vertex is positionned at the global maximum of the scalar field.
 }{snake_algorithm_external.png}{The central vertex can optimize its external energy by translating in the same direction as the function gradient $\nabla \fitnessFunc$.}{fig:env-obj_snake-external}
@@ -800,7 +803,7 @@ If a steep coast can be found where the terrain slope is important near the wate
     \begin{align}
         \Eshape    &= \Ashape \left( \Length - \int_{\curve}{ \, ds } \right)^2 \nonumber
     \end{align}
-    We introduced the shape energy, an energy defined on the whole curve to apply constraints on its final shape. As many natural features have a given dimension, we may add a constraint on the length of the \gloss{Skeleton}. 
+    We introduced the shape energy, an energy defined on the whole curve to apply constraints on its final shape. As many natural features have a given dimension, we may add a constraint on the length of the \gloss{Skeleton} (\cref{fig:env-obj_snake-shape}). 
 
     The original Snake algorithm is biased, forcing the curve to shrink as the internal forces attracts the vertices towards their neighbors. The introduction of a target length cancels this effect.
 }{snake_algorithm_shape.png}{The shape energy is minimized when the arc length of the curve $\curve$ is equal to a parameter $\Length$, obtainable by towards or in opposition of its neighbors. }{fig:env-obj_snake-shape}
@@ -810,7 +813,7 @@ If a steep coast can be found where the terrain slope is important near the wate
     \begin{align}
         \Egradient &= \Agradient \int_{\curve}{\bigl\langle \curve'(s),\nabla\fittingFunc\left(\curve(s)\right)\bigr\rangle ds} \nonumber
     \end{align}
-    In our application, having information about the orientation of \glosses{EnvObj} may be essential. For this purpose, we introduced a gradient energy component in the formulation. The equation impose that the direction of the curve at any point should be directed towards the gradient of the scalar field. As the external energy pushes points toward the lowest point of the scalar field, the gradient field restrict the gradient descent for the global curve into a specific way, which may feel more natural.
+    In our application, having information about the orientation of \glosses{EnvObj} may be essential. For this purpose, we introduced a gradient energy component in the formulation. The equation impose that the direction of the curve at any point should be directed towards the gradient of the scalar field (\cref{fig:env-obj_snake-gradient}). As the external energy pushes points toward the lowest point of the scalar field, the gradient field restrict the gradient descent for the global curve into a specific way, which may feel more natural.
     
     During the optimization process, the gradient of the scalar field is already evaluated by the external energy optimization, so the addition of the gradient component is almost free.
 
@@ -929,7 +932,7 @@ Terrain elevation is updated by blending the \gloss{CoarseHeight} functions of a
 
 To preserve ordering constraints we partition objects into three mutually exclusive groups:
 \begin{Itemize}
-  \Item{$\groundedHeight$} grounded data (e.g.\ sea floor patches) defined from the absolute zero level,
+  \Item{$\groundedHeight$} grounded data (e.g.\ islands) defined from the absolute zero level,
   \Item{$\altitudeHeight$} altitude-relative shapes (depth-constrained corals, tidal flats),
   \Item{$\surfaceHeight$} fine surface details that sit on the current terrain, that can be seen as bumps or carves from an aerial view. 
 \end{Itemize}
@@ -1171,7 +1174,9 @@ The user can guide the generation process. The use of simple shapes as \glosses{
 \label{sec:env-obj_manual-interaction}
 The interactive nature of our simulation enables the user to modify the state of the terrain by manipulating directly the \glosses{EnvObj} of the scene. We assume the modifications applied between two iterations of the simulation.
 
-Translating an \gloss{EnvObj} is trivial, we simply requires to evaluate the state of the \glosses{EnvObj} at a translated position. The deformation of \glosses{EnvObj} can be applied on curve and region \glosses{EnvObj} by updating the control points of the skeleton and recomputing the resulting implicit surfaces. The evaluation positions used for region \glosses{EnvObj} are displaced by applying a cage deformation of the 2D shape using the Green coordinates of points in the shape. After the alteration of the region, evaluation points should be keeping a similar distribution than before, avoiding unexpected results during the interaction.
+Translating an \gloss{EnvObj} is trivial, we simply requires to evaluate the \gloss{FitnessFunc} of the \glosses{EnvObj} at a translated position to verify that the environment is suitable for its survival.
+
+The deformation of \glosses{EnvObj} can be applied on curve and region \glosses{EnvObj} by updating the control points of the skeleton and recomputing the resulting implicit surfaces. The evaluation positions used for region \glosses{EnvObj} are displaced by applying a cage deformation of the 2D shape using the Green coordinates of points in the shape. After the alteration of the region, evaluation points should be keeping a similar distribution than before, avoiding unexpected results during the interaction.
 By modifying an \gloss{EnvObj}, the \glosses{EnvVal} may change, which can result in the destruction of the now incompatible environment objects in the scene (\cref{fig:env-obj_user-interaction}).
 
 \begin{figure}
