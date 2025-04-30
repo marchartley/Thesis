@@ -732,7 +732,7 @@ Different types of \glosses{EnvObj} require different criteria for their fitness
 
 % For example, a mining facility \gloss{EnvObj} might achieve a high fitness only in locations where the targeted mineral is abundant in the ground (reflecting a material presence requirement). If that resource is absent, the mining facility's $\fitnessFunc$ value at that site would be near zero regardless of other conditions. By contrast, a heavy building structure prefers flat, stable terrain. Its fitness function peaks on low-gradient ground underlain by solid bedrock, and it drops off on steep slopes or soft soil where stability is poor. Similarly, an aquatic organism (or installation) thrives within a specific range of water flow: its $\fitnessFunc$ is maximized at an optimal current speed and declines in either stagnant waters or excessively strong currents. These examples illustrate how different environment variables contribute to $\fitnessFunc$ in distinct ways depending on the object class, with each fitness function capturing the particular environmental needs of that object type. 
 
-In practice, to find suitable locations for an object, we evaluate its $\fitnessFunc$ across the environment's spatial domain. This typically involves sampling $\fitnessFunc$ values on a grid or at numerous candidate points covering the area of interest, effectively producing a fitness map for that object class. If an object occupies an area (rather than being point-like), the fitness of a proposed placement can be obtained by aggregating $\fitnessFunc$ over that area by averaging the fitness values at multiple sample points within the object's footprint. The outcome is a field of fitness values where peaks indicate highly suitable locations. Each object class thus yields its own fitness landscape. These fitness landscapes serve as a crucial input to the placement algorithm: the subsequent \gloss{FittingFunc} uses them to guide and optimize the configuration of objects in the environment.
+In practice, to find suitable locations for an object, we evaluate its $\fitnessFunc$ across the environment's spatial domain. This typically involves sampling $\fitnessFunc$ values on a grid or at numerous candidate points covering the area of interest, effectively producing a fitness map for that object class. If an object occupies an area (rather than being point-like), the fitness of a proposed placement can be obtained by aggregating $\fitnessFunc$ over that area by averaging the fitness values at multiple sample points within the object's footprint. The outcome is a field of fitness values where peaks indicate highly suitable locations. Each object class thus yields its own fitness landscape. 
 
 The value of the \gloss{FitnessFunc} can be used later on to modify the geometric representation or the aspect of the \gloss{EnvObj} to appear more eroded (\cref{fig:env-obj_procedural-erosion}).
 
@@ -1105,7 +1105,7 @@ The proposed formulation offers a terrain-aware approach to modeling water curre
     $\Wobj$ is a deformation field defined as the accumulation of flow primitives. The use of analytical primitives to represent localized variations within large-scale scenes has been explored in various contexts such as the edition of wind fields (\cite{Wejchert1991}, \cref{fig:env-obj_wejchert-flow}) and authoring of rivers' water surface geometry (\cite{Peytavie2019}, \cref{fig:env-obj_peytavie-river-primitives}). In the latter, flow primitives are primarily used to generate the geometry of the water surface, but the same primitives can also be reused to produce a flow field, enabling effects such as floating debris or leaves drifting along the surface. Because geometry is sensitive to overlapping influences, the authors. organize primitives into a blending tree, where merge and replace operations control how individual contributions interact. 
 }{riverscape-primitives-Peytavie2019.png, riverscape-result-Peytavie2019.png}{\cite{Peytavie2019} uses a sparse representation of a river surface to include details at the water surface.}{fig:env-obj_peytavie-river-primitives}
 \AltTextImage{
-    On the other hand, \cite{Wejchert1991} showed that simply summing flow primitives generates velocity fields that approximate Navier-Stokes dynamics (\cref{fig:}). Because their method affects motion rather than visible geometry, this additive approach offers a good trade-off between plausibility, user control and computation time.
+    On the other hand, \cite{Wejchert1991} showed that simply summing flow primitives generates velocity fields that approximate Navier-Stokes dynamics (\cref{fig:env-obj_wejchert-flow}, bottom). Because their method affects motion rather than visible geometry, this additive approach offers a good trade-off between plausibility, user control and computation time.
 
     In our method, we adopt a similar additive approach to combine Kelvinlet-based primitives. Our goal is to define a deformation field and as such, summation offers an effective and intuitive way to accumulate the influence of multiple localized deformations at various scales, without requiring additional structure to resolve overlaps.
 }{aerodynamics-primitives-Wejchert1991.png, aerodynamics-addition-Wejchert1991.png}{\cite{Wejchert1991} propose to describe the flowfield of the environment by a combination of primitives, resulting in a simulation of wind field controllable by the user at very small memory cost.}{fig:env-obj_wejchert-flow}
@@ -1174,18 +1174,20 @@ The user can guide the generation process. The use of simple shapes as \glosses{
 \label{sec:env-obj_manual-interaction}
 The interactive nature of our simulation enables the user to modify the state of the terrain by manipulating directly the \glosses{EnvObj} of the scene. We assume the modifications applied between two iterations of the simulation.
 
-Translating an \gloss{EnvObj} is trivial, we simply requires to evaluate the \gloss{FitnessFunc} of the \glosses{EnvObj} at a translated position to verify that the environment is suitable for its survival.
+Translating an \gloss{EnvObj} is trivial, we simply requires to evaluate the \gloss{FitnessFunc} of the \glosses{EnvObj} at a translated position to verify that the environment is still suitable for its survival.
 
-The deformation of \glosses{EnvObj} can be applied on curve and region \glosses{EnvObj} by updating the control points of the skeleton and recomputing the resulting implicit surfaces. The evaluation positions used for region \glosses{EnvObj} are displaced by applying a cage deformation of the 2D shape using the Green coordinates of points in the shape. After the alteration of the region, evaluation points should be keeping a similar distribution than before, avoiding unexpected results during the interaction.
-By modifying an \gloss{EnvObj}, the \glosses{EnvVal} may change, which can result in the destruction of the now incompatible environment objects in the scene (\cref{fig:env-obj_user-interaction}).
+The deformation\glosses{EnvObj} can be applied on curve and region \glosses{EnvObj} by displacing directly the control points of the skeleton (\cref{fig:env-obj_user-interaction}). Many methods may be used for displacing a polygon, such as the use of Kelvinlets, cage deformation, displacement maps, or gaussian influence. In the scope of this chapter, we will not cover the multiple aspect of curve and polygon deformation. However, as the closed or open geometry shape of the \gloss{Skeleton} changes, it needs to run again the \gloss{FittingFunc} optimization though our Snake algorithm (\cref{sec:env-obj_generation-rules}).
+
+Locking the vertices from the deformed \gloss{Skeleton} edited manually by the user can be achieved by cancelling the energy $\energy(\curve)_v$ from the Snake algorithm for this specific vertex $v$, disabling it from any displacement during the optimization process. Finer control can be given by applying a coefficient on the energy gradient, such that the vertices are not locked but hindered.
+
+% The deformation of \glosses{EnvObj} can be applied on curve and region \glosses{EnvObj} by updating the control points of the skeleton and recomputing the resulting implicit surfaces. The evaluation positions used for region \glosses{EnvObj} are displaced by applying a cage deformation of the 2D shape using the Green coordinates of points in the shape. After the alteration of the region, evaluation points should be keeping a similar distribution than before, avoiding unexpected results during the interaction.
+
+By modifying an \gloss{EnvObj}, the \glosses{EnvVal} may change, which can result in the destruction of the now incompatible \glosses{EnvObj} in the scene (\cref{fig:env-obj_user-interaction}, middle). The removal of \gloss{EnvObj} is subject to chain reaction, often visible in nature. Reducing the reaction is achievable by alternating, until a steady-state is reached again, a step in the environment update (\cref{sec:env-obj_materials}) and a step of \gloss{Skeleton} refinement for each \gloss{EnvObj}. In counter-balance of the removal, each deleted \gloss{EnvObj} is reinserted in the scene (\cref{fig:env-obj_user-interaction}, right) following the process described in \cref{sec:env-obj_generation-rules}.
 
 \begin{figure}
     % \centering
     \autofitgraphics[]{InteractionEdition1.png, InteractionEdition2.png, InteractionEdition3.png}
-    % \includegraphics[width = 0.3 \linewidth]{InteractionEdition1.png}
-    % \includegraphics[width = 0.3 \linewidth]{InteractionEdition2.png}
-    % \includegraphics[width = 0.3 \linewidth]{InteractionEdition3.png}
-    \caption{Starting from a coral colony developed around a canyon (\textit{left}), the user edits the shape of the canyon, resulting in a different configuration of the scene, killing the corals that ends too deep in the water (\textit{center}) and the development and growth of new corals at the previous location of the canyon (\textit{right}). }
+    \caption{Starting from a coral colony developed around a canyon (left), the user edits the shape of the canyon, resulting in a different configuration of the scene, killing the corals that ends too deep in the water (center) and the development and growth of new corals at the previous location of the canyon (right). }
     \label{fig:env-obj_user-interaction}
 \end{figure}
 
@@ -1205,47 +1207,48 @@ Control over the region of the terrain that should be updated can be given by ad
 
 % - Changing the water currents
 
-Our water current simulation is modeled as a simple vector field. As such, the user is able to interact with it at any moment of the simulation, allowing for the death of sensible \glosses{EnvObj} while it will guide the simulation into a new landscape. By modifying the water currents, the user also modifies the transport rate of \glosses{EnvMat} at this position. The modification of currents is given as a stroke, a parametric curve $\curve$ for which we evaluate $\Delta \Wuser(\p)$ just as for curved environment objects (\cref{sec:env-obj_water-currents}).
+Our water current simulation is modeled as a simple vector field. As such, the user is able to interact with it at any moment of the simulation, allowing for the death of sensible \glosses{EnvObj} while it will guide the simulation into a new landscape. By modifying the water currents, the user also modifies the transport rate of \glosses{EnvMat} at this position. The modification of currents is given as a stroke, a parametric curve $\curve$ for which we evaluate $\Delta \Wuser(\p)$ just as described in \cref{sec:env-obj_water-currents}.
 
 \subsection{Indirect interaction with \glosses{EnvObj}}
 \label{sec:env-obj_events}
 A configuration file can define in advance the different \glosses{GeoEvent} that should be triggered during the simulation. This can be useful to generate landscapes that are close to some existing locations. 
 Multiple \glosses{GeoEvent} can be triggered either as sudden or continuous environmental changes. These changes play a huge role in the morphology of landscapes.
-We define \glosses{GeoEvent} with a starting point and an ending point, such that at any time of the simulation we can compute the progress of the \gloss{GeoEvent} as $\tEvent \in [0, 1]$.
+We define \glosses{GeoEvent} with a starting point and an ending point, such that at any time of the simulation we can compute the progress of the \gloss{GeoEvent} as $\tEvent \in [0, 1]$ and linearly interpolate the effects on \glosses{EnvVal}.
 
-Water level changes are important \glosses{GeoEvent} that shape the underwater landscapes. As previously submerged \glosses{EnvObj} get elevated above water level, flora and fauna terrain features dry and die. Deprived from the living part of the features, everything is more affected by terrestrial erosion. By updating the value of the depth $\depth$ evaluated in the \glosses{FitnessFunc}, any \gloss{EnvObj} that is sensible to the depth will be impacted automatically, that may be causing death (\cref{fig:env-obj_water-event}). The modification of the water level is defined as 
-\begin{align*}
+\subsubsection{Water level events}
+Water level changes are important \glosses{GeoEvent} that shape the underwater landscapes. As previously submerged \glosses{EnvObj} get elevated above water level, flora and fauna terrain features dry and die. Deprived from the living part of the features, everything is more affected by terrestrial erosion. By updating the value of the depth $\depth$ evaluated in the \glosses{FitnessFunc}, any \gloss{EnvObj} that is sensible to depth and altitude will be impacted automatically, that may be causing death (\cref{fig:env-obj_water-event}). The modification of the water level is defined as 
+\begin{align}
     \depth(\p) = \depth_0(\p) + \sum_{e \in \events} \Delta \depth_e \tEvent
-\end{align*}
+\end{align}
 with $\Delta \depth_e$ the amount of water rising or lowering during an \gloss{GeoEvent}. We assumed a linear evolution of the water level during an \gloss{GeoEvent}. This allows to evaluate the depth at any point in space and in time.
 
 \begin{figure}
     % \centering
     \autofitgraphics[]{InteractionWater1.png, InteractionWater3.png}
-    % \includegraphics[width = 0.45 \linewidth]{InteractionWater1.png}
-    % \includegraphics[width = 0.45 \linewidth]{InteractionWater3.png}
     \caption{Lowering the water level by a few meters caused most of the coral objects to satisfy $\fitnessFunc \leq 0$, causing their death. Since the water level (blue) decrease slowly, new coral objects spawn progressively at a lower altitude.}
     \label{fig:env-obj_water-event}
 \end{figure}
 
-Subsidence and uplift are the main \glosses{GeoEvent} that create or destroy islands in the long term. These \glosses{GeoEvent} are simulated as a simple factor on the height field of the generated terrain (\cref{fig:env-obj_subsidence-event}). Subsidence is not always uniform in the terrain. As such, the user can provide a position $\q$ at which the subsidence is the strongest, the amount of subsidence applied $\Delta \height_e$ and a standard deviation $\std$ for which we can then compute at any point in space and time of the simulation the height of the terrain
+\subsubsection{Subsidence and uplift events}
+Subsidence and uplift are the main \glosses{GeoEvent} that create or destroy islands in the long term, as presented in \cref{chap:coral-island}.
+These \glosses{GeoEvent} are simulated as a simple factor on the height field of the generated terrain (\cref{fig:env-obj_subsidence-event}). Subsidence is not always uniform in the terrain. As such, the user can provide a position $\q$ at which the subsidence is the strongest, the amount of subsidence applied $\Delta \height_e$ and a standard deviation $\std$ for which we can then compute at any point in space and time of the simulation the height of the terrain
 \begin{align*}
     \height(\p) = \height_0(\p) \cdot \sum_{e \in \events}{G(\norm{\p - \q})} \Delta \height_e \tEvent 
 \end{align*}
 with $G(x)$ the Gaussian function
-\begin{align*}
+\begin{align}
     G(x) = \frac{1}{\std \sqrt{2\pi}} \exp \left(-\frac {x^{2}}{2 \std ^{2}}\right)
-\end{align*}
+\end{align}
+The gaussian formulation guarantee continuity and analytic formulation of the changes on the \glosses{EnvVal}, with smooth transition from the epicenter of the \glosses{GeoEvent} as the distance increase. Any other analytical formulation could be used, but the gaussian formulation has been chosen as the only parameter needing tuning by the user is the standard deviation $\std$.
 
 \begin{figure}
     % \centering
     \autofitgraphics[]{InteractionSubsidence1.png, InteractionSubsidence2.png}
-    % \includegraphics[width = 0.45 \linewidth]{InteractionSubsidence1.png}
-    % \includegraphics[width = 0.45 \linewidth]{InteractionSubsidence2.png}
     \caption{Simulating subsidence on a part of the terrain (brown area) cause the depth value to change locally, resulting in the death of coral objects that find themselves too deep to survive. Here two subsidence \glosses{GeoEvent} are triggered in parallel. }
     \label{fig:env-obj_subsidence-event}
 \end{figure}
 
+\subsubsection{Storm events}
 Storms are factors of the geomorphology of coral reefs \cite{VilaConcejo2016, Oron2023} and coasts \cite{Dominguez2005, Cowart2010}. Due to the extreme wind and wave velocities coasts are highly eroded in a short time period and the more fragile corals near the water surface are broken, possibly causing breaches in the reefs and spreading polyps in the currents direction. While there are many factors at play to understand the apparition of storms and the hydrodynamics affecting it, we simplified the model of storms to the user as a single epicenter $\q$ with a wind velocity $\windVelocity$ and a standard deviation $\std$ representing the spread around the epicenter (\cref{fig:env-obj_storm-event}). The computation of water currents are then computed as 
 \begin{align*}
     \Wuser(\p) = \Wuser^*(\p) + \sum_{e \in \events} {\windVelocity G(\norm{\p - \q})}
@@ -1255,17 +1258,17 @@ In this case, we did not include the linear factor $\tEvent$ as storms are usual
 \begin{figure}
     % \centering
     \autofitgraphics[]{interactionStorm1.png, interactionStorm2.png}
-    % \includegraphics[width = 0.45 \linewidth]{interactionStorm1.png}
-    % \includegraphics[width = 0.45 \linewidth]{interactionStorm2.png}
     \caption{The result of a storm localized on one side of the island (red area) modifies the result of the evaluation of \glosses{EnvObj} around its epicenter for a short period of time. Most of the coral objects died from the \gloss{GeoEvent}, except few \glosses{EnvObj} less sensible to water currents strength. }
     \label{fig:env-obj_storm-event}
 \end{figure}
 
 % Just as for the rise and lowering of water level, the heat is modeled as a simple value of the environment. For shallow areas (<100m) we assume a linear relation between depth and temperature, and a constant value for the terrestrial environment. As such, we can model a heat wave by a change of the \glosses{EnvVal}. \Glosses{EnvObj} who are sensible to temperature may die instantly. The modification of the temperature is defined as 
 % \begin{align*}
-%     \temperature(\p) = T_0(\p) + \sum_{e \in \events} \Delta \temperature_e \tEvent + \curve \depth(\p)
+%     \temperature(\p) = T_0(\p) + \sum_{e \in \events} \Delta \temperature_e \tEvent + c \depth(\p)
 % \end{align*}
-with $\Delta \temperature_e$ the change of heat during an \gloss{GeoEvent}, $\temperature_0$ the temperature at the water surface, and $\curve$ a very small factor.
+with $\Delta \temperature_e$ the change of heat during an \gloss{GeoEvent}, $\temperature_0$ the temperature at the water surface, and $c$ a very small factor.
+
+\midConclusion
 
 The framework can easily be extended as the \gloss{GeoEvent} system stays similar for all \glosses{GeoEvent}. Including higher level simulations in the \gloss{GeoEvent} system can be added, such as the simulation of tectonic activity, the use of fluid dynamics for tsunami \glosses{GeoEvent}, the integration of human activity, ...
 
@@ -1288,10 +1291,6 @@ In this example we defined three different types of corals, coralA, coralB and c
 \begin{figure*}
     % \centering
     \autofitgraphics[]{col0.png, col1.png, col2.png, col3.png}
-    % \includegraphics[width=0.24 \linewidth]{col0.png}
-    % \includegraphics[width=0.24 \linewidth]{col1.png}
-    % \includegraphics[width=0.24 \linewidth]{col2.png}
-    % \includegraphics[width=0.24 \linewidth]{col3.png}
     \caption{Three colonies of coral (red, blue, green) restricted to an annulus the middle section of the terrain fighting for the space.}
     \label{fig:env-obj_coral-colonization-scene}
 \end{figure*}
@@ -1299,10 +1298,6 @@ In this example we defined three different types of corals, coralA, coralB and c
 \begin{figure*}
     % \centering
     \autofitgraphics[]{Canyon2.png, Canyon3.png, Canyon4.png, Canyon5.png}
-    % \includegraphics[width = 0.24 \linewidth]{Canyon2.png}
-    % \includegraphics[width = 0.24 \linewidth]{Canyon3.png}
-    % \includegraphics[width = 0.24 \linewidth]{Canyon4.png}
-    % \includegraphics[width = 0.24 \linewidth]{Canyon5.png}
     \caption{Evolution of a canyon scene at different iterations of the simulation. The apparition of an arch causes the spawning of rocks, pebbles, and finally some deposition of sand at the bottom of the canyon, spawning ripples. }
     \label{fig:env-obj_canyon-scene}
 \end{figure*}
