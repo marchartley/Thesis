@@ -176,10 +176,20 @@
   {\usebibmacro{postnote}}
 
 \AtEveryBibitem{\clearfield{url}}
+\AtEveryBibitem{\clearfield{doi}}
 \AtEveryBibitem{\clearfield{note}} % Notes from Mendeley
 \newtotcounter{citenum}
 \AtEveryBibitem{\stepcounter{citenum}}
 
+
+\renewbibmacro*{title}{%
+{}
+{\printtext[title]{\mkbibbold{\printfield[title]{title}}}\newunit}}
+
+\DefineBibliographyStrings{english}{
+  backrefpage = {Cited on page},
+  backrefpages = {Cited on pages},
+}
 
 
 

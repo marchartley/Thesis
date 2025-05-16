@@ -15,7 +15,7 @@
 }
 
 \abstract 
-In this chapter, we propose a procedural method for generating single circular volcanic islands with coral reefs using user sketching from two projections: a top view, which defines the island's shape (horizontal dimensions), and a profile view, which outlines its elevation and terrain (vertical dimensions). These projections, commonly used in geological and remote sensing domains, are complemented by a user-defined wind field, applied as a distortion field to deform the island's shape, mimicking the effects of wind and waves on the long term. We then model the growth of coral on the island and its surronding to construct the reef following biological observations. Based on these inputs, our method generates a height field of the island. Our method is capable of creating a large variety of island models composing a dataset used for training a conditional Generative Adversarial Network (cGAN). By applying data augmentation, the cGAN allows for even greater variety in the generated islands, providing users with higher freedom and intuitive controls over the shape and structure of the final output.
+In this chapter, we propose a procedural method for generating single circular volcanic islands with coral reefs using user sketching from two projections: a top view, which defines the island's shape, and a profile view, which outlines its elevation. These projections, commonly used in geological and remote sensing domains, are complemented by a user-defined wind field, applied as a distortion field to deform the island's shape, mimicking the effects of wind and waves on the long term. We then model the growth of coral on the island and its surronding to construct the reef following biological observations. Based on these inputs, our method generates a height field of the island. Our method is capable of creating a large variety of island models composing a dataset used for training a conditional Generative Adversarial Network (cGAN). By applying data augmentation, the cGAN allows for even greater variety in the generated islands, providing users with higher freedom and intuitive controls over the shape and structure of the final output.
 \pagebreak 
 
 \minitoc
@@ -223,46 +223,70 @@ Procedural generation of terrain has been a well-researched area in computer gra
 However, each of these techniques has its strengths and limitations, particularly when it comes to modeling coral reef islands. Coral reef islands present unique challenges due to the combination of long-term geological processes (such as subsidence and coral reef growth) and environmental interactions (like erosion caused by wind and waves). In this section, we review the key techniques that have been applied to terrain generation, highlight their limitations for coral reef island formation, and position our work as an approach that addresses these challenges.
 
 
+\subsubsection{Noise-based terrain generation}
+
 \begin{figure}[ht]
     \centering
     \includegraphics[width = \linewidth]{noise_examples3.pdf}
     \caption{Three different results of an island generated from noise functions. In each case, the initial height field is the same, computed through flow noise. The falloff masks are also generated with a combination of fBm noise mitigated by the euclidean distance from the image center, warp noise and gamma correction. The only parameter modified for each example is the gamma correction. The results are very different, and hardly controllable. It is also difficult to represent lagoons and reefs using this method.}
     \label{fig:coral-island_noise-example}
 \end{figure}
-Noise-based procedural generation remains one of the most widely used techniques for creating natural-looking terrains. Perlin noise \cite{Perlin1985}, Simplex noise \cite{Perlin2001}, and Diamond-square \cite{Fournier1982}, are foundational algorithms that generates pseudo-random yet continuous variations across a grid, producing terrain features that resemble organic landscapes.
 
-Beyond basic noise functions, more advanced techniques, such as fractal Brownian motion (fBm), are commonly used to add additional detail to terrains. FBm combines multiple layers, or "octaves," of noise at different frequencies, creating terrains with finer details and more realistic features. Noise functions can be paired with falloff maps to generate island-like terrains, where the height of the terrain gradually decreases toward the edges, mimicking the appearance of coastlines and providing a way to create basic island shapes (see \cref{fig:coral-island_noise-example}). However, noise-based methods have significant limitations when applied to the simulation of coral reef islands. While these techniques excel at producing large, varied landscapes quickly, they lack the geological accuracy needed to model real-world processes like volcanic subsidence and coral growth. These approaches generate random patterns, but are disconnected from the actual physical processes that govern coral reef island formation, which is relevant by the fine tuning required on signal analysis parameters (frequencies, lacunarities, gains, etc.), which are unrelated to geology or biology.
+Noise-based procedural generation remains one of the most widely used techniques for creating natural-looking terrains. Perlin noise \cite{Perlin1985}, Simplex noise \cite{Perlin2001}, and the Diamond-square algorithm \cite{Fournier1982} are foundational algorithms that generate pseudo-random yet continuous variations across a grid, producing terrain features that resemble organic landscapes. These techniques have been widely adopted in computer graphics and game development due to their efficiency and visual appeal.
+
+Beyond basic noise functions, more advanced techniques such as fractal Brownian motion (fBm) and multifractal noise have been introduced to add finer-scale variation and detail \cite{Musgrave1989,Ebert2003}. FBm combines multiple layers, or "octaves," of noise at different frequencies and amplitudes, producing terrains that exhibit more realistic and varied features. The combination of noise with domain warping and signal processing techniques has been explored in depth in procedural modeling literature \cite{Reinhard2010}, enabling further control over visual complexity and terrain realism.
+
+Noise functions are often paired with falloff maps to produce island-like terrains, where elevation gradually decreases toward the edges of the domain, mimicking coastlines and basic island shapes (see \cref{fig:coral-island_noise-example}). Various methods for enhancing island generation using noise and falloff blending have been proposed for applications in games and virtual worlds \cite{Olsen2004}. While these techniques excel at producing large, visually diverse landscapes quickly, they suffer from several key limitations when applied to the modeling of coral reef islands.
+
+Critically, noise-based terrains lack grounding in geological or biological reality. They generate spatial patterns through mathematical noise, not through simulations of real-world processes such as volcanic subsidence or coral accretion. The signal processing parameters typically involved (frequency, lacunarity, gain, amplitude, ...) are tuned for visual effect rather than scientific plausibility. As highlighted in procedural modeling surveys \cite{Smelik2009,Galin2019}, this disconnect results in a lack of semantic control and poor correlation with actual environmental dynamics, making it difficult to represent phenomena like reef rings, lagoons, or atoll structures in a biologically or geologically coherent way.
+
+Moreover, the biological aspects of coral growth are inherently tied to environmental conditions. Coral reefs form and persist only within specific ranges of water depth, sunlight, salinity, and water quality. Their growth patterns are further influenced by ecological health, nutrient availability, and symbiotic relationships. These dependencies are extremely difficult to capture in procedural noise systems, which are not designed to model such complex and coupled dynamics.
+
+Our approach goes beyond the randomness of noise-based generation by incorporating real-world geological and biological processes into the terrain formation pipeline. Specifically, we model the gradual subsidence of volcanic islands and the upward growth of coral reefs, both of which are central to the long-term evolution of coral reef islands. By embedding these natural processes directly into the generation algorithm, we produce terrains that are not only more realistic but also more controllable. This integration of scientific modeling with procedural flexibility allows us to overcome the inherent limitations of traditional noise-based techniques and more accurately represent the complex formation of coral reef island systems.
+
+\subsubsection{Simulation-based modeling}
+
+Simulation-based terrain modeling methods aim to increase realism by replicating natural processes such as erosion, sediment transport, tectonic uplift, and vegetation growth. Unlike noise-based techniques, which rely on random functions, simulation-based approaches model causality and temporal dynamics to describe how a terrain evolves over time under physical or biological forces. These methods are often used to enhance base terrains, adding geologically plausible detail and structure \cite{Benes2006, Smelik2009}.
+
+\subsubsubsection{Hydraulic and thermal erosion}
+
+Hydraulic erosion models simulate the impact of flowing water on the landscape by modeling erosion, sediment pickup, transport, and deposition. Early implementations by Musgrave et al. \cite{Musgrave1989} laid the groundwork for erosion in procedural generation, while more recent works (e.g., \cite{Mei2007}) have accelerated these simulations using GPU architectures and particle-based methods. These simulations often follow Eulerian fluid models or Lagrangian particle systems to capture terrain displacement.
+
+Thermal erosion, by contrast, simulates mass movement due to gravity, redistributing material from steeper slopes to gentler gradients, akin to landslides or soil creep \cite{Benes2006}. These erosion models generate realistic fluvial networks and landforms, but they are parameter-sensitive and computationally expensive.
+
+Moreover, such models are generally designed for terrestrial landscapes and lack mechanisms for simulating underwater sedimentation, reef growth, or biogenic processes crucial to coral island formation. These models typically simulate time scales relevant to geomorphological processes (hundreds to thousands of years), which are mismatched with both the faster dynamics of biological processes like coral health and the slower geological evolution of reef islands.
+
+\subsubsubsection{Tectonic uplift and geologic simulation}
+
+Geological simulation approaches such as those proposed by Cordonnier et al. \cite{Cordonnier2016, Cordonnier2017a} and extended by Schott et al. \cite{Schott2023} model terrain evolution through crustal deformation and tectonic uplift. These methods simulate isostatic adjustments, plate tectonics, or local uplift phenomena, often over geological timescales.
+
+Although well-suited for mountain-building processes or fault line modeling, these methods are not designed to account for biogenic terrain formation, such as coral reef accretion, which is critical for simulating coral reef islands. As a result, despite being physically grounded models, they do not capture the coupled geological and biological dynamics necessary for representing the long-term evolution of reef islands.
+
+\subsubsubsection{Vegetation and ecosystem dynamics}
+
+Some simulation-based terrain models integrate ecological dynamics to reflect the feedback between terrain and living systems. For instance, Ecormier-Nocca et al. \cite{Ecormier-Nocca2021} and Cordonnier et al. \cite{Cordonnier2017b} simulate interactions between vegetation and terrain erosion, modeling plant colonization, growth, and their influence on soil stability and moisture retention.
+
+These ecosystem simulations allow more complex landscape evolution by considering biotic agents; however, they are designed primarily for terrestrial plants and temperate ecosystems. Coral colonies, in contrast, are marine organisms with strict environmental requirements such as limited depth, adequate sunlight, warm water temperatures, and clear water for photosynthesis via symbiotic algae. Accurately simulating these dependencies would require significant computation resources.
+
+Furthermore, coral growth is not a passive process like sediment accumulation or root expansion, but an active accretion system that builds calcium carbonate structures over thousands of years. These unique growth mechanisms, constrained by marine ecology, fall outside the scope of existing vegetation or soil-plant-water feedback models.
+
+\midConclusion
+
+While simulation-based models represent a significant advancement over purely procedural approaches, they fall short in capturing the coupled geological and biological dynamics that shape coral reef islands. They are either computationally intensive, domain-specific, or biologically inapplicable, highlighting the need for a new class of terrain generation tools that embed long-term marine biogeomorphological processes into the procedural pipeline.
 
 
-Additionally, the biological aspects of coral growth are inherently tied to environmental factors. Coral reefs grow only within a specific range of water depth and sunlight, and their growth patterns are affected by the health of the reef ecosystem and the availability of resources. Accurately modeling these biological dependencies in a procedural system is challenging, as these factors are numerous and difficult to generalize.
 
 
+% \comment{Here, present hydraulic erosion (which will be developed indepth in \cref{chap:erosion}), then uplift simulation \cite{Cordonnier2017a,Cordonnier2016} and \cite{Schott2023}, then \cite{Ecormier-Nocca2021} and \cite{Cordonnier2017b} for simulating erosion + vegetation, but coral does not behave like a vegetal, nor fauna, nor geology. }
 
-Our approach goes beyond the randomness of noise-based generation by incorporating real-world geological and biological processes into terrain formation. Specifically, we model the gradual subsidence of volcanic islands and the upward growth of coral reefs, which are needed for representing the long-term evolution of coral reef islands. By integrating these processes into the generation algorithm, we create terrains that are not only more realistic but also allow more user control. This blend of user input and geological grounding provides a more accurate and flexible approach to modeling coral reef islands, addressing the limitations inherent in traditional noise-based techniques.
-
-
-
-Techniques like hydraulic erosion add realism by simulating natural processes, but they can be computationally expensive and still require careful parameter tuning.
-
-\comment{Here, present hydraulic erosion (which will be developed indepth in \cref{chap:erosion}), then uplift simulation \cite{Cordonnier2017a,Cordonnier2016} and \cite{Schott2023}, then \cite{Ecormier-Nocca2021} and \cite{Cordonnier2017b} for simulating erosion + vegetation, but coral does not behave like a vegetal, nor fauna, nor geology. }
 
 
 \subsection{Sketch-based terrain modeling}
 \label{sec:coral-island_sota-sketches}
-\comment{
-    Here, need to include methods like 3D radial methods. constrained geometry \cite{Talgorn2018}.
-}
-
-\comment{
-    Explain the pros/cons of those approaches: typically, they give a lot of control, but may require multiple sketches or the results depend heavily on user skill. 
-    
-    To date, most sketch-based terrain tools focus on either top-down features or perspective silhouettes. Combining an explicit top outline with a separate profile sketch is a new approach introduced in our work. \\
-    -> clear line of novelty.
-}
 
 The term sketching encompasses several meanings: it can refer to performing gestures with the hand or body, creating a rough drawing, or outlining an idea in a simplified form. Accordingly, sketch-based modeling in 3D computer graphics can be understood through three complementary perspectives, each centered around a distinct core concept.
 
-First, sketching may focus on interaction, where gestures captured through hand or body motion are used to manipulate virtual objects, often in immersive environments like virtual or augmented reality, drawing on established techniques such as sculpting and distortion. Second, it can involve construction, where simple geometric primitives (curves, parametric shapes, implicit surfaces, ...) are combined under constraints to build more complex models. Finally, sketching may center on interpretation, where the user draws strokes on a 2D canvas and the system analyzes their meaning to generate a plausible 3D model.
+First, sketching may focus on interaction, where gestures captured through hand or body motion are used to manipulate virtual objects, often in immersive environments like virtual or augmented reality, drawing on established techniques such as sculpting and distortion \cite{Olsen2009, Cook2009}. Second, it can involve construction, where simple geometric primitives (curves, parametric shapes, implicit surfaces, ...) are combined under constraints to build more complex models. Finally, sketching may center on interpretation, where the user draws strokes on a 2D canvas and the system analyzes their meaning to generate a plausible 3D model.
 
 While sketch-based modeling encompasses a wide range of techniques, including gesture-driven interaction in immersive environments, this work focuses primarily on the construction and interpretation aspects. In particular, construction serves as the foundation for procedural generation techniques using geometric primitives and constraints (addressed in this section), while interpretation becomes relevant when exploring data-driven approaches using deep learning to infer terrain structure from sketches (discussed in the following section). Interaction-based techniques, though significant in other contexts, fall outside the scope of this work. 
 
@@ -279,11 +303,11 @@ Sketch-based terrain generation often begins with user-defined curves that act a
     We draw direct inspiration from this work's dual-view sketching strategy, combining top-view and profile sketches, which closely aligns with our concentric curve and height-profile input approach.
 
     Expanding on this idea, \citep{Hnaidi2010} proposed a technique based on diffusion equations. In their method, curves are annotated with geometric constraints such as elevation or slope, and a diffusion process is used to interpolate these constraints across the terrain surface. This results in smooth, continuous elevation fields that conform to user-defined features such as rivers, ridgelines, or cliffs. The use of parameterized curves as terrain anchors allows for precise control over landform shaping, while maintaining a high degree of automation.
-}{placeholder.pdf}{caption}{label}
+}{sketchingGain2009-vertical.png}{caption}{label}
 
 \AltTextImage{
     In a different interaction paradigm, \citep{Tasse2014} introduced a first-person sketching interface, where users draw terrain silhouettes from a particular camera viewpoint. These silhouettes are then projected into 3D, and a deformation algorithm adjusts the terrain so that the drawn features are visible exactly as intended from the user's perspective. This method supports complex silhouettes with occlusions, T-junctions, and cusps, and represents a more immersive and perceptually grounded approach to sketch-based terrain editing.
-}{placeholder.pdf}{caption}{label}
+}{sketchingTasse2014-vertical.png}{caption}{label}
 
 These methods demonstrate the expressive power of curves as terrain-defining elements. By enabling users to sketch intuitive shapes and constraints, they bridge the gap between artistic intent and procedural complexity. Curve-driven approaches remain foundational in terrain modeling, particularly when user control over large-scale structure is essential. While we do not use the diffusion model, the idea of sketch-defined elevation constraints along curves informs our use of user-defined shape boundaries.
 
@@ -295,12 +319,16 @@ While curve-driven techniques provide intuitive shape design, constraint-based a
 \AltTextImage{
     A representative example of constraint-based modeling is presented by \citep{Gasch2020}, who propose a method for procedural terrain generation that respects user-defined elevation constraints. Their system allows users to fix values at specific control points (e.g., paths, landmarks) and then employs a system of equations to propagate these constraints throughout the terrain. Crucially, the method integrates these constraints with a noise-based procedural function to preserve natural randomness while conforming to user intent. This approach is especially valuable when generating terrains that must align with real-world data or gameplay constraints. 
     We do not adopt their constraint-solving mechanism, but conceptually relate our profile sketch input to a localized height constraint.
-}{placeholder.pdf}{caption}{label}
+}{sketching-Gasch2020.png}{caption}{label}
+
+\AltTextImage{
+    Extending the idea of constrained procedural generation, \citep{Talgorn2018} introduce a real-time sketch-based terrain generation system based on a GPU-accelerated implementation of midpoint displacement. Users sketch curves with explicit elevation values, which act as absolute constraints, while the system extrapolates and interpolates terrain surfaces in real-time. Crucially, their model supports both global and local control over interpolation curvature and roughness, and introduces semantic labeling of sketched features (e.g., ridges vs. rivers) to influence how terrain propagates around constraints. This combination of sketch-based input, constraint propagation, and semantic control enables expressive, large-scale terrain modeling at interactive speeds. We do not reuse their fractal interpolation model, but we incorporate their notion of semantic labels and hierarchical constraint propagation to support real-time terrain shaping with sketch-defined features.
+}{sketching-Talgorn2018.png}{caption}{label}
 
 \AltTextImage{
     Building on the need for more intuitive editing, \citep{Guerin2022} introduce a novel paradigm by modeling terrain in the gradient domain. Rather than specifying elevation values directly, users interact with slope-based representations, allowing for the manipulation of terrain inclination and the integration of local edits into global terrain structure. By controlling terrain gradients and reconstructing elevation through integration, this method enables seamless blending between regions and supports a more natural editing workflow, particularly for sculpting realistic mountain ridges, valleys, or plateaus. 
     This gradient-domain editing approach offers interesting insights, but is not directly used, as we operate in the elevation domain with semantic control.
-}{placeholder.pdf}{caption}{label}
+}{sketching-Guerin2022-vertical.png}{caption}{label}
 
 Both approaches offer complementary strengths: constraint-based methods ensure precise adherence to user-defined features or data sources, while gradient-based systems provide fluid, perceptual control over terrain shaping. Together, they represent a shift toward high-level modeling tools that maintain procedural expressiveness while granting users a deeper degree of terrain control.
 
@@ -308,20 +336,22 @@ Both approaches offer complementary strengths: constraint-based methods ensure p
 Beyond geometric sketching and low-level constraints, a third class of methods explores high-level terrain construction, where users guide terrain generation using abstract or semantic inputs. These approaches aim to simplify the authoring process by allowing users to describe what a terrain should contain (e.g., a mountain or a valley) without specifying how to generate it geometrically. Such methods often rely on symbolic sketching, sparse representations, or domain-specific visual cues, offering powerful tools for conceptual design and inverse procedural modeling.
 
 \AltTextImage{
-    In this vein, \citep{Guerin2016a} propose a method for representing terrains as sparse combinations of procedural primitives, referred to as "terrain atoms." These atoms are stored in a dictionary and can be either extracted from real-world data or generated synthetically. The terrain is modeled as a linear combination of these features, forming a Sparse Construction Tree that blends primitives in a compact and expressive form. This representation facilitates terrain editing, amplification, and reconstruction from coarse user input, making it ideal for scenarios that require terrain matching or abstract design control.
+    In this vein, \citep{Genevaux2015} propose a method for representing terrains as sparse combinations of procedural primitives, referred to as "terrain atoms." These atoms are stored in a dictionary and can be either extracted from real-world data or generated synthetically. The terrain is modeled as a linear combination of these features, forming a Sparse Construction Tree that blends primitives in a compact and expressive form. This representation facilitates terrain editing, amplification, and reconstruction from coarse user input, making it ideal for scenarios that require terrain matching or abstract design control.
     While this work introduces a symbolic representation of terrain via atoms, it is not reused in our method, which instead relies on semantic label maps. 
-}{placeholder.pdf}{caption}{label}
+}{sketching-Genevaux2015-1.png,sketching-Genevaux2015-2.png}{caption}{label}
 
 \AltTextImage{
     A more illustrative and domain-specific use case is presented by \citep{Natali2012}, who introduce a system for rapid visualization of geological concepts. Here, users sketch schematic representations of subsurface structures such as faults, folds, or strata, and the system generates plausible 3D visualizations of geological terrains. The tool is designed primarily for educational and exploratory purposes, enabling geoscientists and students to create, manipulate, and communicate complex geological scenarios through intuitive sketch input. Although it extends beyond traditional terrain elevation modeling, the work exemplifies how sketch-based systems can operate on a conceptual level and support domain-specific semantics.
     This work inspired our use of sketch strokes to define deformation fields, although our implementation targets structured terrain generation rather than schematic visualization.
-}{placeholder.pdf}{caption}{label}
+}{sketching-Natali-2012.png}{caption}{label}
 
 These high-level approaches demonstrate the potential of sketch-based modeling not just as a geometric tool, but as a semantic interface between human intention and terrain synthesis. By abstracting terrain construction into symbolic or feature-based representations, they allow users to create rich, expressive landscapes without directly engaging with low-level geometry, making them particularly valuable for tasks involving conceptual design, education, and inverse procedural modeling.
 
 \midConclusion
 
 The works presented in this section illustrate the diversity of sketch-based approaches for constructive terrain modeling, from curve-driven shape control to constraint-based editing and semantic abstractions. While these methods offer valuable tools for intuitive user interaction and procedural shaping, they often lack ecological grounding, multi-view integration, or the ability to produce structured data suitable for training generative models. In our work, we reinterpret and adapt elements from these approaches such as dual-view sketching, curve-based region definition, and deformation fields, to support the generation of coral reef islands through a hybrid procedural and learning-based pipeline. This constructive sketch-based foundation enables us to balance user control with scalable terrain generation in data-sparse domains.
+
+\comment{Also need to include \citep{Ketabchi2016}}
 
 % \AltTextImage{
 
@@ -364,7 +394,7 @@ The works presented in this section illustrate the diversity of sketch-based app
 
 \subsection{Deep learning}
 \label{sec:coral-island_sota-deep-learning}
-% cGAN
+
 \begin{figure}[H]
 	\centering
 	\includegraphics{schemaGAN_cGAN.jpg}
@@ -372,165 +402,188 @@ The works presented in this section illustrate the diversity of sketch-based app
     \label{fig:coral-island_GAN-scheme}
 \end{figure}
 
-% In recent years, deep learning has become a groundbreaking tool in computer graphics, image processing, and procedural content generation. Deep learning refers to a class of machine learning techniques that use artificial neural networks with multiple layers to model complex patterns in data. By training these networks on large datasets, deep learning models can learn to generate new, realistic data by identifying the underlying relationships between inputs and outputs.
-
 Over the past decade, deep learning has revolutionized many areas of computer graphics and procedural content creation by learning complex, data-driven priors directly from examples. Unlike purely procedural or sketch-based methods, which rely on hand-tuned noise functions or geometric constraints, neural networks can capture subtle patterns and high-frequency details without explicit programming of each effect. In terrain synthesis, this enables models to infer realistic elevation structures, textures, and region transitions from training data, even when that data is sparse or synthetic. In the context of coral-reef islands where high-resolution digital elevation models are rare, deep learning offers a way to abstract away low-level procedural rules and directly learn the mapping from semantic layouts (label maps) to plausible height fields. In the following sections, we first review general generative adversarial networks (GANs) and then focus on their conditional variant (cGAN), which forms the backbone of our sketch-to-terrain translation pipeline.
 
 \subsubsection{Generative Aversarial Networks}
 \label{sec:coral-island_sota-GAN}
 
-Generative Adversarial Networks (GANs) were first introduced by \cite{Goodfellow2014} as a framework for learning generative models via a two-player minimax game between a generator $G$ and a discriminator $D$.  The generator maps a random noise vector $z\sim p_z$ to a synthetic sample $G(z)$, while the discriminator is trained to distinguish real samples $x\sim p_{\text{data}}$ from generated ones.  Formally, the objective is
-\begin{align}
-    \min_G \max_D \; \mathbb{E}_{x\sim p_{\text{data}}}[\log D(x)] \;+\;
-    \mathbb{E}_{z\sim p_z}[\log(1 - D(G(z)))].   \nonumber
-\end{align}
-Through alternating updates, $G$ learns to produce samples that $D$ finds increasingly hard to reject.  
+Generative Adversarial Networks (GANs), introduced by \cite{Goodfellow2014}, are a class of generative models in which two neural networks are trained in opposition: a generator $G$ learns to produce synthetic data samples that resemble those from a target distribution, while a discriminator $D$ learns to distinguish real samples from those generated. Through this adversarial process, the generator improves its ability to mimic the underlying data distribution, enabling the creation of realistic outputs from random input.
 
-While compelling in theory, vanilla GANs suffer from training instabilities, most notably mode collapse, where $G$ produces only a few distinct outputs, and sensitivity to hyperparameters.  Radford's DCGAN architecture demonstrated that careful architectural choices (strided convolutions, batch normalization, ReLU activations) can stabilize training on image data and yield high-quality samples \cite{Radford2015}. Subsequent work has explored techniques such as Wasserstein GANs for improved convergence, spectral normalization to enforce Lipschitz continuity, and two-time-scale update rules to balance generator/discriminator strength.  
+GANs have been widely adopted for image synthesis, texture generation, and data augmentation, among other tasks. In terrain modeling, they offer the potential to generate plausible landforms by learning directly from real-world data, without requiring hand-crafted procedural rules. The following works demonstrate how different GAN variants have been applied to terrain synthesis, each with its own assumptions, design trade-offs, and limitations.
 
 
 
-Early work by \cite{WulffJensen2018} demonstrated that a deep convolutional GAN (DCGAN) can learn to produce realistic digital elevation maps (DEMs) of mountain landscapes purely from noise inputs. Their generator-discriminator pair captures local elevation statistics and permits smooth traversal of terrain variations in latent space, enabling intuitive exploration of mountain forms. However, because the model operates without any semantic or spatial conditioning, users lack direct control over specific features (such as ridge placement or basin depth), and the generator's outputs tend to reflect only the statistics of the training set, limiting generalization to other landform types.
+Early applications of GANs to terrain focused on unconditional generation, where elevation maps are synthesized from pure latent noise, without any spatial or semantic guidance. \citep{WulffJensen2018} trained a deep convolutional GAN (DCGAN) to produce realistic digital elevation models of mountainous landscapes, showing that terrain-like structures could emerge from purely data-driven learning. The model captured local elevation statistics and allowed for latent space interpolation, enabling smooth variations across generated terrains. However, the lack of spatial conditioning made it difficult to control or constrain specific features such as ridges, valleys, and coastlines, resulting in landscapes that reflected training set distributions but offered no means for intentional design.
 
-Spick and Walker extended this approach with their Spatial GAN (SGAN), which jointly synthesizes both height and texture in a single network pass by conditioning on multi-scale spatial coordinates \cite{Spick2019}. This integration simplifies content pipelines by producing geometry and appearance together and ensures local consistency via a patch-based adversarial loss. On the other hand, SGAN's reliance on spectral convolutions makes training more computationally intensive, and the patchwise discriminator can introduce seam-like artifacts at larger scales. Furthermore, because elevation and texture are tightly coupled, adapting to different resolutions or decoupling the two modalities requires retraining the entire model.
+\citep{Spick2019} extended this approach by introducing a Spatial GAN that generates height and texture maps jointly. By conditioning the generation process on spatial coordinates, their model enforced local consistency and reduced structural artifacts. This integration simplified the content pipeline by fusing geometry and appearance into a single pass. Yet despite improved quality, the generation process remained fundamentally uncontrolled: there was no way for users to specify terrain layout, features, or semantics. As with earlier GANs, the model learned to mimic terrain distributions but could not support authoring or guided synthesis.
 
-Beckham and Pal proposed a two-stage pipeline to address some of these drawbacks: a DCGAN first learns a latent manifold of bare-terrain height fields, and then a conditional pix2pix GAN adds textures to those geometries based on semantic guides \cite{Beckham2017}. This separation allows independent control of geometry interpolation and stylized texturing, making it easy to remix terrain types. Yet the approach can suffer from alignment issues between stages (misregistration between generated heights and applied textures) and remains limited by the diversity present in the initial height-field manifold, which often covers only a narrow set of biomes.
+To address the lack of control inherent in purely noise-driven GANs, later works introduced multi-stage architectures in which a second, conditional GAN refines or interprets the output of a first-stage generator. \citep{Beckham2017} proposed a two-step pipeline where a DCGAN generates bare terrain heightmaps from noise, and a conditional pix2pix network adds texture based on semantic cues. This separation of geometry and appearance allows for basic stylization and terrain remixing, but still suffers from the lack of control in the initial heightmap generation. In a conceptually similar structure, \citep{Panagiotou2020} reversed the mapping: an unconditional GAN first synthesizes aerial RGB imagery from noise, which is then passed to a cGAN trained to predict plausible DEMs. While this image-to-DEM translation enables realistic terrain reconstruction, it depends on large collections of paired data and lacks any semantic or structural control from the user. In both cases, despite the introduction of a conditional refinement stage, the generation process remains fundamentally anchored in an unconstrained latent input, offering limited authoring capability and no principled way to shape landform structures.
 
-Finally, Panagiotou and Charou inverted the terrain-generation paradigm by training a cGAN to predict DEMs directly from aerial RGB imagery \cite{Panagiotou2020}. Their image-to-DEM translation showcases how GANs can handle inverse reconstruction tasks, but it hinges on large collections of paired satellite images and elevation data, which are resources that are sparse and inconsistent for many coastal and coral environments. Moreover, the inherent ambiguity of mapping color to height leads to blurred or uncertain elevation outputs when multiple plausible terrains correspond to the same visual appearance.
-
-Together, these works illustrate the power of GAN variants to capture terrain statistics, fuse geometry with texture, and translate between modalities. However, they also underscore two critical challenges: the need for large, paired real-world datasets (often unavailable for coral-reef islands), and the difficulty of providing users with intuitive, high-level control over the generated landforms. In the next section, we address these gaps by synthesizing our own training data, using procedural sketch-based island models, to train a pix2pix network that directly maps user-drawn label maps to realistic, coral-reef island height fields.  
+These approaches show a shift toward using conditional models to guide terrain generation with more structure. But because they still start from random noise, they offer little real control over the layout or meaning of the terrain. A natural next step is to guide the generation process directly from user-defined semantic inputs, such as sketches or label maps, to produce terrain that reflects both the training data and the user's intent.
 
 
-\subsubsection{Conditional GANs and Image-Image Translation}
+\subsubsection{Conditional GANs for terrain generation}
 \label{sec:coral-island_sota-cGAN}
 
-To steer generation toward a desired output, Conditional GANs (cGANs) augment both $G$ and $D$ with side information $y$, such as class labels or input images \cite{Mirza2014}.  The objective becomes
-\[
-\min_G \max_D \; \mathbb{E}_{x,y\sim p_{\text{data}}}[\log D(x,y)] \;+\;
-\mathbb{E}_{z\sim p_z,y\sim p_{\text{data}}}[\log(1 - D(G(z,y),y))].
-\]
-The pix2pix model, proposed in \cite{Isola2017}, applied a U-Net generator and PatchGAN discriminator to learn mappings between paired images such as edge maps to photographs, label maps to facades, and more, demonstrating sharp, structurally coherent translations on a variety of vision tasks.  The key insight is that $y$ can encode spatial layouts (semantic labels, sketches) that $G$ uses to condition high-frequency detail synthesis, while $D$ focuses on local realism through a patchwise adversarial loss.
-
-\subsubsection{From cGANs to Terrain Synthesis}
-\label{sec:coral-island_sota-GAN-to-terrain}
-
-
-% Guérin et al.\ (2017) pioneered the use of conditional GANs for interactive sketch-to-terrain authoring \cite{Guerin2017}. They paired simple user strokes, marking ridges, valleys, peaks, and basins, with high-resolution DEM patches from NASA’s topography data, and trained a U-Net generator plus PatchGAN discriminator to translate coarse line sketches into fully detailed height fields. This approach delivers real-time feedback and preserves fine geomorphic detail, yet demands extensive, manually paired sketch–DEM examples and can falter on terrain features outside its training distribution.
-
-% Beckham and Pal (2017) separated geometry synthesis from appearance by first training a DCGAN on bare-terrain height fields to learn a smooth latent manifold, then applying a pix2pix cGAN to overlay realistic textures conditioned on semantic masks \cite{Beckham2017}. Their two-stage pipeline enables continuous interpolation between distinct terrain types in latent space and flexible texture stylization, but introduces potential misalignment between generated geometry and subsequent texture, and remains limited by the diversity of its initial height-field training set.
-
-% Anagnostopoulos et al.\ (2021) showed that even minimal semantic guidance (binary ridge/valley masks) can drive a pix2pix-style cGAN to synthesize plausible terrain when trained on a mixture of synthetic masks and a modest real DEM collection \cite{Anagnostopoulos2021}. By blending procedurally generated feature masks with actual elevation data, they improve generalization beyond purely real datasets. However, their model still relies on paired examples and exhibits tiling artifacts when generating regions larger than its native 256×256 patch size.
-
-% Panagiotou and Charou (2020) inverted the typical workflow by using a cGAN to perform “image-to-DEM” translation: their generator takes high-resolution aerial RGB imagery as input and produces corresponding elevation maps \cite{Panagiotou2020}. While this demonstrates GANs’ versatility in inverse reconstruction, it depends on large corpora of accurately co-registered satellite and DEM pairs which are scarce for coral reef islands and often yields blurred elevations when multiple plausible height profiles correspond to the same surface appearance.
-
-% These examples highlight the strengths of cGANs in capturing fine terrain statistics, fusing geometry with texture, and translating between modalities, but also their dependence on extensive paired data. In the next section, we address this data bottleneck by procedurally synthesizing our own sketch–height-field pairs for coral-reef islands, and training a pix2pix network to map user-drawn label maps directly to realistic island terrains without any real DEM examples.  
-
-
-
-
-
-
-
-
-GANs and cGANs have been increasingly adopted in terrain and environment generation.  Early works trained DCGANs on elevation maps or satellite DEMs to produce plausible mountain and valley structures.  More recent studies leverage conditional models to translate user-provided layouts into detailed terrains: Guérin et al. showed how a cGAN can convert simple sketch constraints into full 3D height fields for terrain modeling \cite{Guerin2017}, while Sisodia et al. combined pix2pix with super-resolution networks to enhance the fidelity of generated landscapes \cite{Sisodia2022}.  However, these approaches typically require large datasets of real DEMs, which are scarce for coral reef islands.  In the next section, we show how to overcome this limitation by procedurally synthesizing training data and then harnessing a pix2pix cGAN to learn sketch-to-terrain translations in a data-sparse domain.
-
-
-
-
-
-\comment{
-    Early work by \cite{Goodfellow2014} introduced GANs ...  %, which have since been applied to terrain: e.g., researchers trained GANs on satellite elevation data to produce realistic mountains. Others have explored GANs for game level generation, showing neural nets can capture design patterns. However, these all rely on large training datasets of real examples, a luxury we don't have for coral reef islands.
-}
-
-A Generative Adversarial Network (GAN) consists of two competing neural networks: a generator that attempts to produce realistic data, and a discriminator that tries to distinguish between real and generated data. In the conditional GAN (cGAN) variant, both the generator and discriminator are conditioned on some input, meaning the generated output is influenced by additional information, such as a label map or image.
-
-
-
-The training dynamics of Generative Adversarial Networks (GANs) poses the challenge of simultaneously training two interconnected networks: the generator and the discriminator. The discriminator's accuracy crucially influences the generator's training outcomes. A discriminator that fails to accurately classify real from generated data may provide misleading feedback to the generator, hindering its ability to learn and improve. Conversely, an overly competent discriminator can excessively penalize the generator, stifling any potential for it to refine its outputs. This can result in the generator settling for a suboptimal minima, where it continuously generates non-diverse or overly simplistic outputs.
-
-Achieving an optimal balance between the performance of the generator and the discriminator involves meticulous tuning of hyperparameters. This balance is critical because it avoids the well-documented problem of mode collapse, where the generator learns to produce a limited variety of outputs [SOURCES]. It also ensures that the generator has enough leeway to explore the data distribution effectively without being overly constrained by the discriminator.
-
-Strategies such as employing adaptive learning rates for the discriminator or using different training frequencies for each network can help mitigate these issues. For example, researchers have found that updating the generator less frequently than the discriminator can prevent the discriminator from becoming too strong too quickly, thus supporting a more balanced training process. [SOURCES]
-
-Other approaches like curriculum learning can further optimize the training process. Curriculum learning strategically increases the complexity of training data over time, gradually challenging the model to improve its capabilities without overwhelming it initially. This method is particularly effective in preventing common pitfalls such as mode collapse by ensuring that the generator learns to replicate an increasingly diverse set of outputs. [SOURCES]
-
-
-\comment{Quickly present \cite{WulffJensen2018} (DC GAN), \cite{Spick2019} (SGAN, which is almost exactly the same thing, but generates height+texture in one pass), \cite{Beckham2017} (height field generated from random, allowing interpolation, and texture added by cGAN), \cite{Panagiotou2020} (exactly the other direction than Beckham), all are trained from real images}
-
-\subsubsection{Conditional Generative Adversarial Networks}
-\label{sec:coral-island_sota-cGAN}
-
-For island generation, we use the pix2pix model, a specific cGAN designed for image-to-image translation. In this case, the input to the generator is a label map which is a 2D image where each pixel is assigned an ID representing a different region of the island (e.g., island body, beach, lagoon, coral reef). The output is an image where each pixel corresponds to the elevation of the terrain at that point, ie. a height field.
-
+While traditional GANs generate data from noise, Conditional GANs (cGANs) extend this concept by incorporating side information, often called class map or label map, to guide generation toward user-specified outcomes \cite{Mirza2014}. This makes them particularly attractive for structured content synthesis tasks, including terrain generation, where user input often defines large-scale layout while realism must emerge from learned detail. The pix2pix framework by \citep{Isola2017} is the canonical cGAN formulation for image-to-image translation. It uses a U-Net generator conditioned on an input image (a sketch or a label map, for example), and a PatchGAN discriminator that evaluates realism at the patch level, encouraging fine detail and local consistency.
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width = 0.8 \linewidth]{example_pix2pix_facade.png}
-    \caption{Example of application of the pix2pix deep learning model: From a trained dataset of facades composed of real world images associated with their label maps, providing a new label map outputs a realistic facade image. }
-    \label{fig:coral-island_pix2pix-example}
+\centering
+\includegraphics[width = 0.8 \linewidth]{example_pix2pix_facade.png}
+\includegraphics[width = 0.8 \linewidth]{example_pix2pix_maps.png}
+\caption{Example of pix2pix image-to-image translation: (top) a trained model converts semantic label maps into realistic façade images, or (bottom) the construction of highly plausible aerial images from navigation map sketches. This paradigm generalizes to many tasks, including terrain generation.}
+\label{fig:coral-island_pix2pix-example}
 \end{figure}
 
+In the domain of terrain generation, the use of cGANs remains surprisingly rare. The most directly relevant precedent is the work of \citep{Guerin2017}, who train a pix2pix-style cGAN to map sketched terrain features such as valleys, ridgelines, or peaks, into full-resolution digital elevation models (DEMs). Their results demonstrate that cGANs can plausibly reconstruct complex topographic forms from sparse semantic cues, offering a promising balance between user control and learned realism. Similarly, \citep{Sisodia2022} applies a cGAN to generate stylized terrain heightmaps from sketch maps in the context of 2D game environments, further validating the sketch-to-terrain pipeline.
 
-\comment{
-    \cite{Isola2017} demonstrated pix2pix on tasks like maps-to-aerial photos, which inspires our use of it for sketch-to-terrain translation.
-}
+Another related line of work explores learning-based terrain synthesis using partial or sparse spatial inputs. \citep{Voulgaris2021} propose a GAN-based system that maps sparse "altitude dot" maps to plausible terrain imagery, acting as a minimal-interaction generative authoring tool. While not strictly a cGAN, their system reflects a similar spirit: conditioning generation on lightweight user constraints. Likewise, \cite{Panagiotou2020} and \cite{Beckham2017} trained a cGAN to invert RGB satellite imagery into elevation data, framing terrain modeling as an appearance-to-geometry and geometry-to-appearance translation task. However, such image-to-DEM (and DEM-to-image) systems are heavily dependent on large paired datasets, which limits their applicability in settings like coral reef islands, where training data are scarce.
 
-
-The pix2pix model operates on the framework of a conditional GAN, where the generator model is typically a U-Net-based architecture, and the discriminator is a PatchGAN. This structure allows the generator to produce full-resolution images while the discriminator focuses on classifying if individual sections of the image are real or fake. For island terrain generation, the U-Net architecture is particularly advantageous due to its ability to handle detailed spatial hierarchies, which is essential when translating simple label maps into complex height fields. 
-
-\comment{Talk about \cite{Sisodia2022} (Use of pix2pix for terrain gen + ESRGAN [superresolution model] for more details [papier a chier])}
-
-
-The cGAN model was chosen for this task because it allows us to overcome some of the constraints of the initial procedural algorithm. While the first algorithm generates island terrains based on radial symmetry and a limited set of input parameters, cGAN can generate more complex and varied terrains by learning from a large dataset of examples. Specifically, the use of cGAN addresses the following challenges:
-\begin{Itemize}
-    \Item{Increased variety:} The cGAN model can generate a wide range of island shapes and terrains by learning from the dataset. This allows for the creation of terrains that go beyond the predefined structures of the initial algorithm, introducing more natural variation in island features.
-
-    \Item{Overcoming constraints:} In the initial algorithm, islands are always centered in the image and adhere to a radial symmetry. Using cGAN, we apply data augmentation (translation, scaling, and copy-pasting multiple islands in one sample) to remove these constraints, allowing islands to take more irregular shapes and positions.
-
-    \Item{Flexibility:} Once trained, the cGAN model acts as a \remove{black box}{} that generates island terrains based on the label input. While this confronts the user to randomness during the generation process, the model can produce a variety of terrains that still respect the underlying structure of the label map. This enables a flexible, rapid generation process without requiring the user to fine-tune unintuitive parameters manually.
-\end{Itemize}
-
-The cGAN model is trained using a dataset of island terrains generated by the initial algorithm. To create this dataset, the algorithm randomly generates top-view shapes for the island's features, adds noise such as fractional Brownian motion, and introduces random wind velocity fields. The profile function remains consistent in determining the relative positions of the island, beach, and lagoon, but the top-view shapes vary through noise and deformation.
-
-
-However, given the specific requirements of our framework where ease of implementation is a priority, and the nature of the outputs (synthetic representations of island topographies) where visual appeal is more critical than precise accuracy, a different approach is justified. In this context, employing a pretrained model can significantly reduce the risk of training instabilities such as mode collapse while simplifying the development process. By using a pretrained model, we leverage previously learned features and patterns, which can facilitate a more stable and efficient training phase. As such, randomly shuffling the easy and difficult examples in the training schedule is sufficient to keep the model progressing.
-
-
-
-\subsubsection{Deep learning for terrain generation}
-\label{sec:coral-island_sota-cGAN-for-terrains}
-
-\begin{figure}[H]
-    \includegraphics[width=0.9 \linewidth]{Guerin_example_cgan.png}
-    \caption{\cite{Guerin2017} trains a cGAN from real world data, such that a sketch drawn by the user gets transformed into a plausible height field respecting the user constraints.}
-    \label{fig:coral-island_Guerin2017-example}
-\end{figure}
-
-\comment{Talk about \cite{Voulgaris2021} (sparse height points in a 2D space to generate plausible aerial images (no geometry)).}
-
-In terrain generation, GANs have been applied to generate diverse landscapes by learning the patterns and features found in real-world terrains. For example, \citep{Guerin2017} demonstrated how GANs can be used to transform 2D sketches into 3D terrains by training the network on a dataset of terrain features, allowing the system to generate new landscapes based on simple user input. GANs are particularly well-suited for this task because they can capture the subtle details of terrain that would be difficult to model explicitly, such as the natural flow of elevation or the transitions between different terrain types.
-
-A variant of GANs, known as Conditional Generative Adversarial Networks (cGANs), takes the power of GANs one step further by allowing the generated data to be conditioned on additional inputs. In a cGAN, both the generator and the discriminator receive additional information such as a class label, a sketch, or an image, that guides the generation process. This makes cGANs particularly useful for terrain generation tasks where users want to control specific aspects of the output while still relying on the model to generate realistic details.
-
-In the case of terrain generation, a cGAN allows the user to specify high-level constraints (such as the regions where different terrain types should be) while the generator fills in the finer details based on what it has learned from the training data. This makes cGANs particularly effective in applications where a mix of user input and data-driven generation is required, as the user can control the broad layout of the terrain while the model ensures that the resulting terrain looks natural and plausible.
-
-In our approach, we use a cGAN to generate coral reef islands, providing a balance between user control and realistic terrain generation. After the initial algorithm outlines the regions of the island such as the island itself, beaches, and lagoons, these regions are transformed into a single image, where each pixel represents a different region ID. This image is used as the input for the cGAN, which conditions the generation process on this initial layout.
-
-
-The cGAN is trained on a dataset of island examples, which are created by our own procedural generation algorithm and further augmented to introduce a wide variety of shapes and features. This training allows the cGAN to generate coral reef islands that follow the high-level layout provided by the user while introducing natural variations and details that reflect real-world island characteristics. By conditioning the cGAN on the user-defined region map, we ensure that the generated islands maintain structural coherence while still exhibiting realistic features like smooth transitions between regions, varied terrain, and non-circular shapes.
-
-One of the key advantages of using a cGAN in our system is its ability to overcome procedural constraints. Traditional procedural generation methods often impose limitations like radial symmetry or require islands to follow overly simplified geometries. With the cGAN, these constraints can be lifted. The model can generate irregular, non-circular islands that adhere to the user's input but introduce a level of complexity and realism that would be difficult to achieve with purely procedural methods.
-
-\begin{figure}[H]
-    \includegraphics[width=0.9 \linewidth]{placeholder.pdf}
-    \caption{Additional difficulties are added to our dataset: from left to right, a simple map, translation from the center, non-radial map, multiple islands}
-    \label{fig:coral-island_difficulties-dataset}
-\end{figure}
-
-Additionally, the cGAN ensures that the generated island terrain aligns with the geological processes modeled in the system, such as subsidence and coral reef growth. By training the cGAN on thousands of examples that reflect these processes, we ensure that the final generated island models are both flexible and geologically plausible. The combination of user-driven design and data-driven generation through the cGAN allows for the creation of coral reef islands that are not only tailored to the user's input but also realistic in their form and structure.
+Despite this emerging body of work, there is still no standard pipeline for generating detailed terrains from semantic layout maps using cGANs, particularly in biologically driven environments like coral reef islands. This gap is outstanding given the success of cGANs in analogous image synthesis domains, and the explosive progress in the field of deep generative models. The potential of this approach remains underexploited, especially when it comes to coupling user control with long-term geological plausibility.
 
 \midConclusion
-In summary, traditional procedural methods can create terrains but struggle with fine realism and user-directed specific shapes, sketch-based methods allow control but typically lack automated detail refinement, and GAN-based generation can produce realistic outputs but is constrained by data availability. Our approach addresses these gaps by combining a user-friendly sketch interface with a cGAN trained on procedurally generated examples, effectively merging the strengths of procedural and learned methods.
+
+In our method, we address this gap by training a pix2pix cGAN to transform label maps (semantic region maps produced by procedural sketch-based modeling) into realistic coral reef island height fields. Each input map encodes key zones of an island (e.g., lagoon, reef crest, beach, island core) using categorical labels, serving as a semantic constraints for terrain synthesis. The cGAN generator learns to condition elevation details on both the global layout and the implicit patterns encoded in the training data. By generating our own synthetic dataset with procedurally modeled coral islands (see \cref{fig:coral-island_difficulties-dataset}), we overcome the shortage of labeled elevation data and enforce geological coherence via data generation design.
+
+\begin{figure}[H]
+\includegraphics[width=0.9 \linewidth]{placeholder.pdf}
+\caption{Examples of procedural region maps used for training: left to right, canonical island, off-center island, elongated shapes, and multi-island scenes. These maps serve as semantic inputs to the cGAN.}
+\label{fig:coral-island_difficulties-dataset}
+\end{figure}
+
+This setup offers several key advantages: it respects user-defined structure while allowing the generator to introduce realistic variation, it removes procedural biases such as radial symmetry and fixed island typologies, and it enables the generation of irregular, non-circular landforms while implicitly modeling geological processes like subsidence and coral accretion through training-time priors. 
+
+In this context, conditional GANs emerge as a powerful yet underutilized tool for terrain modeling. By training on procedurally generated coral island data, we show that sketch-conditioned learning can effectively bridge the gap between high-level user intent and geologically plausible terrain synthesis.
+
+
+
+
+
+% To steer generation toward a desired output, Conditional GANs (cGANs) augment both $G$ and $D$ with side information $y$, such as class labels or input images \cite{Mirza2014}.  The objective becomes
+% \[
+% \min_G \max_D \; \mathbb{E}_{x,y\sim p_{\text{data}}}[\log D(x,y)] \;+\;
+% \mathbb{E}_{z\sim p_z,y\sim p_{\text{data}}}[\log(1 - D(G(z,y),y))].
+% \]
+% The pix2pix model, proposed in \cite{Isola2017}, applied a U-Net generator and PatchGAN discriminator to learn mappings between paired images such as edge maps to photographs, label maps to facades, and more, demonstrating sharp, structurally coherent translations on a variety of vision tasks.  The key insight is that $y$ can encode spatial layouts (semantic labels, sketches) that $G$ uses to condition high-frequency detail synthesis, while $D$ focuses on local realism through a patchwise adversarial loss.
+
+% \begin{figure}[H]
+% 	\centering
+% 	\includegraphics[width = 0.8 \linewidth]{example_pix2pix_facade.png}
+%     \caption{Example of application of the pix2pix deep learning model: From a trained dataset of facades composed of real world images associated with their label maps, providing a new label map outputs a realistic facade image. }
+%     \label{fig:coral-island_pix2pix-example}
+% \end{figure}
+
+
+% \comment{
+%     \cite{Isola2017} demonstrated pix2pix on tasks like maps-to-aerial photos, which inspires our use of it for sketch-to-terrain translation.
+% }
+
+% \comment{Talk about \cite{Voulgaris2021} (sparse height points in a 2D space to generate plausible aerial images (no geometry)).}
+
+% \AltTextImage{
+%     In terrain generation, or more specifically terrain authoring, cGANs have been applied to generate diverse landscapes by learning the patterns and features found in real-world terrains. For example, \citep{Guerin2017} demonstrated how cGANs can be used to transform 2D sketches into 3D terrains by training the network on a dataset of terrain features, allowing the system to generate new landscapes based on simple user input (see \cref{fig:coral-island_Guerin2017-example}). cGANs are particularly well-suited for this task because they can capture the subtle details of terrain that would be difficult to model explicitly, such as the natural flow of elevation or the transitions between different terrain types.
+% }{Guerin_example_cgan.png}{\cite{Guerin2017} trains a cGAN from real world data, such that a sketch drawn by the user gets transformed into a plausible height field respecting the user constraints.}{fig:coral-island_Guerin2017-example}
+
+% In the case of terrain generation, a cGAN allows the user to specify high-level constraints (such as the regions where different terrain types should be) while the generator fills in the finer details based on what it has learned from the training data. This makes cGANs particularly effective in applications where a mix of user input and data-driven generation is required, as the user can control the broad layout of the terrain while the model ensures that the resulting terrain looks natural and plausible.
+
+% In our approach, we use a cGAN to generate coral reef islands, providing a balance between user control and realistic terrain generation. After the initial algorithm outlines the regions of the island such as the island itself, beaches, and lagoons, these regions are transformed into a single image, where each pixel represents a different region ID. This image is used as the input for the cGAN, which conditions the generation process on this initial layout.
+
+
+% The cGAN is trained on a dataset of island examples, which are created by our own procedural generation algorithm and further augmented to introduce a wide variety of shapes and features. This training allows the cGAN to generate coral reef islands that follow the high-level layout provided by the user while introducing natural variations and details that reflect real-world island characteristics. By conditioning the cGAN on the user-defined region map, we ensure that the generated islands maintain structural coherence while still exhibiting realistic features like smooth transitions between regions, varied terrain, and non-circular shapes.
+
+% One of the key advantages of using a cGAN in our system is its ability to overcome procedural constraints. Traditional procedural generation methods often impose limitations like radial symmetry or require islands to follow overly simplified geometries. With the cGAN, these constraints can be lifted. The model can generate irregular, non-circular islands that adhere to the user's input but introduce a level of complexity and realism that would be difficult to achieve with purely procedural methods.
+
+% \begin{figure}[H]
+%     \includegraphics[width=0.9 \linewidth]{placeholder.pdf}
+%     \caption{Additional difficulties are added to our dataset: from left to right, a simple map, translation from the center, non-radial map, multiple islands}
+%     \label{fig:coral-island_difficulties-dataset}
+% \end{figure}
+
+% Additionally, the cGAN ensures that the generated island terrain aligns with the geological processes modeled in the system, such as subsidence and coral reef growth. By training the cGAN on thousands of examples that reflect these processes, we ensure that the final generated island models are both flexible and geologically plausible. The combination of user-driven design and data-driven generation through the cGAN allows for the creation of coral reef islands that are not only tailored to the user's input but also realistic in their form and structure.
+
+% \midConclusion
+% In summary, traditional procedural methods can create terrains but struggle with fine realism and user-directed specific shapes, sketch-based methods allow control but typically lack automated detail refinement, and GAN-based generation can produce realistic outputs but is constrained by data availability. Our approach addresses these gaps by combining a user-friendly sketch interface with a cGAN trained on procedurally generated examples, effectively merging the strengths of procedural and learned methods.
+
+
+
+% \comment{
+%     Early work by \cite{Goodfellow2014} introduced GANs ...  %, which have since been applied to terrain: e.g., researchers trained GANs on satellite elevation data to produce realistic mountains. Others have explored GANs for game level generation, showing neural nets can capture design patterns. However, these all rely on large training datasets of real examples, a luxury we don't have for coral reef islands.
+% }
+
+% A Generative Adversarial Network (GAN) consists of two competing neural networks: a generator that attempts to produce realistic data, and a discriminator that tries to distinguish between real and generated data. In the conditional GAN (cGAN) variant, both the generator and discriminator are conditioned on some input, meaning the generated output is influenced by additional information, such as a label map or image.
+
+
+
+% The training dynamics of Generative Adversarial Networks (GANs) poses the challenge of simultaneously training two interconnected networks: the generator and the discriminator. The discriminator's accuracy crucially influences the generator's training outcomes. A discriminator that fails to accurately classify real from generated data may provide misleading feedback to the generator, hindering its ability to learn and improve. Conversely, an overly competent discriminator can excessively penalize the generator, stifling any potential for it to refine its outputs. This can result in the generator settling for a suboptimal minima, where it continuously generates non-diverse or overly simplistic outputs.
+
+% Achieving an optimal balance between the performance of the generator and the discriminator involves meticulous tuning of hyperparameters. This balance is critical because it avoids the well-documented problem of mode collapse, where the generator learns to produce a limited variety of outputs [SOURCES]. It also ensures that the generator has enough leeway to explore the data distribution effectively without being overly constrained by the discriminator.
+
+% Strategies such as employing adaptive learning rates for the discriminator or using different training frequencies for each network can help mitigate these issues. For example, researchers have found that updating the generator less frequently than the discriminator can prevent the discriminator from becoming too strong too quickly, thus supporting a more balanced training process. [SOURCES]
+
+% Other approaches like curriculum learning can further optimize the training process. Curriculum learning strategically increases the complexity of training data over time, gradually challenging the model to improve its capabilities without overwhelming it initially. This method is particularly effective in preventing common pitfalls such as mode collapse by ensuring that the generator learns to replicate an increasingly diverse set of outputs. [SOURCES]
+
+
+% \comment{Quickly present \cite{WulffJensen2018} (DC GAN), \cite{Spick2019} (SGAN, which is almost exactly the same thing, but generates height+texture in one pass), \cite{Beckham2017} (height field generated from random, allowing interpolation, and texture added by cGAN), \cite{Panagiotou2020} (exactly the other direction than Beckham), all are trained from real images}
+
+% \subsubsection{Conditional Generative Adversarial Networks}
+% \label{sec:coral-island_sota-cGAN}
+
+% For island generation, we use the pix2pix model, a specific cGAN designed for image-to-image translation. In this case, the input to the generator is a label map which is a 2D image where each pixel is assigned an ID representing a different region of the island (e.g., island body, beach, lagoon, coral reef). The output is an image where each pixel corresponds to the elevation of the terrain at that point, ie. a height field.
+
+
+% \begin{figure}[H]
+% 	\centering
+% 	\includegraphics[width = 0.8 \linewidth]{example_pix2pix_facade.png}
+%     \caption{Example of application of the pix2pix deep learning model: From a trained dataset of facades composed of real world images associated with their label maps, providing a new label map outputs a realistic facade image. }
+%     \label{fig:coral-island_pix2pix-example}
+% \end{figure}
+
+
+% \comment{
+%     \cite{Isola2017} demonstrated pix2pix on tasks like maps-to-aerial photos, which inspires our use of it for sketch-to-terrain translation.
+% }
+
+
+% The pix2pix model operates on the framework of a conditional GAN, where the generator model is typically a U-Net-based architecture, and the discriminator is a PatchGAN. This structure allows the generator to produce full-resolution images while the discriminator focuses on classifying if individual sections of the image are real or fake. For island terrain generation, the U-Net architecture is particularly advantageous due to its ability to handle detailed spatial hierarchies, which is essential when translating simple label maps into complex height fields. 
+
+% \comment{Talk about \cite{Sisodia2022} (Use of pix2pix for terrain gen + ESRGAN [superresolution model] for more details [papier a chier])}
+
+
+% The cGAN model was chosen for this task because it allows us to overcome some of the constraints of the initial procedural algorithm. While the first algorithm generates island terrains based on radial symmetry and a limited set of input parameters, cGAN can generate more complex and varied terrains by learning from a large dataset of examples. Specifically, the use of cGAN addresses the following challenges:
+% \begin{Itemize}
+%     \Item{Increased variety:} The cGAN model can generate a wide range of island shapes and terrains by learning from the dataset. This allows for the creation of terrains that go beyond the predefined structures of the initial algorithm, introducing more natural variation in island features.
+
+%     \Item{Overcoming constraints:} In the initial algorithm, islands are always centered in the image and adhere to a radial symmetry. Using cGAN, we apply data augmentation (translation, scaling, and copy-pasting multiple islands in one sample) to remove these constraints, allowing islands to take more irregular shapes and positions.
+
+%     \Item{Flexibility:} Once trained, the cGAN model acts as a \remove{black box}{} that generates island terrains based on the label input. While this confronts the user to randomness during the generation process, the model can produce a variety of terrains that still respect the underlying structure of the label map. This enables a flexible, rapid generation process without requiring the user to fine-tune unintuitive parameters manually.
+% \end{Itemize}
+
+% The cGAN model is trained using a dataset of island terrains generated by the initial algorithm. To create this dataset, the algorithm randomly generates top-view shapes for the island's features, adds noise such as fractional Brownian motion, and introduces random wind velocity fields. The profile function remains consistent in determining the relative positions of the island, beach, and lagoon, but the top-view shapes vary through noise and deformation.
+
+
+% However, given the specific requirements of our framework where ease of implementation is a priority, and the nature of the outputs (synthetic representations of island topographies) where visual appeal is more critical than precise accuracy, a different approach is justified. In this context, employing a pretrained model can significantly reduce the risk of training instabilities such as mode collapse while simplifying the development process. By using a pretrained model, we leverage previously learned features and patterns, which can facilitate a more stable and efficient training phase. As such, randomly shuffling the easy and difficult examples in the training schedule is sufficient to keep the model progressing.
+
+
+
+% \subsubsection{Deep learning for terrain generation}
+% \label{sec:coral-island_sota-cGAN-for-terrains}
+
+% \begin{figure}[H]
+%     \includegraphics[width=0.9 \linewidth]{Guerin_example_cgan.png}
+%     \caption{\cite{Guerin2017} trains a cGAN from real world data, such that a sketch drawn by the user gets transformed into a plausible height field respecting the user constraints.}
+%     \label{fig:coral-island_Guerin2017-example}
+% \end{figure}
+
+% \comment{Talk about \cite{Voulgaris2021} (sparse height points in a 2D space to generate plausible aerial images (no geometry)).}
+
+% In terrain generation, GANs have been applied to generate diverse landscapes by learning the patterns and features found in real-world terrains. For example, \citep{Guerin2017} demonstrated how GANs can be used to transform 2D sketches into 3D terrains by training the network on a dataset of terrain features, allowing the system to generate new landscapes based on simple user input. GANs are particularly well-suited for this task because they can capture the subtle details of terrain that would be difficult to model explicitly, such as the natural flow of elevation or the transitions between different terrain types.
+
+% A variant of GANs, known as Conditional Generative Adversarial Networks (cGANs), takes the power of GANs one step further by allowing the generated data to be conditioned on additional inputs. In a cGAN, both the generator and the discriminator receive additional information such as a class label, a sketch, or an image, that guides the generation process. This makes cGANs particularly useful for terrain generation tasks where users want to control specific aspects of the output while still relying on the model to generate realistic details.
+
+% In the case of terrain generation, a cGAN allows the user to specify high-level constraints (such as the regions where different terrain types should be) while the generator fills in the finer details based on what it has learned from the training data. This makes cGANs particularly effective in applications where a mix of user input and data-driven generation is required, as the user can control the broad layout of the terrain while the model ensures that the resulting terrain looks natural and plausible.
+
+
+
 
 
 \section{Description of our method}
@@ -1042,7 +1095,7 @@ All augmentation techniques are applied both to the height field and the label m
 \subsection{Model output}
 \label{sec:coral-island_cGAN-output}
 
-Once trained, the cGAN model generates a height field from a given label map. The output is a complete 2D height map representing the terrain's elevation at each point. Although the cGAN works as a \remove{black box}, the label map remains available after inference and retains valuable information for the user.
+Once trained, the cGAN model generates a height field from a given label map. The output is a complete 2D height map representing the terrain's elevation at each point. Although the cGAN's internal logic is not easily interpretable, the label map remains available after inference and retains valuable information for the user.
 
 The label map can be used for post-processing tasks, such as:
 \begin{Itemize}
@@ -1140,11 +1193,11 @@ While the cGAN model provides increased flexibility and variety in island genera
 
 \begin{Itemize}
     \Item{Biases from the synthetic dataset:} Since the cGAN model is trained entirely on a procedurally generated dataset, it inherits the biases present in the initial algorithm. For example, while the model can break free from the radial symmetry constraint and center positioning, it still relies on the synthetic data's structure and patterns. This can limit the true diversity of the generated terrains, as the cGAN cannot generate terrains that deviate too far from the examples in the training set.
-    \Item{Lack of user control:} Another limitation of using cGAN in this context is the lack of real-time user control during terrain generation. While traditional procedural generation methods allow users to tweak parameters (e.g., island size, beach width) during the generation process, the cGAN model operates as a \remove{black box}, providing no mechanism for direct user interaction beyond the initial label map. This reduces the level of customization available to the user. \comment{Here, I had a WTF moment...}
+    \Item{Lack of user control:} Another limitation of using cGAN in this context is the lack of real-time user control during terrain generation. While traditional procedural generation methods allow users to tweak parameters (e.g., island size, beach width) during the generation process, the cGAN model operation is abstracted from the user, providing no mechanism for direct interaction beyond the initial label map. This reduces the level of customization available to the user. \comment{Here, I had a WTF moment...}
     \Item{Data-driven dependence:} The quality of the generated terrain depends entirely on the quality of the training dataset. Since the dataset is synthetically generated, any limitations or biases in the initial dataset directly affect the cGAN's output. This dependence on data quality makes it crucial to design a well-augmented and varied dataset to ensure diverse and realistic outputs.
 \end{Itemize}
 
-While this approach brings significant advantages, there are also some limitations to consider. The reliance on a synthetic dataset means that the cGAN inherits the biases and limitations of the original procedural algorithm. This could limit the true diversity of the terrains that the model can generate, as the output is confined by the patterns present in the training data. Additionally, the cGAN model functions as a \remove{black box}, offering limited user control over the generation process once the model has been trained. This contrasts with traditional procedural methods, which typically allow for real-time tweaking of parameters.
+While this approach brings significant advantages, there are also some limitations to consider. The reliance on a synthetic dataset means that the cGAN inherits some biases and limitations of the original procedural algorithm. This could limit the true diversity of the terrains that the model can generate, as the output is confined by the patterns present in the training data. Additionally, the cGAN model's internal logic lacks transparency, offering limited user control over the generation process once the model has been trained. This contrasts with traditional procedural methods, which typically allow for real-time tweaking of parameters.
 
 
 \section{Conclusion and future works}
