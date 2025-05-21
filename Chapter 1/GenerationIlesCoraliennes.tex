@@ -1,7 +1,9 @@
 \resetgraphicspath
 \appendtographicspath{{./Chapter 1/figures/} }
+\appendtographicspath{{./Chapter 1/figures/Procedural/} }
 \appendtographicspath{{./Chapter 1/islands/} }
 \appendtographicspath{{./Chapter 1/Results/} }
+\appendtographicspath{{./Chapter 1/Results/Procedural/} }
 
 \zzcommand{\distRegions}{\Tilde{x}}
 
@@ -603,13 +605,11 @@ The pipeline consists of two distinct phases: a procedural data-generation phase
 \subsection{Procedural generation phase}
 \label{sec:coral-island_proc-phase}
 
-In the initial procedural phase, the user sketches key island features from two complementary viewpoints: a top view, defining the horizontal layout of island features (e.g., island boundaries, beach width, lagoon areas, coral reefs), and a profile view, specifying the vertical elevation profile from island center to ocean.
+In the initial procedural phase, the user sketches key island features from two complementary viewpoints: a top view, defining the horizontal layout of island features (island boundaries, beach width, lagoon areas, coral reefs), and a profile view, specifying the vertical elevation profile from island center to ocean (\cref{sec:coral-island_generation-initial}).
 
-\comment{Point to sections...}
+Additionally, users can sketch a wind deformation map, enabling simulation of natural erosion patterns caused by wind and waves (\cref{sec:coral-island_wind-deformation}).
 
-Additionally, users can sketch a wind deformation map, enabling simulation of natural erosion patterns caused by wind and waves.
-
-From these sketches, the procedural system generates a synthetic island terrain and a corresponding semantic label map, where each pixel indicates its region type (island, beach, lagoon, reef, abyss).
+From these sketches, the procedural system generates a synthetic island terrain with the keep-up stategy of coral reefs (\cref{sec:coral-island_coral-reef}) and a corresponding semantic label map, where each pixel indicates its region type (island, beach, lagoon, reef, abyss) (\cref{sec:coral-island_procedural-output}).
 
 
 
@@ -636,11 +636,11 @@ This interactive process, combining sketches and wind deformation, allows users 
 \subsection{Learning-based generation phase}
 \label{sec:coral-island_cGAN-phase}
 
-We repeat this procedural generation process many times with varied parameters (different shapes, scales, subsidence levels, and wind patterns) to create a large synthetic dataset. Each dataset entry consists of a label map paired with its procedurally generated terrain height field.
+We repeat this procedural generation process many times with varied parameters (different shapes, scales, subsidence levels, and wind patterns) to create a large synthetic dataset (\cref{sec:coral-island_dataset-generation}). Each dataset entry consists of a label map paired with its procedurally generated terrain height field. Data augmentation is applied to the generated pairs to reduce the impact of the constraints induced from the procedural method (\cref{sec:coral-island_data-augmentation}).
 
-We use this dataset to train a Conditional Generative Adversarial Network (cGAN), specifically the pix2pix architecture, capable of translating label semantic maps into realistic terrain height fields.
+We use this dataset to train a Conditional Generative Adversarial Network (cGAN), specifically the pix2pix architecture, capable of translating label semantic maps into realistic terrain height fields (\cref{sec:coral-island_cGAN-output}).
 
-After training, the procedural step becomes unnecessary. To generate new island terrains, the user only needs to provide a label semantic map as input to the trained cGAN. The cGAN then synthesizes realistic island elevation details directly, capturing learned geological and geomorphological patterns from the synthetic training data.
+After training, the procedural step becomes unnecessary. To generate new island terrains, the user only needs to provide a label semantic map as input to the trained cGAN. The cGAN then synthesizes realistic island elevation details directly, capturing learned geological and geomorphological patterns from the synthetic training data (\cref{sec:coral-island_results}).
 
 \subsubsection*{User interaction}
 \label{sec:coral-island_cGAN-phase-interaction}
@@ -682,11 +682,8 @@ This combined procedural-and-learning approach provides a simple, flexible, and 
     \label{fig:coral-island_example-pipeline}
 \end{figure}
 
-\replace{
-Generating synthetic coral reef island terrains involves a combination of user input, procedural techniques, and simplified geological simulations. The process begins with the creation of a base terrain using user-defined sketches, followed by a simulation of coral reef growth and subsidence. These two steps, although interconnected, can also be used independently, providing flexibility in how the system is applied. In this section, we describe the example generation process in detail.
-}{
 The generation of coral reef island terrains involves a structured process that takes the user's sketches and produces a complete 3D terrain model. This process begins with the creation of the initial height field based on the user's input, followed by the application of wind deformation to introduce natural variations, and concludes with the integration of coral reef features through subsidence and coral growth modeling.
-}
+
 
 
 
@@ -715,6 +712,12 @@ The top-view sketch defines the islands outline as seen from above. Using a simp
 Each region's boundary is represented in polar coordinates, with $\radius_\p$ indicating the radial distance from the islands center and $\angl_\p$ representing the angular position. This polar representation allows the system to map the users sketch onto a circular framework, ensuring smooth transitions between regions and maintaining a coherent layout for the island.
 
 In this sketch, the user defines the overall horizontal layout of the island, including the size and shape of each feature. Variations in the outline are introduced by allowing the radial distances to vary with angle, ensuring that the island is not strictly symmetrical and introducing more natural, irregular shapes.
+
+\begin{figure}[H]
+    \autofitgraphics[]{binary-heights-input-only-outlines-2.png, binary-heights-output-only-heightmap-2.png, binary-heights-render-2.png}
+    \caption{Using only the outlines of the island as a input sketch, we can provide a height to each point of the field depending on the region in which it rely.}
+    \label{fig:coral-island_procedural-height-only}
+\end{figure}
 
 % \subsubsection{Profile-view sketch}
 % \label{sec:coral-island_profile-view}
@@ -755,6 +758,13 @@ This approach ensures that the height field accurately follows the elevation pro
 
 The result is a height field that captures both the radial structure of the island (from the top-view sketch) and the vertical elevation profile (from the profile-view sketch), producing a realistic representation of islands with smooth transitions between the key terrain features.
 
+\begin{figure}[H]
+    \autofitgraphics[]{smooth-input-outline-heights-1.png, smooth-output-heights-1.png, smooth-render-1.png}
+    \autofitgraphics[]{smooth-input-outline-heights-2.png, smooth-output-heights-2.png, smooth-render-2.png}
+    \autofitgraphics[]{smooth-input-outline-heights-3.png, smooth-output-heights-3.png, smooth-render-3.png}
+    \caption{Providing a smooth function between each region results in islands with plausible reliefs. We fixed the outlines while editing only the height function in order to produce, from top to bottom, a low island, a coral reef island, and finally an identical island without the reef. }
+    \label{fig:coral-island_procedural-smooth-heights}
+\end{figure}
 
 
 
@@ -1008,7 +1018,7 @@ The resulting terrain represents a plausible coral reef island, where the volcan
 One of the key strengths of this method is its flexibility as the subsidence and coral reef growth processes are modeled independently, allowing for a wide range of configurations. Users can generate plausible island terrains with or without coral features, or apply the coral reef growth simulation to existing height fields from other sources.
 
 
-\comment{Here, I would like a big gap, possibly by introducing ablation study, procedural results, and a short conclusion. }
+% \comment{Here, I would like a big gap, possibly by introducing ablation study, procedural results, and a short conclusion. }
 
 \section{Learning-based generation}
 \label{sec:coral-island_cGAN-training}
@@ -1078,15 +1088,15 @@ This configuration allows the process to create quickly a large quantity of data
 To enhance the variety of the dataset and improve the model's ability to generalize, we apply several data augmentation techniques:
 \begin{Itemize}
     \AltTextImage{
-        \Item{Translation:} Since the original algorithm always centers the island, we translate the islands within the image to remove this constraint. This ensures that the cGAN can generate islands in any position within the frame. }
+        \Item{Translation:} Since the original algorithm always centers the island, we translate the islands within the image to remove this constraint (\cref{fig:coral-island_data-augmentation-translation}). This ensures that the cGAN can generate islands in any position within the frame. }
         {translation_example.png}{}{fig:coral-island_data-augmentation-translation}
 
     \AltTextImage{
-        \Item{Directional scaling:} By scaling the terrain in one direction, we create elongated islands that resemble corridors or archipelagos, adding another layer of diversity to the dataset. Such islands are usually found on tectonic plates convergence boundaries, creating island arcs with high density of volcanic centers like the Izu-Bonin-Mariana arc system. }
+        \Item{Directional scaling:} By scaling the terrain in one direction, we create elongated islands that resemble corridors or archipelagos, adding another layer of diversity to the dataset. Such islands are usually found on tectonic plates convergence boundaries, creating island arcs with high density of volcanic centers like the Izu-Bonin-Mariana arc system (\cref{fig:coral-island_data-augmentation-scaling} shows an example of elongated island). }
         {Babeldaob_island.png}{Babeldaob Island, in the Caroline Islands.}{fig:coral-island_data-augmentation-scaling}
 
     \AltTextImage{
-        \Item{Copy-paste:} In some cases, we combine multiple islands into a single sample, ensuring they do not overlap. The regions not covered by any island are assigned the abyss ID. Although this approach ensures non-overlapping regions, future work could explore using blending techniques to position islands more closely without the risk of overlap.}
+        \Item{Copy-paste:} In some cases, we combine multiple islands into a single sample, ensuring they do not overlap. The regions not covered by any island are assigned the abyss ID. Although this approach ensures non-overlapping regions, future work could explore using blending techniques to position islands more closely without the risk of overlap (\cref{fig:coral-island_data-augmentation-copy-paste}).}
         {copy_paste_example.png}{}{fig:coral-island_data-augmentation-copy-paste}
 \end{Itemize}
 
@@ -1097,65 +1107,79 @@ All augmentation techniques are applied both to the height field and the label m
 
 Once trained, the cGAN model generates a height field from a given label map. The output is a complete 2D height map representing the terrain's elevation at each point. Although the cGAN's internal logic is not easily interpretable, the label map remains available after inference and retains valuable information for the user.
 
-The label map can be used for post-processing tasks, such as:
-\begin{Itemize}
-    \AltTextImage{
-        \Item{Texturing:} Different regions of the terrain (e.g., beach, lagoon, coral reef) can be textured based on their region ID from the label map, allowing for detailed terrain decoration.}
-        {placeholder.pdf}{}{fig:coral-island_label-image-texture}
+% The label map can be used for post-processing tasks, such as:
+% \begin{Itemize}
+%     \AltTextImage{
+%         \Item{Texturing:} Different regions of the terrain (e.g., beach, lagoon, coral reef) can be textured based on their region ID from the label map, allowing for detailed terrain decoration.}
+%         {placeholder.pdf}{}{fig:coral-island_label-image-texture}
 
-    \AltTextImage{
-        \Item{Material information:} The label map can provide cues about the underlying ground material in each region, which can be useful for additional processing, such as erosion simulations.}
-        {placeholder.pdf}{}{fig:coral-island_label-image-materials}
-\end{Itemize}
+%     \AltTextImage{
+%         \Item{Material information:} The label map can provide cues about the underlying ground material in each region, which can be useful for additional processing, such as erosion simulations.}
+%         {placeholder.pdf}{}{fig:coral-island_label-image-materials}
+% \end{Itemize}
 
-\add{
-    A label map is a symbolic representation of the terrain, where each pixel of the map (each color) represents a class. We can use this information to keep a sparse representation of the environment, for which we will see how to treat in the next chapter about EnvObj. \\
-    The training of the model can be done in the other direction, from height field to label map. \\
-    If we wish to extract its content into EnvObj, we can use the label map, skeletonize it, then attribute to each resulting polyline a class, that we will call, in the next chapter, EnvObj.
-}
+A label map is a symbolic representation of the terrain, where each pixel of the map (each color) represents a class. We can use this information to keep a sparse representation of the environment, for which we will see how to treat in the next chapter about \glosses{EnvObj}.
+
+% The training of the model can be done in the other direction, from height field to label map. \\
+% If we wish to extract its content into \glosses{EnvObj}, we can use the label map, skeletonize each class blob through medial axes, then attribute to each resulting polyline a class, that we will call, in the next chapter, \glosses{EnvObj}.
 
 \section{Results and discussion}
 \label{sec:coral-island_results}
 
-\comment{
-    - Talk briefly about initial algo -> Can be incremented with more complex simulations if desired. Here we present the base case.
+The resulting model for coral island generation enables a high control-level from a user perspective as the unconstraint painting allows for complex scenarios while producing in real-time the resulting height fields. In this chapter we used the software Blender to provide renders directly from the outputed height fields. As our pix2pix model is trained to output $256\times256$ images, the resolution of the 3D models is limited by this architecture.
 
-    - In this section we consider the leaning-based model as the final interface with the user.
-}
+% \comment{
+%     - Talk briefly about initial algo -> Can be incremented with more complex simulations if desired. Here we present the base case.
+
+%     - In this section we consider the leaning-based model as the final interface with the user.
+% }
 \subsection{Control}
 \label{sec:coral-island_control}
 
-\comment{
-    - Freedom of shape, drawing method, noise method, scene complexity, ... 
+Using deep-learning-based models, most constraints from our initial assumptions are lifted (radial layout, isolated islands, ...). The control over the overall shapes of the islands regions are given through digital painting, here using the GIMP software. Each pixel of the image are encoded in HSV, with the region identifier encoded in the Hue channel. The user may increase or decrease the subsidence level of the island by modifying the Saturation channel over the whole image (see \cref{fig:coral-island_results-subsidence}).
 
-    - Allow fuzzy drawings 
+Since the model is based on statistics over the pixel values instead of hard values, users are not limited to a finite number of region identifiers, meaning that the output is more or less robust to noise (due to image compression, for example) and to the fuzzy values resulting from anti-aliasing of brushes often set by default, or resizing algorithm, by image editors, or even due to compression algorithm. The example displayed in \cref{fig:coral-island_results-fuzzy} presents a sketch for which the outlines of the regions are at the same time blurry and with layouts that are not expected (such as the small red regions inside the southern lagoon region or the adjacency of beach regions directly with the abyssal region) on the top figure and over-saturated on the bottom figure. The learned model does not include inconsistancies and results in plausible 3D models.
 
-    - The blending between regions can be controlled
+The tolerence over the input values may be used to provide even more control about the transitions between two regions. \cref{fig:coral-island_results_dino} shows an example of input map with regions that are leaking over neighboring regions, and the introduction of new hue values non-existant in the dataset (light green and dark green) but are the interpolated hue value of mountain regions and beach regions.
 
-    - Results in real-time
+Since the procedural phase included low randomness, the output of the cGAN is limiting its inpredictibility and the results to a slight change on the input create only slight changes on the output, preventing unexpected results. \cref{fig:coral-island_results-subsidence} shows the result of an input map with only a variation on the subsidence level, the resulting height fields are very similar. Adding the real-time computation of outputs, it becomes possible to construct progressively a landscape and correct small mistakes to intuitively design islands inspired by real-world regions (see an reproduction of Mayotte in \cref{fig:coral-island_example-Mayotte}). 
 
-    - Controllable subsidence factor, but could also encode more parameters. Here the channel "Value" is kept unused. Other cGAN architectures can accept additional $n$-dimensional vectors, meaning that many parameters coming from the procedural phase could be included (including the wind field, for example). We kept it to the bare minimum of the possibilities of a cGAN here.
+% \comment{
+%     - Freedom of shape, drawing method, noise method, scene complexity, ... 
 
-    - Since the procedural phase include very low randomness, the output of the cGAN is limiting its inpredictibility and the results to a slight change on the input create only slight changes on the output, preventing unexpected results.
-}
+%     - Allow fuzzy drawings 
+
+%     - The blending between regions can be controlled
+
+%     - Results in real-time
+
+%     - Controllable subsidence factor, but could also encode more parameters. Here the channel "Value" is kept unused. Other cGAN architectures can accept additional $n$-dimensional vectors, meaning that many parameters coming from the procedural phase could be included (including the wind field, for example). We kept it to the bare minimum of the possibilities of a cGAN here.
+
+%     - Since the procedural phase include very low randomness, the output of the cGAN is limiting its inpredictibility and the results to a slight change on the input create only slight changes on the output, preventing unexpected results.
+% }
 
 
-\begin{figure}[H]
+\begin{figure}
     \autofitgraphics[]{2_features.png, 2_heightmaps.png, 2_results.png}
     \autofitgraphics[]{1_features.png, 1_heightmaps.png, 1_results.png}
     \caption{An identical label map yield similar height fields over multiple inferences from the model, even after modifying the subsidence factor (visible in the luminosity of the input image).}
-    \label{fig:coral-island_results1}
+    \label{fig:coral-island_results-subsidence}
 \end{figure}
-\begin{figure}[H]
+\begin{figure}
     \autofitgraphics[]{3_features.png, 3_heightmaps.png, 3_results.png}
-    % \autofitgraphics[]{4_features.png, 4_heightmaps.png, 4_results.png}
-    \caption{Using a generative neural network allows a higher level of tolerence on the user input. Here the user used an fuzzy brush to draw the label map, resulting in some pixels that are inconsistent with the dataset and unlogical island layouts (some small "abyss" regions [red] are found between "beach" [green], "lagoon" [cyan] and "reef" [blue]). The model ignores the inconsistencies. }
-    \label{fig:coral-island_results2}
+    \autofitgraphics[]{4_features.png, 4_heightmaps.png, 4_results.png}
+    \caption{Using a generative neural network allows a higher level of tolerence on the user input. Here the user used an fuzzy brush to draw the label map, resulting in some pixels that are inconsistent with the dataset and unlogical island layouts (some small "abyss" regions [red] are found between "beach" [green], "lagoon" [cyan] and "reef" [blue]). The model ignores the inconsistencies even for over-saturated pixels. }
+    \label{fig:coral-island_results-fuzzy}
 \end{figure}
-\begin{figure}[H]
+\begin{figure}
     \autofitgraphics[]{DinoIsland_features.png, DinoIsland_heightmaps.png, DinoIsland_results.png}
     \caption{Without constraints on the generation, the user may use unrealistic layout and the neural network will however output a plausible result.}
     \label{fig:coral-island_results_dino}
+\end{figure}
+\begin{figure}
+    \autofitgraphics[]{Mayotte-example.png, 5_results.png}
+    \caption{Comparison between of real (left) and synthetic (right) islands of Mayotte.}
+    \label{fig:coral-island_example-Mayotte}
 \end{figure}
 
 
@@ -1168,12 +1192,6 @@ On the other hand, the inference time for a single input image of dimension $256
 
 We not only show that using a neural network reduces the constraints on the generation process, but also that the execution time is only dependant on the network architecture, without influence from the dataset generation algorithm. 
 
-
-
-\begin{figure}[H]
-    \autofitgraphics[]{Mayotte-example.png, 5_results.png}
-    \caption{Comparison between of real (left) and synthetic (right) islands of Mayotte.}
-\end{figure}
 
 
 \subsection{Advantages of the approach}
