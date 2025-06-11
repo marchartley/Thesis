@@ -538,6 +538,22 @@
   \edef\fitimageoptions{\cleanopts}%
   \fitNimages{#2}%
 }
+\newcounter{fitCapIndex}
+\NewDocumentCommand{\autofitcaptions}{O{} m}{%
+  \ifblank{#1}
+    {\def\fitraiseamount{2ex}} % default
+    {\def\fitraiseamount{#1}}  % use passed value
+  \setcounter{fitCapIndex}{0}%
+  \begin{adjustbox}{width=\fitrowwidth}%
+    \renewcommand{\do}[1]{%
+      \stepcounter{fitCapIndex}%
+      \pgfmathsetmacro{\relwidth}{\csname fitRatio\thefitCapIndex\endcsname / \fitTotalRatio}%
+      \raisebox{\fitraiseamount}{\parbox[t]{\relwidth\linewidth}{\centering ##1}}%
+    }%
+    \docsvlist{#2}%
+  \end{adjustbox}%
+  \vspace{-\fitraiseamount}%
+}
 \makeatother
 
 \newcounter{fitImgCount}%

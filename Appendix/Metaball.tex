@@ -1,5 +1,5 @@
 \chapter{Computation of a metaball}
-\label{sec:erosion_appendix_metaball}
+\label{sec:erosion-appendix_metaball}
 
 \shortAbstract{
     In this section we develop in more detail the formulation used for metaballs used in \cref{chap:erosion} for the simulation of particle erosion on implicit terrains.
@@ -9,11 +9,11 @@ We use the following formula to evaluate a metaball in space with a center $c$ a
 $$ g(\p) = 1 - \frac{||\p - c||}{\Radius} $$
 using the euclidean distance.
 
-We have a total amount $\totalErosion$ to define in this space, so the final metaball function $f$ needs to satisfy the equations \eqref{eq:erosion_function_f_is_metaball} and \eqref{eq:erosion_int_function_f_is_erosion}:
+We have a total amount $\totalErosion$ to define in this space, so the final metaball function $f$ needs to satisfy the equations \eqref{eq:erosion-function_f_is_metaball} and \eqref{eq:erosion-int_function_f_is_erosion}:
 \begin{align}
-\label{eq:erosion_function_f_is_metaball}
+\label{eq:erosion-function_f_is_metaball}
 f(\p) &= \lambda g(\p) \\
-\label{eq:erosion_int_function_f_is_erosion}
+\label{eq:erosion-int_function_f_is_erosion}
 \int_{\p \in V_{3D}}{f \, dp} &= \totalErosion
 \end{align}
 
@@ -35,11 +35,11 @@ By combining all these integrals, we get $\int{g} = \frac{1}{12} \times 2 \times
 
 So given $\int{f} = \erosionAmount$ and $\int{f} = \lambda \int{g}$, we can deduce that $\lambda = \frac{\totalErosion}{\int{g}} = \frac{3}{\pi}\totalErosion$.
 
-From \eqref{eq:erosion_function_f_is_metaball} we finally get 
+From \eqref{eq:erosion-function_f_is_metaball} we finally get 
 \begin{align} 
-\label{eq:erosion_proofErosionMetaball}
+\label{eq:erosion-proofErosionMetaball}
 f(\p) = \frac{3 \totalErosion}{\pi} \left(1 - \frac{||\p - c||}{\Radius} \right)
 \end{align}
 , representing the rate of change on the evaluation function of the terrain surface.
 
-The integration in the voxel space is out of the scope of this paper and a numerical solution is instead proposed in \cref{sec:erosion_application_on_voxels}.
+The integration in the voxel space is out of the scope of this paper and a numerical solution is instead proposed in \cref{sec:erosion-application_on_voxels}.
