@@ -15,13 +15,13 @@
 
 Procedural generation refers to algorithmically producing content rather than authoring it manually, leveraging rules, mathematical models, or data-driven methods. Its primary benefits include reducing storage needs (since content is generated on-the-fly), enabling rapid creation of large or varied content, and supporting both reproducibility and controlled variability. In terrain contexts, these advantages allow creation of vast landscapes or seascapes with relatively small parameter sets and facilitate interactive pipelines where artists or researchers can iterate quickly without storing every variant.
 
-The conceptual roots of procedural techniques in graphics trace back to fractal geometry and noise functions. Benoît Mandelbrot's work on fractals demonstrated how complex, self-similar structures can arise from simple rules and randomness, influencing landscape modeling approaches that mimic natural roughness and multi-scale detail. Ken Perlin's introduction of gradient noise ("Perlin noise") in his 1985 SIGGRAPH paper provided a practical mechanism to generate coherent pseudo-random patterns for textures and terrain features. These foundational ideas underpin many terrain algorithms, where noise at multiple scales produces hills, valleys, and finer details.
+The conceptual roots of procedural techniques in graphics trace back to fractal geometry and noise functions. Mandelbrot's work on fractals demonstrated how complex, self-similar structures can arise from simple rules and randomness, influencing landscape modeling approaches that mimic natural roughness and multi-scale detail \cite{Mandelbrot1983}. Perlin's introduction of gradient noise provided a practical mechanism to generate coherent pseudo-random patterns for textures and terrain features \cite{Perlin1985}. These foundational ideas underpin many terrain algorithms, where noise at multiple scales produces hills, valleys, and finer details.
 
-Procedural paradigms are often categorized as deterministic (repeatable given fixed inputs), stochastic (introducing randomness for variation), or hybrid (structure defined by deterministic rules, with randomness filling details). Rule-based systems, where content emerges via iterative application of predefined rules or grammars, also play a role, particularly in generating structured features (e.g., river networks, vegetation patterns). In terrain generation, deterministic components ensure global coherence (e.g., major landmass shapes), while stochastic elements add natural variability (e.g., subtle elevation perturbations). Later chapters leverage these paradigms: for instance, \cref{chap:coral-island}'s sketch-based island shape combined with noise and data-driven augmentation yields varied yet controlled outputs.
+Procedural paradigms are often categorized as deterministic (repeatable given fixed inputs), stochastic (introducing randomness for variation), or hybrid (structure defined by deterministic rules, with randomness filling details). Rule-based systems, where content emerges via iterative application of predefined rules or grammars, also play a role, particularly in generating structured features (e.g., river networks, vegetation patterns). In terrain generation, deterministic components ensure global coherence (e.g., major landmass shapes), while stochastic elements add natural variability (e.g., subtle elevation perturbations). Later chapters leverage these paradigms: for instance, \cref{chap:coral-island}'s sketch-based island shape combined with noise and data-driven augmentation yields varied yet controlled outputs, and \cref{chap:semantic-representation}'s ecosystem simulation is governed by rule-based systems with stochastic sampling.
 
-Recent advances incorporate machine learning to learn distributions of terrain patches or entire landscapes from data, enabling synthesis of realistic terrain patterns beyond hand-tuned noise parameters, using especially generative models like GANs or autoencoders. \cref{chap:coral-island} uses a conditional GAN to diversify coral island heightmaps. However, a detailed survey of learning-based terrain methods appears in that chapter's State-of-the-Art.
+Recent advances incorporate machine learning to learn distributions of terrain patches or entire landscapes from data, enabling synthesis of realistic terrain patterns beyond hand-tuned noise parameters, using especially generative models like GANs or autoencoders. \cref{chap:coral-island} uses a conditional GAN to diversify coral island heightmaps. However, a detailed description of learning-based terrain methods appears in that chapter's State-of-the-Art.
 
-In interactive and production pipelines, procedural systems must balance realism, speed, and user control. Fast evaluation (often via GPU) supports real-time or near-interactive feedback for artist-driven editing. Parameter design and UI metaphors (e.g., sketching, semantic objects, masking) are critical to let users influence generation without overwhelming them. \cref{chap:semantic-representation}'s semantic \glosses{EnvObj} framework exemplifies user-centric design, enabling multi-scale editing and expert knowledge integration.
+In interactive and production pipelines, procedural systems must balance realism, speed, and user control. Fast evaluation (often parallelized and/or using GPU) supports real-time or near-interactive feedback for artist-driven editing. Parameter design and UI metaphors (e.g., sketching, semantic objects, masking) are critical to let users influence generation without overwhelming them. \cref{chap:semantic-representation}'s semantic \glosses{EnvObj} framework exemplifies user-centric design, enabling multi-scale editing and expert knowledge integration.
 
 Procedural terrain generation also encompasses physical simulation techniques such as erosion and sediment transport models, that refine initial shapes to enhance plausibility. These simulations are typically more expensive but can run offline or via parallel algorithms. \cref{chap:erosion} presents a particle-based erosion method applicable across representations (height fields, voxels, etc.), reflecting this integration of procedural and physical approaches.
 
@@ -37,7 +37,7 @@ While the term "terrain" describes the physical characteristics of land, it does
 
 In addition to "terrain generation," other terms such as "landscape generation," "world generation," and "environment generation" can be used to describe the creation of virtual landscapes. These terms are interchangeable and can all refer to the process of generating physical terrain along with natural and artificial elements. However, by convention and for simplicity, the term "terrain generation" is most commonly used in the field. Despite its original focus on the physical features of the land, "terrain generation" has evolved to encompass a broader range of environmental elements, making it a convenient and widely accepted term for describing the comprehensive process of creating virtual environments.
 
-A terrain can be represented in various ways, each of them suited for a given application of which we give an brief overview, more details can be found in \cite{Galin2019}.
+A terrain can be represented in various ways, each of them suited for a given application. In the different chapters of this thesis, we will move from one representation to another depending on the scope of the work, so we will provide a short description of the representations used here. More details can be found in \cite{Galin2019}.
 
 \subsection{Elevation models}
 
@@ -48,7 +48,7 @@ A terrain can be represented in various ways, each of them suited for a given ap
     \label{fig:erosion-elevation-representation}
 \end{figure}
 
-Elevation models are a fundamental approach in terrain representation, widely used in procedural generation due to their simplicity and efficiency. These models define the terrain as a function $h : \R^2 \to \R$, where each point in a 2D plane is mapped to an elevation value. This approach is particularly effective for representing terrains where the elevation is the only varying factor, such as hills, valleys, and plateaus, and it is best suited for terrains without complex 3D features like overhangs or caves. While we visualize elevation models in three dimensions, they are mathematically considered two-dimensional functions. In the domain of terrain generation, we will name them 2.5D models.
+Elevation models are a fundamental approach in terrain representation, widely used in procedural generation due to their simplicity and efficiency. These models define the terrain as a function $h : \R^2 \to \R$, where each point in a 2D plane is mapped to an elevation value. This approach is particularly effective for representing terrains where the elevation is the only varying factor, such as hills, valleys, and plateaus, and it is best suited for terrains without complex 3D features like overhangs or caves. While we visualize elevation models in three dimensions, they are mathematically considered two-dimensional functions. In the domain of terrain generation, we will name them 2.5D models and are closely related to image processing.
 
 Elevation models are widely used in industries where large-scale terrain representation is crucial. In video games, they provide the foundation for creating vast open-world environments. In geographic information systems (GIS) and remote sensing, height fields are used to represent real-world terrain data, offering a practical means of visualizing and analyzing geographical features. The ability to manipulate and control terrain features procedurally makes elevation models a common choice for applications that require efficient terrain generation and rendering.
 
@@ -64,8 +64,10 @@ They offer a powerful method for representing terrains in procedural generation,
 
 Implicit height fields represent the terrain as a mathematical function that provides a height value at any given point in the domain. These functions can be procedural or closed-form expressions, allowing for compact storage and infinite precision in theory. The elevation function allows for easy manipulation of terrain features, making it ideal for generating terrains that require smooth, continuous surfaces. However, the primary disadvantage is the computational complexity involved in evaluating the function, especially for large or highly detailed terrains. The challenge lies in constructing functions that can realistically represent large-scale terrains with complex landforms.
 
+This representation, inherently multi-scale from their mathematical nature, will be the main support for our \cref{chap:semantic-representation}'s environment generations.
+
 \subsubsection{Discrete height fields}
-Discrete height fields, or explicit height fields, are one of the most prevalent methods for terrain representation. These models consist of a 2D grid where each cell contains a height value, representing the elevation at that point. Height fields are particularly advantageous because they are simple to implement and are directly compatible with many rendering techniques and hardware, but also due to their closeness with image processing, a domain studied for many decades now.
+Discrete height fields, or explicit height fields, are one of the most prevalent methods for terrain representation. These models consist of a 2D grid where each cell contains a height value, representing the elevation at that point. Height fields are particularly advantageous because they are simple to implement and are directly compatible with many rendering techniques and hardware, but also due to their closeness with image processing, a domain studied for many decades now. As the deep learning architectures used in \cref{chap:coral-island} are designed for image generation, the first contribution of this manuscript uses exclusively this representation.
 
 The main advantage of height fields is their ability to handle large datasets efficiently, providing a balance between memory usage and detail. However, they are limited by their inability to represent terrains with overhangs or caves, as each point on the grid can only hold a single elevation value. Additionally, height fields often require interpolation methods, such as bi-linear or bi-cubic interpolation, to reconstruct a continuous surface from the discrete grid points. 
 
@@ -82,10 +84,12 @@ Volumetric models represent a more complex approach to terrain modeling, allowin
 
 Volumetric models, including layered materials, voxel grids, and implicit models, are essential in applications where terrain complexity and detail are primordial. In geological simulations, these models allow for accurate representation of subsurface structures and processes. Voxel models are widely used in games that require dynamic terrain deformation, providing a rich interactive environment for players. Implicit models are favored in situations where smooth, continuous surfaces are needed [FIND OTHER USE CASES].
 
+The erosion simulation presented in \cref{chap:erosion} evolves in the 3D space and will present applications for discrete and implicit volumetric representations.
+
 \subsubsection{Implicit volumetric models}
 Implicit volumetric models describe the terrain's shape and features using an implicit function. The terrain is represented by a mathematical function $f: \R^3 \to \R$ that determines the terrain surface by evaluating to an isovalue, often zero. This function provides a continuous representation of the terrain, with points inside the terrain returning positive values and while points in the air evaluate to negative values. It allows for the seamless representation of complex terrain features, including caves, overhangs, and varying geological structures, which are impossible to represent with  elevation models.
 
-One of the key advantages of implicit models is their ability to produce smooth surfaces without the need for discrete polygonal meshes, which can result in realistic and natural-looking terrains. However, the computational complexity of evaluating the implicit function, especially for large terrains, can be a significant drawback. Additionally, converting an implicit surface into a mesh for rendering can be challenging and resource-intensive. \cite{Araujo2015} 
+One of the key advantages of implicit models is their ability to produce smooth surfaces without the need for discrete polygonal meshes, which can result in realistic and natural-looking terrains. However, the computational complexity of evaluating the implicit function, especially for large terrains, can be a significant drawback. Additionally, converting an implicit surface into a mesh for rendering can be challenging and resource-intensive \cite{Araujo2015}.
 
 \subsubsection{Layered models}
 Layered models are a type of volumetric representation that encode different material layers within the terrain and are defined by a function $\mu : \R^3 \to \material$, where $\material$ denotes the material type at any given point in 3D space. This allows for a detailed representation of the terrain's internal composition, which can be crucial for applications requiring realistic geological simulations. Each layer is defined by its thickness or elevation, and multiple layers can be stacked to represent complex geological formations. These layers might include materials like bedrock, sand, soil, or water, each contributing to the overall structure of the terrain. Layered models are particularly useful in simulations that involve processes like erosion or sedimentation, where the interaction between different material layers affects the physical process.
@@ -104,7 +108,7 @@ Binary voxel grids are the simplest form of voxel representation. In these grids
 The simplicity of binary voxel grids is one of their main advantages. They are easy to understand and visualize, with each voxel requiring only a single bit of information to represent its state. Additionally, because only a binary state is stored, these grids can be memory-efficient when combined with compression techniques like Sparse Voxel Octrees (SVOs) \cite{Laine2010} or voxel Directed Acyclic Graphs (DAG) \cite{Villanueva2017,Careil2020}. The simplicity of the data structure also allows for quick processing, making binary voxel grids suitable for real-time applications where performance is required. However, the binary nature of these grids limits their ability to represent variations in material density or properties, or even smoothness, resulting in less detailed terrain models. This can lead to hard, blocky edges in the terrain, which may appear unnatural without additional smoothing or processing.
 
 \subsubsubsection{Material voxel grids}
-Material voxel grids, defined as $\mu: \R^3 \to \material$, are commonly used in applications where simple occupancy information is sufficient. For example, voxel-based games like Minecraft utilize material grids to create terrains composed of solid blocks with clear boundaries. These grids are also employed in scientific simulations where the primary concern is the presence or absence of materials, rather than detailed material properties.
+Material voxel grids, defined as $\mu: \R^3 \to \material$, are commonly used in applications where simple occupancy information is sufficient. For example, voxel-based games like \citeProgram{Minecraft2011} utilize material grids to create terrains composed of solid blocks with clear boundaries. These grids are also employed in scientific simulations where the primary concern is the presence or absence of materials, rather than detailed material properties.
 
 \subsubsubsection{Density voxel grids}
 Finally, density voxel grids allow each voxel to store a range of values, representing varying degrees of material presence with $f: \R^3 \to \R$. Instead of a simple discrete state, a density voxel grid assigns a continuous value to each voxel, which can represent material density, opacity, or other properties. This added complexity enables density voxel grids to represent subtle variations in terrain, such as gradual changes in material density or smooth transitions between solid and empty spaces, allowing for more realistic and natural-looking terrain models.
@@ -118,11 +122,14 @@ Density voxel grids are often used in high-fidelity simulations where detail and
 
 \section{Interactivity}
 % \subsection{Realism-speed-control balance}
+Procedural algorithms are designed to find a balance between three main objectives: controllability, realism, and computation speed.
+In our work, we positioned our focus on the inclusion of the user in the generation process, resulting in a need to focus our attention on controllability for authoring without frustration, and computation speed in order to visualize results quickly, allowing to interatively interact with the system to obtain the best possible outputs. In this section we will briefly present the tools available for interacting with a procedural system.
+
 Procedural terrain generation algorithms usually take parameters into account in order to generate something that fits the user's needs. The tools that let the user interact with the different parameters are essential to include efficiently the user in the process. 
 
 The parameters that a user can play with can have many nature, and require a large varety of visual tools to interact with them. In the different nature of parameters, we can typically find: 
 \begin{Itemize}
-    \Item{Noise parameters:} Almost abstract values used in the equation ruling the noise functions. 
+    \Item{Noise parameters:} Abstract values used in the equation ruling the noise functions. 
     \Item{Physical constants:} Constants that are used in physic simulations. They are often tweaked by the user to exagerate certain features, force some phenomena, etc... As they are constants, the parametrization of these values is often done inside the source code, as spinboxes, or inside a configuration file. 
     \Item{Densities and distributions:} Marking areas that are affected by a process, or where a seed can be used is useful to control a procedural algorithm. This is refered as "masking", but due to its binary nature, we can find sharp and unatural transitions from the use of binary masks. We often use weighted masks to provide more control about probabilities that a seed appear at one point. The control of the masks is usually done through grayscale images or by a "brush tool" that can modify the value directly on the surface of a 2D or 3D object. As virtual terrains are generally represented by a rectangular base, the use of brushes is a facade to the manipulation of a grayscale image.
     \Item{Structures placement:} Placing a specific terrain feature inside a terrain may be useful to finalize the generation of a landscape, or to add obstacles that will affect a physic simulation. This is usually implemented by clicking on the surface of the terrain, to provide the initial $xyz$ position, and then use translation and rotation tools to adjust the placement. If many elements are added, we usually use the previous strategy, involving masking, to add all the structures.
@@ -150,260 +157,22 @@ Control refers to how much users can influence or direct the procedural generati
 
 Managing diverse and sometimes conflicting user expectations, such as balancing creative freedom with the demand for realistic outcomes, requires careful consideration. Additionally, it is essential to balance the complexity of procedural systems to ensure they remain user-friendly, avoiding overwhelming users or producing results that feel artificial or inconsistent.
 
-% \begin{figure}[H]
-%     \includegraphics{other_images/smiley_heightmap_comparison_flat.png}
-%     \label{fig:introduction_shading-comparison}
-%     \caption{The application of shading (texturing and noise normal map) is an efficient method to whitewash any artifact in the original geometry of the terrain, faking a high resolution model, and hiding the unatural aspect of a synthetic model, improving artificially the realism of the terrain generation. Moreover, depending on the method used, the execution time of the aesthetic components generation may be longer than the geometry generation by order of magnitudes. Here, we trained a neural network (identical as the cGAN presented in \cref{sec:coral-island-cGAN}) to generate aerial images from elevation maps. Our synthetic height field represent a simple smiley (left) on which we applied the texture provided by the neural network and added fractal noise on the surface to add roughness to the material (right). }
-% \end{figure}
-
-
-% \subsubsection{Regeneration}
-% The regeneration of procedurally generated models is an issue often overlooked. As the user is almost satisfied with its generation, he may decide to adjust slightly the parameters used. The challenges of the regeneration are multiple: How to let the user explore the \gloss{ParamSpace} of the model freely? How to ensure that a small change in a parameter induce a small change in the result? How to handle the edition from direct manipulations after regeneration? Those question arise directly from the realism-speed-control balance of our procedural models.
-
-% Users can manually start the regeneration process to refresh or update a model. This allows the content to reflect new parameters or conditions as specified by the user. The generation speed has a strong influence on the possibility for the user to fine tune parameters as algorithms that can be executed in real-time or interactive-time keep the user active in his work. Longer execution times force him to find optimal parameters beforehand in order to create a satisfying model faster than if it was hand-made, which, when the model is not completely explicit, may feel impossible. 
-
-% The fine-tuning speed can be improved by different strategies:
-% \begin{Itemize}
-%     \Item{} Modifications that have a local incidence on the resulting model requires only a local regeneration of the output. Limiting the spatial scope of an interaction is an efficient mean to keep at the same time a way to explore the \gloss{ParamSpace} of the algorithm while keeping the predictability of the outcome by avoiding global changes from a local edition.
-%     \Item{} Live preview of the outcome can be displayed in a coarse computation, allowing to have a rough idea of the result without the full computation. This strategy is easier to develop with algorithms using refinement paradigms.
-% \end{Itemize}
-
-% [TODO]
-% Interface controls: various tools and options in the user interface enable users to initiate regeneration. 
-% This may include buttons or commands designed to reload or update the generated content based on user inputs.
-
-% Customizable parameters: \\
-% Adjustment of variables: before initiating regeneration, users can adjust parameters or settings to influence the outcome. 
-% This might involve changing terrain features, texture types, or simulation conditions to achieve the desired results. \\
-% Preview and validation: offering preview modes or validation checks helps users understand potential outcomes before finalizing the regeneration. 
-% This feature ensures that users can visualize changes and make adjustments as needed.
-
-% Issues with regeneration \\
-% What to regenerate: \\
-% Selective regeneration: deciding whether to regenerate the entire model or only specific parts is crucial. 
-% For example, users may choose to regenerate just the terrain features while leaving other elements intact to preserve consistency. \\
-% Scope and scale: determining how extensive the regeneration should be is essential. 
-% This could involve minor updates or a complete overhaul of the generated content, depending on the changes required.
-
-% How to regenerate: \\
-% Algorithmic approaches: various methods can be used for regeneration, including reapplying existing algorithms or introducing new procedural rules. 
-% These methods alter or update the existing content based on user inputs or new conditions. \\
-
-% Incremental vs. complete regeneration: \\
-% Incremental: gradual updates or changes applied to only parts of the generated content to minimize disruption and maintain consistency. \\
-% Complete: full regeneration from scratch may be necessary for significant changes or when previous results are no longer valid, ensuring a fresh start if needed.
-
-% \subsubsection{Interaction mechanisms}
-% Interaction mechanisms are tools and methods used to facilitate user interaction with procedural generation: \\
-% Parameter adjustment: user interfaces like sliders and controls enable adjustments to parameters such as terrain height or texture type. 
-% Real-time feedback ensures users see the immediate impact of their adjustments. \\
-% Guided creation: templates and presets offer predefined starting points that users can modify. 
-% Assistive tools or wizards help guide users through the generation process, making it easier to understand and control the outcome. \\
-% Direct manipulation: interactive tools allow users to directly manipulate generated content, such as sculpting terrain or painting textures. 
-% Live updates reflect changes in real-time, facilitating immediate validation and adjustment.
-
-% \subsubsection{Challenges and considerations}
-% Challenges and considerations include balancing complexity and usability to ensure that sophisticated procedural systems remain user-friendly. \\
-% Performance impact is another concern, especially in real-time applications where frequent updates are required. 
-% Effective feedback and iteration mechanisms are crucial for helping users understand the impact of their interactions and refine their designs.
-
-% Problems with user interactions \\
-% Consistency: ensuring that regeneration maintains or enhances the consistency and quality of generated content is vital. 
-% This involves avoiding artifacts or inconsistencies that could impact the user experience or the realism of the content. \\
-% Feedback handling: effectively managing user feedback and requests for regeneration, which can vary in scope and detail, is important.
-% Providing clear feedback mechanisms helps users understand how their inputs affect the generation process. \\
-% Performance: addressing performance implications is crucial, particularly in real-time or interactive applications where frequent updates are necessary.
-% Efficiently handling resource usage and computational demands during regeneration is key to maintaining a smooth experience.
-
-% Action Storage
-% Storage Formats:
-
-% JSON: JavaScript Object Notation (JSON) files can be used to store regeneration actions and parameters. JSON is flexible and readable, making it a suitable format for saving and retrieving procedural settings.
-% Other Formats: Alternatives such as XML, binary files, or custom formats may be used depending on specific needs or systems.
-% Tracking Changes:
-
-% Action History: Maintaining a history of user actions and regeneration events allows users to revert to previous states or track changes over time. This feature supports iterative development and refinement of generated content.
-% Versioning: Implementing version control for procedural generation settings helps manage different versions of generated content, allowing users to compare and manage variations effectively.
-% Restoration and Undo:
-
-% Undo Mechanisms: Providing options for users to undo recent regeneration actions or revert to previous states enhances flexibility and control. This allows users to correct mistakes or adjust their approach as needed.
-% Restoration of Defaults: Allowing users to restore default settings or regeneration conditions if custom changes lead to unsatisfactory results ensures that users can revert to a baseline if needed.
-% Implementation Considerations
-% Efficiency: Designing algorithms and systems to handle regeneration efficiently is crucial. This involves minimizing computational overhead and ensuring that updates are responsive and timely.
-
-% User Experience: Creating intuitive interfaces and feedback mechanisms facilitates smooth user interactions with the regeneration process. Ensuring that users can easily understand and control the regeneration helps improve their overall experience.
-
-% Error Handling: Implementing robust error handling and recovery mechanisms addresses potential issues that may arise during regeneration, such as unexpected results or system failures. Effective error management ensures that users can continue working without significant disruptions.
-
-
-
-% \section{Procedural biogeocoenosis generation}
-% Bla bla bla, terrain + atmosphere = environment, environment + living beings = biogeocoenosis bla bla 
-
-% \subsection{}
-
-% \subsection{Fluid simulations}
-% Fluid simulations are an essential component of procedural terrain generation, particularly for modeling the behavior of water and its interactions with the terrain. These simulations are crucial for creating realistic and dynamic environmental models that accurately reflect natural phenomena, such as river flow, coastal erosion, sediment transport, and overall hydrology.
-
-% At the core of fluid simulations are the Navier-Stokes equations, which describe the motion of fluid substances. These equations account for various forces acting on a fluid, such as pressure, viscosity, and external forces like gravity. 
-% \begin{align}
-%     \rho \left( \frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \nabla) \mathbf{u} \right) = -\nabla p + \mu \nabla^2 \mathbf{u} + \mathbf{f}
-% \end{align}
-% Where $\mathbf{u} = (u, v, w)$ is the fluid velocity vector, with components $u$, $v$, and $w$ in the $x$-, $y$-, and $z$-directions, respectively, $t$ is time, $\rho$ is the fluid density, $p$ is the pressure field within the fluid, $\mu$ is the dynamic viscosity of the fluid, $\nabla p$ is the pressure gradient force, $\mu \nabla^2 \mathbf{u}$ is the viscous diffusion term, representing the effects of internal friction within the fluid and finally, $\mathbf{f}$ represents external body forces, such as gravity.
-
-% For an incompressible fluid like water, the Navier-Stokes equations can be simplified by assuming that the fluid density remains constant, leading to the incompressibility condition:
-
-% \begin{align}
-%     \nabla \cdot \mathbf{u} = 0
-% \end{align}
-
-% This condition ensures that the volume of fluid elements remains unchanged as they move through space, which is crucial for accurately simulating water flow.
-
-% The Navier-Stokes equations are highly non-linear, which means that even small changes in the input conditions can lead to significant and unpredictable changes in the fluid's behavior. The non-linearity makes solving these equations a expensive computational problem, as it requires iterative methods to find stable solutions. Each step of the simulation must balance the forces acting on the fluid, such as pressure and viscosity, while ensuring that the solution remains physically accurate and stable over time. This process becomes particularly demanding when aiming for realistic, high-resolution simulations where fine details like turbulence and surface tension must be accurately captured.In this case we require dense computational grids or a large number of particles, and these elements must be updated frequently to maintain the realism of the simulation, which exponentially increase the computations and the memory used.
-
-% The computation cost is further amplified when simulations are performed in 3D space. Unlike 2D simulations, where calculations are confined to a plane, 3D simulations must account for the full complexity of fluid movement in all directions. This increases the number of computations required, making real-time applications like as video games and interactive simulations almost incapable to use them.
-
-% Different fluid solvers have been developed to approximate the solutions to the Navier-Stokes equations, each with its strengths and weaknesses. These solvers vary in how they represent the fluid (the Lagrangian approach using particles or the Eulerian approach with discrete grids, or a combination of both) and how they handle the computational trade-offs between accuracy, stability, and performance. The choice of a fluid solver depends on the specific requirements of the simulation, such as the need for real-time performance, the level of detail required, or the types of fluid behavior being modeled.
-
-% \subsubsection{Marker-And-Cell (MAC) Method}
-
-% The Marker-And-Cell (MAC) method is one of the earliest and most fundamental grid-based techniques for simulating incompressible fluid flows. In the MAC method, the fluid's velocity components are stored at the faces of grid cells, while pressure values are stored at the cell centers. Marker particles are used to track the fluid's free surface, ensuring that fluid interfaces and boundaries are accurately captured. The MAC method excels at maintaining the incompressibility condition of fluids and accurately modeling pressure fields, which are important for realistic fluid dynamics. Because of its emphasis on accuracy and detailed pressure modeling, MAC is more oriented toward realism, especially in scenarios where the precise behavior of fluids is essential. However, its grid-based nature can lead to challenges in handling complex geometries and fine details at fluid boundaries, as the resolution is limited by the grid size. Moreover, the method can be computationally intensive, especially for high-resolution grids, making it less ideal for real-time applications.
-
-% \subsubsection{Stable Fluids}
-
-% Building on the grid-based approach of the MAC method, the Stable Fluids method addresses key stability issues that arise in fluid simulations \cite{Stam1999}. Stable Fluids uses a semi-Lagrangian advection scheme and implicit solvers to achieve stability even with large time steps, which is particularly advantageous in real-time applications like video games or interactive simulations. This method is designed with performance in mind, allowing for the simulation of fluid motion without the numerical dissipation that can degrade the accuracy of results over time, which was a common problem in other grid-based methods. While Stable Fluids prioritize performance and stability, particularly in real-time environments, the use of implicit solvers can introduce smoothing effects that reduce the sharpness of fine details in the fluid's motion. Additionally, the method's reliance on grid resolution still limits its ability to represent highly detailed surface interactions, making it a good compromise between realism and performance.
-
-% \subsubsection{Particle-In-Cell (PIC) Method}
-
-% The Particle-In-Cell (PIC) method represents a hybrid approach that combines the strengths of particle-based and grid-based methods. Fluid properties are stored on a grid, but the fluid's motion is tracked using particles, which carry velocity and position information only. The particles interact with the grid to update the fluid's velocity field, and the grid provides a stable mean for solving the fluid dynamics equations. PIC is particularly useful for capturing the large-scale motion of fluids, benefiting from the grid's stability while using particles to track detailed fluid behavior. However, the method leans more toward performance over accuracy due to its hybrid nature and ability to handle large-scale fluid movements efficiently. A major downside of PIC is its tendency toward numerical dissipation, where the fluid's kinetic energy is artificially reduced over time, leading to a loss of fine details, especially in turbulent flows. This dissipation occurs because the interpolation between particles and the grid tends to average out small-scale variations in velocity, making PIC less suitable for scenarios where high fidelity and detail are required.
-
-% \subsubsection{Fluid-Implicit Particle (FLIP) Method}
-
-% The Fluid-Implicit Particle (FLIP) method is an evolution of the PIC method designed to address its numerical dissipation problem \cite{Brackbill1988}. FLIP retains the grid-particle hybrid approach but modifies how particle velocities are updated. Instead of fully relying on the grid's velocity field, FLIP updates particle velocities by applying only the changes in the grid's velocity field, preserving the fluid's kinetic energy and maintaining the detail in small-scale motions. This approach significantly reduces numerical dissipation, making FLIP more oriented toward realism, particularly in simulations that require detailed fluid dynamics like splashing, swirling, and other turbulent effects. However, FLIP is more computationally expensive than PIC and can suffer from instability issues, particularly when dealing with highly turbulent flows. The increased computational cost and the need for careful tuning of simulation parameters to maintain stability make FLIP less ideal for performance-focused applications but suitable for scenarios where high fidelity and detailed fluid behavior are essential.
-
-% \subsubsection{Smoothed Particle Hydrodynamics (SPH)}
-
-% Smoothed Particle Hydrodynamics (SPH) \cite{Muller2003} is a purely particle-based method that models fluids using discrete particles, each representing a small volume of fluid. These particles interact with each other based on smoothing kernels, which define the influence of one particle on its neighbors over a certain distance \cite{Koschier2022}. SPH is particularly well-suited for simulating free-surface flows, such as waves, splashes, and other fluid phenomena where the interaction between fluid particles is complex and highly dynamic. Due to its ability to handle complex boundaries and fluid interfaces naturally, SPH is much more focused on realism, especially in scenarios that require accurate computation of fluid dynamics and interactions. However, SPH is computationally intensive, especially for high-resolution simulations where a large number of particles is required. Additionally, SPH can suffer from stability issues, such as particle clumping or excessive smoothing, which can detract from the realism of the simulation if not carefully managed. These factors make SPH better suited for applications where realism is prioritized over performance, particularly in high-fidelity simulations used in film and scientific research, but not for real-time applications.
-
-% We can find improvements \cite{Roose2011}, can represent may elements \cite{Iwasaki2010}, either fluid or sediments \cite{Lenaerts2009}, so it is often used to simulate accurately water bodies \cite{Nikeghabali2018}.
-
-% Some other models exist, and are often proposed in OpenFOAM, either using grids, or particles, or an hybrid version \cite{Caretto1973} [ADD OTHER REFERENCES]. But some works tend in directions that are more "procedural" like the use of cellular automata \cite{Boldea2009,Cattaneo2005}, while other toward a more modern approach with the use of deep learning \cite{Tompson2017} [ADD OTHER REFERENCES].
-
-
-
-
-
-
-% \subsection{Fluid simulations}
-
-% Fluid simulations are almost inevitable in representing natural phenomena in terrain generation, particularly in modeling water flow, erosion, and sediment transport. These simulations are used for creating realistic and dynamic environmental models that accurately reflect the interactions between fluids and terrain. The ability to simulate fluid behaviors such as river currents, coastal erosion, and sediment deposition is fundamental to producing realistic terrains.
-
-% Fluid simulations can be categorized into various methods, each with its unique applications. Techniques like Particle-In-Cell (PIC), Fluid-Implicit Particle (FLIP), and Stable Fluids are commonly used to simulate fluid dynamics. PIC combines particles with a grid to offer a straightforward approach for basic fluid simulations and visualizations. FLIP builds on the PIC method by enhancing accuracy and efficiency through a hybrid approach that merges particle and grid techniques, making it suitable for complex fluid behaviors. Stable Fluids, a grid-based method, is designed for simulating stable, incompressible fluids with minimal computational complexity, often used in interactive applications where real-time rendering is required.
-
-% More sophisticated methods include Smoothed Particle Hydrodynamics (SPH) and Marker-And-Cell (MAC). SPH is a particle-based method where fluid properties are represented by particles that interact based on smoothing kernels, useful for detailed simulations, including interactions between fluids and terrain. MAC and other grid-based approaches use a grid to simulate fluid behavior, providing detailed and accurate representations suitable for various scales of environments. Hybrid methods combine the strengths of grid and particle approaches, balancing the need for detail with performance requirements in complex simulations.
-
-% Fluid simulations are integral to terrain generation, particularly in modeling erosion and sediment transport. These simulations allow for the realistic modeling of erosion processes, which affect terrain features like riverbeds and valleys over time. By simulating how fluids interact with the terrain, these models can show how sediment is moved and deposited, contributing to the natural evolution of the landscape. Water flow and hydrology are other applications of fluid simulations in terrain generation. Simulating surface water dynamics, such as the flow of rivers, lakes, and wetlands, helps create realistic environments where water interacts dynamically with the terrain. 
-% % Additionally, subsurface flow simulations model groundwater movement and its interactions with surface features, adding another layer of realism to the terrain.
-
-% % In interactive environments, such as video games and virtual simulations, real-time fluid simulations are crucial for creating dynamic water interactions. These simulations enable the depiction of responsive and changing environments, where water flow can be influenced by user actions or environmental conditions, enhancing the immersive experience.
-
-% While significant for terrain generation, fluid simulations still present important challenges. The main issue is the computational resources required to run accurate and detailed simulations. Performance trade-offs are often necessary, especially in real-time applications where the simulation must balance accuracy with computational efficiency. Complex 2D (or 2.5D) fluid simulations already require powerful hardware, including advanced processors and substantial memory, to handle the intensive calculations involved. 3D simulations are even more computationally expensive, as the third dimension has to be taken into account.
-
-% Another challenge lies in balancing accuracy with realism. While detailed fluid dynamics can produce highly realistic simulations, they often come at the cost of performance. Simulation artifacts, or inaccuracies, can also impact the perceived realism of the terrain, requiring careful attention to detail in the modeling process. Integrating fluid simulations with terrain models presents its own set of challenges. Ensuring that fluids interact seamlessly with the terrain, such as through fluid erosion or sediment deposition, requires sophisticated techniques to maintain consistency between the simulated fluid behaviors and the terrain features.
-
-% Recent developments in fluid simulation technology have focused on enhancing both the accuracy and efficiency of these simulations. Advancements in algorithms have led to new techniques that improve the realism and computational performance of fluid models. There has also been significant progress in real-time fluid simulation, with innovations aimed at improving interactivity.
-
-% The integration of Deep Learning and Machine Learning into fluid simulations represents a recent trend in this field. AI-enhanced simulations use machine learning to refine fluid simulation accuracy and adaptivity, enabling more realistic and responsive environments. Predictive models, powered by AI, can simulate complex fluid behaviors based on historical data, offering new possibilities for dynamic and evolving terrain representations.
-
-
-
-% - Definition and purpose: \\
-% ** Overview: explanation of fluid simulations and their role in representing natural phenomena in terrains, including water flow, erosion, and sediment transport. \\
-% ** Importance: impact of accurate fluid simulations on creating realistic terrain and environmental models.\\
-% \subsection{Types of fluid simulations}
-% - 2D fluid simulations: \\
-% ** Particle-In-Cell (PIC): \\
-% *** Concept: combines particles with a grid to simulate fluid dynamics. \\
-% *** Applications: used for simpler simulations and visualizations. \\
-% ** Fluid-Implicit Particle (FLIP): \\
-% *** Concept: a hybrid method that combines particle and grid approaches for better accuracy and efficiency. \\
-% *** Applications: suitable for capturing complex fluid behaviors in 2D environments. \\
-% ** Stable Fluids: \\
-% *** Concept: a grid-based method for simulating stable, incompressible fluids with less computational complexity. \\
-% *** Applications: often used in interactive applications where real-time performance is crucial.\\
-% - 3D fluid simulations: \\
-% ** Smoothed Particle Hydrodynamics (SPH): \\
-% *** Concept: a particle-based method where fluid properties are represented by particles that interact based on smoothing kernels. \\
-% *** Applications: useful for highly detailed simulations of fluids, including interactions with terrain. \\
-% ** Grid-based methods: \\
-% *** Concept: methods like Marker-And-Cell (MAC) and Navier-Stokes equations applied on a grid to simulate fluid behavior. \\
-% *** Applications: used for detailed and accurate 3D simulations, including large-scale environments. \\
-% ** Hybrid methods: \\
-% *** Concept: combining grid and particle approaches to leverage the strengths of both methods.\\
-% *** Applications: balancing detail and performance in complex simulations. 
-
-% \subsection{Applications in terrain representation}
-% - Erosion and sediment transport: \\
-% ** Simulation of erosion: how fluid simulations model erosion processes affecting terrain features such as riverbeds and coastlines. \\
-% ** Sediment movement: modeling the transport and deposition of sediment, contributing to realistic terrain evolution. \\
-% - Water flow and hydrology: \\
-% ** Surface water dynamics: representing the flow of water across terrain surfaces, including rivers, lakes, and wetlands. \\
-% ** Subsurface flow: simulating groundwater movement and interactions with terrain features. \\
-% - Interactive environments: \\
-% ** Real-time simulations: implementing fluid simulations in interactive applications, such as video games and virtual environments, where dynamic water interactions are crucial. 
-
-% \subsection{Challenges and considerations}
-% - Computational resources: \\
-% ** Performance trade-offs: balancing simulation accuracy with computational efficiency, especially for real-time applications. \\
-% ** Hardware requirements: the need for powerful processors and memory to handle complex 3D fluid simulations. \\
-% - Accuracy vs. realism: \\
-% ** Detail vs. performance: finding the right balance between detailed fluid dynamics and the practical limitations of simulation resources. \\
-% ** Simulation artifacts: addressing potential artifacts or inaccuracies in simulations that can impact realism. \\
-% - Integration with terrain models: \\
-% ** Interaction with terrain: ensuring fluid simulations integrate seamlessly with terrain models, including handling interactions such as fluid erosion or deposition. \\
-% ** Data consistency: maintaining consistency between simulated fluid behaviors and terrain features for accurate representations. 
-
-% \subsection{Recent developments and future trends}
-% - Advancements in algorithms: \\
-% ** New techniques: emerging algorithms and methods that enhance the accuracy and efficiency of fluid simulations. \\
-% ** Real-time improvements: innovations aimed at improving real-time performance and interactivity in fluid simulations. \\
-% - Integration with Deep Learning and Machine Learning: \\
-% ** AI-enhanced simulations: using machine learning to improve fluid simulation accuracy and adaptivity. \\
-% ** Predictive models: leveraging AI to predict and simulate complex fluid behaviors based on historical data. 
-
-% - Very important in procedural terrain generation \\
-% - Allows justifying the geophysics of a simulation/generation \\
-% - Quite fast solutions in 2D (PIC, FLIP, Stable Fluids, SPH, etc.) \\
-% - But becomes much heavier and memory-intensive in 3D \\
-% - ...
-
-% \subsection{Vegetation generation}
-% Bla bla...
-
-
-
 
 
 
 \section{Underwater landscapes}
-- Use "seascape" instead of "landscape" and "aerial landscapes" for above water. \\
-** Not official terms, but may be very useful for the rest of this thesis..! \\
-- Describe main differences with landscape generation \\
-- Describe coral reef islands ecosystems.
+Underwater landscapes, or "seascapes", displays large differences with landscapes above water level, we will call "aerial landscapes". 
+In the field of terrain generation, particularly when it comes to modeling underwater landscapes, the challenge is to accurately represent complex environments that include both geological and biological features. From the material composition differences and the water density in comparison with air density, stems multiple challenges that can be ignored in aerial landscape generation such as the lower importance of gravity in opposition with the importance of water currents, the difficulties to observe continuously from a large-scale to a small-scale data, and the comprehension of physics and biology in these dynamic ecosystems. 
 
-\subsection{Main differences with aerial terrains}
-In the field of terrain generation, particularly when it comes to modeling underwater landscapes, the challenge is to accurately represent complex environments that include both geological and biological features. The underwater world is filled with diverse structures, ranging from vast coral reefs to intricate cave systems, each requiring specialized techniques to model their unique characteristics.
-
-\subsubsection{3D Data for underwater landscapes}
+\subsection{3D Data for underwater landscapes}
 
 One of the most challenging aspects of underwater landscape modeling is capturing the complexity of its structure. Taking the example of coral reefs,these environments feature highly intricate 3D structures, including branching corals, coral mounds, and encrusting forms. These formations are not just surface-level features; they extend into the terrain with voids and cavities, such as caves, grottos, and karst networks, which add layers of complexity to their representation. Accurate modeling of coral reefs demands that the porous and irregular nature of these formations is represented in high detail, which is a significant challenge due to the variability of their structures.
 
 In addition to biological features, underwater landscapes are shaped by geological processes that must also be accurately represented. For example, sedimentary layers and underwater geological formations like seamounts and ridges are important components of the terrain. 
-% Furthermore, volcanic activity, including underwater volcanos and hydrothermal vents, significantly impacts the landscape and ecosystem, necessitating their inclusion in any comprehensive model of underwater environments.
 
 To gather the data needed for such detailed modeling, advanced measurement techniques are employed. Sonar, including multi-beam echo sounders, and LIDAR (Light Detection and Ranging) are commonly used to capture detailed 3D data of underwater terrains. These technologies allow for the mapping of areas that are otherwise difficult to access, providing the foundational data necessary for accurate terrain generation. Remote sensing technologies also play a major role, enabling the collection of data over large and remote areas, further enhancing the model's accuracy, but represent a significant challenge as the approvision of humans and hardware in these areas is far from easy to achieve.
 
-\subsubsection{Interdisciplinary data integration}
+\subsection{Interdisciplinary data integration}
 
 Accurately modeling underwater landscapes requires more than just geological data; it necessitates an interdisciplinary approach that integrates biological and ecological data. Geological validation is an important step in this process, involving collaboration with geologists and marine scientists to ensure that the models are not only scientifically accurate but also reflective of real-world conditions. This validation process ensures that the generated models accurately depict the geological and biological features present in underwater environments.
 
@@ -411,7 +180,7 @@ Biological data is also essential, particularly when modeling coral reefs and ot
 
 However, one of the major challenges in modeling underwater landscapes is the scarcity of high-resolution data, especially in remote, protected or less studied areas. This data scarcity makes it difficult to create detailed and accurate models. Another challenge lies in the integration of diverse data types, geological, biological, hydrological, etc, into a cohesive and comprehensive model. Effective integration requires complex techniques to ensure that all aspects of the underwater environment are accurately represented.
 
-\subsubsection{Multi-scale modeling}
+\subsection{Multi-scale modeling}
 
 Underwater landscapes are characterized by features that vary greatly in scale, from vast underwater mountains and ridges to small-scale elements like individual coral polyps and marine vegetation. This diversity in scale necessitates multi-scale modeling techniques that can accommodate both large and small features within the same model.
 
@@ -421,161 +190,112 @@ Large-scale features, such as underwater mountains and ridges, define the macros
 
 [TODO]
 
-% One of the key techniques used in multi-scale modeling is \gloss{LOD}, which involves adjusting the level of detail in the model based on factors like user interaction or viewing distance. Adaptive LOD techniques help balance the need for visual fidelity with the performance demands of rendering complex terrains. The goal is to preserve detail across scales, ensuring that both macro and micro features are represented without losing important details when the model is scaled or zoomed.
-
-% Visualization techniques also play a crucial role in representing underwater landscapes accurately. Hydrographic mapping is one such technique, providing specialized methods to visualize underwater features clearly. Additionally, the use of textures and lighting that simulate underwater conditions, such as light absorption and scattering, enhances the realism of the model. These techniques help create visually accurate and scientifically meaningful representations of underwater environments.
-
 The procedural generation of underwater landscapes involves the integration of advanced 3D data collection techniques, interdisciplinary collaboration, and multi-scale modeling approaches. Modeling underwater environments, from the complex structures of coral reefs to the accurate representation of geological and biological features, requires innovative solutions that combine geological plausibility with visual realism.
 
-
-% - 3D data: \\
-% ** Coral landscapes: addressing challenges in modeling coral reefs and underwater features. \\
-% ** Cavities: representing underwater caves and karst formations. \\
-% - Interdisciplinary data: \\
-% ** Geological validation: integrating expert knowledge for accurate modeling. \\
-% ** Challenges: fewer experts and more uncertainties in underwater environments. \\
-% ** Data scarcity: limited data availability for detailed underwater landscapes. \\
-% - Need for multi-scale: \\
-% ** Integration of large and small elements. \\
-% ** Level of Detail (LOD): Techniques for managing detail across different scales.
-
-% \subsubsection{3D data}
-% - Coral landscapes: \\
-% ** Complex structures: coral reefs feature complex 3D structures with intricate patterns including branching corals, coral mounds, and encrusting forms. These structures often have a high degree of variability and detail. \\
-% ** Void spaces: coral reefs contain many voids and cavities such as caves, grottos, and karst networks, adding to the complexity of modeling these environments. \\
-% ** Challenges: modeling coral reefs requires accurately representing the porous and irregular nature of coral formations, which can be challenging due to the high level of detail and variability. \\
-% - Geological features: \\
-% ** Sedimentary layers: representing sedimentary layers and underwater geological formations such as seamounts and underwater ridges. \\
-% ** Volcanic activity: incorporating features such as underwater volcanos and hydrothermal vents, which affect the landscape and ecosystem. \\
-% - Measurement and data collection: \\
-% ** Sonar and LIDAR: using sonar (e.g., multi-beam echo sounders) and LIDAR (Light Detection and Ranging) to collect detailed 3D data of underwater terrain. \\
-% ** Remote sensing: utilizing remote sensing technologies to map and model underwater landscapes, especially in areas that are difficult to access.
-
-% \subsubsection{Interdisciplinary data}
-% - Geological validation: \\
-% ** Expert consultation: collaborating with geologists and marine scientists to validate and refine models based on real-world observations and data. \\
-% ** Data accuracy: ensuring that the generated models accurately reflect real underwater geological and biological features. \\
-% - Biological data: \\
-% ** Coral and marine life: integrating data on coral species, marine biodiversity, and ecosystem dynamics to create realistic and biologically accurate representations. \\
-% ** Ecological impact: considering the impact of various biological factors on the terrain, such as coral growth patterns and marine erosion. \\
-% - Challenges: \\
-% ** Data scarcity: limited availability of high-resolution data for some underwater environments, especially in less studied or remote areas. \\
-% ** Integration: combining geological, biological, and hydrological data effectively to create comprehensive and accurate models. 
-
-% \subsubsection{Multi-scale modeling}
-% - Large vs. small scale elements: \\
-% ** Macro features: incorporating large-scale features such as underwater mountains, ridges, and large coral formations. \\
-% ** Micro features: modeling small-scale elements such as individual coral polyps, marine vegetation, and detailed sedimentary textures. \\
-% - \Gloss{LOD} (LOD): \\
-% ** Adaptive LOD: using techniques to adjust the level of detail based on user interaction or view distance to balance performance and visual fidelity. \\
-% ** Detail preservation: ensuring that both macro and micro-scale features are accurately represented without losing important details during scaling or zooming. \\
-% - Visualization techniques: \\
-% ** Hydrographic mapping: employing specialized visualization techniques to represent underwater features clearly and accurately. \\
-% ** Texture and lighting: using textures and lighting models that simulate underwater conditions, such as light absorption and scattering in water.
-
-% - 3D Data \\
-% ** Coral landscapes filled with voids \\
-% ** Many cavities (caves, grottos, karst networks) \\
-% - Interdisciplinary Data \\
-% ** Rather common with terrain generation \\
-% ** => Geological validation with experts \\
-% ** For underwater, \\
-% *** Fewer experts, \\
-% *** More uncertainties \\
-% *** Based more on observations \\
-% *** Few data (coral landscapes < 0.1\% of oceans), for significant biological impact (25\% marine biodiversity) \\
-% ** Mix of geology, biology, hydrology, and physics (especially fluid dynamics) \\
-% - Need for multi-scale \\
-% ** Not limited to underwater \\
-% ** Integrate large elements (mountains) with small elements (vegetation) \\
-% ** LOD \\
-% - ...
 
 \section{Coral biology}
 \label{sec:state-of-the-art_biology}
 
-Coral reefs have intrigued humans for centuries, with early observations by ancient civilizations often misunderstanding these structures as mysterious sea plants or rocks. The study of coral reefs gained scientific momentum during the era of exploration, particularly through the work of figures like Captain James Cook and Charles Darwin. Darwin's theory of atoll formation, developed during his voyage on the HMS Beagle, was a significant milestone, proposing that atolls form around sinking volcanic islands as coral growth keeps pace with subsidence.
+Coral reefs, once misunderstood as sea plants or lifeless rocks, are now known to be biologically rich structures formed by colonies of marine invertebrates. Technological advances in the 20th century, including scuba diving and sonar mapping, enabled direct observation of reefs, revealing their complex ecological and geological roles. Today, tools like remote sensing and genetic analysis continue to enhance our understanding of their biodiversity and spatial patterns.
 
-The 20th century brought technological advancements, such as scuba diving and sonar, which allowed scientists to directly observe and map coral reefs, deepening our understanding of their biology and ecological significance. In recent decades, tools like remote sensing and genetic analysis have further expanded our knowledge, highlighting the critical role of coral reefs in marine biodiversity and their vulnerability to environmental changes.
-
-\subsection{Anatomy of coral reefs}
-
-\subsubsection{Coral polyps}
-
-Coral polyps are the essential building blocks of coral reefs. These tiny, soft-bodied organisms, just a few millimeters in diameter, form the vast structures of coral reefs. Each polyp consists of a sac-like body with a central mouth surrounded by tentacles equipped with stinging cells (nematocysts) for defense and capturing prey.
-
-The body of the polyp is anchored to a hard surface, which it helps create by secreting calcium carbonate \ch{CaCO3}. This secretion forms a protective exoskeleton around the polyp, allowing it to attach securely to the substrate or to other polyps in a colony. This secretion process creates the coral's hard structure, which becomes the foundation of the reef.
-
-Reproduction in coral polyps occurs in two main ways: asexual and sexual reproduction. Asexually, polyps reproduce through a process called budding, where new polyps form from the sides of an existing polyp. These new polyps remain attached, leading to the growth of a larger coral colony. In sexual reproduction, polyps release eggs and sperm into the water during spawning events, where fertilization occurs externally. The resulting larvae settle onto a suitable substrate, developing into new polyps and eventually forming new colonies.
-
-Coral polyps are in a symbiotic relationship with zooxanthellae, a type of photosynthetic algae that live within the tissues of the coral polyps, providing them with vital energy through photosynthesis, fueling its growth and calcification.
-
-In return, the coral provides the zooxanthellae with protection and access to sunlight. This mutualistic relationship is highly efficient, allowing corals to thrive in the nutrient-poor waters of tropical oceans.
-
-However, this relationship is fragile. When corals are exposed to environmental stressors such as elevated water temperatures, they may expel their zooxanthellae in a phenomenon known as coral bleaching. Without the algae, the coral loses its primary energy source, leading to a whitening of the coral and, if conditions do not improve in the next weeks, eventual death.
-
-\subsubsection{Coral colonies}
-Coral polyps, though individually small and simple, have the remarkable ability to form large, complex colonies that create the structure of coral reefs. These colonies exhibit a variety of growth patterns, each of which plays a different role in the overall architecture and ecological function of coral reefs.
-
-Once established, coral colonies can develop into a wide range of growth forms, each adapted to specific environmental conditions and with unique functions to contribute to the reef shape.
-
-Massive corals, like those in the genus \textit{Porites}, grow in boulder-like forms. They tend to grow more slowly than other types but are much more resistant to physical damage from waves and storms. They contribute to the long-term stability and resilience of coral reefs. Massive corals can live for hundreds of years, with some colonies growing to several meters in diameter. Their dense, solid structure provides a stable and enduring foundation for the reef, making them useful for the long-term stability of the reef ecosystem. Their robust skeletons can withstand strong wave action, storms, and other environmental stresses that would easily damage more delicate coral types. As they grow and expand, massive corals create the core of the reef, providing a solid base that other corals and marine organisms can build upon. Their presence is vital for maintaining the reef's overall integrity and resilience.
-
-In contrast, branching corals, such as those in the genus \textit{Acropora} (e.g., staghorn corals), look like a tree structure with numerous branches. These corals grow rapidly, extending outward to maximize exposure to sunlight. The dense thickets formed by branching corals provide essential habitat for a wide variety of marine species, from small fish to invertebrates. This growth form is particularly present in shallow, well-lit waters where competition for space and light is intense. This rapid growth allows them to quickly occupy space and expand the reef's surface area. The three-dimensional architecture of branching corals provides important habitats for a variety of marine life, including small fish and invertebrates, offering them protection from predators and strong currents. However, branching corals are relatively fragile and can be easily damaged by storms, waves, or human activity. Their ability to regenerate through fragmentation allows them to recover quickly from physical damage, but they do not contribute significantly to the reef's overall structural strength.
-
-Similarly, foliose corals like in the genus \textit{Astreopora}, which form leaf-like structures, add another dimension to reef complexity. These corals grow in overlapping layers, creating sheltered environments within the reef that are ideal for smaller marine organisms. Foliose corals can be particularly abundant in areas with moderate water movement, where their shape helps capture food particles from the water.
-
-Corals that grow in flat, horizontal formations are known as table corals or plate coral, such as \textit{Acropora}, can spread out to cover large areas, creating expansive, flat surfaces that provide important habitats for animals and other coral colonies. Their growth form allows them to efficiently capture sunlight, making them well-suited for shallow reef environments.
-
-Some corals, known as encrusting corals like in the genus \textit{Cyphastrea}, grow as a thin layer over hard substrates, including rocks, dead coral skeletons, and other surfaces. They are particularly adept at covering large areas of the reef, often outcompeting other organisms for space. Their growth form helps to bind loose sediments and rubble together, contributing to the stabilization of the reef's foundation. Although encrusting corals do not add significant height or volume to the reef, they are critical for cementing the reef structure, preventing erosion, and enhancing the overall stability of the reef. By filling in gaps between other coral colonies and consolidating the reef framework, encrusting corals help maintain the reef's structural cohesion, which is essential for its longevity.
-
-The position of different coral types within the reef varies depending on factors such as water depth, wave exposure, and light availability. Massive corals are typically found on the reef slope, where the water is deeper and more stable. Encrusting corals thrive in the less turbulent waters of the deep reef, where they can spread across stable surfaces. Branching corals, such as Acropora species, are often found on the reef crest and fore reef, where they are exposed to strong wave action and plenty of sunlight. Their fast growth and ability to regenerate quickly make them well-suited for these dynamic environments. Foliose corals are often found on the reef flat and in the back reef areas, where the water is calmer and light levels are moderate. Table corals are also commonly found in shallow reef environments, where they can maximize their exposure to sunlight.
-
-These varied growth patterns not only shape the physical structure of coral reefs but also create habitats that support immense biodiversity, making coral reefs, even if representing less than 0.1\% of the ocean area, some of the most biologically diverse ecosystems on Earth, with about 25\% of the marine species.
-
-\subsubsection{Reproduction}
-The formation and expansion of coral colonies are driven by a combination of sexual and asexual reproductive strategies, each of which plays a vital role in the growth, survival and spread of coral species.
-
-Asexual reproduction is the primary mechanism by which coral colonies expand and repair themselves. The most common form of asexual reproduction is budding, where new polyps are produced from the body of an existing polyp. These new polyps remain attached to the parent polyp, leading to the growth of a larger, stronger, interconnected colony. The shared calcium carbonate skeleton secreted by these polyps provides the structural foundation for the entire colony.
-
-Another important method of asexual reproduction is fragmentation, in which parts of the coral break off, often due to physical disturbances such as storms or strong currents, emit fragments with polyps that can then reattach to a suitable substrate and form new colonies further away. Species like \textit{Acropora} spp. and \textit{Pocillopora} spp. are known for their ability to reproduce through fragmentation, making them proliferic in dynamic environments. Similarly, polyp bail-out, where individual polyps detach from the colony in response to environmental stress allows corals to survive adverse conditions and spread its colonies. Species such as \textit{Fungia} spp. and \textit{Scleractinia} spp. have been observed to reproduce through polyp bail-out.
-
-Sexual reproduction is essential for generating new colonies and ensuring genetic diversity within coral populations. Many coral species, particularly those that are broadcast spawners, engage in mass spawning events. During these events, numerous corals simultaneously release eggs and sperm into the water column, where fertilization occurs externally. The resulting larvae (planulae), are carried by ocean currents, sometimes over great distances, before settling onto a suitable substrate where they can develop into new polyps and establish a new colony. The precise synchronization of these spawning events, while not fully understood, is thought to be influenced by environmental elements such as lunar cycles, water temperature, and daylight length. Species such as \textit{Acropora} spp. and \textit{Porites} spp. are typical broadcast spawners, relying on this strategy to disperse their offspring and colonize new areas of the reef.
-
-Some coral species are brooders, where fertilization occurs internally within the polyp. The larvae are retained inside the polyp until they are more developed and ready to settle soon after being released. This strategy often results in the larvae settling near the parent colony, contributing to the growth of dense coral clusters. \textit{Pocillopora} spp. and \textit{Stylophora} spp. are examples of brooding corals that employ this strategy, leading to the formation of tightly clustered colonies that enhance the local complexity of the reef.
-
-Together, these reproductive strategies ensure the survival, expansion, and genetic diversity of coral populations. They enable coral reefs to adapt to changing environmental conditions, recover from disturbances by colonizing new areas and reinforce existing structures.
+This section summarizes key biological and ecological features of corals, focusing on elements relevant to reef morphology and terrain modeling.
 
 
-\subsection{Corals, animals and vegetation interactions}
+\subsection{Coral polyps and reef formation}
+Coral polyps are tiny, soft-bodied marine invertebrates that secrete calcium carbonate (\ch{CaCO_3}) to build an external exoskeleton. Over time, successive secretion by many polyps produces the rigid framework of a reef. Symbiosis with zooxanthellae (photosynthetic algae) supplies most of the energy for calcification; this makes coral growth strongly light-dependent and tied to shallow, clear-water zones. 
 
-Coral reefs are dynamic ecosystems where corals, algae, and reef-dwelling animals are constantly interacting, with each playing a vital role in the health and stability of the reef. The competition between corals and algae is a fundamental aspect of these interactions. Both corals and algae compete for the same resources: sunlight, nutrients, and substrate. However, their growth strategies differ significantly. Corals are slow-growing, reef-building organisms that provide the structural foundation of the reef, while algae are generally fast-growing and can quickly colonize available space, especially when nutrient levels are elevated due to pollution or when populations of herbivores, such as fish and sea urchins, are reduced due to overfishing or diseases. This algal overgrowth can suffocate coral colonies, blocking sunlight and hindering coral growth and reproduction. A shift in the ecosystem from a coral-dominated system to an algal-dominated significantly reduces the structural complexity of the reef, as algae do not build the rigid frameworks that corals do. The loss of coral cover and the dominance of algae decrease the reef's ability to provide habitat for marine life, leading to a decline in biodiversity and altering the dynamics of the entire ecosystem.
+From a terrain generation perspective, the \ch{CaCO_3} secretion underlies the elevation of reef structures; light dependence implies depth-based constraints on where reef "height" appears in the heightmap. Moreover, coral-built substrate can be assigned higher resistance values; abstract resistance fields may reflect accumulated skeleton.
 
-In addition to controlling algae, certain reef animals contribute to coral health through bioerosion, a process where organisms like parrotfish and certain invertebrates break down dead coral structures, which help recycle calcium carbonate within the reef ecosystem. The fine sediment produced by bioerosion can fill in gaps between living coral colonies, stabilizing the reef and providing a more solid foundation for new coral growth. 
+\subsection{Coral colony morphologies and zonation}
+Coral colonies adopt varied growth forms adapted to local conditions (light, water motion, depth). Major types and their computational implications:
 
-Fishes also contribute to coral preservation through nutrient cycling. As fishes move through the reef and excrete waste, they release nutrients that can be utilized by corals and other reef organisms. These nutrients can be absorbed by corals to grow, especially in nutrient-poor environments where external nutrient sources are limited. Furthermore, the physical presence of fish within the reef can enhance water circulation, which helps distribute nutrients and oxygen throughout the reef, supporting coral health and resilience.
+\begin{Itemize}
+    \AltTextImage{
+        \Item{Massive} (e.g., \textit{Porites}): boulder-like, slow-growing, long-lived, highly damage-resistant. Typically on reef slopes (deeper, more stable). \emph{Terrain effect:} Smooth bulges with high resistance; foundation for surrounding features.
+    }{graphics-oceanus_corals-_MG_9848_LuisLamar.jpg}{Large \textit{Porite labota} - Photo credit: Luis Lamar}{fig:intro-Porite}
+        %}{Porite-Microatoll.jpg}{A colony of massive \textit{Porites} in a microatoll formation - By R. van Woesik, Y. Golbuu and G. Roff - [1], CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=54621624}{fig:intro-Porite}
 
-Corals have evolved various defense mechanisms to protect themselves from algal overgrowth and other threats. Some corals produce chemical compounds that deter algal growth or attract herbivorous fish that feed on algae. Additionally, certain coral species engage in mutualistic relationships with small fish or invertebrates that help defend the coral from algal encroachment and predation.
+    \AltTextImage{
+        \Item{Branching} (e.g., \textit{Acropora}): tree-like, fast-growing, shallow/crest or fore-reef, light-optimized but fragile; regenerate via fragmentation. \emph{Terrain effect:} Fine-scale roughness (high rugosity) in shallow zones; lower resistance patches where branches break.
+    }{staghorn-coral-large.jpg}{A field of staghorn coral - Photo credit: NOAA}{fig:intro-Staghorn}
 
-Environmental changes, particularly those driven by climate change, can disrupt the balance between corals and algae. Warmer ocean temperatures and acidification by increased \ch{CO2} can increase the frequency and severity of coral bleaching events, weakening corals and giving algae a competitive advantage. Additionally, nutrient enrichment from agricultural runoff, sewage, and other sources can lead to algal domination on coral reefs. 
+    \AltTextImage{
+        \Item{Foliose} (e.g., \textit{Pavona}): leaf-like, layered, sheltering microhabitats; in moderate flow, often on reef flats or back-reef. \emph{Terrain effect:} Overlapping platelets yield intermediate-scale texture; moderate resistance.
+    }{Pavona_cactus_colonia_in_situ.jpg}{Foliose corals such as \textit{Pavona Cactus} have a stony skeleton but displays a petal-like structure that provide shelter to the ecosystem - Photo credit: Benzoni, F.}{fig:intro-Pavona}
 
-Fish and other marine organisms derive significant benefits from living in coral reef habitats, which are essential for their survival, growth, and reproduction. Coral reefs offer a complex three-dimensional structure that provides shelter and protection from predators, particularly for juvenile fish. This protective environment increases the chances of survival for many species.
+    \AltTextImage{
+        \Item{Table/Plate} (e.g., \textit{Acropora}): flat, expansive in shallow, well-lit areas. \emph{Terrain effect:} Broad, near-horizontal surfaces with edge complexity; influences flow divergence at reef top.
+    }{Acropora_pulchra.jpg}{Example of an \textit{Acropora pulchra}, forming a large table - Photo credit: Albert Kok}{fig:intro-Acropora}
 
-Additionally, coral reefs serve as critical breeding and nursery grounds. The sheltered environments within the reef are ideal for spawning and raising young, offering protection to eggs and larvae. Coral reefs also facilitate important social interactions, such as territory establishment and mating behaviors, which are vital for reproduction and species survival.
+    \AltTextImage{
+        \Item{Encrusting} (e.g., \textit{Cyphastrea}): thin mats over substrate, in deeper or stable areas. \emph{Terrain effect:} Cementing layer that fills gaps, increases cohesion, highest resistance but low vertical relief.
+    }{Psammocora.jpg}{Example of a \textit{Psammocora} - Photo credit: Michael Paletta}{fig:intro-Psammocora}
+\end{Itemize}
 
-Lastly, some fish species engage in mutualistic relationships with corals, such as clownfish with anemones, gaining protection while providing benefits like nutrient exchange or cleaning services. These interactions underscore the interdependence of fish and corals within the reef ecosystem. 
+Zonation: each form appears in depth- and energy-specific bands (massive on slopes; branching on crest/fore reef; foliose on flats/back-reef; table in shallow flats; encrusting in deeper/stable). This results in a necessity of depth/light/slope masks to assign morphology types; this yields realistic spatial patterns in generated reefs. Moreover, different morphologies define habitat templates and resistance fields; in EFT, they become entity types with distinct parameter sets.
+
+\subsection{Ecological interactions}
+
+Corals act as dynamic ecological agents, engaging in feedback loops with their environment; modeling them requires accounting for spatial diffusion via diverse reproductive modes, competition for resources, and bidirectional environmental influences.
+
+Dispersal occurs at multiple scales through budding (local polyp duplication), brooding (larvae settle near parent), polyp bail-out (stress-induced short-range resettlement), fragmentation (medium-range reattachment after disturbance) and broadcast spawning (long-range larval drift). In simulation, these map to multi-scale seeding rules or probabilistic dispersal kernels triggered by environmental and stochastic parameters.
+
+Environmental stressors (such as elevated temperature, increased \ch{CO_2}, excess nutrients from runoff) heighten bleaching, reduce resilience and favor algal proliferation. Sea-level rise imposes vertical growth constraints: reefs may keep pace, lag then match, or fail to keep up. These factors translate into dynamic parameters affecting coral health or mortality state transitions (e.g., healthy - stressed - dead) and limiting maximum reef elevation relative to sea-level scenarios, enabling exploration of degradation or recovery trajectories.
+
+Competition for light, substrate and nutrients allows faster-growing algae (especially under high nutrients or low herbivory) to overtake corals, flattening topography and lowering complexity. Simulation can use local competition rules or cellular-automata-style state transitions driven by fields (nutrient, light, herbivory), representing algal zones as lower-relief substrate. Bioerosion by fish and invertebrates produces sediment that fills gaps, suggesting episodic sediment-deposition events balancing accretion and breakdown to shape net reef morphology.
+
+Coral structural complexity feeds back via functional proxies (e.g., habitat-suitability fields, flow-resistance modifiers) instead of full geometry. These guide hydrodynamic or movement simulations (modulating flow routing and energy dissipation) and inform reef-dependent agent distributions. Reef morphology (crest, slopes, flats) attenuates waves, stabilizes sediments and buffers adjacent habitats (e.g., seagrass, mangroves). In procedural terrain generation, integrate reef features at appropriate elevations with roughness parameters feeding erosion or hydrodynamic modules without resolving every crevice.
 
 
-\subsection{Coastal impact}
-Coral reefs serve as vital natural barriers for coastlines, acting as a first line of defense against oceanic forces. These complex structures, composed of the reef crest, fore reef, and back reef, significantly reduce incoming wave energy, thereby protecting coastal ecosystems and communities from storms, waves, and rising sea levels. Coral reefs are especially important for densely populated coastal regions, where they provide crucial protection, as evidenced by the percentage of coastlines safeguarded by reefs globally.
 
-[ADD PROFILE IMAGE FOR FORE-REEF, CREST AND BACK REEF]
 
-A key protective function of coral reefs is their ability to dissipate wave energy. As waves approach the shore, the reef crest acts as a primary barrier, breaking and reducing their intensity. The slope and structural complexity of branching corals contribute to slowing down and dispersing wave energy. This reduction in wave energy directly impacts the shoreline, by reducing coastal erosion and preserving beaches. The stability provided by reefs extends to adjacent coastal ecosystems, such as mangroves and seagrasses, which are also vital for shoreline protection. Together, these ecosystems form a multi-layered defense system where each component enhances the protective functions of the others.
 
-Storm surges have the potential to cause severe coastal flooding. Coral reefs act as natural buffers, reducing the height and energy of these surges before they reach the coast. However, storms also affect the physical structure of the reef itself, with different types of corals responding differently to storm impacts. In regions where coral reefs have remained healthy, communities have benefited from reduced damage during storms, whereas areas with degraded reefs have experienced significant flooding and destruction. 
+% Corals are seen as a whole dynamic ecological component inside its ecosystem as it behave in response to its environment and affect it in a feedback loop. In order to model its behaviour, we need to consider its ability to diffuse itself through reproduction, compete for ressources with other agents, affect and is affected by its environment in a feedback loop.
 
-Coral reefs also provide long-term protection against sea-level rise through their ability to grow vertically by depositing calcium carbonate. The sediment stabilization and the protection of mangroves and seagrass areas reduces the erosion on the coasts, the loss of land and flooding. The ability of a reef to respond to sea-level rise is often described in terms of "keep up," "catch up," and "give up." Reefs that "keep up" grow vertically at a rate that matches or exceeds the rate of sea-level rise, ensuring that they continue to provide effective coastal protection. Reefs that "catch up" grow slower than the current rate of sea-level rise but may eventually match it, potentially restoring their protective capabilities over time. On the other hand, reefs that "give up" are unable to grow fast enough to keep up with rising sea levels, leading to their submersion and loss of protective function. 
+% % [CORAL DIFFUSE IN THE ENVIRONMENT]
+
+% Coral dispersal and colonization combine sexual and asexual modes, spreading their offsprings very locally or extremely far depending on the process. From the closest to the farthest, we can note:
+
+% \begin{Itemize}
+%     \Item{Budding:} produces local expansion on the existing colony (fine-scale growth rule).
+%     \Item{Brooding:} internal fertilization, larvae released when more developed, settling close to parent, promoting clustered growth.
+%     \Item{Polyp bail-out:} happens occasionally when individual polyps detach under stress and resettle, short-range dispersal under adverse conditions.
+%     \Item{Fragmentation:} occurs when broken fragments reattach elsewhere, enabling medium-range spread and recovery after disturbance.
+%     \Item{Broadcast spawning:} mass synchronous release of eggs and sperm; external fertilization yields larvae (planulae) that drift with currents, allowing long-range dispersal of few kilometers.
+% \end{Itemize}
+
+% These modes shows a clear capacity of corals to diffuse in their environment by emitting sexual and asexual parts locally that drift with the water currents.
+
+% % [CORAL IS INFLUENCED BY THE ENVIRONMENT]
+
+
+% \textbf{Climate stressors:} Elevated temperature and \ch{CO_2} increase bleaching frequency and reduce resilience; pollution and runoff raise nutrient levels, favoring algal blooms.
+
+% \emph{Implication:} Could parameterize coral health or mortality rates in ecosystem simulation; drive scenarios of degradation or recovery.
+
+% \textbf{Sea-level rise response:} Reef vertical accretion may "keep up" (the coral reef stays in the sunlight, just below water), "catch up" (growth slower but eventually matches), or "give up" (cannot match and becomes submerged).
+
+% \emph{Implication:} In procedural generation or dynamic modeling, include constraints on maximum reef elevation based on assumed growth rates vs. sea-level scenarios; can guide long-term morphology or sensitivity analyses.
+
+% % [CORAL COMPETE IN THE ENVIRONMENT]
+
+% Coral and algae both compete for sunlight, substrate, and nutrients. Algae grow faster, especially under elevated nutrients or reduced herbivory, leading to algal overgrowth that smothers coral, flattens reef topography, and reduces habitat complexity and biodiversity. In ecosystem simulations, this behaviour include competitive interactions or state transitions where algae can overtake coral patches under certain field conditions (nutrient/light/herbivore proxies). Terrain impact: algal-dominated zones may be represented by lower-relief substrate without reef elevation.
+
+% On a small scale level, other organisms (e.g., parrotfish, certain invertebrates) break down dead coral, producing sediment that can fill gaps and support new settlement. This introduce occasional sediment deposition events in erosion model; balance between accretion and bioerosion influences net morphology over time.
+
+% % [CORAL INFLUENCE THE ENVIRONMENT]
+
+% Structural complexity (rugosity, crevices) offers shelter for juveniles, spawning grounds, and supports diverse species ( about 25\% of marine species in < 0.1\% ocean area). True internal geometry of a reef is not currently completely understood; in our work we abstract it by encoding "presence of complex structure" via functional parameters (e.g., habitat suitability fields, flow resistance modifiers) rather than modeling fine-scale surfaces. 
+
+% This fine-scale properties have influence on the large-scale environment. In fluid or movement simulations, incorporate rugosity/resistance parameters derived from morphology type rather than resolving every crevice. In EFT, these fields influence distribution and behavior of reef-dependent agents.
+
+% For the same reasons, reef crest breaks incoming waves; morphological complexity (e.g., branching structures) slows water and reduces energy reaching shore, mitigating erosion.
+
+% The erosion process is directly impacted by the small-scale. Reef structures trap or stabilize sediments, protecting mangroves and seagrass beds.
+
+% Procedural terrain should include reef features (crest, slopes, flats) at appropriate elevations and roughness to inform hydrodynamic or erosion simulations. Abstract resistance fields derived from morphology guide flow routing and energy dissipation in particle-based erosion models. Adjacent zones (seagrass/mangrove) can be placed based on reef buffering.
+
+
 
 \subsection{Coral reefs' shape}
 In \citep{Darwin1842}, Darwin outlined his atoll reefs formation theory, inspired by his Beagle voyage. He proposed that Earth's crust movements under the oceans created atolls. Darwin described a three-stage process in atoll formation: a fringing reef forms around a sinking volcanic island, evolving into a barrier reef, and finally an atoll reef as subsidence continues.
@@ -609,172 +329,8 @@ Patch reefs are characterized by their simplicity and isolation compared to thei
 
 The formation of patch reefs is influenced by a combination of biological and physical factors. Coral larvae settle in suitable areas where they can establish colonies and grow over time. They often develop in locations where the water is clear, and the substrate is stable, such as on sandy bottoms or rocky outcrops.
 
-% \subsubsection{Coral structures}
 Spurs and grooves are alternating ridges (spurs) and channels (grooves) found on the fore reef slope, which is the part of the reef that faces the open ocean. This distinctive pattern is formed primarily by the action of waves and currents, which erode and shape the coral over time. Spurs, the ridges of coral that extend seaward, help to break up and dissipate the energy of incoming waves. The grooves, or channels between these ridges, serve as pathways for water and sediment to flow back into the ocean after waves break on the reef. This spurred and grooved topography is crucial for the reef's ability to protect the coastline, as it reduces the energy of waves before they reach the more fragile parts of the reef and the shore.
 
 Pinnacles are vertical, column-like coral formations that rise from the seafloor, often found on the fore reef slope or within lagoons. These towering structures add significant three-dimensional complexity to the reef system. Pinnacles can vary greatly in size, from small outcrops to large, towering columns that reach close to the water's surface. The formation of pinnacles is often influenced by localized environmental conditions, such as strong currents or the availability of hard substrate for coral larvae to settle on.
 
 Bommies are isolated outcrops or large coral heads that rise from the seafloor, typically within lagoons or on the reef slope. These features, sometimes referred to as coral knolls, can be quite large and are often found scattered across the lagoon or near the outer edges of the reef. Bommies are important structural components of the reef as they contribute to the overall topographic complexity of the environment. 
-
-
-
-
-
-
-
-
-
-% Coral reefs are among the most vibrant and biologically diverse ecosystems on Earth. Understanding their formation, structure, and the critical roles they play in marine environments requires an interdisciplinary approach that spans historical, biological, and geological perspectives. This article delves into the biological aspects of coral reefs, exploring their historical discovery, structural formation, importance in biodiversity, the threats they face, and ongoing conservation efforts.
-
-% \subsection{Historical discovery of coral reefs}
-
-% The knowledge of coral reefs has evolved significantly over centuries, beginning with early observations by ancient civilizations such as the Greeks and Romans, who were among the first to document coral structures. During the Age of Exploration, figures like Captain James Cook and naturalist Alexander von Humboldt contributed to the early documentation of coral reefs, highlighting their biodiversity and unique structures. The scientific understanding of coral reefs took a major leap forward in the 19th century, particularly with the work of Charles Darwin, who developed influential theories on the formation of coral reefs, including the concept of atoll formation. The 20th century saw further advances in marine biology and oceanography, deepening our understanding of coral reef ecosystems and their role in the marine environment.
-
-% \subsection{Coral reef structure and formation}
-
-% Coral reefs are formed by the accumulation of calcium carbonate, primarily secreted by coral polyps, which are tiny, soft-bodied organisms. These polyps live in colonies and work together to build the massive structures we recognize as coral reefs. There are several types of coral reefs, each with distinct characteristics. Fringing reefs are directly attached to coastlines and extend outward into shallow waters, often featuring a narrow reef crest and slope. Barrier reefs run parallel to the coastline but are separated from it by a lagoon or deep channel, typically forming in deeper waters and with more pronounced lagoons. Atolls are circular or oval reefs that encircle a lagoon, often forming around a submerged volcanic island, creating a ring-like structure with no central landmass.
-
-% The process of reef building is complex and involves both the deposition of calcium carbonate by living organisms and bioerosion, where marine creatures such as parrotfish and sea urchins erode the reef structure. This natural balance between construction and erosion is essential for the maintenance and growth of coral reefs over time.
-
-% \subsection{Importance in biodiversity}
-
-% Coral reefs are critical hotspots of marine biodiversity, supporting thousands of species, including fish, invertebrates, and algae. The structural complexity of coral reefs provides numerous niches and habitats, fostering high levels of species diversity and endemism: many species found in coral reefs exist nowhere else in the world. Beyond their ecological significance, coral reefs play crucial roles in ecosystem services. They provide essential habitats for a wide range of marine species, including those that are commercially important. Coral reefs also play a vital role in nutrient cycling, which is crucial for the productivity and health of the broader marine ecosystem.
-
-% Economically, coral reefs are invaluable. They support fisheries that millions of people depend on for food and livelihood, and they are major attractions for tourism, generating significant revenue. Moreover, coral reefs hold cultural and spiritual significance for many coastal communities, forming an integral part of their traditions and practices.
-
-% \subsection{Threats to coral reefs}
-
-% Despite their importance, coral reefs are under severe threat from a variety of factors. Climate change is one of the most significant threats, with rising sea temperatures leading to coral bleaching, where corals expel the symbiotic algae that provide them with energy, often resulting in widespread coral mortality. Ocean acidification, driven by increased levels of carbon dioxide, further impacts coral growth by reducing calcification rates, weakening reef structures.
-
-% Pollution also poses a grave danger to coral reefs. Nutrient runoff from agriculture and urban areas can lead to algal blooms that smother corals, while marine debris, particularly plastics, can cause physical damage and harm marine life. Overfishing exacerbates the problem by depleting fish stocks that are crucial for maintaining the ecological balance of reef ecosystems. Destructive fishing practices, such as blast fishing and cyanide fishing, cause direct physical damage to coral reefs, further threatening their survival.
-
-% Coastal development contributes to the degradation of coral reefs through habitat destruction and increased sedimentation. Activities such as dredging, land reclamation, and construction can destroy or degrade coral habitats, while sediment runoff from deforestation and construction reduces light availability, which is essential for coral health and growth.
-
-% \subsection{Conservation efforts}
-
-% In response to these threats, numerous conservation efforts are underway to protect and restore coral reefs. Marine Protected Areas (MPAs) are designated zones where human activities are regulated or restricted to protect coral reefs and promote their recovery. There are several success stories where the implementation of MPAs has led to significant improvements in reef health and biodiversity.
-
-% Restoration projects are also playing a vital role in coral reef conservation. Techniques such as coral gardening, where corals are grown in nurseries and then transplanted to damaged reefs, have shown promise in restoring reef structures. Artificial reefs, created by sinking ships, placing concrete structures, or using other materials, provide new habitats for marine life and can help jumpstart reef recovery.
-
-% Community involvement is crucial for the success of these conservation efforts. Engaging local communities through education, stewardship, and sustainable practices helps ensure that conservation measures are culturally appropriate and effective. Citizen science initiatives, where members of the public participate in monitoring and research, have also been instrumental in gathering data and raising awareness about the importance of coral reefs.
-
-% At the policy level, international agreements like the Convention on Biological Diversity and national regulations play a critical role in safeguarding coral reefs. These policies aim to address global issues such as climate change and marine pollution, which are central to the long-term survival of coral reefs.
-
-% \subsection{Future research and monitoring}
-
-% Looking ahead, ongoing research and monitoring are essential for understanding and mitigating the impacts of environmental changes on coral reefs. Innovative technologies, such as remote sensing using satellite imagery and drones, are increasingly being used to monitor reef health and track changes over time. Genomics is another promising area, offering insights into coral resilience and adaptation to environmental stressors, which could inform future conservation strategies.
-
-% Adaptive management strategies are needed to respond dynamically to changing conditions and emerging threats. This requires collaboration among scientists, policymakers, and local communities to develop and implement effective conservation measures. Public education and awareness are also key components of this effort, as they help foster a broader understanding of the importance of coral reefs and the actions individuals can take to support their preservation.
-
-% Coral reefs are vital ecosystems that require a multifaceted approach to conservation. By integrating historical knowledge, scientific research, and community engagement, we can work towards safeguarding these critical environments for future generations.
-
-% - Historical discovery: evolution of knowledge about coral reefs. \\
-% - Types of coral reefs: \\
-% ** Islands, barriers, atolls: different forms and structures of coral reefs. \\
-% - Atoll theories: historical and scientific theories explaining the formation of atolls. \\
-% - Importance in biodiversity: coral reefs as critical ecosystems with high marine biodiversity. \\
-% - Threats and protection: current threats to coral reefs and conservation efforts.
-
-% \subsection{Historical discovery of coral reefs}
-% - ... 
-% \subsubsection{Early observations}
-% - Ancient knowledge: initial observations by ancient civilizations (e.g., Greeks, Romans) and their interpretations of coral structures. \\
-% - Exploration era: the role of early explorers and naturalists (e.g., Captain James Cook, Alexander von Humboldt) in documenting coral reefs and their biodiversity.
-% \subsubsection{Scientific discovery}
-% - 19th century advances: key contributions from scientists such as Charles Darwin, who developed theories on coral reef formation. \\
-% - 20th century developments: advances in marine biology and oceanography that improved understanding of coral reef ecosystems.
-
-% \subsection{Coral reef structure and formation}
-% - ... 
-% \subsubsection{Coral anatomy}
-% - Coral polyps: basic building blocks of coral reefs, their structure, and function. Each polyp is a tiny, soft-bodied organism that secretes calcium carbonate to form the reef structure. \\
-% - Coral colonies: how individual polyps form colonies and contribute to the growth of the reef structure. 
-% \subsubsection{Types of coral reefs}
-% - Fringing reefs: \\
-% ** Definition: reefs that are directly attached to a coastline, extending out from the shore. \\
-% ** Characteristics: shallow waters, often with a narrow reef crest and slope. \\
-% - Barrier reefs: \\
-% ** Definition: reefs that run parallel to the coastline but are separated by a lagoon or deep channel. \\
-% ** Characteristics: typically found farther from the shore, with a more pronounced lagoon and deeper water. \\
-% - Atolls: \\
-% ** Definition: circular or oval reefs that encircle a lagoon, often formed around a submerged volcanic island. \\
-% ** Characteristics: reefs form a ring around a central lagoon, with no land in the center. 
-% \subsubsection{Reef building processes}
-% - Calcium carbonate deposition: the process by which corals and other organisms secrete calcium carbonate to build the reef structure. \\
-% - Bioerosion: the natural process by which reef structures are eroded by marine organisms such as parrotfish and sea urchins.
-
-% \subsection{Importance in biodiversity}
-% - ... 
-% \subsubsection{Species diversity}
-% - Marine life: coral reefs are among the most diverse ecosystems in the world, supporting thousands of marine species including fish, invertebrates, and algae. \\
-% - Endemism: many species are found exclusively in coral reef environments, contributing to global biodiversity.
-% \subsubsection{Ecosystem services}
-% - Habitat provision: coral reefs provide essential habitats for a wide range of marine species, including commercially important fish and invertebrates. \\
-% - Nutrient cycling: reefs play a critical role in nutrient cycling, supporting the productivity of marine ecosystems. 
-% \subsubsection{Economic and cultural value}
-% - Fishing and tourism: coral reefs support important fisheries and generate significant revenue through tourism and recreational activities. \\
-% - Cultural significance: many coastal communities have cultural and spiritual connections to coral reefs, incorporating them into traditions and practices.
-
-% \subsection{Threats to coral reefs}
-% - ... 
-% \subsubsection{Climate change}
-% - Coral bleaching: caused by elevated sea temperatures, leading to the expulsion of symbiotic algae (zooxanthellae) and subsequent coral bleaching. \\
-% - Ocean acidification: reduced calcification rates due to increased \ch{CO2} levels, impacting coral growth and reef structure.
-% \subsubsection{Pollution}
-% - Nutrient runoff: increased nutrient levels from agricultural and urban runoff can lead to algal blooms that smother corals and disrupt reef balance. \\
-% - Marine debris: pollution from plastics and other debris that can damage coral reefs and harm marine life.
-% \subsubsection{Overfishing}
-% - Depletion of fish stocks: overfishing can lead to the loss of key reef species and disrupt ecological balance. \\
-% - Destructive fishing practices: practices such as blast fishing and cyanide fishing cause direct physical damage to reefs and harm marine biodiversity. 
-% \subsubsection{Coastal development}
-% - Habitat destruction: development activities such as dredging, land reclamation, and construction can destroy or degrade coral reef habitats. \\
-% - Sedimentation: increased sedimentation from coastal construction and deforestation can smother corals and reduce light availability.
-
-% \subsection{Conservation efforts}
-% - ... 
-% \subsubsection{Marine Protected Areas (MPAs)}
-% - Designated zones: areas where human activities are regulated or restricted to protect coral reefs and promote recovery. \\
-% - Success stories: examples of successful MPA implementations and their positive impacts on reef health and biodiversity.
-% \subsubsection{Restoration projects}
-% - Coral gardening: techniques for growing and replanting corals to restore damaged reef areas. \\
-% - Artificial reefs: creation of artificial structures to provide new habitats for marine life and promote reef recovery.
-% \subsubsection{Community involvement}
-% - Local engagement: involving local communities in reef conservation through education, stewardship, and sustainable practices. \\
-% - Citizen science: encouraging public participation in monitoring and research efforts to support reef conservation. 
-% \subsubsection{Policy and legislation}
-% - International agreements: global and regional agreements aimed at protecting coral reefs and addressing climate change impacts (e.g., the Convention on Biological Diversity). \\
-% - National policies: policies and regulations at the national level to safeguard coral reefs and manage marine resources sustainably. 
-
-% \subsection{Future research and monitoring}
-% - ... 
-% \subsubsection{Innovative technologies}
-% - Remote sensing: use of satellite imagery and drones to monitor reef health and track changes over time. \\
-% - Genomics: applying genetic research to understand coral resilience and adaptation to environmental stressors. 
-% \subsubsection{Adaptive management}
-% - Dynamic strategies: developing flexible management approaches that can adapt to changing conditions and emerging threats. \\
-% - Collaboration: promoting collaboration among scientists, policymakers, and local communities to address complex challenges facing coral reefs.
-% \subsubsection{Education and awareness}
-% - Public outreach: raising awareness about the importance of coral reefs and the actions individuals can take to support conservation efforts. \\
-% - Training programs: providing training for scientists, managers, and local stakeholders to enhance reef management and restoration practices.
-
-
-
-% \section{Prototype creation}
-% \label{sec:introduction_prototype}
-% - C++23 and Qt5.12 \\
-% - OpenGL 4.6 and GLSL \\
-% - Marching Cubes on geometry shader \\
-% ** Bad idea, but justify why \\
-% - Renderings: \\
-% ** With the prototype: \\
-% *** Marching Cubes on geometry shader \\
-% *** Triplanar texture \\
-% *** Real-time results \\
-% *** Textures based on materials \\
-% ** With Unreal Engine 5: \\
-% *** Static meshes \\
-% *** Added procedural vegetation with plugin [PLUGIN NAME] and ocean with [PLUGIN NAME] \\
-% ** With Blender 4.1: \\
-% *** Static meshes \\
-% *** Easier script usage \\
-% - ...
