@@ -217,7 +217,16 @@
 
 \newlength{\currentparindent}
 \newlength{\contentheightofalttextimage}
+\newlength{\contentheightofalttextimagecaption}
 \newsavebox{\alttextbox}
+
+\ExplSyntaxOn
+\newdimen\l_tmpa_img_width
+\newdimen\l_tmpa_img_height
+\newdimen\l_tmpa_ratio
+\newdimen\l_tmpa_min_height
+\newdimen\l_tmpa_final_height
+\ExplSyntaxOff
 
 \ExplSyntaxOn
 % \AltTextImageR{item_content}{placeholder.pdf}{caption}{label}
@@ -227,6 +236,9 @@
   % \newsavebox{\alttextbox}
     \sbox{\alttextbox}{\vbox{\hsize=0.65\linewidth #1}}%
     \setlength{\contentheightofalttextimage}{\ht\alttextbox}%
+
+    \sbox{\alttextbox}{\vbox{\hsize=0.3\linewidth #3\quad}}%
+    \setlength{\contentheightofalttextimagecaption}{\ht\alttextbox}%
   \noindent
   \begin{minipage}[t]{0.65\linewidth}
     \setlength{\parindent}{\currentparindent}
@@ -235,10 +247,17 @@
   \hfill % Add horizontal space between text and image
   \begin{minipage}[t]{0.30\linewidth}    
     \centering
+    % Size: \the\contentheightofalttextimage
     % Parse comma-separated images and stack them
     \seq_set_split:Nnn \l_tmpa_seq { , } { #2 }%
     \int_set:Nn \l_tmpa_int { \seq_count:N \l_tmpa_seq }%
-    \dim_set:Nn \l_tmpa_dim { \contentheightofalttextimage / \l_tmpa_int }%
+    \dim_set:Nn \l_tmpa_dim {
+      \dim_max:nn {
+        .5 \contentheightofalttextimage
+      }{
+        (\contentheightofalttextimage / \l_tmpa_int) - (\contentheightofalttextimagecaption / 2)
+      }
+    }
     \seq_map_inline:Nn \l_tmpa_seq {%
       \includegraphics[width=\linewidth, height=\l_tmpa_dim, keepaspectratio, valign=t]{##1}\\%
     }%
@@ -255,13 +274,24 @@
   \setlength{\currentparindent}{\parindent}%
     \sbox{\alttextbox}{\vbox{\hsize=0.65\linewidth #1}}%
     \setlength{\contentheightofalttextimage}{\ht\alttextbox}%
+
+    \sbox{\alttextbox}{\vbox{\hsize=0.3\linewidth #3\quad}}%
+    \setlength{\contentheightofalttextimagecaption}{\ht\alttextbox}%
   \noindent
   \begin{minipage}[t]{0.30\linewidth}
     \centering
+    % Size: \the\contentheightofalttextimagecaption
     % Parse comma-separated images and stack them
     \seq_set_split:Nnn \l_tmpa_seq { , } { #2 }%
     \int_set:Nn \l_tmpa_int { \seq_count:N \l_tmpa_seq }%
-    \dim_set:Nn \l_tmpa_dim { \contentheightofalttextimage / \l_tmpa_int }%
+    \dim_set:Nn \l_tmpa_dim {
+      \dim_max:nn {
+        .5 \contentheightofalttextimage
+      }{
+        (\contentheightofalttextimage / \l_tmpa_int) - (\contentheightofalttextimagecaption / 2)
+      }
+    }
+    % \dim_set:Nn \l_tmpa_dim { (\contentheightofalttextimage / \l_tmpa_int)  - (\contentheightofalttextimagecaption / 2) }%
     \seq_map_inline:Nn \l_tmpa_seq {%
       \includegraphics[width=\linewidth, height=\l_tmpa_dim, keepaspectratio, valign=t]{##1}\\%
     }%

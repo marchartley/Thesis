@@ -123,15 +123,15 @@ Studying erosion is essential across numerous fields due to its impact on landsc
 
 The effects of erosion extend beyond simple landscape alteration. They play a central role in soil formation, nutrient cycling, and the distribution of sediments in various ecosystems.
 
-The main problem with studying erosion is the large amount of factors to take into account in the process. When studying erosion, a range of interconnected properties must be considered to understand its causes, rates, and impacts. Soil and rock characteristics such as texture, structure, cohesion, permeability, and organic matter content influence how easily soil and sediment detach and are transported. Climate factors like rainfall intensity, temperature fluctuations, wind speed, and seasonal changes impact erosion by affecting soil moisture and stability. Topography—including slope gradient, length, elevation, and drainage patterns—affects how water flows and gathers momentum, directly influencing erosion potential. Hydrological factors like surface runoff, infiltration rate, groundwater flow, and wave action are critical in understanding how water drives erosion in riverine and coastal environments.
+The main problem with studying erosion is the large amount of factors to take into account in the process. When studying erosion, a range of interconnected properties must be considered to understand its causes, rates, and impacts. Soil and rock characteristics such as texture, structure, cohesion, permeability, and organic matter content influence how easily soil and sediment detach and are transported. Climate factors like rainfall intensity, temperature fluctuations, wind speed, and seasonal changes impact erosion by affecting soil moisture and stability. Slope gradient, river length, elevation, and drainage patterns affects how water flows and gathers momentum, directly influencing erosion potential. Hydrological factors like surface runoff, infiltration rate, groundwater flow, and wave action are critical in understanding how water drives erosion in riverine and coastal environments.
 
-Biological influences include vegetation cover, root density, and plant types, which stabilize soil, while animal activities like burrowing can increase erosion susceptibility. Human activity, such as agriculture, deforestation, urbanization, and mining, significantly accelerates erosion by disturbing soil and removing natural vegetation. Geological properties like soil depth, rock layering, and prior erosion events, along with chemical characteristics such as mineral composition and soil acidity, also shape erosion patterns, influencing how landscapes respond to environmental forces. Temporal factors—including the duration of exposure, rate of soil formation, seasonal cycles, and the frequency of intense weather events—affect erosion rates over time, leading to varying erosion impacts across regions and ecosystems. These properties collectively provide a comprehensive foundation for understanding and managing erosion processes across diverse landscapes.
+Biological influences include vegetation cover, root density, and plant types, which stabilize soil, while animal activities like burrowing can increase erosion susceptibility. Human activity, such as agriculture, deforestation, urbanization, and mining, significantly accelerates erosion by disturbing soil and removing natural vegetation. Geological properties like soil depth, rock layering, and prior erosion events, along with chemical characteristics such as mineral composition and soil acidity, also shape erosion patterns, influencing how landscapes respond to environmental forces. Temporal factors, including the duration of exposure, rate of soil formation, seasonal cycles, and the frequency of intense weather events affect erosion rates over time, leading to varying erosion impacts across regions and ecosystems. These properties collectively provide a comprehensive foundation for understanding and managing erosion processes across diverse landscapes.
 
 Due to the large amount of properties to take into account, each domain uses a subset of the factors, with more or less simplifications in the erosion model. Depending on the use case, the analysis of erosion effects may vary largely. [ADD EXAMPLE OF FIELDS THAT STUDY EROSION THAT HAVE INSTANTANEOUS EFFECTS LIKE LANDSLIDES AND FIELDS THAT USE MILLIONS OF YEARS LIKE TECTONIC ACTIVITY].
 
 In procedural terrain generation, simulating erosion based on soil and rock characteristics (like texture, cohesion, and permeability) allows the algorithm to mimic how different materials break down and redistribute under various conditions. For example, regions with sandy or loosely cohesive soils can be programmed to erode more rapidly, while rocky, cohesive areas remain more stable.
 
-Incorporating climate factors (rainfall, wind, and temperature) helps to model how landscapes evolve in different biomes—such as dry, windy deserts versus lush, wet valleys. Simulating topographic influences like slope gradient and drainage patterns enables the formation of natural-looking valleys, cliffs, and river networks, while accounting for hydrological factors like runoff and groundwater flow creates realistic water paths and sediment deposits.
+Incorporating climate factors (rainfall, wind, and temperature) helps to model how landscapes evolve in different biomes such as dry, windy deserts versus lush, wet valleys. Simulating topographic influences like slope gradient and drainage patterns enables the formation of natural-looking valleys, cliffs, and river networks, while accounting for hydrological factors like runoff and groundwater flow creates realistic water paths and sediment deposits.
 
 Procedural algorithms can also use biological factors to define erosion resistance based on vegetation cover, with densely vegetated areas exhibiting slower erosion rates and barren regions eroding faster. Including human activity effects, such as altered runoff or deforestation, allows for terrain that mirrors landscapes influenced by development or agriculture, adding further realism. Finally, using temporal properties to simulate seasonal erosion and landscape changes enables the terrain to evolve naturally over time, creating dynamic environments where erosion patterns shift as weather and vegetation change.
 
@@ -234,27 +234,31 @@ In this section, we first present the major terrain representations (height fiel
 
 
 \subsection{Erosion processes}
-Driven by an array of natural forces and processes, erosion varies significantly across environments, from the intense carving of river valleys to the subtle reshaping of slopes in arctic regions. In this section, we present the primary types of erosion—thermal, hydraulic, and wind erosion—alongside other significant processes that contribute to landscape change. 
+Driven by an array of natural forces and processes, erosion varies significantly across environments, from the intense carving of river valleys to the subtle reshaping of slopes in arctic regions. In this section, we present the primary types of erosion (thermal, hydraulic, and wind erosion) alongside other significant processes that contribute to landscape change. 
 Each erosion type not only influences distinct terrain forms but also varies in applicability depending on terrain representation in simulations. Notably, not all erosion types are easily adaptable to all forms of terrain representation, due to inherent limitations in data resolution and computational methods.
 
+\AltTextImage{
+    % \subsubsection{Gravity-driven erosion}
+    % \wrapFig{earthflow-erosions.jpg}{0.25}{fig:erosion-landslides_processes}{Different landslide processes}
 
-\subsubsection{Gravity-driven erosion}
-\wrapFig{earthflow-erosions.jpg}{0.25}{fig:erosion-landslides_processes}{Different landslide processes}
-
-Gravity-driven erosion encompasses processes that involve the downslope movement of soil, rock, or debris due to the force of gravity. These processes, including landslides and talus slope formation, play a crucial role in reshaping landscapes by redistributing materials across slopes, valleys, and cliffs, influencing terrain stability and morphology.
+    Gravity-driven erosion encompasses processes that involve the downslope movement of soil, rock, or debris due to the force of gravity. These processes, including landslides and talus slope formation, play a crucial role in reshaping landscapes by redistributing materials across slopes, valleys, and cliffs, influencing terrain stability and morphology.
+}{earthflow-erosions.jpg}{Different landslide processes.}{fig:erosion-landslides_processes}
 
 
-\subsubsubsection{Thermal erosion}
-\wrapFig{freeze-thaw.jpg}{0.25}{fig:erosion-freeze_thaw}{Freeze-thaw process from \cite{Wang2017}}
+\AltTextImage{
+    \subsubsubsection{Thermal erosion}
+    % \wrapFig{freeze-thaw.jpg}{0.25}{fig:erosion-freeze_thaw}{Freeze-thaw process from \cite{Wang2017}}
 
-Freeze-thaw weathering, also known as frost wedging or frost shattering, is a process that occurs when water infiltrates cracks and pores within rocks and then freezes. As the water freezes, it expands and exerts pressure on the rock, causing it to fracture and break apart over time. This cycle of freezing and thawing is especially prevalent in regions with large temperature variations between day and night or between seasons, such as alpine and polar climates. Over time, freeze-thaw weathering contributes to the breakdown of large rocks into smaller fragments, creating loose rock material that can accumulate and gradually move downslope.
+    Freeze-thaw weathering, also known as frost wedging or frost shattering, is a process that occurs when water infiltrates cracks and pores within rocks and then freezes. As the water freezes, it expands and exerts pressure on the rock, causing it to fracture and break apart over time. This cycle of freezing and thawing is especially prevalent in regions with large temperature variations between day and night or between seasons, such as alpine and polar climates. Over time, freeze-thaw weathering contributes to the breakdown of large rocks into smaller fragments, creating loose rock material that can accumulate and gradually move downslope.
 
-Freeze-thaw weathering plays an important role in shaping landscapes, as it weakens rock faces and cliff edges, contributing to the formation of loose rock debris that eventually becomes part of other erosive processes, such as the development of talus slopes. This process, involving freeze-thaw cycles, can quickly fragment rock surfaces, with cumulative landscape impacts like the formation of talus slopes observable over decades to centuries.
+    Freeze-thaw weathering plays an important role in shaping landscapes, as it weakens rock faces and cliff edges, contributing to the formation of loose rock debris that eventually becomes part of other erosive processes, such as the development of talus slopes. This process, involving freeze-thaw cycles, can quickly fragment rock surfaces, with cumulative landscape impacts like the formation of talus slopes observable over decades to centuries.
+}{freeze-thaw.jpg}{Freeze-thaw process from \cite{Wang2017}}{}
 
-\subsubsubsection{Talus slopes}
-\wrapFigR{talus.png}{}{}{} % {Mark A. Wilson (Department of Geology, The College of Wooster)}{fig:erosion-talus}
-
-Talus slopes, also known as scree slopes, are accumulations of loose, angular rock debris at the base of cliffs, steep slopes, or mountainous areas. These slopes form as fragments of rock break off due to weathering processes like freeze-thaw and gravity pulls them downslope, where they accumulate in a cone-shaped deposit. Talus slopes are common in high-altitude or cold regions where physical weathering of rock faces is intense, and they contribute to the visual ruggedness of mountainous landscapes. Formed by the accumulation of rock debris from higher elevations, talus slopes develop gradually as materials accumulate, influencing terrain over centuries.
+% \wrapFigR{talus.png}{}{}{} % {Mark A. Wilson (Department of Geology, The College of Wooster)}{fig:erosion-talus}
+\AltTextImage{
+    \subsubsubsection{Talus slopes}
+    Talus slopes, also known as scree slopes, are accumulations of loose, angular rock debris at the base of cliffs, steep slopes, or mountainous areas. These slopes form as fragments of rock break off due to weathering processes like freeze-thaw and gravity pulls them downslope, where they accumulate in a cone-shaped deposit. Talus slopes are common in high-altitude or cold regions where physical weathering of rock faces is intense, and they contribute to the visual ruggedness of mountainous landscapes. Formed by the accumulation of rock debris from higher elevations, talus slopes develop gradually as materials accumulate, influencing terrain over centuries.
+}{talus.png}{}{}
 
 The procedural terrain generation domain blurres the definition of thermal erosion introduced by \cite{Musgrave1989} simplifying it to a material stabilization problem. 
 
@@ -288,23 +292,27 @@ Thermal erosion can be simulated by redistributing rock fragments or particles t
 \end{figure}
 
 
-Hydraulic erosion is the process by which moving water dislodges and transports soil, sediment, and rock from the Earth's surface. Occurring in multiple forms, including river-based, rainfall-induced, and coastal erosion, hydraulic erosion is driven by factors such as water velocity, volume, and surface composition. This process plays a primary role in reshaping landforms—forming valleys, river channels, and coastlines—and significantly contributes to sediment redistribution in terrestrial and coastal environments.
+Hydraulic erosion is the process by which moving water dislodges and transports soil, sediment, and rock from the Earth's surface. Occurring in multiple forms, including river-based, rainfall-induced, and coastal erosion, hydraulic erosion is driven by factors such as water velocity, volume, and surface composition. This process plays a primary role in reshaping landforms, forming valleys, river channels, and coastlines, and significantly contributes to sediment redistribution in terrestrial and coastal environments.
 
 
-\subsubsubsection{Fluvial erosion}
-\wrapFigL{river_erosion.pdf}{0.25}{fig:erosion-river-erosion-profile}
-{The erosion on the river bank is the combination of two processes: the detachment of the bottom of the sides, then the break of the upper coasts. }
+\AltTextImage{
+    \subsubsubsection{Fluvial erosion}
+    % \wrapFigL{river_erosion.pdf}{0.25}{fig:erosion-river-erosion-profile}
+    % {The erosion on the river bank is the combination of two processes: the detachment of the bottom of the sides, then the break of the upper coasts. }
 
-Fluvial erosion is the process by which rivers and streams reshape the landscape by eroding, transporting, and depositing sediment. This phenomenon occurs as the kinetic energy of moving water exerts mechanical forces on the riverbed and banks, dislodging soil, rock, and sediment particles. The intensity of fluvial erosion is influenced by factors such as water velocity, discharge (the volume of water flowing per unit time), channel slope, and the composition of the riverbed and banks.
+    Fluvial erosion is the process by which rivers and streams reshape the landscape by eroding, transporting, and depositing sediment. This phenomenon occurs as the kinetic energy of moving water exerts mechanical forces on the riverbed and banks, dislodging soil, rock, and sediment particles. The intensity of fluvial erosion is influenced by factors such as water velocity, discharge (the volume of water flowing per unit time), channel slope, and the composition of the riverbed and banks.
+}{river_erosion.pdf}{The erosion on the river bank is the combination of two processes: the detachment of the bottom of the sides, then the break of the upper coasts.}{fig:erosion-river-erosion-profile}
 
 In steep, fast-flowing sections of a river, higher water velocities generate turbulent flow, which increases the river's capacity to dislodge and carry large particles. These particles, including gravel and pebbles, collide with the riverbed in a process called abrasion, grinding and wearing down the bedrock over time. Additionally, water exerts direct hydraulic pressure, especially in areas where currents are swift, prying apart rocks and sediment through hydraulic action. This is especially effective in widening channels and undercutting banks.
 
 Fluvial erosion processes contribute to a dynamic reshaping of river channels, forming distinct landforms such as V-shaped valleys, canyons, and river meanders. Over time, rivers naturally balance their erosive energy with sediment transport and deposition, forming floodplains where sediment is deposited during seasonal overflows. In meandering rivers, erosion typically occurs on the outer curves of bends, where flow velocity is highest, while sediment deposition takes place on the inner curves, forming point bars. This continual interaction between erosion and deposition drives the lateral migration of meanders, altering the river's course across the landscape. The river's competence, or its ability to transport particles of a certain size, depends on the flow's velocity and discharge. During periods of high flow, such as after heavy rainfall or snowmelt, rivers gain greater erosive power, enabling them to transport larger particles and increase their erosion rates. River systems reshape landscapes methodically over years to millennia, deeply engraving river paths and altering regional topographies.
 
 
-\subsubsubsection{Rainfalls}
-\wrapFig{rillsGullies.jpg}{0.25}{fig:erosion-rills_gullies}{From \cite{Geertsema2010}}
-Rainfall-induced hydraulic erosion begins as raindrops strike exposed soil surfaces, causing splash erosion, where particles are dislodged and displaced by the impact of individual raindrops, creating tiny craters \cite{Li2024,Valette2005}. As rainfall accumulates and flows overland, it transitions into sheet erosion, where a thin layer of water, known as sheet flow, moves across the land surface. This process is often intensified on sloped terrain, where the water gains momentum as it descends, picking up and carrying loose particles downslope. Sheet erosion can remove a uniform layer of soil across a large area, gradually depleting soil fertility and weakening the structure of the soil surface.
+\AltTextImage{
+    \subsubsubsection{Rainfalls}
+    % \wrapFig{rillsGullies.jpg}{0.25}{fig:erosion-rills_gullies}{From \cite{Geertsema2010}}
+    Rainfall-induced hydraulic erosion begins as raindrops strike exposed soil surfaces, causing splash erosion, where particles are dislodged and displaced by the impact of individual raindrops, creating tiny craters \cite{Li2024,Valette2005}. As rainfall accumulates and flows overland, it transitions into sheet erosion, where a thin layer of water, known as sheet flow, moves across the land surface. This process is often intensified on sloped terrain, where the water gains momentum as it descends, picking up and carrying loose particles downslope. Sheet erosion can remove a uniform layer of soil across a large area, gradually depleting soil fertility and weakening the structure of the soil surface.
+}{rillsGullies.jpg}{From \cite{Geertsema2010}}{fig:erosion-rills_gullies}
 
 On steeper or more prolonged slopes, sheet flow may concentrate into small channels, initiating rill erosion \cite{Gatto2000}. Rills are narrow, shallow channels that cut into the soil as water flow converges, carving miniature stream-like paths down the slope. As rills deepen and widen, they can evolve into larger channels in a process called gully erosion. Gullies represent a more severe stage of erosion, where channels become deep and wide enough that normal agricultural or natural processes cannot easily repair them. Gullies disrupt the landscape, fragmenting ecosystems, and accelerating the removal of topsoil.
 
@@ -322,13 +330,15 @@ In most works, the amount of water falling at each point of the terrain can be t
 
 As the motion of water is easier to model on the surface of the terrain, almost all algorithms consider the terrain with a 2.5D representation. On a large-scale, this assumption is beneficial but limits their scope to this type of representation, making them unavailable to volumetric models. Particle-based methods are then proposed to overcome this issue for smaller-scale terrains, using 3D Eulerian fluid simulations on voxel terrain representations \cite{Benes2006} or Lagrangian simulations on TIN terrains \cite{Kristof2009} at the expense of much higher computational time.
 
-\subsubsection{Chemical erosion and caves}
+\AltTextImage{
+    \subsubsection{Chemical erosion and caves}
 
-% \wrapFigR{corrosion_erosion.pdf}{0.25}{fig:erosion-corrosion-erosion}
-% { ... }
-\wrapFigR{seaCaveArch.jpg}{0.25}{fig:erosion-corrosion-erosion}{By Steve Hillebrand/U. S. Fish and Wildlife Service}
+    % \wrapFigR{corrosion_erosion.pdf}{0.25}{fig:erosion-corrosion-erosion}
+    % { ... }
+    % \wrapFigR{seaCaveArch.jpg}{0.25}{fig:erosion-corrosion-erosion}{By Steve Hillebrand/U. S. Fish and Wildlife Service}
 
-Chemical erosion, also known as chemical weathering, involves the chemical reactions between water and rock that lead to the dissolution and alteration of minerals within the rock. This process is especially significant in river and coastal environments, where water, often containing dissolved carbon dioxide, interacts with rocks like limestone and dolostone to form weak carbonic acid. This acid reacts with carbonate minerals, gradually breaking down the rock structure through a process called dissolution. Over time, this breakdown weakens rock formations, making them more susceptible to mechanical erosion by water.
+    Chemical erosion, also known as chemical weathering, involves the chemical reactions between water and rock that lead to the dissolution and alteration of minerals within the rock. This process is especially significant in river and coastal environments, where water, often containing dissolved carbon dioxide, interacts with rocks like limestone and dolostone to form weak carbonic acid. This acid reacts with carbonate minerals, gradually breaking down the rock structure through a process called dissolution. Over time, this breakdown weakens rock formations, making them more susceptible to mechanical erosion by water.
+}{seaCaveArch.jpg}{By Steve Hillebrand/U. S. Fish and Wildlife Service}{fig:erosion-corrosion-erosion}
 
 Chemical erosion is particularly influential in the formation of karst landscapes, where the dissolution of carbonate rocks creates unique features such as caves, sinkholes, and underground drainage systems. As acidic water seeps into fractures within the rock, it slowly enlarges these cracks, leading to the creation of hollow spaces and intricate cave networks. In addition to carbonic acid, other dissolved ions, such as sulfur and organic acids, can also contribute to the chemical weathering of rocks in various environments. The dissolution of soluble rocks such as limestone forms extensive karst landscapes, including networks of underground caves, over thousands to millions of years.
 
@@ -363,21 +373,27 @@ The generation of complete karst networks has been studied in different domains,
     \label{fig:erosion-wind-erosion}
 \end{figure}
 
-\wrapFig{sandDunes.jpg}{0.25}{fig:erosion-sand-dunes}{Sand dunes, from \cite{Sun2006}}
+% \wrapFig{sandDunes.jpg}{0.25}{fig:erosion-sand-dunes}{Sand dunes, from \cite{Sun2006}}
 Aeolian erosion, also known as wind erosion, is the process by which wind transports, dislodges, and deposits particles of soil, sand, and rock, particularly in arid and semi-arid regions where vegetation is sparse. This form of erosion is driven by the movement of loose particles across the surface and the abrasive impact of wind-driven sand. Aeolian erosion leads to distinctive landforms that shape desert landscapes, coastal areas, and regions downwind of deserts. Wind erosion typically occurs through three main processes: deflation (the removal of fine particles), saltation (the bouncing movement of medium-sized particles), and abrasion (the wearing down of rock surfaces by wind-driven particles).
 
-\subsubsubsection{Sand dunes}
-One such feature is sand dunes, mounds or ridges of sand formed by the accumulation of wind-transported particles. As wind moves sand across a surface, obstacles such as rocks or vegetation can slow the particles, causing them to settle and accumulate into dunes. The shape and type of dune depend on wind direction, strength, sand availability, and landscape features. Common types of dunes include barchan dunes, which are crescent-shaped with tips pointing downwind, transverse dunes, long ridges perpendicular to the wind, and star dunes, which have multiple arms formed by shifting winds. These dunes are dynamic, migrating over time as wind continues to move sand particles, contributing to the constantly evolving desert landscape.
+\AltTextImage{
+    \subsubsubsection{Sand dunes}
+    One such feature is sand dunes, mounds or ridges of sand formed by the accumulation of wind-transported particles. As wind moves sand across a surface, obstacles such as rocks or vegetation can slow the particles, causing them to settle and accumulate into dunes. The shape and type of dune depend on wind direction, strength, sand availability, and landscape features. Common types of dunes include barchan dunes, which are crescent-shaped with tips pointing downwind, transverse dunes, long ridges perpendicular to the wind, and star dunes, which have multiple arms formed by shifting winds. These dunes are dynamic, migrating over time as wind continues to move sand particles, contributing to the constantly evolving desert landscape.
+}{sandDunes.jpg}{Sand dunes, from \cite{Sun2006}}{fig:erosion-sand-dunes}
 
-\subsubsubsection{Yardangs}
-Yardangs, another aeolian feature, are elongated ridges formed where softer material is eroded faster than more resistant rock. The wind-carved ridges align with the prevailing wind direction, creating streamlined shapes with steep sides facing into the wind and gentler slopes on the leeward side. Yardangs vary widely in size, from small ridges a few meters long to massive formations stretching for kilometers, as seen in desert regions of Iran and Egypt. They illustrate the power of wind erosion in shaping landscapes over long periods, with their formation largely dependent on rock hardness, wind intensity, and particle size. These streamlined rock formations are carved by persistent wind eroding softer material faster than harder material, typically forming over centuries.
+\AltTextImage{
+    \subsubsubsection{Yardangs}
+    Yardangs, another aeolian feature, are elongated ridges formed where softer material is eroded faster than more resistant rock. The wind-carved ridges align with the prevailing wind direction, creating streamlined shapes with steep sides facing into the wind and gentler slopes on the leeward side. Yardangs vary widely in size, from small ridges a few meters long to massive formations stretching for kilometers, as seen in desert regions of Iran and Egypt. They illustrate the power of wind erosion in shaping landscapes over long periods, with their formation largely dependent on rock hardness, wind intensity, and particle size. These streamlined rock formations are carved by persistent wind eroding softer material faster than harder material, typically forming over centuries.
+    % \wrapFig{Yardang.jpg}{0.25}{fig:erosion-yardang}{Yardang, from Leaflet}
+}{Yardang.jpg}{Yardang, from Leaflet}{fig:erosion-yardang}
 
-% \wrapFig{Yardang.jpg}{0.25}{fig:erosion-yardang}{Yardang, from Leaflet}
-% \wrapFig{ventifact2.jpg}{0.25}{fig:erosion-ventifact}{Ventifact, from Segerstrom, K. — U.S. Geological Survey}
-\subsubsubsection{Ventifacts}
-Ventifacts are rocks that have been shaped and polished by the abrasive action of wind-driven sand. These rocks typically exhibit flat, smooth surfaces that are often oriented in the same direction as the prevailing winds. Their formation occurs predominantly in arid environments where loose sand is available to act as a natural sandblasting tool. This erosive process highlights the power of wind as a geomorphic agent, capable of sculpting rocks into distinctive shapes over time. Rocks shaped by wind-driven sand, ventifacts can take decades to centuries to form, depending on local wind conditions and rock exposure.
+% \wrapFig{ventifact2.jpg}{0.25}{fig:erosion-ventifact}{Ventifact, from Segerstrom, K. - U.S. Geological Survey}
+\AltTextImage{
+    \subsubsubsection{Ventifacts}
+    Ventifacts are rocks that have been shaped and polished by the abrasive action of wind-driven sand. These rocks typically exhibit flat, smooth surfaces that are often oriented in the same direction as the prevailing winds. Their formation occurs predominantly in arid environments where loose sand is available to act as a natural sandblasting tool. This erosive process highlights the power of wind as a geomorphic agent, capable of sculpting rocks into distinctive shapes over time. Rocks shaped by wind-driven sand, ventifacts can take decades to centuries to form, depending on local wind conditions and rock exposure.
 
-% \wrapFig{ventifact.jpg}{0.25}{fig:erosion-ventifact}{Ventifact, from Christine Schultz}
+    % \wrapFig{ventifact.jpg}{0.25}{fig:erosion-ventifact}{Ventifact, from Christine Schultz}
+}{ventifact.jpg}{Ventifact, from Christine Schultz}{fig:erosion-ventifact}
 
 \smallConclusion
 
@@ -416,11 +432,11 @@ Few works have been focusing their effort on the understanding and modeling of g
 % % Basin formation also has significant implications for hydrocarbon reservoirs as many of the world's oil and gas deposits are found in these structures. Sedimentary basins like the Persian Gulf Basin have become focal points for energy resources due to their extensive oil and natural gas deposits formed from organic matter buried under layers of sediment.
 
 \subsubsection{Volcanic activity}
-Volcanic activity is a powerful tectonic process that alters landscapes by creating new landforms through the eruption of magma from the Earth's mantle. Volcanoes form primarily at tectonic boundary zones—either where plates diverge, allowing magma to rise and fill the gaps, or where one plate subducts beneath another, melting into magma due to high pressure and temperature.
+Volcanic activity is a powerful tectonic process that alters landscapes by creating new landforms through the eruption of magma from the Earth's mantle. Volcanoes form primarily at tectonic boundary zones either where plates diverge, allowing magma to rise and fill the gaps, or where one plate subducts beneath another, melting into magma due to high pressure and temperature.
 
 The surface changes wrought by volcanic activity are profound and varied. When a volcano erupts, it can deposit layers of lava that solidify into new rock formations, gradually building the volcanic cones and mountainous structures that are characteristic of volcanic islands and mountain ranges. For example, the formation of the Hawaiian Islands is the result of repeated eruptions of volcanoes, which have created high volcanic islands from the ocean floor for nearly a hundred million years.
 
-% In addition to lava flows, volcanoes can emit vast amounts of tephra—fragments of rock and solidified lava ejected into the air. The accumulation of tephra can bury landscapes, altering topography rapidly and contributing to the slope instability of the terrain. Over time, tephra layers can consolidate into tuff, a rock type that forms a significant component of some volcanic landscapes.
+% In addition to lava flows, volcanoes can emit vast amounts of tephra-fragments of rock and solidified lava ejected into the air. The accumulation of tephra can bury landscapes, altering topography rapidly and contributing to the slope instability of the terrain. Over time, tephra layers can consolidate into tuff, a rock type that forms a significant component of some volcanic landscapes.
 
 Pyroclastic flows are another aspect of volcanic activity that dramatically changes the terrain. These fast-moving currents of hot gas and volcanic matter can race down the sides of a volcano, obliterating everything in their path and laying down thick deposits that can form natural barriers or change drainage patterns by damming rivers and creating lakes almost instantaneously.
 
@@ -448,183 +464,11 @@ Root systems form the foundation of soil stability. Deep-rooted plants like many
 
 The canopy of vegetation acts as a first line of defense against the erosive force of rain. By intercepting raindrops, tree canopies distribute the water's impact over a wider area and decrease the velocity at which water hits the ground. This dispersion reduces the kinetic energy of raindrops, which lessens their ability to dislodge soil particles. Beneath the main canopy, smaller shrubs and herbaceous plants catch residual droplets, providing a secondary layer of protection that minimizes splash erosion and soil displacement.
 
-The presence of vegetative cover significantly modifies surface runoff dynamics. Dense plant life adds physical barriers—stems, leaves, and branches—that increase the land's surface roughness and impede the flow of runoff water. This roughness slows down water movement, allowing more time for the water to seep into the soil rather than washing it away. Additionally, the process of transpiration, where plants absorb water from the ground and release it into the atmosphere, reduces the soil's moisture level, thereby increasing its capacity to absorb further rainfall. This cycle plays a critical role in maintaining soil hydration balance and reducing the volume of runoff during precipitation events.
+The presence of vegetative cover significantly modifies surface runoff dynamics. Dense plant life adds physical barriers that increase the land's surface roughness and impede the flow of runoff water. This roughness slows down water movement, allowing more time for the water to seep into the soil rather than washing it away. Additionally, the process of transpiration, where plants absorb water from the ground and release it into the atmosphere, reduces the soil's moisture level, thereby increasing its capacity to absorb further rainfall. This cycle plays a critical role in maintaining soil hydration balance and reducing the volume of runoff during precipitation events.
 
 \midConclusion
 
 As we can see, many different erosion processes can occur on terrains over very different timescales. However, each procedural generation algorithms are mimicking a small amount of these processes at once. The choice of the terrain representation is a limiting factor in the possibilities offered to the developer. We can however see that most of the erosion processes are very similar and are composed of three main steps, even if their name differ depending on the phenomenon: the detachment of matter, its displacement, and the deposition in smaller sediments. The displacement is guided by the environment in which the erosion occurs. It may be only the force of gravity, the water flow, the wind or the trajectories of glaciers. 
-
-
-
-% \subsection{Erosion processes}
-% Driven by an array of natural forces and processes, erosion varies significantly across environments, from the intense carving of river valleys to the subtle reshaping of slopes in arctic regions. In this section, we present the primary types of erosion—thermal, hydraulic, and wind erosion—alongside other significant processes that contribute to landscape change. Each erosion type not only influences distinct terrain forms but also varies in applicability depending on terrain representation in simulations. Notably, not all erosion types are easily adaptable to all forms of terrain representation, due to inherent limitations in data resolution and computational methods.
-
-% % \subsubsection{Gravity-driven erosion}
-
-% \subsubsection{Thermal erosion}
-% \wrapFig{0.25}{freeze-thaw.jpg}{Freeze-thaw process from \cite{Wang2017}}{fig:erosion-freeze_thaw}
-
-% Freeze-thaw weathering, also known as frost wedging or frost shattering, is a process that occurs when water infiltrates cracks and pores within rocks and then freezes. As the water turns to ice, it expands, exerting pressure on the rock and causing it to fracture and break apart over time. This cycle of freezing and thawing is especially prevalent in regions with large temperature variations between day and night or between seasons, such as alpine and polar climates. Over time, freeze-thaw weathering contributes to the breakdown of large rocks into smaller fragments, creating loose rock material that can accumulate and migrate downslope.
-
-% Freeze-thaw weathering plays a crucial role in shaping landscapes, as it gradually weakens rock faces and cliff edges, contributing to the formation of loose rock debris that eventually becomes part of other erosive processes, such as the development of talus slopes.
-
-% In procedural terrain generation, freeze-thaw weathering can be approximated by simulating rock fragmentation along cliff edges and exposed surfaces. By incrementally adding fractures and breaking down rock surfaces, procedural models can create natural-looking debris fields and fragmented rock faces. This effect can be achieved with iterative algorithms that simulate rock degradation over time, enhancing realism in mountainous or cold-region terrains.
-
-
-
-
-% % Thermal erosion is the process through which temperature changes, primarily freeze-thaw cycles or permafrost thaw, lead to the breakdown, displacement, and reshaping of soil, rock, and sediment. This type of erosion is most prevalent in cold environments, including arctic, subarctic, and alpine regions where seasonal or climate-driven temperature fluctuations are common. When temperatures drop, water within rock and soil expands as it freezes, exerting pressure that weakens the material. As temperatures rise and the ice melts, the material is left fractured, which can lead to gradual downslope movement of soil and rocks. Thermal erosion is also prominent in permafrost regions, where the thawing of ice-rich ground destabilizes the soil, causing ground subsidence and creating unique landforms such as thermokarst lakes and thaw slumps.
-
-% % % \subsubsubsection{Thaw slumps}
-% % \wrapFig{0.25}{thermokarst.jpg}{Alexander Gabyshev, Research Institute of Applied Ecology of the North}{fig:erosion-thermokarst}
-% % Thaw slumps are bowl-shaped depressions that form when permafrost thaws, destabilizing the ground and causing large sections of soil and sediment to slump or slide downslope. These features are often seen on slopes, where the melting ground ice leads to waterlogged soil that can no longer support itself. Thaw slumps can expand over time as warming continues to melt permafrost, creating zones of exposed soil and water pooling at the base. In regions with high permafrost content, thaw slumps contribute to significant landscape transformation and are indicators of ongoing thermal erosion.
-
-% % \subsubsubsection{Thermokarst landforms}
-% % Thermokarst landforms, such as thermokarst lakes, ponds, and pits, emerge when ground ice within permafrost melts and causes the ground to collapse. As ice-rich permafrost thaws, it creates depressions that often fill with water, forming thermokarst lakes and ponds. These features are common in arctic and subarctic landscapes, where gradual permafrost melt reshapes the ground. Thermokarst landscapes can expand as thawing progresses, sometimes merging into larger lakes or interconnected depressions, leading to more extensive terrain deformation over time.
-
-% % In geomorphology, "thermal erosion" refers specifically to temperature-induced processes, such as freeze-thaw cycles. Initially inspired by this idea, in the domain of procedural terrain generation, the term "thermal erosion" is often used to describe material movement driven by gravity (with or without a real notion of temperature changes), including processes like soil creep, landslides, and slope stabilization. 
-
-
-% \subsubsubsection{Talus slopes}
-% \wrapFig{0.25}{talus.png}{Mark A. Wilson (Department of Geology, The College of Wooster)}{fig:erosion-talus}
-
-% Talus slopes, also known as scree slopes, are accumulations of loose, angular rock debris at the base of cliffs, steep slopes, or mountainous areas. These slopes form as fragments of rock break off due to weathering processes like freeze-thaw and gravity pulls them downslope, where they accumulate in a cone-shaped deposit. Talus slopes are common in high-altitude or cold regions where physical weathering of rock faces is intense, and they contribute to the visual ruggedness of mountainous landscapes.
-
-% Talus slopes are important indicators of ongoing weathering and erosion in mountainous areas. They provide habitat niches and help regulate drainage patterns around cliffs and steep slopes by absorbing rainwater and reducing surface runoff.
-
-% In procedural terrain generation, talus slopes can be simulated by redistributing rock fragments or particles to accumulate at the base of cliffs or steep inclines. This effect can be achieved by applying gravity-based algorithms that allow loose materials to fall and settle, forming natural slopes of debris at the base of rocky terrain. Talus slope simulation adds depth to mountainous landscapes, giving them a natural and weathered appearance.
-
-% % Talus slopes, also known as scree slopes, form in mountainous and polar areas where rock faces or cliffs naturally break down over time. As rock fragments accumulate at the base of these slopes, they create a distinctive pile of angular debris. This gradual buildup of material forms a talus slope, commonly found beneath cliff faces where rock fracturing and weathering are prevalent. In procedural terrain generation, talus slopes are often approximated by redistributing particles or fragments to mimic the natural accumulation of debris at the base of slopes.
-
-% % \subsubsubsection{Rock fracturing and block fields}
-% % Rock fracturing, leading to the formation of block fields (or felsenmeer), occurs over extended periods as exposed bedrock gradually breaks down into smaller fragments. In high-altitude or high-latitude areas, these fields of broken rock form stable expanses across mountain ridges or plateaus. These block fields represent the cumulative effect of weathering and gravity-driven displacement over many cycles, creating unique terrain patterns. Procedurally, block fields can be simulated by fragmenting rock surfaces and distributing material along slopes, reflecting gradual, gravity-driven displacement.
-
-% % \subsubsubsection{Soil creep}
-% % Soil creep is a slow, gradual movement of soil and sediment downslope, occurring on slopes where soil and loose materials are susceptible to displacement. This subtle movement is influenced by natural instability in the slope, causing soil particles to shift downslope over time. In procedural terrain generation, soil creep can be approximated through iterative adjustments that mimic this gentle downslope movement, creating realistic, stabilized slopes over repeated cycles.
-
-% \subsubsubsection{Landslides}
-% \wrapFig{0.25}{earthflow-erosions.jpg}{Different slides}{fig:erosion-landslides_processes}
-
-% Landslides encompass a range of processes where rock, soil, or debris moves downslope due to gravitational forces. Landslides can vary greatly in scale and speed, from rapid, sudden rockfalls to slow, gradual soil creep. Key types of landslides include:
-% \begin{Itemize}
-    
-%     \Item{Rockfalls:} Sudden release of rock from steep faces, often leading to fast movement downslope.
-%     \Item{Soil creep:} Slow, gradual downslope movement of soil or rock, often unnoticed over short time spans.
-%     \Item{Mudflows and debris flows:} Rapid flows of water-saturated soil and debris, typically triggered by heavy rainfall or snowmelt.
-%     \Item{Thermokarst slumping:} In permafrost regions, thawing ground ice causes the ground to collapse and slump, often creating depressions and rapidly redistributing soil downslope.
-% \end{Itemize}
-    
-% Landslides are a major force in landscape evolution, rapidly reshaping terrain and redistributing materials across slopes and valleys. They often follow periods of intense rainfall, seismic activity, or sudden thawing in permafrost areas, and are critical in maintaining slope stability over geological timescales.
-
-% In procedural terrain generation, landslides can be simulated by identifying areas where slopes exceed stability thresholds and triggering material displacement. For example, rockfall and debris flow simulations can be created by allowing particles on steep slopes to detach and move downslope in response to gravity. For gradual processes like creep, procedural models can apply small, iterative displacements to terrain layers, creating a subtle smoothing effect over time. Simulating landslides in this way adds dynamic, varied textures to terrains, enhancing the realism of steep, weathered landscapes.
-
-
-% % \subsubsubsection{Patterned ground}
-% % Patterned ground is a distinctive terrain feature characterized by geometric arrangements of soil and rock, such as polygons, stripes, or circular patterns on the surface. These formations arise as soil and rock particles rearrange over time, often influenced by the structural layout of the ground itself. Common in arctic and alpine regions, patterned ground provides visual markers of ongoing landscape change. In procedural generation, these patterns can be simulated by arranging particles or adjusting surface characteristics to create visually appealing and natural-looking terrain patterns.
-
-% % Thermal erosion is driven by large temperature shifts, transferring material based on slope thresholds. The process is iterative, redistributing material until slopes stabilize. It can be computed efficiently on height fields and layered terrains due to their manipulable height nature \cite{Musgrave1989, Benes2001, Peytavie2009b}. However, its application on voxel grids is challenging due to limited Z-axis resolution.
-
-% \subsubsection{Hydraulic erosion}
-
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width = 0.8 \linewidth]{hydraulic_erosion.pdf}
-%     \caption{Hydraulic erosion is tailored by the friction of water displacing sediments in a slope}
-%     \label{fig:erosion-hydraulic-erosion}
-% \end{figure}
-
-% Hydraulic erosion is the process by which water, through its motion and force, dislodges and transports soil, sediment, and rock from the Earth's surface. This erosion occurs in various forms across landscapes, driven by factors such as water velocity, volume, and surface material composition. Hydraulic erosion is a primary force in reshaping landforms, forming valleys, river channels, and coastlines, and it plays a central role in sediment redistribution in both terrestrial and coastal environments.
-
-% 2.5D terrains are widely studied for this simulation, using either water slope velocities \cite{Neidhold2005} or water simulations for erosion effects \cite{Mei2007}. For smaller scales, 3D fluid simulations on voxel grids have been proposed \cite{Benes2006}. Kristof et al \cite{Kristof2009} used SPH (Smoothed Particle Hydrodynamics) for meshless erosion simulations on various terrains. Their method involves numerous particle interactions, demanding significant computational power. Our approach draws inspiration from this but enhances efficiency by removing certain particle interactions.
-
-% \subsubsubsection{Rivers}
-
-% \begin{wrapfigure}{R}{0.25\textwidth}
-%     \includegraphics[width=\linewidth]{river_erosion.pdf}
-%     \caption{The erosion on the river bank is the combination of two processes: the detachment of the bottom of the sides, then the break of the upper coasts. }
-%     \label{fig:erosion-river-erosion-profile}
-% \end{wrapfigure}
-
-% In river systems, hydraulic erosion occurs as flowing water exerts a mechanical force on the riverbanks and bed. The energy of the moving water dislodges soil and rock particles, transporting them downstream. This process, known as fluvial erosion, deepens and widens river channels over time, contributing to the development of valleys, canyons, and floodplains. River-based hydraulic erosion is influenced by factors such as water velocity, sediment load, and riverbed composition, with faster-flowing rivers typically eroding at higher rates and transporting larger sediment particles.
-
-% \subsubsubsection{Rain}
-
-% Rain-induced hydraulic erosion, or rainfall erosion, involves the impact of raindrops on exposed soil surfaces. When raindrops strike the ground, they create small craters, displacing soil particles in a process known as splash erosion. As rain accumulates and flows overland, this sheet flow (or sheet erosion) can wash away layers of soil, especially on slopes where water can gain momentum. Prolonged or intense rainfall leads to greater erosion, creating rills or small channels on the surface that can develop into larger gullies, significantly altering the landscape.
-
-% \subsubsubsection{Corrosion}
-
-% \begin{wrapfigure}{R}{0.25\textwidth}
-%     \includegraphics[width=\linewidth]{corrosion_erosion.pdf}
-%     \caption{.}
-%     \label{fig:erosion-corrosion-erosion}
-% \end{wrapfigure}
-
-% Corrosion, or chemical erosion, in the context of hydraulic processes, refers to the chemical interactions between water and rock that lead to the dissolution or weakening of rock material. This form of erosion is common in river and coastal environments where water, often containing dissolved carbon dioxide, forms weak carbonic acid that reacts with minerals in rocks, particularly limestone. The chemical breakdown of rock through corrosion complements the mechanical forces of hydraulic erosion, making rocks more susceptible to further dislodgement and transport by water.
-
-% \subsubsubsection{Landslides}
-
-% In hydraulic erosion, landslides occur when water infiltrates soil or rock on slopes, increasing weight and reducing cohesion, leading to a sudden downslope movement of material. This process, also called slope failure, is often triggered by heavy or prolonged rainfall that saturates the soil, reducing its stability. Landslides contribute to hydraulic erosion by quickly redistributing large volumes of soil and rock, which are then often carried further by streams or rivers. Landslide-prone areas with steep slopes, loose soil, or unstable geological layers are especially susceptible to this form of erosion.
-
-% \subsubsubsection{Coasts}
-
-% Coastal erosion is the process by which wave action and tidal forces wear away and reshape coastlines, removing sediment and rock from beaches, cliffs, and shorelines. The energy from waves striking the shore can dislodge particles, leading to abrasion, where sediment carried by water further erodes rock surfaces. Over time, coastal erosion forms cliffs, caves, and other coastal landforms, and it is influenced by factors such as wave energy, sea level, coastal rock type, and shoreline configuration. Coastal erosion plays a vital role in shaping dynamic coastal landscapes, but it also poses challenges for coastal management due to its impact on infrastructure and habitats.
-
-% \subsubsection{Wind erosion}
-
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width = 0.8 \linewidth]{wind_process.png}
-%     \caption{Wind erosion includes the lifting of the sand, the transport through the wind, and its deposition. }
-%     \label{fig:erosion-wind-erosion}
-% \end{figure}
-
-% Aeolian erosion, also known as wind erosion, is the process by which wind transports, dislodges, and deposits particles of soil, sand, and rock, particularly in arid and semi-arid regions where vegetation is sparse. This form of erosion is driven by the movement of loose particles across the surface and the abrasive impact of wind-driven sand. Aeolian erosion leads to distinctive landforms that shape desert landscapes, coastal areas, and regions downwind of deserts. Wind erosion typically occurs through three main processes: deflation (the removal of fine particles), saltation (the bouncing movement of medium-sized particles), and abrasion (the wearing down of rock surfaces by wind-driven particles).
-
-% \subsubsubsection{Sand dunes}
-% Sand dunes are mounds or ridges of sand formed by the accumulation of wind-transported particles. As wind moves sand across a surface, obstacles like rocks or vegetation can slow the particles, causing them to settle and accumulate into dunes. The shape and type of dune depend on wind direction, strength, sand availability, and landscape features. Common types of dunes include barchan dunes (crescent-shaped with tips pointing downwind), transverse dunes (long ridges perpendicular to the wind), and star dunes (with multiple arms formed by shifting winds). Dunes are dynamic features that migrate over time as wind continues to move sand particles, contributing to the constantly evolving desert landscape.
-
-% \subsubsubsection{Yardangs}
-% Yardangs are elongated ridges formed by wind erosion in areas where softer material is eroded faster than more resistant rock. The wind-carved ridges align with the prevailing wind direction, creating streamlined shapes with steep sides facing into the wind and gentler slopes on the lee side. Yardangs vary widely in size, from small ridges a few meters long to massive formations stretching for kilometers, as seen in desert regions of Iran and Egypt. Yardangs illustrate the power of wind erosion in shaping landscapes over long periods, with their formation largely dependent on rock hardness, wind intensity, and particle size.
-
-% \subsubsubsection{Loess deposits}
-% Loess deposits are thick layers of fine, silt-sized particles carried long distances by wind and eventually settled as dust. These deposits often originate from deserts, dry lake beds, or glaciated areas, where winds pick up and transport the fine particles. Loess is highly fertile due to its mineral content and porosity, and it forms extensive layers, sometimes tens of meters thick, in regions like the Loess Plateau in China and parts of the Midwestern United States. Loess deposits support agriculture but are also prone to erosion if disturbed, as they are easily moved by water and wind once exposed.
-
-% \subsubsubsection{Hoodoos}
-% Hoodoos, also known as pedestal rocks, are tall, slender rock formations with a broad top and narrow base. They form in arid regions where differential erosion occurs, with wind and occasional water eroding the softer rock layers at the base faster than the harder rock above. This process leaves a columnar structure with a cap rock that protects the softer layers below. Hoodoos are commonly found in areas like the American Southwest, where they add striking, unique shapes to the landscape. Their formation highlights the selective erosion caused by wind over long periods in areas with varied rock resistance.
-
-% \subsubsubsection{Sand sheets}
-% Sand sheets are flat or gently undulating expanses of sand that form in areas with limited sand supply or lower wind speeds. Unlike dunes, sand sheets lack significant relief and often cover large areas of desert terrain. The sand in these sheets typically consists of a mix of fine sand, silt, and clay, which creates a stable surface with limited movement. Sand sheets are common around dune fields and act as transitional zones between active dunes and more stabilized desert surfaces.
-
-% \subsubsubsection{Pinnacles}
-% Pinnacles are tall, slender rock formations that emerge as softer surrounding material is eroded by wind over time, leaving behind more resistant rock in narrow, tower-like structures. Pinnacles can form in areas with alternating layers of hard and soft rock, where wind erosion gradually removes the less resistant material. They are typically found in arid, open landscapes such as Australia's Pinnacles Desert, where they create dramatic, vertical formations that illustrate the erosive power of wind in carving and isolating rock features over extended periods.
-
-% \subsubsubsection{Caves}
-% Aeolian caves, though less common than those formed by water erosion, develop when wind-driven sand particles carve out hollows in softer rock formations. These wind-eroded caves form in areas with exposed, less resistant rock layers where continuous abrasion slowly excavates recesses or shallow caves. The shape and size of aeolian caves depend on wind direction, particle size, and rock hardness. Aeolian caves are typically shallow, but they highlight how wind erosion can create sheltered, unique spaces within desert landscapes.
-
-% Wind erosion shifts material through wind force, notably impacting areas with fine surface particles like deserts. It has been modeled on discrete height fields \cite{Roa2004, Paris2019b} by mimicking sand's wind-driven trajectory and using thermal erosion for corrections. This process is simulated by iteratively displacing small amounts of matter, which make it less suitable for representations with discrete height resolution.
-
-% % \subsubsection{Erosion by other forces}
-% % Erosion comes in many forms. These includes influences like glaciers, snow, tectonic movements, and fauna, each introducing distinctive terrain patterns, enriching its intricacy \cite{Cordonnier2016,Cordonnier2017a,Cordonnier2018,Cordonnier2017b,Argudo2020}. However, most methods are tailored by a given terrain representation, often the height fields, and might not be applicable to other representations due to their intrinsic properties.
-
-% \subsubsection{Other erosive processes}
-% Beyond hydraulic, aeolian, and thermal erosion, several other processes contribute to the shaping and reshaping of landscapes. These include geophysical forces like glaciers, volcanos, and tectonic activity, as well as biological influences from animals and vegetation. Each of these processes plays a unique role in erosion, affecting landscapes in ways that reflect the interaction between natural forces and biological systems.
-
-% \subsubsubsection{Glaciers}
-% Glacial erosion is a powerful force in cold regions, where massive ice sheets and glaciers carve through rock, creating distinctive landforms. As glaciers move, they erode the underlying rock through plucking, where ice adheres to rock and pulls chunks away, and abrasion, where embedded rocks grind against bedrock, polishing and deepening valleys. These processes lead to characteristic U-shaped valleys, fjords, cirques, and moraines, all indicative of glacial activity. Glaciers not only erode but also transport vast amounts of sediment, which is deposited as the ice retreats, reshaping the landscape in profound ways.
-
-% \subsubsubsection{Volcanos}
-% Volcanos indirectly contribute to erosion by depositing loose volcanic material, such as ash, lava, and pyroclastic flows, which are highly vulnerable to wind and water erosion once settled. Following an eruption, rain or snowmelt can trigger lahars—volcanic mudflows that rapidly carry large amounts of debris down slopes, eroding valleys and river channels. Volcanic ash, when deposited on surrounding landscapes, can also create a loose surface layer that is quickly dispersed by wind, contributing to accelerated erosion and landscape change in volcanic regions.
-
-% \subsubsubsection{Tectonic activity}
-% Tectonic forces, through uplift and faulting, create steep landscapes and set the stage for erosion by raising mountain ranges and exposing new rock. This uplift increases slopes and makes landscapes more vulnerable to gravity-driven erosion and surface runoff. Earthquakes can further destabilize slopes, triggering landslides and rockfalls that accelerate erosion. By lifting rock layers to the surface, tectonic activity continuously exposes fresh material to erosion, influencing the overall rate and pattern of landscape evolution over geologic time.
-
-% \subsubsubsection{Animals}
-% Animals contribute to erosion in various ways, collectively known as bioerosion. Burrowing animals like rodents, insects, and earthworms disturb soil structure, loosening particles and making soil more vulnerable to wind and water erosion. Grazing animals compact soil and reduce vegetation cover, exposing the land to erosive forces. In coastal and marine environments, bioerosion is driven by organisms such as barnacles, algae, and coral-eating fish, which weaken and erode rock, contributing to shoreline and reef changes.
-
-% \subsubsubsection{Vegetation}
-% Vegetation plays a dual role in erosion by both stabilizing and sometimes enhancing erosion rates. Roots help anchor soil, making vegetated areas more resistant to erosion, while foliage shields soil from direct impact by wind and rain. However, when vegetation is removed through activities like logging, agriculture, or wildfires, the exposed soil becomes highly susceptible to rapid erosion. Different vegetation types also have varying effects; for example, deep-rooted plants provide better soil stability than shallow-rooted grasses. In deforested areas, erosion can increase dramatically, leading to sediment runoff, loss of soil fertility, and habitat degradation.
-
-
 
 
 
@@ -942,13 +786,10 @@ Erosion occurs in three stages: material detachment, transport and deposition (r
 \subsection{Overview}
 Particles are transported through the medium and can pass through several different media. Each medium is defined by a density and a flow. Consider, for example, water density to be \SI{1000}{\kilogram \per \cubic \meter} and that of air to be \SI{1}{\kilogram \per \cubic \meter}. The gravity applied to the particles is then very different between open and submerged environments due to the difference in buoyancy, while the process remains similar.
 Using a pre-calculated flow field to guide particle movement simplifies the simulation by treating particles as independent entities, eliminating the need for inter-particle calculations. This not only reduces significantly the overall execution time but also offers users high flexibility over the quality of the simulation and simplify the implementation. 
-\subsection{Erosion process}
-\begin{wrapfigure}{r}{2,4cm}
-\centering
-\includegraphics{erosion_deposition.pdf}
-
-\end{wrapfigure}
-Every time the particle hits the ground, a given amount $\erosionAmount$ of sediment is detached from the ground (red arrows) while another amount $\depositAmount$ of sediments is deposed at this location (green arrows). Our erosion model is based on the work of Wojtan et al where regular 3D grids are used to estimate the fluid velocity and sediment transport \cite{Wojtan2007}. In the spirit of \cite{Kristof2009}, we transposed their method into a particle-based erosion simulation, but, in our proposition, we decouple the particle system from the fluid simulation, making the process more flexible and opening the door for richer effects that can easily be produced. 
+\AltTextImage{
+    \subsection{Erosion process}
+    Every time the particle hits the ground, a given amount $\erosionAmount$ of sediment is detached from the ground (red arrows) while another amount $\depositAmount$ of sediments is deposed at this location (green arrows). Our erosion model is based on the work of Wojtan et al where regular 3D grids are used to estimate the fluid velocity and sediment transport \cite{Wojtan2007}. In the spirit of \cite{Kristof2009}, we transposed their method into a particle-based erosion simulation, but, in our proposition, we decouple the particle system from the fluid simulation, making the process more flexible and opening the door for richer effects that can easily be produced. 
+}{erosion_deposition.pdf}{}{}
 
 \subsubsection{Detachment}
 As a particle approaches the surface of the terrain, its motion applies friction at the interface between fluid and ground, causing bedrock to dislocate microscopic parts, that we call abrasion. We use pseudoplastics model to approximate the amount of matter removed due to the shear forces while considering the physical properties of the fluid and the ground \cite{Wojtan2007}. 

@@ -592,13 +592,13 @@ Each point's height is computed using the profile function $\heightProfile(\dist
         \distRegions_\p = i \;+\; \frac{\radius_\p - \Radius_{i}}{\Radius_{i + 1} - \Radius_{i}},
     \end{align}
     where $i$ is the index of the region containing $\p$ (i.e., $\Radius_i \le \radius_\p < \Radius_{i+1}$). This linear mapping stretches each region's radial span to the interval $[i,\,i+1]$, ensuring smooth interpolation across region boundaries. The final height at point $\p$ is then $h(\p) = \heightProfile(\distRegions_\p)$.
+    For any point $\p$, the height is finally computed as:
+    \begin{align}
+        h(\p) = \heightProfile(\distRegions_\p)
+    \end{align}
 }{outlines-top-view-x-bar.pdf, outlines-result-x-bar.pdf}{The $\tilde{x}$ parameter is used to stretch the 1D height function $\heightProfile(x)$ to fit the distances from the center to the outlines of each region defined in the top-view sketch.}{fig:coral-island-parametric-distance}
 
 
-For any point $\p$, the height is finally computed as:
-\begin{align}
-    h(\p) = \heightProfile(\distRegions_\p)
-\end{align}
 
 This approach ensures that the height field accurately follows the elevation profile specified by the user while maintaining smooth transitions between different regions of the island.
 
