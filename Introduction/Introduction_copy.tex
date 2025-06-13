@@ -1,0 +1,82 @@
+\chapter{Introduction}
+\label{chap:introduction}
+
+Over the past 50 years, terrain generation has emerged as an increasingly active domain inside the field of computer graphics. As the demand for more realistic, faster, and automated processes has grown, terrain generation techniques have evolved to meet these needs. As these objectives get progressively achieved, a new trend has started to emmerge in which focus is pushed toward user control. The focus of this work is on one specific branch of terrain generation: the interactive creation and modeling of landscapes.
+
+The utility of landscape generation goes beyond purely scientific pursuits, finding applications in diverse fields such as biology, geology, and robotics. Additionally, it has become a central tool in the entertainment industry, particularly in video games and cinema, where creating realistic and dynamic environments is key for immersive experiences. The ability to generate landscapes that help in understanding natural rules and testing hypotheses makes this the ideal tool for both researchers and industries.
+
+What sets this work apart is its emphasis on underwater landscapes or "seascapes", an area still overviewed but is important in domains such as marine biology, oceanography, and underwater robotics. Furthermore, the extension of these techniques to new areas of the entertainment industry, such as video games and cinema, presents new opportunities for innovation.
+
+However, this exploration of the domain comes with significant difficulties. Finding a balance between automation and the user's creative desires is essential, as is the ability to isolate variables and manage scaling effectively. 
+
+The central question guiding this research is: "How can we efficiently guide the user in the creation of virtual content along the production process line to maintain as much control as possible over the final product?" This concept of "guiding" rather than "replacing" the user is, from my point of view, fundamental, as no machine can truly know better than a human what the final product should look like. The goal is to present algorithms that can be used flexibly within a production pipeline, adapting to many terrain representations, fluid solvers, landscape types, user's hardwares, or objectives, whether the final use is real-time rendering, realism, or animation.
+
+Maintaining control over the creative process is essential. Each generated result should feel unique, meet the user's expectations, be explainable, and be easily correctible without requiring a complete regeneration. This approach ensures that the user remains at the center of the creative process, with the tools and algorithms serving to enhance their objectives, rather than replacing the users themselves.
+
+
+\section{Challenges in Environment Generation in Computer Graphics}
+
+This thesis is situated within the domain of computer graphics, with a primary focus on procedural modeling and user interaction. Unlike traditional approaches that emphasize rendering and visual output, this work is dedicated to the generation and structuring of data that forms the foundation of virtual environments. In particular, we are concerned with how such environments are constructed procedurally, while preserving meaningful control over their form and complexity.
+
+Procedural terrain generation presents a number of enduring challenges within computer graphics. Among these, three are particularly prominent: the need to maintain high levels of user control over the generated content, the requirement for computational efficiency and scalability, and the demand for realism or plausibility in the resulting environments. These goals often stand in tension with one another. A highly controllable system may introduce complexity that slows down generation. A fast algorithm may impose rigid constraints that reduce expressiveness. And realism, especially when linked to natural processes like erosion or geological evolution, may require approximations that affect both speed and user flexibility.
+
+The work presented in this thesis addresses these challenges primarily through interactive and procedural modeling strategies. Rather than relying on fully automatic generation, the emphasis is placed on guiding the user through intuitive tools and algorithms that allow flexible composition and refinement of terrains. This requires careful design of data structures that support real-time interaction, selection of models that balance physical plausibility with algorithmic simplicity, and an overall architecture that can accommodate a wide range of use cases, from scientific simulation to content creation.
+
+Although realism is not the central goal of this work, it plays a supporting role in enhancing the credibility and interpretability of the environments. However, the priority is placed on maintaining responsiveness and control during the modeling process, especially in situations where users need to generate large-scale scenes or iterate quickly over variations.
+
+These foundational challenges in computer graphics are compounded when the generated environments must also serve the needs of specific application domains. In the following sections, we examine two such domains—underwater robotics and marine biology—which each impose their own constraints and expectations on the modeling process. These applications demand not only geometrically consistent terrains but also physically and biologically meaningful structures, further elevating the complexity of the task.
+
+\section{Challenges in Environment Generation for Underwater Robotics}
+
+While the preceding discussion focused on general challenges in procedural modeling within computer graphics, the domain of underwater robotics introduces a distinct set of requirements that shape the terrain generation process in specialized ways. These constraints emerge from the need to simulate, test, and validate autonomous robotic missions in complex underwater environments, often before any real-world deployment is feasible.
+
+In this context, virtual environments serve as essential testing grounds. Field trials for underwater robots are not only costly and time-consuming but also prone to failure due to the unpredictable nature of marine conditions. High-fidelity digital twins of both the robot and its operating environment enable early-stage validation of mission scenarios, including the simulation of hardware faults, unforeseen environmental configurations, and sensor failure cases. As such, the generated terrain must go beyond visual plausibility—it must reflect the geometric, physical, and material conditions that the robot will encounter.
+
+One of the primary challenges lies in the scale and resolution of the generated environments. The terrain must be modeled at a resolution fine enough to simulate collisions, path planning, and local navigation—often down to the centimeter scale—while also covering large mission areas that span hundreds or thousands of square meters. Balancing these two demands requires careful design of multiscale data structures and modeling techniques that support local detail without compromising global coherence or computational efficiency.
+
+Beyond geometry, the terrain must encode material properties that influence sensor behavior. For example, the reflectance, granularity, or porosity of a surface can significantly affect the signals received by sonar, lidar, or optical sensors. This level of physical parameterization is rarely required in traditional CG applications, but becomes critical for accurate sensor simulation in robotics. Furthermore, external forces such as water currents or buoyancy must be represented in ways that can influence robot dynamics, adding another layer of complexity to the virtual environment.
+
+Finally, simulation-based testing requires both reproducibility and controlled variability. The system must support replaying identical mission scenarios to verify algorithmic consistency, while also enabling the introduction of randomized variations to test robustness. These seemingly conflicting goals demand a modeling framework that allows structured authoring of terrain features while preserving the ability to introduce stochastic changes without undermining the intended environmental constraints.
+
+These domain-specific challenges inform both the design goals and technical decisions made in this thesis. The methods proposed aim to support user-guided creation of terrain that is geometrically detailed, physically parameterized, and flexibly adjustable—ensuring that the resulting virtual environments are suitable for rigorous testing and development of underwater robotic systems.
+
+\section{Challenges in Environment Generation for Biology}
+
+In contrast to the engineering-oriented demands of underwater robotics, biological research imposes a different set of challenges on virtual environment generation. Where robotics emphasizes physical interaction and system validation, biology is concerned with understanding complex, often non-deterministic relationships between living organisms and their environments. As such, procedural terrain generation in this context must support interpretability, systemic reasoning, and the ability to simulate emergent phenomena across multiple spatial and temporal scales.
+
+Virtual environments serve as essential tools in modern biological studies, particularly those focused on marine ecosystems. Field observation remains central to biological inquiry, but it is increasingly augmented by computer simulations that help formulate and test hypotheses. These simulations allow researchers to observe long-term dynamics, investigate rare or difficult-to-reproduce events, and refine theoretical models based on computational feedback. The effectiveness of this feedback loop—between theoretical modeling, simulation, and real-world observation—depends critically on the fidelity and flexibility of the virtual environments used.
+
+Simulating ecosystems involves more than accurately modeling terrain geometry. The environment must represent both biotic and abiotic components and their interactions. Features such as coral structures, sediment composition, and water flow patterns influence not only habitat availability but also organism behavior and community dynamics. Capturing these relationships requires symbolic representations that can express domain-specific concepts while remaining computationally tractable.
+
+A further challenge lies in the injection of expert knowledge into the modeling process. Marine biologists often operate with deep but non-formalized intuition about how organisms interact with their habitats. Translating this expertise into simulation parameters demands an intuitive human-computer interface and a representation system that minimizes the risk of introducing unintentional bias. The modeling framework must bridge the gap between biological language and computational representation, enabling domain experts to influence environment generation without needing deep technical knowledge.
+
+Controlled randomness plays a critical role as well. Ecosystem simulations must include stochastic processes to capture the variability and uncertainty inherent in natural systems, while preserving a coherent structure that reflects scientific expectations. Maintaining this balance—between interpretability and spontaneity—requires procedural tools that are both expressive and constrained.
+
+Finally, the spatial scale of biological inquiry spans several orders of magnitude. A modeling system must accommodate both large-scale environmental gradients and fine-scale interactions between organisms. This multi-scale nature of biological systems introduces stringent requirements on data structures, resolution handling, and simulation coherence across scales.
+
+The symbolic and semantic approaches proposed in this thesis are shaped by these challenges. By focusing on abstraction, expert-guided structure, and composable representations, the methods developed here aim to support realistic yet controllable virtual ecosystems that meet the needs of biological research and hypothesis exploration.
+
+
+\section{Contributions and outlines}
+This thesis explores the procedural generation of underwater environments, with a particular focus on coral reef islands. Our contributions are organized into three complementary parts, covering the creation, structuring, and physical evolution of underwater terrains.
+
+\subsubsubsection{Background}
+In \cref{chap:background} we will first introduce the fondamentals of procedural terrain generation. A description of the different terrain representations is provided, as well as an overview of coral biology and coral reefs formation.
+
+
+\subsubsubsection{Automatic generation of coral reef islands}
+\AltTextImageR{
+    In \cref{chap:coral-island}, we propose a user-guided method for the procedural creation of coral reef islands. Users sketch the island shape and elevation from two projections and define a wind field that simulates long-term environmental deformation. The system models coral growth and outputs heightmaps that are further used to train a conditional generative adversarial network (cGAN) for diversified generation. This method enables rapid and controllable generation of varied reef island configurations.
+}{Chapter 1/figures/3_results.png}{}{}
+
+
+\subsubsubsection{Semantic terrain representation}
+\AltTextImageR{
+    The semantic representation we present in \cref{chap:semantic-representation} aims to design the features of a terrain with an abstraction the 3D aspect of the surface. We will introduce \glosses{EnvObj} and their simplified representation from the real world, which we used to obtain a symbolic representation of the terrain features, biotic and abiotic, that are present in the scene. Using symbolism allows us to focus on the interactions between the different elements of an environment without the high computational needs of running an accurate multiphysics simulation. Moreover, the simplified representation used allows the user to manipulate the shape of the final terrain, without having to choose a specific terrain representation.
+}{Chapter 2/figures/Canyon5.png}{}{}
+
+
+\subsubsubsection{Erosion simulation}
+\AltTextImageR{
+    To increase the realism and the visual impact of the generated synthetic landscapes, the use of terrain enhancement techniques are often required. In \cref{chap:erosion}, we tackled the specific challenge of running erosion simulations, a type of enhancement that mimics the effects of water, wind and erosive forces on a virtual terrain to improve the belivability of the final landscape. A particle-based erosion method is proposed, designed to be generalizable for flexibility on multiple levels, and its implementation is oriented towards speed and parallelization. The main flexibility of our method is to be applicable to multiple terrain representations, but also to be agnostic to the fluid solver used, and to be generalized for both landscapes and seascapes.
+}{Chapter 3/results/karst.pdf}{}{}

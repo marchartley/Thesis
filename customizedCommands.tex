@@ -262,9 +262,11 @@
       \includegraphics[width=\linewidth, height=\l_tmpa_dim, keepaspectratio, valign=t]{##1}\\%
     }%
     % \includegraphics[width=\linewidth, height=\contentheightofalttextimage, keepaspectratio, valign=t]{#2}
-    \captionsetup{font=footnotesize}
-    \captionsetup{width=\linewidth}
-    \captionof{figure}{#3}
+    \ifblank{#3}{}{
+      \captionsetup{font=footnotesize}
+      \captionsetup{width=\linewidth}
+      \captionof{figure}{#3}
+    }
     \label{#4}
   \end{minipage}%
 }
@@ -296,9 +298,11 @@
       \includegraphics[width=\linewidth, height=\l_tmpa_dim, keepaspectratio, valign=t]{##1}\\%
     }%
     % \includegraphics[width=\linewidth, height=\contentheightofalttextimage, keepaspectratio, valign=t]{#2}
-    \captionsetup{font=footnotesize}
-    \captionsetup{width=\linewidth}
-    \captionof{figure}{#3}
+    \ifblank{#3}{}{
+      \captionsetup{font=footnotesize}
+      \captionsetup{width=\linewidth}
+      \captionof{figure}{#3}
+    }
     \label{#4}
   \end{minipage}%
   \hfill % Add horizontal space between text and image

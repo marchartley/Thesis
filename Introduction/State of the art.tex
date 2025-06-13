@@ -8,6 +8,7 @@
 \appendtographicspath{ {./Chapter 3/figures/erosion/}{./Chapter 3/figures/terrain_representations/}{./Chapter 3/results/}{./Chapter 3/otherPapersRepro/} {./Chapter 3/images/erosion-processes/}}
 
 \chapter{Background}
+\label{chap:background}
 \minitoc
 
 \section{Procedural terrain generation}
@@ -15,15 +16,23 @@
 
 Procedural generation refers to algorithmically producing content rather than authoring it manually, leveraging rules, mathematical models, or data-driven methods. Its primary benefits include reducing storage needs (since content is generated on-the-fly), enabling rapid creation of large or varied content, and supporting both reproducibility and controlled variability. In terrain contexts, these advantages allow creation of vast landscapes or seascapes with relatively small parameter sets and facilitate interactive pipelines where artists or researchers can iterate quickly without storing every variant.
 
-The conceptual roots of procedural techniques in graphics trace back to fractal geometry and noise functions. Mandelbrot's work on fractals demonstrated how complex, self-similar structures can arise from simple rules and randomness, influencing landscape modeling approaches that mimic natural roughness and multi-scale detail \cite{Mandelbrot1983}. Perlin's introduction of gradient noise provided a practical mechanism to generate coherent pseudo-random patterns for textures and terrain features \cite{Perlin1985}. These foundational ideas underpin many terrain algorithms, where noise at multiple scales produces hills, valleys, and finer details.
+\AltTextImage{
+    The conceptual roots of procedural techniques in graphics trace back to fractal geometry and noise functions. Mandelbrot's work on fractals demonstrated how complex, self-similar structures can arise from simple rules and randomness, influencing landscape modeling approaches that mimic natural roughness and multi-scale detail \cite{Mandelbrot1983}. Perlin's introduction of gradient noise provided a practical mechanism to generate coherent pseudo-random patterns for textures and terrain features \cite{Perlin1985}. These foundational ideas underpin many terrain algorithms, where noise at multiple scales produces hills, valleys, and finer details.
+}{noises.pdf}{Example of procedural noises}{fig:intro-noises}
 
-Procedural paradigms are often categorized as deterministic (repeatable given fixed inputs), stochastic (introducing randomness for variation), or hybrid (structure defined by deterministic rules, with randomness filling details). Rule-based systems, where content emerges via iterative application of predefined rules or grammars, also play a role, particularly in generating structured features (e.g., river networks, vegetation patterns). In terrain generation, deterministic components ensure global coherence (e.g., major landmass shapes), while stochastic elements add natural variability (e.g., subtle elevation perturbations). Later chapters leverage these paradigms: for instance, \cref{chap:coral-island}'s sketch-based island shape combined with noise and data-driven augmentation yields varied yet controlled outputs, and \cref{chap:semantic-representation}'s ecosystem simulation is governed by rule-based systems with stochastic sampling.
+\AltTextImage{
+    Procedural paradigms are often categorized as deterministic (repeatable given fixed inputs), stochastic (introducing randomness for variation), or hybrid (structure defined by deterministic rules, with randomness filling details). Rule-based systems, where content emerges via iterative application of predefined rules or grammars, also play a role, particularly in generating structured features (e.g., river networks, vegetation patterns). In terrain generation, deterministic components ensure global coherence (e.g., major landmass shapes), while stochastic elements add natural variability (e.g., subtle elevation perturbations). Later chapters leverage these paradigms: for instance, \cref{chap:coral-island}'s sketch-based island shape combined with noise and data-driven augmentation yields varied yet controlled outputs, and \cref{chap:semantic-representation}'s ecosystem simulation is governed by rule-based systems with stochastic sampling.
+}{Snowflake5-Siertriangle11.jpg}{Fractal geometry: Sierpinsky Triangle in Koch Snowflack, from Larry Riddle}{fig:intro-fractal}
 
-Recent advances incorporate machine learning to learn distributions of terrain patches or entire landscapes from data, enabling synthesis of realistic terrain patterns beyond hand-tuned noise parameters, using especially generative models like GANs or autoencoders. \cref{chap:coral-island} uses a conditional GAN to diversify coral island heightmaps. However, a detailed description of learning-based terrain methods appears in that chapter's State-of-the-Art.
+\AltTextImage{
+    Recent advances incorporate machine learning to learn distributions of terrain patches or entire landscapes from data, enabling synthesis of realistic terrain patterns beyond hand-tuned noise parameters, using especially generative models like GANs or autoencoders. \cref{chap:coral-island} uses a conditional GAN to diversify coral island heightmaps. However, a detailed description of learning-based terrain methods appears in that chapter's State-of-the-Art.
+}{Graph-coloring-Kim2020.png}{Rule-based graph coloring from \cite{Kim2020}}{fig:intro-rule-based-Kim2020}
 
-In interactive and production pipelines, procedural systems must balance realism, speed, and user control. Fast evaluation (often parallelized and/or using GPU) supports real-time or near-interactive feedback for artist-driven editing. Parameter design and UI metaphors (e.g., sketching, semantic objects, masking) are critical to let users influence generation without overwhelming them. \cref{chap:semantic-representation}'s semantic \glosses{EnvObj} framework exemplifies user-centric design, enabling multi-scale editing and expert knowledge integration.
+In interactive and production pipelines, procedural systems must balance realism, speed, and user control. Fast evaluation (often parallelized and/or using GPU) supports real-time or near-interactive feedback for artist-driven editing. Parameter design and UI tools (e.g., sketching, semantic objects, masking) are critical to let users influence generation without overwhelming them. \cref{chap:semantic-representation}'s semantic \glosses{EnvObj} framework exemplifies user-centric design, enabling multi-scale editing and expert knowledge integration.
 
-Procedural terrain generation also encompasses physical simulation techniques such as erosion and sediment transport models, that refine initial shapes to enhance plausibility. These simulations are typically more expensive but can run offline or via parallel algorithms. \cref{chap:erosion} presents a particle-based erosion method applicable across representations (height fields, voxels, etc.), reflecting this integration of procedural and physical approaches.
+\AltTextImage{
+    Procedural terrain generation also encompasses physical simulation techniques such as erosion and sediment transport models, that refine initial shapes to enhance plausibility. These simulations are typically more expensive but can run offline or via parallel algorithms. \cref{chap:erosion} presents a particle-based erosion method applicable across representations (height fields, voxels, etc.), reflecting this integration of procedural and physical approaches.
+}{CFD-Sphynx.png}{Fluid simulation over the Great Sphynx}{fig:intro-cfd}
 
 
 
@@ -201,12 +210,12 @@ Coral reefs, once misunderstood as sea plants or lifeless rocks, are now known t
 This section summarizes key biological and ecological features of corals, focusing on elements relevant to reef morphology and terrain modeling.
 
 
-\subsection{Coral polyps and reef formation}
+\subsection{Coral polyps and colonies}
 Coral polyps are tiny, soft-bodied marine invertebrates that secrete calcium carbonate (\ch{CaCO_3}) to build an external exoskeleton. Over time, successive secretion by many polyps produces the rigid framework of a reef. Symbiosis with zooxanthellae (photosynthetic algae) supplies most of the energy for calcification; this makes coral growth strongly light-dependent and tied to shallow, clear-water zones. 
 
-From a terrain generation perspective, the \ch{CaCO_3} secretion underlies the elevation of reef structures; light dependence implies depth-based constraints on where reef "height" appears in the heightmap. Moreover, coral-built substrate can be assigned higher resistance values; abstract resistance fields may reflect accumulated skeleton.
+From a terrain generation perspective, the \ch{CaCO_3} secretion underlies the elevation of reef structures and light-dependence of the polyps implies depth-based constraints on where reef heights appears, relatively to water level. Moreover, coral-built substrate produced by accumulated skeleton, or "dead coral", increase landscape resistance to erosion.
 
-\subsection{Coral colony morphologies and zonation}
+% \subsection{Coral colony morphologies and zonation}
 Coral colonies adopt varied growth forms adapted to local conditions (light, water motion, depth). The main shapes are listed below :
 
 \begin{Itemize}
@@ -220,7 +229,7 @@ Coral colonies adopt varied growth forms adapted to local conditions (light, wat
 
     \AltTextImage{
         \Item{Foliose:} These corals form leaf-like laminae often spanning over a meter wide. They inhabit back-reefs and reef flats between 2 to 20 m depth with moderate flow and light. They provide microhabitats, surface for symbionts, trap sediment, and contribute moderate carbonate. 
-    }{Pavona_cactus_colonia_in_situ.jpg}{Foliose corals such as \textit{Pavona Cactus} have a stony skeleton but displays a petal-like structure that provide shelter to the ecosystem - Photo credit: Benzoni, F.}{fig:intro-Pavona}
+    }{Pavona_cactus_colonia_in_situ.jpg}{\textit{Pavona Cactus} - Photo credit: Benzoni, F.}{fig:intro-Pavona}
 
     \AltTextImage{
         \Item{Table/Plate:} These corals develop broad plate up to 3m wide in shallow, well-lit reef crest and upper fore-reef zones above 15m deep. They maximize photosynthesis and carbonate production, offer horizontal habitats and shaded refuges, and support encrusting life beneath which alter water flow by causing divergence above and shadows below, redistributing sediment, and producing oxygen. Fragile in storms, they form rubble that aids colonization when fragmented.
@@ -228,22 +237,22 @@ Coral colonies adopt varied growth forms adapted to local conditions (light, wat
 
     \AltTextImage{
         \Item{Encrusting:} These corals grow as thin mats tightly adhering to substrate for about a meter wide and up to 40m deep, tolerating various flow regimes. By resisting breakage and binding rubbles, they stabilize the substrate and cohesion reducing erosion.
-    }{Psammocora.jpg}{Example of a \textit{Psammocora} - Photo credit: Michael Paletta}{fig:intro-Psammocora}
+    }{Psammocora.jpg}{\textit{Psammocora} - Photo credit: Michael Paletta}{fig:intro-Psammocora}
 \end{Itemize}
 
 % Zonation: each form appears in depth- and energy-specific bands (massive on slopes; branching on crest/fore reef; foliose on flats/back-reef; table in shallow flats; encrusting in deeper/stable). This results in a necessity of depth/light/slope masks to assign morphology types; this yields realistic spatial patterns in generated reefs. Moreover, different morphologies define habitat templates and resistance fields; in EFT, they become entity types with distinct parameter sets.
 
 \subsection{Ecological interactions}
 
-Corals act as dynamic ecological agents, engaging in feedback loops with their environment; modeling them requires accounting for spatial diffusion via diverse reproductive modes, competition for resources, and bidirectional environmental influences.
+% Corals act as dynamic ecological agents, engaging in feedback loops with their environment. Modeling them requires accounting for spatial diffusion via diverse reproductive modes, competition for resources, and bidirectional environmental influences. We will describe ecological agent modeling in \cref{chap:semantic-representation}'s state of the art section.
 
-Dispersal occurs at multiple scales through budding (local polyp duplication), brooding (larvae settle near parent), polyp bail-out (stress-induced short-range resettlement), fragmentation (medium-range reattachment after disturbance) and broadcast spawning (long-range larval drift). In simulation, these map to multi-scale seeding rules or probabilistic dispersal kernels triggered by environmental and stochastic parameters.
+% Dispersal occurs at multiple scales through budding (local polyp duplication), brooding (larvae settle near parent), polyp bail-out (stress-induced short-range resettlement), fragmentation (medium-range reattachment after disturbance) and broadcast spawning (long-range larval drift). In simulation, these map to multi-scale seeding rules or probabilistic dispersal kernels triggered by environmental and stochastic parameters.
 
-Environmental stressors (such as elevated temperature, increased \ch{CO_2}, excess nutrients from runoff) heighten bleaching, reduce resilience and favor algal proliferation. Sea-level rise imposes vertical growth constraints: reefs may keep pace, lag then match, or fail to keep up. These factors translate into dynamic parameters affecting coral health or mortality state transitions (e.g., healthy - stressed - dead) and limiting maximum reef elevation relative to sea-level scenarios, enabling exploration of degradation or recovery trajectories.
+% Environmental stressors (such as elevated temperature, increased \ch{CO_2}, excess nutrients from runoff) heighten bleaching, reduce resilience and favor algal proliferation. Sea-level rise imposes vertical growth constraints: reefs may keep pace, lag then match, or fail to keep up. These factors translate into dynamic parameters affecting coral health or mortality state transitions (e.g., healthy - stressed - dead) and limiting maximum reef elevation relative to sea-level scenarios, enabling exploration of degradation or recovery trajectories.
 
-Competition for light, substrate and nutrients allows faster-growing algae (especially under high nutrients or low herbivory) to overtake corals, flattening topography and lowering complexity. Simulation can use local competition rules or cellular-automata-style state transitions driven by fields (nutrient, light, herbivory), representing algal zones as lower-relief substrate. Bioerosion by fish and invertebrates produces sediment that fills gaps, suggesting episodic sediment-deposition events balancing accretion and breakdown to shape net reef morphology.
+% Competition for light, substrate and nutrients allows faster-growing algae (especially under high nutrients or low herbivory) to overtake corals, flattening topography and lowering complexity. Simulation can use local competition rules or cellular-automata-style state transitions driven by fields (nutrient, light, herbivory), representing algal zones as lower-relief substrate. Bioerosion by fish and invertebrates produces sediment that fills gaps, suggesting episodic sediment-deposition events balancing accretion and breakdown to shape net reef morphology.
 
-Coral structural complexity feeds back via functional proxies (e.g., habitat-suitability fields, flow-resistance modifiers) instead of full geometry. These guide hydrodynamic or movement simulations (modulating flow routing and energy dissipation) and inform reef-dependent agent distributions. Reef morphology (crest, slopes, flats) attenuates waves, stabilizes sediments and buffers adjacent habitats (e.g., seagrass, mangroves). In procedural terrain generation, integrate reef features at appropriate elevations with roughness parameters feeding erosion or hydrodynamic modules without resolving every crevice.
+% Coral structural complexity feeds back via functional proxies (e.g., habitat-suitability fields, flow-resistance modifiers) instead of full geometry. These guide hydrodynamic or movement simulations (modulating flow routing and energy dissipation) and inform reef-dependent agent distributions. Reef morphology (crest, slopes, flats) attenuates waves, stabilizes sediments and buffers adjacent habitats (e.g., seagrass, mangroves). In procedural terrain generation, integrate reef features at appropriate elevations with roughness parameters feeding erosion or hydrodynamic modules without resolving every crevice.
 
 
 
@@ -253,6 +262,7 @@ Coral structural complexity feeds back via functional proxies (e.g., habitat-sui
 
 % % [CORAL DIFFUSE IN THE ENVIRONMENT]
 
+Coral dispersal and colonization occurs at multiple scales through budding (local polyp duplication), brooding (larvae settle near parent), polyp bail-out (stress-induced short-range resettlement), fragmentation (medium-range reattachment after disturbance) and broadcast spawning (long-range larval drift).
 % Coral dispersal and colonization combine sexual and asexual modes, spreading their offsprings very locally or extremely far depending on the process. From the closest to the farthest, we can note:
 
 % \begin{Itemize}
@@ -265,71 +275,95 @@ Coral structural complexity feeds back via functional proxies (e.g., habitat-sui
 
 % These modes shows a clear capacity of corals to diffuse in their environment by emitting sexual and asexual parts locally that drift with the water currents.
 
-% % [CORAL IS INFLUENCED BY THE ENVIRONMENT]
+\AltTextImage{
+    % [CORAL IS INFLUENCED BY THE ENVIRONMENT]
+    This diffusion is balanced with their mortality and environmental factors limiting their spread. The most notable factors taken into account are elevation of temperature and \ch{CO_2} concentration, visible through the increase of their bleaching frequency and reduction of resilience, as well as pollution which favor algal blooms, overcoming and shading polyps. Another key factor is sea-level changes, in response to which reefs vertical accretion may "keep up" (the coral reef stays in the sunlight, just below water), "catch up" (growth slower but eventually matches), or "give up" (cannot match and becomes submerged).
+}{Coral_bleaching.png}{Coral bleaching in the National Marine Sanctuary of America Samoa between 2014 and 2015 - Photo credit: NOAA/ XL Catlin Seaview Survey}{fig:intro-coral-bleaching}
 
+\AltTextImage{
+    % [CORAL COMPETE IN THE ENVIRONMENT]
+    Coral and algae both compete for sunlight, substrate, and nutrients. However, algae grow faster, especially under elevated nutrients or reduced herbivory, leading to algal overgrowth that smothers coral, flattens reef topography, and reduces habitat complexity and biodiversity.
+    % In ecosystem simulations, this behaviour include competitive interactions or state transitions where algae can overtake coral patches under certain field conditions (nutrient/light/herbivore proxies). Terrain impact: algal-dominated zones may be represented by lower-relief substrate without reef elevation.
+    On a small scale level, other organisms (e.g., parrotfish, certain invertebrates) break down dead coral, producing sediment that can fill gaps and support new settlement. %This introduce occasional sediment deposition events in erosion model; balance between accretion and bioerosion influences net morphology over time.
+}{Coral_Algae_competition.png}{Algae colonizing massive coral}{fig:intro-coral-algae}
 
-% \textbf{Climate stressors:} Elevated temperature and \ch{CO_2} increase bleaching frequency and reduce resilience; pollution and runoff raise nutrient levels, favoring algal blooms.
+\AltTextImage{
+    % [CORAL INFLUENCE THE ENVIRONMENT]
 
-% \emph{Implication:} Could parameterize coral health or mortality rates in ecosystem simulation; drive scenarios of degradation or recovery.
+    Structural complexity (rugosity, crevices) offers shelter for juveniles, spawning grounds, and supports diverse species ( about 25\% of marine species in < 0.1\% ocean area). True internal geometry of a reef is not currently completely understood but is know to influence the hydrodynamics, and by extension, biodiversity, of the whole biome. 
+    %  in our work we abstract it by encoding "presence of complex structure" via functional parameters (e.g., habitat suitability fields, flow resistance modifiers) rather than modeling fine-scale surfaces. 
 
-% \textbf{Sea-level rise response:} Reef vertical accretion may "keep up" (the coral reef stays in the sunlight, just below water), "catch up" (growth slower but eventually matches), or "give up" (cannot match and becomes submerged).
+    These fine-scale properties have influence on the large-scale environment as they introduce turbulences and drag in the water flow and producing sediment deposition at small and large distances. % In fluid or movement simulations, incorporate rugosity/resistance parameters derived from morphology type rather than resolving every crevice. In EFT, these fields influence distribution and behavior of reef-dependent agents.
+}{Coral_shelter.jpg}{Coral reefs are porous, resulting in biodiversity shelter, but also complex hydrodynamics}{fig:intro-coral-shelter}
 
-% \emph{Implication:} In procedural generation or dynamic modeling, include constraints on maximum reef elevation based on assumed growth rates vs. sea-level scenarios; can guide long-term morphology or sensitivity analyses.
+For the same reasons, reef crest breaks incoming waves; morphological complexity (e.g., branching structures) slows water and reduces energy reaching shore, mitigating erosion.
 
-% % [CORAL COMPETE IN THE ENVIRONMENT]
-
-% Coral and algae both compete for sunlight, substrate, and nutrients. Algae grow faster, especially under elevated nutrients or reduced herbivory, leading to algal overgrowth that smothers coral, flattens reef topography, and reduces habitat complexity and biodiversity. In ecosystem simulations, this behaviour include competitive interactions or state transitions where algae can overtake coral patches under certain field conditions (nutrient/light/herbivore proxies). Terrain impact: algal-dominated zones may be represented by lower-relief substrate without reef elevation.
-
-% On a small scale level, other organisms (e.g., parrotfish, certain invertebrates) break down dead coral, producing sediment that can fill gaps and support new settlement. This introduce occasional sediment deposition events in erosion model; balance between accretion and bioerosion influences net morphology over time.
-
-% % [CORAL INFLUENCE THE ENVIRONMENT]
-
-% Structural complexity (rugosity, crevices) offers shelter for juveniles, spawning grounds, and supports diverse species ( about 25\% of marine species in < 0.1\% ocean area). True internal geometry of a reef is not currently completely understood; in our work we abstract it by encoding "presence of complex structure" via functional parameters (e.g., habitat suitability fields, flow resistance modifiers) rather than modeling fine-scale surfaces. 
-
-% This fine-scale properties have influence on the large-scale environment. In fluid or movement simulations, incorporate rugosity/resistance parameters derived from morphology type rather than resolving every crevice. In EFT, these fields influence distribution and behavior of reef-dependent agents.
-
-% For the same reasons, reef crest breaks incoming waves; morphological complexity (e.g., branching structures) slows water and reduces energy reaching shore, mitigating erosion.
-
-% The erosion process is directly impacted by the small-scale. Reef structures trap or stabilize sediments, protecting mangroves and seagrass beds.
+The erosion process is directly impacted by the small-scale. Reef structures trap or stabilize sediments, protecting mangroves and seagrass beds. Simulation of the evolution of the landscape and fluid dynamics would require to take into account almost as importantly the large-scale and small-scale bathymetry, as well as the geological and biological aspect of the ecosystem, to reach accuracy.
 
 % Procedural terrain should include reef features (crest, slopes, flats) at appropriate elevations and roughness to inform hydrodynamic or erosion simulations. Abstract resistance fields derived from morphology guide flow routing and energy dissipation in particle-based erosion models. Adjacent zones (seagrass/mangrove) can be placed based on reef buffering.
 
+
+Overall, from these behaviours, we consider that corals act as important dynamic ecological agents, engaging in feedback loops with their environment. Modeling them requires accounting for spatial diffusion via diverse reproductive modes, competition for resources, and bidirectional environmental influences. We will describe ecological agent simulation in \cref{chap:semantic-representation}'s state of the art section.
 
 
 \subsection{Coral reefs' shape}
 In \citep{Darwin1842}, Darwin outlined his atoll reefs formation theory, inspired by his Beagle voyage. He proposed that Earth's crust movements under the oceans created atolls. Darwin described a three-stage process in atoll formation: a fringing reef forms around a sinking volcanic island, evolving into a barrier reef, and finally an atoll reef as subsidence continues.
 
 \subsubsection{Fringing reefs}
-Fringing reefs are the most common and widespread type of coral reef, typically found in close proximity to the shore, forming a narrow band that runs parallel to the coastline. These reefs are directly attached to the land, often with no significant separation between the reef and the shore, or they may be separated by a shallow, narrow lagoon. The proximity of fringing reefs to the coast makes them easily accessible, but it also exposes them to various environmental stressors from both the land and the sea.
+Fringing reefs are the most common and widespread coral reefs. They form narrow bands near the shore and are usually attached directly to land. Sometimes, they are separated by a shallow, narrow lagoon. Their coastal location makes them accessible but also exposes them to land- and sea-based stressors.
 
-The structure of fringing reefs is defined by several key components. The reef flat is the area closest to the shore, characterized by shallow waters where corals grow in a relatively calm environment. The reef flat often extends out to the reef crest, which is the highest point of the reef and is typically exposed at low tide. The reef crest is subjected to the full force of incoming waves, making it a zone of high energy where only the hardiest coral species can thrive. Beyond the reef crest, the reef slope descends into deeper water, where the diversity and density of coral species often increase. The reef slope provides a habitat for a wide variety of marine organisms, taking advantage of the increased light availability and water movement.
+\AltTextImage{
+    Their structure includes the reef flat, reef crest, and reef slope. The reef flat is shallow, calm, and closest to shore. The reef crest is higher, exposed at low tide, and faces strong wave action. Only hardy corals survive there. The reef slope descends into deeper water where coral diversity and density increase. It offers habitat for many marine organisms due to more light and water movement.
+    
+    Fringing reefs grow in clear, shallow waters with high light, warmth, and moderate waves. Coastal currents bring nutrients, helping coral growth. Yet, their location makes them prone to sedimentation, runoff, and pollution. Sediment can smother corals and block sunlight. Runoff adds nutrients, causing algae blooms that compete with corals.
+}{Moorea_fringing.jpg}{Fringing reef around Mo'orea island.}{fig:intro-fringing-reef-Moorea}
+    
+    Zonation defines coral distribution across the reef. On the flat, corals handle temperature shifts and sediment. On the crest, species tolerate waves and low-tide exposure. The slope supports more diverse corals, often forming large structures that shelter marine life.
+    % Fringing reefs are the most common and widespread type of coral reef, typically found in close proximity to the shore, forming a narrow band that runs parallel to the coastline. These reefs are directly attached to the land, often with no significant separation between the reef and the shore, or they may be separated by a shallow, narrow lagoon. The proximity of fringing reefs to the coast makes them easily accessible, but it also exposes them to various environmental stressors from both the land and the sea.
 
-Fringing reefs form in areas where the environmental conditions are favorable for coral growth, including clear, shallow waters with high light availability, warm temperatures, and moderate wave action. These conditions allow corals to establish themselves close to the shore, where they can benefit from the nutrients carried by coastal currents. However, the proximity of fringing reefs to land also makes them more vulnerable to the impacts of sedimentation, freshwater runoff, and pollution from human activities. Sedimentation can smother corals, blocking the light they need for photosynthesis, while excess nutrients from runoff can lead to algal blooms that compete with corals for space and resources.
+    % The structure of fringing reefs is defined by several key components. The reef flat is the area closest to the shore, characterized by shallow waters where corals grow in a relatively calm environment. The reef flat often extends out to the reef crest, which is the highest point of the reef and is typically exposed at low tide. The reef crest is subjected to the full force of incoming waves, making it a zone of high energy where only the hardiest coral species can thrive. Beyond the reef crest, the reef slope descends into deeper water, where the diversity and density of coral species often increase. The reef slope provides a habitat for a wide variety of marine organisms, taking advantage of the increased light availability and water movement.
 
-Within fringing reefs, there is a distinct pattern of zonation, where different coral species and marine organisms are distributed according to the environmental conditions across the reef. On the reef flat, where conditions are relatively calm, corals tend to be more resilient to temperature fluctuations and sedimentation. On the reef crest, the coral species are more adapted to withstand the wave action and exposure during low tides. The reef slope, with its deeper waters and more stable conditions, often supports a greater diversity of coral species, including those that form large, complex structures that provide habitat for a variety of marine life.
+    % Fringing reefs form in areas where the environmental conditions are favorable for coral growth, including clear, shallow waters with high light availability, warm temperatures, and moderate wave action. These conditions allow corals to establish themselves close to the shore, where they can benefit from the nutrients carried by coastal currents. However, the proximity of fringing reefs to land also makes them more vulnerable to the impacts of sedimentation, freshwater runoff, and pollution from human activities. Sedimentation can smother corals, blocking the light they need for photosynthesis, while excess nutrients from runoff can lead to algal blooms that compete with corals for space and resources.
 
-\subsubsection{Barrier reefs}
-These reefs typically develop from fringing reefs that have grown over long periods, during which the coastline has either subsided or sea levels have risen. As the land subsides or the sea level rises, the original fringing reef is gradually separated from the shore, forming a lagoon between the reef and the coastline.
-The depth and size of the lagoon, as well as the height of the reef crest, are influenced by factors such as wave action, currents, and the rate of coral growth. The lagoon often contains patch reefs, seagrass beds, and sandy areas. The zonation within barrier reefs creates distinct ecological niches, with different species of corals, fish, and invertebrates adapted to the specific conditions found in each zone. The fore reef slope, with its high-energy environment, supports species that are resilient to strong waves and currents. In contrast, the more sheltered back reef and lagoon provide habitats for species that prefer calmer waters and stable conditions.
+    % Within fringing reefs, there is a distinct pattern of zonation, where different coral species and marine organisms are distributed according to the environmental conditions across the reef. On the reef flat, where conditions are relatively calm, corals tend to be more resilient to temperature fluctuations and sedimentation. On the reef crest, the coral species are more adapted to withstand the wave action and exposure during low tides. The reef slope, with its deeper waters and more stable conditions, often supports a greater diversity of coral species, including those that form large, complex structures that provide habitat for a variety of marine life.
 
-Barrier reefs also play role in the connectivity between marine ecosystems. They act as a bridge between the open ocean and the coastal environments, facilitating the movement of marine species across different habitats. Many species of fish and invertebrates migrate between the reef and the lagoon during different life stages, using the barrier reef as a nursery or feeding ground.
+\AltTextImage{
+    \subsubsection{Barrier reefs}
+    These reefs typically develop from fringing reefs that have grown over long periods, during which the coastline has either subsided or sea levels have risen. As the land subsides or the sea level rises, the original fringing reef is gradually separated from the shore, forming a lagoon between the reef and the coastline.
+    The depth and size of the lagoon, as well as the height of the reef crest, are influenced by factors such as wave action, currents, and the rate of coral growth. The lagoon often contains patch reefs, seagrass beds, and sandy areas. The zonation within barrier reefs creates distinct ecological niches, with different species of corals, fish, and invertebrates adapted to the specific conditions found in each zone. The fore reef slope, with its high-energy environment, supports species that are resilient to strong waves and currents. In contrast, the more sheltered back reef and lagoon provide habitats for species that prefer calmer waters and stable conditions.
+}{Divine_Providencia_barrier_reef.jpg}{Aerial image of Providencia island}{fig:intro-barrier-reef-Providencia}
 
-\subsubsection{Atolls}
-The formation of atolls is a process that unfolds over millions of years. As the island gradually subsides, mainly due to tectonic activity, the coral continues to grow upward toward the sunlight. Eventually, the island disappears entirely beneath the ocean's surface, leaving behind a ring-shaped coral reef that encircles the central lagoon. This theory of atoll formation was first proposed by Charles Darwin and remains one of the most widely accepted explanations for the development of atolls.
+    Barrier reefs also play role in the connectivity between marine ecosystems. They act as a bridge between the open ocean and the coastal environments, facilitating the movement of marine species across different habitats. Many species of fish and invertebrates migrate between the reef and the lagoon during different life stages, using the barrier reef as a nursery or feeding ground.
 
-The lagoon varies greatly in depth, ranging from shallow areas with sandy bottoms to deeper sections where patch reefs and seagrass beds may develop. The sheltered waters of the lagoon provide a calmer environment compared to the outer reef slope, allowing a different community of marine species to develop. These species often include a mix of corals, fish, and invertebrates that are weakly tolerant of the high-energy conditions. The lagoon may also contain small coral reef islands, known as motus, which form from the accumulation of coral debris and sand.
+    \subsubsection{Atolls}
+    The formation of atolls is a process that unfolds over millions of years. As the island gradually subsides, mainly due to tectonic activity, the coral continues to grow upward toward the sunlight. Eventually, the island disappears entirely beneath the ocean's surface, leaving behind a ring-shaped coral reef that encircles the central lagoon. This theory of atoll formation was first proposed by Charles Darwin and remains one of the most widely accepted explanations for the development of atolls.
+    
+\AltTextImage{
+    The lagoon varies greatly in depth, ranging from shallow areas with sandy bottoms to deeper sections where patch reefs and seagrass beds may develop. The sheltered waters of the lagoon provide a calmer environment compared to the outer reef slope, allowing a different community of marine species to develop. These species often include a mix of corals, fish, and invertebrates that are weakly tolerant of the high-energy conditions. The lagoon may also contain small coral reef islands, known as motus, which form from the accumulation of coral debris and sand.
+}{Tetiaroa_from_sky.jpeg}{Aerial view of Tetiaroa atoll, French Polynesia - Photo credit: }{fig:intro-atoll-Tetiaroa}
 
-The outer reef slope, with its exposure to the open ocean, is home to species that are adapted to strong currents and waves, including large predatory fish and robust coral species. In contrast, the sheltered lagoon provides a haven for more delicate species, such as seagrasses, small fish, and invertebrates, which rely on the calmer waters for feeding and reproduction. This diversity of habitats within a relatively small area makes atolls particularly important for marine biodiversity.
+    The outer reef slope, with its exposure to the open ocean, is home to species that are adapted to strong currents and waves, including large predatory fish and robust coral species. In contrast, the sheltered lagoon provides a haven for more delicate species, such as seagrasses, small fish, and invertebrates, which rely on the calmer waters for feeding and reproduction. This diversity of habitats within a relatively small area makes atolls particularly important for marine biodiversity.
 
 \subsubsection{Other types of coral reefs and structures}
-Patch reefs are smaller, isolated coral formations that occur within lagoons, between larger reef systems, or in shallow coastal waters. These reefs are typically found in the sheltered environments of lagoons, where conditions are favorable for coral growth but do not support the development of larger reef structures.
+\AltTextImage{
+    Patch reefs are small, isolated coral formations found in lagoons, between larger reefs, or in shallow coastal waters. They grow in sheltered areas that support coral but not larger reef structures. Simpler and more isolated than larger reefs, they are often circular or irregular. They form where water depth, light, and wave action favor coral growth. The formation of patch reefs is influenced by a combination of biological and physical factors. Coral larvae settle in suitable areas where they can establish colonies and grow over time. They often develop in locations where the water is clear, and the substrate is stable, such as rocky outcrops or fossil coral ridges.
+    % Patch reefs are smaller, isolated coral formations that occur within lagoons, between larger reef systems, or in shallow coastal waters. These reefs are typically found in the sheltered environments of lagoons, where conditions are favorable for coral growth but do not support the development of larger reef structures.
 
-Patch reefs are characterized by their simplicity and isolation compared to their larger counterparts. These small, often circular or irregularly shaped coral assemblages form in areas where the physical and environmental conditions, such as water depth, light availability, and wave action, allow for the localized growth of coral colonies.
+    % Patch reefs are characterized by their simplicity and isolation compared to their larger counterparts. These small, often circular or irregularly shaped coral assemblages form in areas where the physical and environmental conditions, such as water depth, light availability, and wave action, allow for the localized growth of coral colonies.
 
-The formation of patch reefs is influenced by a combination of biological and physical factors. Coral larvae settle in suitable areas where they can establish colonies and grow over time. They often develop in locations where the water is clear, and the substrate is stable, such as on sandy bottoms or rocky outcrops.
+    % The formation of patch reefs is influenced by a combination of biological and physical factors. Coral larvae settle in suitable areas where they can establish colonies and grow over time. They often develop in locations where the water is clear, and the substrate is stable, such as rocky outcrops fossil coral ridges.
+}{coral-patch-belize.png}{Parch reefs behind the barrier reef of Belize}{fig:intro-patch-reef-Belize}
 
-Spurs and grooves are alternating ridges (spurs) and channels (grooves) found on the fore reef slope, which is the part of the reef that faces the open ocean. This distinctive pattern is formed primarily by the action of waves and currents, which erode and shape the coral over time. Spurs, the ridges of coral that extend seaward, help to break up and dissipate the energy of incoming waves. The grooves, or channels between these ridges, serve as pathways for water and sediment to flow back into the ocean after waves break on the reef. This spurred and grooved topography is crucial for the reef's ability to protect the coastline, as it reduces the energy of waves before they reach the more fragile parts of the reef and the shore.
+\AltTextImage{
+    Spurs and grooves are alternating ridges (spurs) and channels (grooves) found on the fore reef slope, which is the part of the reef that faces the open ocean. This distinctive pattern is formed primarily by the action of waves and currents, which erode and shape the coral over time. Spurs, the ridges of coral that extend seaward, help to break up and dissipate the energy of incoming waves. The grooves, or channels between these ridges, serve as pathways for water and sediment to flow back into the ocean after waves break on the reef. This spurred and grooved topography is crucial for the reef's ability to protect the coastline, as it reduces the energy of waves before they reach the more fragile parts of the reef and the shore.
+}{Spurs-and-groove-Broomfield-Reef.jpg}{Sprurs-and-grooves patterns in Broomfield Reef, Australia - Photo credit: AIMS}{fig:intro-spurs-and-grooves-Broomfield}
 
-Pinnacles are vertical, column-like coral formations that rise from the seafloor, often found on the fore reef slope or within lagoons. These towering structures add significant three-dimensional complexity to the reef system. Pinnacles can vary greatly in size, from small outcrops to large, towering columns that reach close to the water's surface. The formation of pinnacles is often influenced by localized environmental conditions, such as strong currents or the availability of hard substrate for coral larvae to settle on.
+\AltTextImage{
+    Pinnacles are vertical, column-like coral structures rising from the seafloor, found on fore reef slopes or in lagoons. They add three-dimensional complexity to reefs and vary from small outcrops to tall columns near the surface. Their formation depends on local conditions like strong currents and hard substrate for coral larvae.
 
-Bommies are isolated outcrops or large coral heads that rise from the seafloor, typically within lagoons or on the reef slope. These features, sometimes referred to as coral knolls, can be quite large and are often found scattered across the lagoon or near the outer edges of the reef. Bommies are important structural components of the reef as they contribute to the overall topographic complexity of the environment. 
+Bommies are isolated outcrops or large coral heads, also called coral knolls. They rise from the seafloor and occur in lagoons or on reef slopes. Often large and scattered across lagoons or near reef edges, they are key to the reef’s topographic complexity.
+    % Pinnacles are vertical, column-like coral formations that rise from the seafloor, often found on the fore reef slope or within lagoons. These towering structures add significant three-dimensional complexity to the reef system. Pinnacles can vary greatly in size, from small outcrops to large, towering columns that reach close to the water's surface. The formation of pinnacles is often influenced by localized environmental conditions, such as strong currents or the availability of hard substrate for coral larvae to settle on.
+
+    % Bommies are isolated outcrops or large coral heads that rise from the seafloor, typically within lagoons or on the reef slope. These features, sometimes referred to as coral knolls, can be quite large and are often found scattered across the lagoon or near the outer edges of the reef. Bommies are important structural components of the reef as they contribute to the overall topographic complexity of the environment. 
+}{Pinnacle-Chumphon.jpg}{Chumphon pinnacle, Kho Toa, Tailand - Phot credit: Allie Vautin}{fig:intro-pinnacle-Chumphon}
+
