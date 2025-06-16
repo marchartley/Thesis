@@ -1,5 +1,73 @@
+\resetgraphicspath
+\appendtographicspath{{./Introduction/figures}}
+
+\chapter*{Résumé long}
+Au cours des cinquante dernières années, la génération de terrains est devenue un domaine de plus en plus actif au sein de l'informatique graphique. À mesure que la demande augmente pour des processus plus réalistes, plus rapides et automatisés, les techniques de génération de terrains ont évolué pour répondre à ces exigences. Alors que ces objectifs sont progressivement atteints, une nouvelle tendance émerge, mettant l'accent sur le contrôle utilisateur. Ce travail se concentre sur une branche spécifique de la génération de terrains : la création interactive et la modélisation de paysages.
+
+L'utilité de la génération de paysages dépasse les seuls objectifs scientifiques, trouvant des applications dans des domaines variés tels que la biologie, la géologie et la robotique. De plus, elle est devenue un outil central dans l'industrie du divertissement, en particulier dans les jeux vidéo et le cinéma, où la création d'environnements réalistes et dynamiques est devenue essentielle pour proposer des expériences immersives. La capacité à générer des paysages aidant à comprendre les lois naturelles et à tester des hypothèses fait de cette approche un outil idéal tant pour les chercheurs que pour les industries.
+
+
+Ce travail se concentre sur les paysages sous-marins, un domaine encore peu exploré mais important dans des secteurs comme la biologie marine, l'océanographie et la robotique sous-marine. Par ailleurs, l'extension de ces techniques à de nouveaux domaines de l'industrie du divertissement, tels que les jeux vidéo et le cinéma, présente de nouvelles opportunités d'innovation.
+
+Cependant, cette exploration du domaine s'accompagne de difficultés significatives. Trouver un équilibre entre l'automatisation et les désirs créatifs de l'utilisateur est essentiel, tout comme la capacité à gérer efficacement la mise à l'échelle.
+% Il existe trois approches principales pour générer des mondes virtuels : les simulations, l'interaction/modélisation par l'utilisateur, et la modélisation procédurale. La modélisation procédurale, en particulier, se distingue par son potentiel de "génération automatique", où le contenu est créé à l'aide de fonctions indépendamment des actions de l'utilisateur. Par exemple, on peut utiliser le bruit de Perlin pour la génération de terrains, du bruit aléatoire pour la modélisation de roches, ou des algorithmes spécifiques pour la génération de textures.
+La question centrale guidant cette recherche est : "Comment pouvons-nous guider efficacement l'utilisateur dans la création de contenu virtuel au long de la chaîne de production afin de conserver autant que possible le contrôle sur le produit final ?" Ce concept de "guider" plutôt que de "remplacer" l'utilisateur est, de mon point de vue, fondamental, car aucune machine ne peut réellement savoir mieux qu'un humain ce à quoi doit ressembler le produit final. L'objectif est de proposer des algorithmes utilisables de manière flexible au sein d'une chaîne de production, s'adaptant à de nombreuses représentations de terrain, solveurs de fluides, types de paysages, acceleration matérielle de l'utilisateur, ou objectifs, que l'usage final soit le rendu en temps réel, le réalisme ou l'animation.
+
+Maintenir le contrôle sur le processus créatif est essentiel. Chaque résultat généré doit paraître unique, répondre aux attentes de l'utilisateur, être explicable et facilement corrigible sans nécessiter une régénération complète. Cette approche garantit que l'utilisateur reste au centre du processus créatif, les outils et algorithmes servant à renforcer ses objectifs, plutôt qu'à le remplacer lui-même.
+
+\section*{Défis dans la génération d'environnements pour la robotique sous-marine}
+
+Cette thèse se développe parallèlement à la création d'un robot d'observation pour la biologie marine sous-marine. Dans ce contexte, les environnements virtuels sont indispensables, car les expérimentations sur le terrain sont coûteuses et sujettes à échec. Les jumeaux numériques du robot et de son environnement permettent de simuler des défaillances matérielles ainsi que des scénarios rares ou imprévisibles.
+
+Pour modéliser avec précision une mission robotique, le simulateur a besoin de la géométrie du terrain, de la faune et de la flore que l'appareil et ses capteurs pourraient rencontrer. Il requiert également les paramètres matériels intrinsèques pour simuler le comportement des capteurs et les forces externes agissant sur le robot.
+
+La géométrie de la scène doit être mise à l'échelle de manière appropriée pour correspondre à la fois au robot, qui opère avec une précision centimétrique, et à la zone de mission, qui peut couvrir des milliers de mètres carrés. Les environnements sous-marins exigent aussi de prendre en compte la troisième dimension, la verticalité. Les matériaux simulés doivent réagir correctement aux ondes lumineuses et sonores, en tenant compte de la porosité, de la granularité et de la réflectance, qui peuvent altérer les signaux des capteurs. Les courants marins affectent fortement la navigation et nécessitent une modélisation avancée pour une simulation réaliste et interactive.
+
+La conception de bancs d'essai virtuels implique la création de surfaces et d'obstacles, ainsi que la possibilité de rejouer des simulations avec des configurations identiques ou légèrement modifiées. Introduire de l'aléa tout en préservant l'intention du concepteur représente un défi supplémentaire pour maintenir le contrôle tout en apportant de la variabilité.
+
+\section*{Défis dans la génération d'environnements pour la biologie}
+
+Les environnements virtuels jouent un rôle crucial en recherche biologique en permettant l'observation et l'étude des interactions au sein des écosystèmes. La biologie repose largement sur la phénoménologie, où la compréhension émerge de l'observation du comportement et des interactions des entités dans des conditions spécifiques.
+
+Simuler ces interactions permet aux scientifiques de tester et d'affiner leurs théories. Les modèles peuvent révéler des comportements inattendus, mettre en évidence des lacunes dans la compréhension et dévoiler des corrélations cachées. Ce processus itératif entre théorie, simulation et observation est central pour faire progresser les connaissances en biologie.
+
+Pour être utiles, les simulations doivent suivre de près les règles biologiques tout en intégrant un aléa contrôlé. Cet équilibre permet un comportement réaliste tout en laissant place à la découverte de phénomènes nouveaux. L'interaction homme-machine doit contribuer à combler le fossé entre l'expertise biologique et les outils informatiques, permettant aux experts du domaine de contribuer efficacement sans introduire de biais.
+
+Ces environnements doivent également fonctionner à plusieurs échelles spatiales. Les simulations doivent couvrir de vastes zones pour refléter des écosystèmes complets tout en capturant des interactions fines entre des entités proches.
+
+\section*{Défis de la génération d'environnements en informatique graphique}
+
+Globalement, ce travail se situe dans le domaine de l'informatique graphique, spécifiquement dans les branches de la modélisation et de l'interaction.
+
+La conception d'outils interactifs efficaces nécessite une prise en compte soignée des besoins des utilisateurs et des contraintes techniques. Cela implique d'explorer comment les utilisateurs interagissent avec les éléments de terrain, de définir des contrôles intuitifs et de garantir que l'interface soutient une capacité de conception à la fois créatif et efficace. Derrière ces outils se cachent des décisions d'implémentation critiques qui affectent directement l'utilisabilité et les performances. Le choix des structures de données, par exemple, détermine la manière dont le système gère des environnements vastes ou complexes. Les modèles mathématiques et physiques employés doivent trouver un équilibre entre réalisme et coût de calcul, surtout dans des scénarios où l'interaction doit rester fluide et réactive. Les algorithmes doivent également pouvoir être parallélisés pour tirer parti des accélérations matérielles modernes, permettant des mises à jour et des retours en temps réel. Enfin, simplifier certains aspects des phénomènes naturels est souvent nécessaire pour réduire la charge de calcul tout en conservant une plausibilité visuelle. Ces décisions à plusieurs niveaux, de la conception de l'interaction à l'efficacité algorithmique, assurent que le système reste à la fois centré sur l'utilisateur et techniquement robuste.
+
+\section*{Contributions et plan}
+Cette thèse explore la génération procédurale d'environnements sous-marins, avec un focus particulier sur les îles dôtés de récifs coralliens. Nos contributions sont organisées en trois parties complémentaires, couvrant la création, la structuration et l'évolution physique des terrains sous-marins.
+
+% \subsubsubsection{Contexte}
+Avant tout, dans le \cref{chap:background}, nous introduirons les fondamentaux de la génération procédurale de terrains. Une description des différentes représentations de terrains est fournie, ainsi qu'un aperçu de la biologie corallienne et de la formation des récifs coralliens.
+
+% \subsubsubsection{Génération automatique d'îles de récifs coralliens}
+Dans \cref{chap:coral-island}, nous proposons une méthode guidée par l'utilisateur pour la création procédurale d'îles de récifs coralliens. Les utilisateurs esquissent la forme de l'île et l'élévation à partir de deux projections et définissent un champ vectoriel de vent, simulant la déformation du terrain à long terme. Le système modélise la croissance du récif corallien et génère des cartes de hauteur utilisées ensuite pour entraîner un \textit{conditional Generative Adversarial Network} (cGAN) pour une génération diversifiée. Cette méthode permet une génération rapide et contrôlable d'îles.
+
+% \subsubsubsection{Représentation sémantique du terrain}
+La représentation sémantique que nous présentons dans \cref{chap:semantic-representation} vise à concevoir les caractéristiques d'un terrain avec une abstraction de l'aspect 3D de la surface. Nous introduirons les objets environementaux et leur représentation simplifiée à partir du monde réel, que nous avons utilisée pour obtenir une représentation symbolique des caractéristiques du terrain, biotiques et abiotiques, présentes dans la scène. L'utilisation du symbolisme permet de se concentrer sur les interactions entre les différents éléments d'un environnement sans les coûts de calcul élevés d'une simulation physique et chimique précise. De plus, la représentation simplifiée utilisée permet à l'utilisateur de manipuler la forme du terrain final sans avoir à choisir une représentation de terrain spécifique.
+
+% \subsubsubsection{Simulation d'érosion}
+Pour augmenter le réalisme et l'impact visuel des paysages synthétiques générés, l'utilisation de techniques d'amélioration de terrain est souvent requise. Dans \cref{chap:erosion}, nous avons abordé le défi spécifique d'exécuter des simulations d'érosion, un type d'amélioration qui imite les effets de l'eau, du vent et des forces érosives sur un terrain virtuel pour augmenter la crédibilité du paysage final. Une méthode d'érosion basée sur des particules est proposée, conçue pour être généralisable afin de proposer une implémentation privilégiant rapidité et parallelisme et offrant de la flexibilité à plusieurs niveaux : applicable à plusieurs représentations de terrain, mais aussi agnostique par rapport au solveur de fluide utilisé, et  généralisable tant aux paysages terrestres qu'aux paysages marins.
+
+
+
+
+
+
+
 \chapter{Introduction}
 \label{chap:introduction}
+
+\teaser{
+    \autofitgraphics[]{TeaserChap1.png, TeaserChap2.png, TeaserChap3.png}
+}
 
 Over the past 50 years, terrain generation has emerged as an increasingly active domain inside the field of computer graphics. As the demand for more realistic, faster, and automated processes has grown, terrain generation techniques have evolved to meet these needs. As these objectives get progressively achieved, a new trend has started to emmerge in which focus is pushed toward user control. The focus of this work is on one specific branch of terrain generation: the interactive creation and modeling of landscapes.
 
@@ -7,7 +75,7 @@ The utility of landscape generation goes beyond purely scientific pursuits, find
 
 What sets this work apart is its emphasis on underwater landscapes or "seascapes", an area still overviewed but is important in domains such as marine biology, oceanography, and underwater robotics. Furthermore, the extension of these techniques to new areas of the entertainment industry, such as video games and cinema, presents new opportunities for innovation.
 
-However, this exploration of the domain comes with significant difficulties. Finding a balance between automation and the user's creative desires is essential, as is the ability to isolate variables and manage scaling effectively. 
+However, this exploration of the domain comes with significant difficulties. Finding a balance between automation and the user's creative desires is essential, as is the ability to manage scaling effectively. 
 % There are three main approaches to generating virtual worlds: simulations, user interaction/modeling, and procedural modeling. Procedural modeling, in particular, is noteworthy for its potential in "automatic generation," where content is created using functions independently of user actions. For example, Perlin noise might be used for terrain generation, random noise for rock modeling, or specific algorithms for texture generation.
 The central question guiding this research is: "How can we efficiently guide the user in the creation of virtual content along the production process line to maintain as much control as possible over the final product?" This concept of "guiding" rather than "replacing" the user is, from my point of view, fundamental, as no machine can truly know better than a human what the final product should look like. The goal is to present algorithms that can be used flexibly within a production pipeline, adapting to many terrain representations, fluid solvers, landscape types, user's hardwares, or objectives, whether the final use is real-time rendering, realism, or animation.
 
@@ -19,20 +87,24 @@ Maintaining control over the creative process is essential. Each generated resul
 
 This thesis is developed alongside the creation of an underwater marine biology observation robot. In this context, virtual environments are essential since field experiments are costly and prone to failure. Digital twins of the robot and its environment allow simulations of material failure and rare or unpredictable scenarios.
 
-To accurately model a robotic mission, the simulator needs the geometry of the terrain, fauna, and flora that the device and its sensors might encounter. It also requires intrinsic material parameters to simulate sensor behavior and external forces acting on the robot.
+\AltTextImage{
+    To accurately model a robotic mission, the simulator needs the geometry of the terrain, fauna, and flora that the device and its sensors might encounter. It also requires intrinsic material parameters to simulate sensor behavior and external forces acting on the robot.
 
-Scene geometry must be scaled appropriately to match both the robot, which operates at centimeter precision, and the mission area, which may cover thousands of square meters. Underwater environments also demand consideration of the third dimension. The materials used in the simulation need to respond correctly to light and sound waves, accounting for porosity, granularity, and reflectance, which can distort sensor signals. Water currents strongly affect navigation and require advanced modeling for realistic and interactive simulation.
+    Scene geometry must be scaled appropriately to match both the robot, which operates at centimeter precision, and the mission area, which may cover thousands of square meters. Underwater environments also demand consideration of the third dimension. The materials used in the simulation need to respond correctly to light and sound waves, accounting for porosity, granularity, and reflectance, which can distort sensor signals. Water currents strongly affect navigation and require advanced modeling for realistic and interactive simulation.
+}{REMI_Robot.jpg}{}{fig:intro-REMI}
 
-Designing virtual test fields involves creating surfaces and obstacles, and also the ability to replay simulations with identical or slightly altered configurations. Adding randomness while preserving the designer’s intent presents an additional challenge in maintaining control while introducing variability.
+Designing virtual test fields involves creating surfaces and obstacles, and also the ability to replay simulations with identical or slightly altered configurations. Adding randomness while preserving the designer's intent presents an additional challenge in maintaining control while introducing variability.
 
 
 \section{Challenges in environment generation for biology}
 
 Virtual environments play a crucial role in biological research by enabling the observation and study of interactions within ecosystems. Biology relies heavily on phenomenology, where understanding emerges from observing how entities behave and interact under specific conditions.
 
-Simulating these interactions allows scientists to test and refine their theories. Models can reveal unexpected behaviors, highlight gaps in understanding, and uncover hidden correlations. This iterative process between theory, simulation, and fieldwork is central to advancing biological knowledge.
+\AltTextImage{
+    Simulating these interactions allows scientists to test and refine their theories. Models can reveal unexpected behaviors, highlight gaps in understanding, and uncover hidden correlations. This iterative process between theory, simulation, and fieldwork is central to advancing biological knowledge.
 
-To be useful, simulations must closely follow biological rules while also incorporating controlled randomness. This balance allows for realistic behavior while making room for discovering novel phenomena. Human-Computer Interaction should help bridge the gap between biological expertise and computational tools, enabling domain experts to contribute effectively without introducing bias.
+    To be useful, simulations must closely follow biological rules while also incorporating controlled randomness. This balance allows for realistic behavior while making room for discovering novel phenomena. Human-Computer Interaction should help bridge the gap between biological expertise and computational tools, enabling domain experts to contribute effectively without introducing bias.
+}{Eccormier-fauna-flora.jpg}{}{fig:intro-challenges-bio}
 
 These environments must also operate across multiple spatial scales. Simulations should cover large areas to reflect full ecosystems while still capturing fine-grained interactions between closely located entities.
 
