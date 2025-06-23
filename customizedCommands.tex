@@ -3,6 +3,16 @@
 % Define \zzcommand for conditional commands
 \def\zzcommand#1{\let#1\undefined\newcommand#1}
 
+\captionsetup[figure]{textfont=it, labelfont=bf}
+\renewcommand{\floatpagefraction}{.8}
+\renewcommand{\topfraction}{.9}
+\renewcommand{\bottomfraction}{.8}
+\renewcommand{\textfraction}{.1}
+\setcounter{totalnumber}{5}
+\setcounter{topnumber}{5}
+\setcounter{bottomnumber}{5}
+
+
 % Macros to hold current titles
 % \currentsection
 \zzcommand{\currentsection}{}
@@ -118,7 +128,7 @@
 \let\origfigure\figure
 \let\endorigfigure\endfigure
 
-\renewenvironment{figure}[1][tbph]{%
+\renewenvironment{figure}[1][tbp]{%
     \origfigure[#1]%
     \centering
 }{%
@@ -234,18 +244,18 @@
   \setcounter{AltTextImageCurrentSide}{1}
   \setlength{\currentparindent}{\parindent}%
   % \newsavebox{\alttextbox}
-    \sbox{\alttextbox}{\vbox{\hsize=0.65\linewidth #1}}%
+    \sbox{\alttextbox}{\vbox{\hsize=0.55\linewidth #1}}%
     \setlength{\contentheightofalttextimage}{\ht\alttextbox}%
 
-    \sbox{\alttextbox}{\vbox{\hsize=0.3\linewidth #3\quad}}%
+    \sbox{\alttextbox}{\vbox{\hsize=0.4\linewidth #3\quad}}%
     \setlength{\contentheightofalttextimagecaption}{\ht\alttextbox}%
   \noindent
-  \begin{minipage}[t]{0.65\linewidth}
+  \begin{minipage}[t]{0.55\linewidth}
     \setlength{\parindent}{\currentparindent}
     #1
   \end{minipage}%
   \hfill % Add horizontal space between text and image
-  \begin{minipage}[t]{0.30\linewidth}    
+  \begin{minipage}[t]{0.40\linewidth}    
     \centering
     % Size: \the\contentheightofalttextimage
     % Parse comma-separated images and stack them
@@ -270,18 +280,19 @@
     }
     \label{#4}
   \end{minipage}%
+  \captionsetup{width=\linewidth}
 }
 % \AltTextImageL{item_content}{placeholder.pdf}{caption}{label}
 \zzcommand{\AltTextImageL}[4]{% 
   \setcounter{AltTextImageCurrentSide}{0}
   \setlength{\currentparindent}{\parindent}%
-    \sbox{\alttextbox}{\vbox{\hsize=0.65\linewidth #1}}%
+    \sbox{\alttextbox}{\vbox{\hsize=0.55\linewidth #1}}%
     \setlength{\contentheightofalttextimage}{\ht\alttextbox}%
 
-    \sbox{\alttextbox}{\vbox{\hsize=0.3\linewidth #3\quad}}%
+    \sbox{\alttextbox}{\vbox{\hsize=0.4\linewidth #3\quad}}%
     \setlength{\contentheightofalttextimagecaption}{\ht\alttextbox}%
   \noindent
-  \begin{minipage}[t]{0.30\linewidth}
+  \begin{minipage}[t]{0.40\linewidth}
     \centering
     % Size: \the\contentheightofalttextimagecaption
     % Parse comma-separated images and stack them
@@ -308,10 +319,11 @@
     \label{#4}
   \end{minipage}%
   \hfill % Add horizontal space between text and image
-  \begin{minipage}[t]{0.65\linewidth}
+  \begin{minipage}[t]{0.55\linewidth}
     \setlength{\parindent}{\currentparindent}
     #1
   \end{minipage}%
+  \captionsetup{width=\linewidth}
 }
 \ExplSyntaxOff
 % \AltTextImage{item_content}{placeholder.pdf}{caption}{label}

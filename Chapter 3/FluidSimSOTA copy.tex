@@ -1,0 +1,267 @@
+\subsection{Fluid simulations}
+Fluid simulations are an essential component of procedural terrain generation, particularly for modeling the behavior of water and its interactions with the terrain. These simulations are crucial for creating realistic and dynamic environmental models that accurately reflect natural phenomena, such as river flow, coastal erosion, sediment transport, and overall hydrology.
+
+\subsubsection{Physical simulations}
+Fluid simulation is fundamental to erosion modeling, particularly in hydraulic processes where flowing water reshapes landscapes by transporting and depositing sediment. This process involves complex interactions as water encounters varying terrain types, mobilizes sediment particles, and continuously alters the landscape. To realistically capture these dynamics, fluid solvers must be capable of modeling a wide range of fluid behaviors, from large-scale flow patterns to the intricate details of sediment transport.
+
+The Navier-Stokes equations form the basis of fluid simulation in erosion, describing fluid motion under forces like pressure, viscosity, and gravity. For erosion modeling, water is typically considered incompressible, simplifying the equations and enhancing stability by assuming constant fluid density:
+
+\begin{align}
+    \rho \left( \frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \nabla) \mathbf{u} \right) = -\nabla p + \mu \nabla^2 \mathbf{u} + \mathbf{f}
+\end{align}
+
+
+where $\mathbf{u} = (u, v, w)$ represents the fluid's velocity vector, with components along the $x$-, $y$-, and $z$-directions, respectively. Here, $t$ denotes time, while $\rho$, the fluid density, serves as a scaling factor for the fluid's response to internal and external forces. The term $\nabla p$ corresponds to the pressure gradient, $\mu$ is the dynamic viscosity governing internal friction within the fluid, and $\mathbf{f}$ represents external forces, such as gravity, acting on the fluid.
+
+In erosion modeling, water is often treated as an incompressible fluid, meaning that its density $\rho$ remains constant throughout the simulation. This assumption simplifies the Navier-Stokes equations by enforcing the incompressibility condition:
+
+\begin{align}
+    \nabla \cdot \mathbf{u} = 0
+\end{align}
+
+This condition implies that the fluid's volume remains constant as it moves, which is particularly relevant for water simulations. Enforcing incompressibility allows fluid solvers to focus on capturing fluid flow patterns and pressure distribution without having to account for density changes, making the simulation both more stable and more efficient.
+
+Fluid solvers face challenges in balancing detail with computational efficiency. Capturing sediment pickup, transport, and deposition with high fidelity is demanding, especially for large-scale or real-time applications. Additionally, as erosion dynamically alters the landscape, solvers must adapt to changing boundaries, often relying on particle-based methods or adaptive grids, which bring their own stability trade-offs.
+
+Ensuring numerical stability over time is crucial to avoid artifacts like unrealistic fluid velocities or excessive energy dissipation, which can erase important small-scale details. By carefully managing stability and detail retention, solvers produce more realistic erosion effects that mirror natural processes.
+
+
+\subsubsection{Overview of the main fluid solvers}
+Fluid solvers differ in methods, strengths, and trade-offs for simulating fluid behavior. This section reviews key approaches for fluid simulations in computational graphics.
+
+\subsubsubsection{Marker-And-Cell (MAC)}
+The Marker-And-Cell (MAC) method is a classic grid-based approach for incompressible fluids. Velocity components are stored on cell faces, while pressure is centered within cells \cite{Harlow1965}. Marker particles track fluid surfaces, helping to maintain volume consistency. MAC is highly stable and accurate for pressure-driven flows but limited by high computational costs for capturing fine details on complex geometries.
+
+\subsubsubsection{Stable Fluids}
+The Stable Fluids method uses a semi-Lagrangian advection scheme and implicit solvers, enabling larger, stable time steps for computational efficiency \cite{Stam1999}. It minimizes numerical artifacts, ideal for real-time applications. However, the semi-Lagrangian approach introduces smoothing that can blur fine details in the fluid interface.
+
+\subsubsubsection{Particle-In-Cell (PIC)}
+The Particle-In-Cell (PIC) method combines particles for tracking fluid motion with a grid for stability \cite{Harlow1962}. It efficiently captures large-scale flows but can lose detail due to numerical dissipation from particle-grid interpolation, limiting its use in high-detail applications.
+
+\subsubsubsection{Fluid-Implicit Particle (FLIP)}
+The FLIP method improves upon PIC by reducing dissipation, preserving kinetic energy for detailed turbulent flows \cite{Brackbill1988}. This approach is effective for simulating swirling or splashing effects but requires careful tuning to avoid instability, particularly in complex, high-density simulations.
+
+\subsubsubsection{Smoothed Particle Hydrodynamics (SPH)}
+SPH, a fully particle-based method, uses smoothing kernels for particle interactions, making it ideal for complex boundaries and free-surface flows \cite{Monaghan2005}. However, SPH is computationally demanding, needing high particle counts for detail, and faces stability issues without uniform particle distribution.
+
+\subsubsubsection{Shallow Water Equations (SWE)}
+SWE simplifies the Navier-Stokes equations for large-scale, shallow flows by averaging depth \cite{Vreugdenhil1994}. This efficient 2D approach is suitable for wide, shallow water bodies like rivers but lacks the accuracy to capture detailed vertical interactions or turbulent effects.
+
+\subsubsubsection{Lattice Boltzmann Method (LBM)}
+LBM uses a lattice structure to simulate fluid properties through particle-like interactions, enabling efficient parallel processing \cite{Chen1998}. Effective for 2D flows and complex boundaries, LBM struggles with flexibility in irregular boundaries and is computationally intensive in 3D.
+
+
+\subsubsection{Fluid solvers characteristics}
+Effective fluid solvers for erosion modeling address several core characteristics, including computational approach, stability, boundary handling, dissipation, and efficiency. Each approach (grid-based, particle-based, and hybrid) has distinct strengths and limitations for simulating fluid-terrain interactions.
+
+\subsubsubsection{Computational approach}
+Fluid solvers fall into three main categories: grid-based, particle-based, and hybrid methods.
+
+\begin{Itemize}
+    \Item{Grid-based models} These solvers, like Marker-And-Cell (MAC) and Stable Fluids, use fixed grids to store fluid properties. They are stable and effective for enforcing incompressibility but struggle with complex, evolving boundaries typical in erosion. High-resolution grids capture finer details but increase computational costs.
+    \Item{Particle-based models} Methods like Smoothed Particle Hydrodynamics (SPH) represent fluid as particles, naturally handling complex boundaries and adapting to dynamic terrain changes. While flexible and ideal for erosion where fluid-terrain interactions are essential, particle-based methods require high computational power and can face stability issues at high particle counts.
+    \Item{Hybrid models} Combining grid and particle techniques, methods such as Particle-In-Cell (PIC) and Fluid-Implicit Particle (FLIP) leverage grid stability with particle flexibility. These methods are versatile for erosion modeling, balancing large-scale motion with fine detail, though they are computationally intensive and require careful tuning.
+\end{Itemize}
+
+
+\subsubsubsection{Stability}
+Stability ensures that simulations remain realistic over time, avoiding artifacts like erratic particle behavior or unnatural fluid smoothing. In erosion modeling, stability is especially important, as processes unfold gradually.
+
+Explicit methods calculate properties each time step based on current values, making them efficient but less stable at large time steps. Implicit methods (e.g., Stable Fluids) consider future time steps to improve stability, allowing larger steps suitable for real-time applications, though at a computational cost.
+
+PIC solvers have higher dissipation, which stabilizes simulations by smoothing out details over time, beneficial for stability but potentially reducing realism in fine sediment transport. FLIP retains more kinetic energy by reducing dissipation, preserving small-scale turbulence and detail, making it particularly suitable for erosion processes involving detailed water and sediment interactions.
+
+
+\subsubsubsection{Boundaries handling}
+Accurate boundary handling is critical in erosion modeling, as terrain continuously reshapes in response to fluid flow.
+
+Grid-based methods like MAC apply boundary conditions at grid cell faces, confining fluid within a structured grid. This structured approach is effective for stable terrain but lacks adaptability to shifting or highly irregular boundaries, common in erosion. Increasing grid resolution can enhance boundary accuracy but raises computational demand.
+
+SPH and other particle-based methods naturally manage boundaries through particle interactions based on proximity, allowing detailed boundary effects around uneven surfaces or obstacles. This flexibility enables SPH to model erosion at complex terrain boundaries, though it requires large particle counts for high accuracy, impacting computational efficiency.
+
+Hybrid methods such as FLIP employ adaptive boundaries where grid cells or particles adjust to evolving terrain. FLIP combines grid stability with particle adaptability, making it effective for erosion modeling on dynamic terrains. However, adaptive techniques can add computational overhead and require careful tuning to avoid instabilities near complex boundaries.
+
+
+\subsubsubsection{Numerical dissipation}
+Preserving fine fluid details is essential in erosion modeling to capture realistic sediment transport and deposition patterns.
+
+PIC and Stable Fluids use moderate to high dissipation to enhance stability by averaging out small-scale details over time. Stable Fluids, for instance, applies semi-Lagrangian advection, allowing stable, large time steps but at the cost of smoothing fluid interfaces, which can limit the realism of fine sediment movements.
+
+FLIP and SPH prioritize detail preservation by minimizing dissipation. FLIP updates particle velocities based on grid changes, preserving kinetic energy and enabling detailed turbulent flows ideal for modeling sediment transport around rocks or irregular surfaces. SPH's particle-based interactions retain detail naturally but demand high particle counts for consistent accuracy, adding computational complexity.
+
+
+\subsubsubsection{Computational efficiency}
+Efficiency is key in erosion modeling, especially for real-time or large-scale simulations where high resolution or large particle counts are necessary for detail.
+
+Stable Fluids and Shallow Water Equations (SWE) are optimized for efficiency. SWE uses depth-averaged 2D calculations, which reduce complexity and are ideal for broad, shallow flows (e.g., river currents), although it lacks detail in vertical motion. Stable Fluids, with its implicit time-stepping, maintains stability at larger time steps, balancing speed and detail for interactive applications but sacrificing some fine detail in small-scale flows.
+
+Solvers like FLIP and SPH prioritize accuracy and detail, making them more computationally intensive. FLIP, by reducing dissipation, preserves detail in turbulent flows and is suitable for scenarios needing high-fidelity erosion patterns but requires high particle counts, especially near complex boundaries. SPH also prioritizes detail with particle-based boundary handling, though it requires significant computational power to maintain particle interactions consistently across high particle densities, limiting its use to offline or scientific applications.
+
+\smallConclusion
+
+Each type of fluid solver brings unique strengths to erosion modeling. Grid-based methods offer stability and structured computation, suitable for large-scale stable flows but limited with dynamic boundaries. Particle-based methods provide flexibility and detailed boundary handling but require high computational resources. Hybrid methods offer a balanced approach, combining grid stability with particle-based detail, though they come with increased complexity and tuning requirements. In erosion modeling, selecting the appropriate solver depends on the simulation's resolution, boundary dynamics, and the need for real-time performance versus detail.
+
+
+
+Scalability is crucial in terrain simulations, where fluid solvers must maintain both efficiency and detail across large domains. Some solvers are inherently more scalable due to their computational design, while others face challenges when applied to expansive terrains.
+
+Shallow Water Equations (SWE) are optimized for large-scale, shallow terrains, like rivers or lakes, and scale well with minimal computational load. However, SWE struggles to capture fine vertical details, making it less suitable for intricate terrain features.
+
+Lattice Boltzmann Method (LBM) benefits from high parallelizability, particularly in 2D applications, allowing it to scale efficiently across large domains. Yet, its fixed lattice structure limits flexibility with highly detailed or irregular terrain features.
+
+Stable Fluids and Marker-And-Cell (MAC) can scale to large terrains but become computationally intensive at higher resolutions. Stable Fluids' implicit time-stepping supports large areas with fewer computations, though with some detail loss. MAC's grid structure, while stable, requires high-resolution grids to capture details, which raises computational costs in larger domains.
+
+Smoothed Particle Hydrodynamics (SPH) and Fluid-Implicit Particle (FLIP) excel in high-detail, small domains but face scalability challenges in larger areas. Their reliance on particle interactions and grid-particle exchanges demands substantial resources. To scale SPH and FLIP for large terrains, significant computational power or strategic simplifications are required.
+
+\smallConclusion
+
+Each fluid solver has distinct strengths and limitations in terrain-based fluid simulation:
+
+\begin{Itemize}
+    \Item{Grid-based solvers} MAC and Stable Fluids offer stability and computational efficiency for large, structured domains, though they struggle with complex terrain boundaries and finer detail preservation.
+    \Item{Particle-Based Solvers} SPH provide flexibility and detailed boundary handling, excelling in smaller, intricate terrain features, but require high computational resources.
+    \Item{Hybrid Solvers} PIC and FLIP balance grid stability with particle detail retention, making them versatile for varied terrains, though they require careful parameter tuning to maintain both stability and scalability.
+\end{Itemize}
+
+\midConclusion
+
+To capture realistic landscape evolution in erosion modeling, fluid solvers must address several core requirements:
+
+\begin{Itemize}
+    \Item{Adaptability to dynamic terrain} Erosion reshapes terrain over time, creating new boundaries. Solvers must adapt fluid interactions to these evolving surfaces to accurately simulate erosion.
+    \Item{Long-term stability} Erosion is gradual, requiring solvers that maintain stability over extended simulation times to prevent artifacts and ensure natural progression.
+    \Item{Efficient detail preservation} Detailed features, such as sediment transport around obstacles and channel formation, require solvers that preserve intricate details without excessive computational costs.
+    \Item{Scalability for large landscapes} Terrain generation often involves large-scale domains, so solvers must handle these efficiently while maintaining realistic detail.
+\end{Itemize}
+
+
+
+% At the core of fluid simulations are the Navier-Stokes equations, which describe the motion of fluid substances. These equations account for various forces acting on a fluid, such as pressure, viscosity, and external forces like gravity. 
+% \begin{align}
+%     \rho \left( \frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \nabla) \mathbf{u} \right) = -\nabla p + \mu \nabla^2 \mathbf{u} + \mathbf{f}
+% \end{align}
+% Where $\mathbf{u} = (u, v, w)$ is the fluid velocity vector, with components $u$, $v$, and $w$ in the $x$-, $y$-, and $z$-directions, respectively, $t$ represents time, $\rho$ is the fluid density, $p$ is the pressure field within the fluid, $\mu$ is the dynamic viscosity of the fluid, $\nabla p$ is the pressure gradient force, $\mu \nabla^2 \mathbf{u}$ is the viscous diffusion term, representing the effects of internal friction within the fluid and finally, $\mathbf{f}$ represents external body forces, such as gravity.
+
+% For an incompressible fluid like water, the Navier-Stokes equations can be simplified by assuming that the fluid density remains constant, leading to the incompressibility condition:
+
+% \begin{align}
+%     \nabla \cdot \mathbf{u} = 0
+% \end{align}
+
+% This condition ensures that the volume of fluid elements remains unchanged as they move through space, which is crucial for accurately simulating the flow of fluids like water.
+
+% The Navier-Stokes equations are highly non-linear, meaning that even slight variations in initial conditions can lead to significant and often unpredictable changes in the fluid's behavior. The non-linearity makes solving these equations a expensive computational problem, as it requires iterative methods to find stable solutions. Each step of the simulation must balance the forces acting on the fluid, such as pressure and viscosity, while ensuring that the solution remains physically accurate and stable over time. This process becomes particularly demanding when aiming for realistic, high-resolution simulations where fine details like turbulence and surface tension must be accurately captured.In such cases, we require dense computational grids or a large number of particles, which must be updated frequently to maintain the realism of the simulation, significantly increasing both the computational power and memory required.
+
+% The computation cost is further amplified when simulations are performed in 3D space. Unlike 2D simulations, where calculations are confined to a plane, 3D simulations must account for the full complexity of fluid movement in all directions. This increases the number of computations required, making real-time applications like as video games and interactive simulations almost incapable to use them.
+
+% Different fluid solvers have been developed to approximate the solutions to the Navier-Stokes equations, each with its strengths and weaknesses. These solvers vary in how they represent the fluid (the Lagrangian approach using particles or the Eulerian approach with discrete grids, or a combination of both) and how they handle the computational trade-offs between accuracy, stability, and performance. The choice of a fluid solver depends on the specific requirements of the simulation, such as the need for real-time performance, the level of detail required, or the types of fluid behavior being modeled.
+
+
+% \subsubsubsection{Fluid representations}
+% Fluid solvers are distinguished by how they represent fluid dynamics, particularly in how they discretize and model fluid motion within a simulation space. Three primary approaches are used: grid-based (Eulerian), particle-based (Lagrangian), and hybrid (combining grid and particles).
+
+% \begin{Itemize}
+%     \Item{Grid-Based (Eulerian):} Grid-based solvers, such as the Marker-And-Cell (MAC) method, Stable Fluids, and Lattice Boltzmann Method (LBM), use a fixed grid where fluid properties, such as velocity and pressure, are computed at discrete points. This structure provides computational stability and accuracy, especially in capturing pressure gradients and incompressibility. However, grid resolution limits detail and adaptability, as dynamic terrains with complex erosion patterns can require high resolutions for realistic simulations. These solvers are effective for simulating large-scale fluid movement but may struggle to capture fine-grained erosion features in evolving terrains.
+
+%     \Item{Particle-Based (Lagrangian):} Particle-based methods, such as Smoothed Particle Hydrodynamics (SPH) and Cellular Automata-Based Models, represent fluids as discrete particles that carry properties like position, velocity, and mass. This approach naturally adapts to complex, irregular boundaries and can better capture localized fluid behavior, such as sediment transport around obstacles. SPH is particularly suited for detailed fluid interactions in erosion but requires high computational resources as particle count increases. Cellular Automata models, although simplified, provide flexibility for rule-based erosion and deposition dynamics in procedural generation, though at the cost of lower fluid realism.
+
+%     \Item{Hybrid (Grid + Particles):} Hybrid approaches, notably Particle-In-Cell (PIC) and Fluid-Implicit Particle (FLIP) methods, combine the stability of grids with the adaptability of particles. PIC and FLIP use a grid to compute average fluid properties but update particle positions and velocities for detailed motion. FLIP further minimizes dissipation by applying only changes in grid velocity to particles, retaining kinetic energy crucial for erosion detail. These methods strike a balance between stability and fine detail, making them effective for erosion processes that require both large-scale stability and localized fluid interactions.
+% \end{Itemize}
+
+
+% \subsubsubsection{Stability and numerical dissipation}
+% Fluid simulations require stability to avoid artifacts and unrealistic results, especially over long time steps. Numerical dissipation, where fluid energy is lost over time, can lead to smoother, less realistic motion. Each solver handles stability and dissipation differently, influencing their effectiveness for erosion modeling.
+
+% \begin{Itemize}
+%     \Item{Stable Fluids and MAC:} The Stable Fluids method, developed by Stam, uses a semi-Lagrangian advection scheme combined with implicit pressure solving, achieving stability even with large time steps. This stability makes it suitable for real-time applications but at the cost of reduced detail due to smoothing effects. The MAC method, a traditional grid-based solver, prioritizes accuracy and stability but requires finer grids and smaller time steps, making it more computationally intensive.
+
+%     \Item{FLIP vs. PIC:} FLIP improves upon PIC by reducing numerical dissipation. While PIC transfers particle velocities back to the grid for stability, FLIP only applies changes in the grid's velocity field to particles. This approach preserves kinetic energy, making FLIP more suited for detailed erosion processes where fluid energy is essential for representing turbulence and sediment transport. PIC, on the other hand, is prone to dissipation, which can reduce the realism of erosion patterns over time.
+
+%     \Item{SPH and Cellular Automata:} SPH, though highly detailed, can suffer from stability issues such as particle clumping, which requires smoothing kernels for stabilization. Cellular Automata-based models are inherently stable due to their rule-based approach, but this stability comes at the cost of fluid realism, as simple rules cannot capture nuanced fluid behavior, which may limit erosion accuracy in complex scenarios.
+% \end{Itemize}
+
+% \subsubsubsection{Boundary handling and terrain interactions}
+% Accurately capturing fluid interactions with complex terrain boundaries is essential for erosion modeling, where the terrain can evolve over time due to sediment transport and deposition. Solvers vary widely in their ability to handle such boundary complexities.
+
+% \begin{Itemize}
+%     \Item{SPH and Cellular Automata:} SPH naturally adapts to complex boundaries, as particles can move freely and interact based on local proximity, making it ideal for terrain with irregular features like rocks or vegetation. Cellular Automata models are also effective at capturing local interactions and adapting to evolving terrains, allowing rule-based erosion and deposition changes on a cell-by-cell basis. However, CA models lack the fluid detail of SPH, limiting their effectiveness in scenarios requiring nuanced water flow patterns.
+
+%     \Item{Grid-Based Solvers (MAC, LBM):} MAC and LBM, as grid-based methods, face challenges with complex, evolving boundaries due to their fixed grid structure. While they can simulate fluid behavior around static obstacles, adapting to dynamically changing terrains is computationally challenging without significantly increasing grid resolution or applying additional boundary handling techniques.
+
+%     \Item{Hybrid Approaches (PIC, FLIP):} The hybrid nature of PIC and FLIP allows for moderate adaptability with terrain interactions, as particles can move across grid boundaries, offering some flexibility in response to evolving landscapes. However, their reliance on a grid base can limit boundary complexity, making them more suitable for stable terrain features with localized erosion effects rather than rapidly changing landscapes.
+% \end{Itemize}
+
+% \subsubsubsection{Computational efficiency}
+% Computational efficiency is a critical consideration, especially for real-time applications where fast simulations are required, as in games or interactive terrain generation. Solvers vary in their efficiency based on the complexity of their underlying algorithms and the computational resources needed.
+
+% \begin{Itemize}
+%     \Item{Real-time:} Stable Fluids prioritizes computational efficiency through its semi-Lagrangian advection and implicit pressure solving, making it well-suited for real-time applications, though at the expense of finer detail. Cellular Automata is also highly efficient and easily scalable, as its rule-based approach avoids complex calculations, ideal for large terrains with simplified erosion dynamics.
+
+%     \Item{Moderate Efficiency with Parallelization Potential (LBM, MAC):} LBM is inherently suited to parallel processing, making it efficient for large-scale terrain applications where accuracy is needed but computational resources are available. MAC provides accurate results but becomes computationally demanding at high resolutions, making it less suitable for real-time applications without significant simplification.
+
+%     \Item{High Computational Cost (SPH, FLIP):} SPH and FLIP are computationally intensive due to particle tracking and the need for frequent updates, especially in turbulent or fine-detail erosion. While they are effective for high-fidelity simulations, their computational requirements make them more appropriate for offline rendering or research-focused simulations than real-time environments.
+% \end{Itemize}
+
+
+% \subsubsubsection{Suitability for Erosion and Sediment Transport Modeling}
+% Erosion modeling requires specialized fluid interactions to simulate sediment transport, deposition, and terrain alteration. Fluid solvers vary in their suitability for these processes based on their ability to handle sediment dynamics alongside fluid motion.
+
+% \begin{Itemize}
+%     \Item{Direct Sediment Modeling (SWE, Cellular Automata):} Shallow Water Equations (SWE) and Cellular Automata are commonly adapted to include sediment transport rules, making them effective for erosion and deposition simulation. Cellular Automata, with its simple, local rule-based interactions, allows for scalable erosion modeling in procedural terrain generation, though its simplified rules can limit fluid accuracy.
+
+%     \Item{Detailed Fluid Interactions (SPH, FLIP):} SPH and FLIP handle sediment transport effectively by leveraging particle-based motion, ideal for complex sediment and water interactions. These methods are capable of representing sediment pickup, movement, and deposition around terrain features, making them well-suited for erosion in high-fidelity terrain simulations, though at a higher computational cost.
+
+%     \Item{General Fluid Dynamics (Stable Fluids, LBM):} Stable Fluids and LBM simulate broad fluid flows effectively, which can be useful for capturing overall erosion patterns across large terrains. However, their lack of sediment transport detail and fluid-surface interactions make them less specialized for fine-scale erosion processes.
+% \end{Itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \subsubsubsection{Marker-And-Cell (MAC) Method}
+
+% The Marker-And-Cell (MAC) method is one of the earliest and most fundamental grid-based techniques for simulating incompressible fluid flows. In the MAC method, the fluid's velocity components are stored at the faces of grid cells, while pressure values are stored at the cell centers. Marker particles are used to track the fluid's free surface, ensuring that fluid interfaces and boundaries are accurately captured. The MAC method excels at maintaining the incompressibility condition of fluids and accurately modeling pressure fields, which are important for realistic fluid dynamics. Because of its emphasis on accuracy and detailed pressure modeling, MAC is more oriented toward realism, especially in scenarios where the precise behavior of fluids is essential. However, its grid-based nature can lead to challenges in handling complex geometries and fine details at fluid boundaries, as the resolution is limited by the grid size. Moreover, the method can be computationally intensive, especially for high-resolution grids, making it less ideal for real-time applications.
+
+% \subsubsubsection{Stable Fluids}
+
+% Building on the grid-based approach of the MAC method, the Stable Fluids method addresses key stability issues that arise in fluid simulations \cite{Stam1999}. Stable Fluids uses a semi-Lagrangian advection scheme and implicit solvers to achieve stability even with large time steps, which is particularly advantageous in real-time applications like video games or interactive simulations. This method is designed with performance in mind, allowing for the simulation of fluid motion without the numerical dissipation that can degrade the accuracy of results over time, which was a common problem in other grid-based methods. While Stable Fluids prioritize performance and stability, particularly in real-time environments, the use of implicit solvers can introduce smoothing effects that reduce the sharpness of fine details in the fluid's motion. Additionally, the method's reliance on grid resolution still limits its ability to represent highly detailed surface interactions, making it a good compromise between realism and performance.
+
+% \subsubsubsection{Particle-In-Cell (PIC) Method}
+
+% The Particle-In-Cell (PIC) method represents a hybrid approach that combines the strengths of particle-based and grid-based methods. Fluid properties are stored on a grid, but the fluid's motion is tracked using particles, which carry velocity and position information only. The particles interact with the grid to update the fluid's velocity field, and the grid provides a stable mean for solving the fluid dynamics equations. PIC is particularly useful for capturing the large-scale motion of fluids, benefiting from the grid's stability while using particles to track detailed fluid behavior. However, the method leans more toward performance over accuracy due to its hybrid nature and ability to handle large-scale fluid movements efficiently. A major downside of PIC is its tendency toward numerical dissipation, where the fluid's kinetic energy is artificially reduced over time, leading to a loss of fine details, especially in turbulent flows. This dissipation occurs because the interpolation between particles and the grid tends to average out small-scale variations in velocity, making PIC less suitable for scenarios where high fidelity and detail are required.
+
+% \subsubsubsection{Fluid-Implicit Particle (FLIP) Method}
+
+% The Fluid-Implicit Particle (FLIP) method is an evolution of the PIC method designed to address its numerical dissipation problem \cite{Brackbill1988}. FLIP retains the grid-particle hybrid approach but modifies how particle velocities are updated. Instead of fully relying on the grid's velocity field, FLIP updates particle velocities by applying only the changes in the grid's velocity field, preserving the fluid's kinetic energy and maintaining the detail in small-scale motions. This approach significantly reduces numerical dissipation, making FLIP more oriented toward realism, particularly in simulations that require detailed fluid dynamics like splashing, swirling, and other turbulent effects. However, FLIP is more computationally expensive than PIC and can suffer from instability issues, particularly when dealing with highly turbulent flows. The increased computational cost and the need for careful tuning of simulation parameters to maintain stability make FLIP less ideal for performance-focused applications but suitable for scenarios where high fidelity and detailed fluid behavior are essential.
+
+% \subsubsubsection{Smoothed Particle Hydrodynamics (SPH)}
+
+% Smoothed Particle Hydrodynamics (SPH) \cite{Muller2003} is a purely particle-based method that models fluids using discrete particles, each representing a small volume of fluid. These particles interact with each other based on smoothing kernels, which define the influence of one particle on its neighbors over a certain distance \cite{Koschier2022}. SPH is particularly well-suited for simulating free-surface flows, such as waves, splashes, and other fluid phenomena where the interaction between fluid particles is complex and highly dynamic. Due to its ability to handle complex boundaries and fluid interfaces naturally, SPH is much more focused on realism, especially in scenarios that require accurate computation of fluid dynamics and interactions. However, SPH is computationally intensive, especially for high-resolution simulations where a large number of particles is required. Additionally, SPH can suffer from stability issues, such as particle clumping or excessive smoothing, which can detract from the realism of the simulation if not carefully managed. These factors make SPH better suited for applications where realism is prioritized over performance, particularly in high-fidelity simulations used in film and scientific research, but not for real-time applications.
+
+We can find improvements \cite{Roose2011}, can represent may elements \cite{Iwasaki2010}, either fluid or sediments \cite{Lenaerts2009}, so it is often used to simulate accurately water bodies \cite{Nikeghabali2018}.
+
+Some other models exist, and are often proposed in OpenFOAM, either using grids, or particles, or an hybrid version \cite{Caretto1973} [ADD OTHER REFERENCES]. 
+
+\subsubsection{Non-physical simulations}
+In fluid animation, balancing physically-based simulation and artist control is challenging. While physical simulations adhere to natural laws, control allows animators to shape fluid behavior creatively. Often, perfect physical accuracy is less important than achieving specific visual effects, such as animating a fluid character (Terminator) or creating a controlled wave (Poseidon).
+
+Controlling complex partial differential equations (PDEs) is inherently difficult. Although parameters like viscosity and body forces in the Navier-Stokes equations offer some control, higher-level control is essential for production, where animators focus on large-scale motion, leaving fine details like vortices to the simulation.
+
+\comment{Here, missing quite a few example: Stokelets, primitives, Paris2019,, Patel2005, etc... }
+% Foster and Metaxas pioneered fluid control by embedding pressure and velocity controllers. Later, Feldman et al. used particle-based control for explosive effects, and Rasmussen et al. introduced control particles for simulating melting and expansion. Treuille et al. introduced user-defined keyframes and an optimization framework to control smoke, further refined with an adjoint method for efficient 3D control. Fattal and Lischinski accelerated smoke control by avoiding optimization, using a direct solution to guide smoke density.
+
+% Additional approaches include Pighin et al.'s radial basis functions for flow control, Hong and Kim's use of potential fields for directing smoke, and Shi and Yu's shape matching for guiding smoke and liquids. Thuurey et al. preserved small-scale details by limiting control forces to large-scale flow components.
+
+While fluid simulation is often thought in terms of complex physical simulation computing as colsely as possible the behaviour of a fluid in space, there are some other ways to describe motion that ignore or simplify drastically the Navier-Stokes equation in order to reduce the computation time and increase the controlability, developed for artists and designers. These simulations are thought to be close to the desires of the user while keeping as much plausibility as possible. Some works tend in directions that are more "procedural" like the use of cellular automata \cite{Boldea2009,Cattaneo2005}, while other toward a more modern approach with the use of deep learning \cite{Tompson2017} [ADD OTHER REFERENCES].
