@@ -68,15 +68,17 @@ They offer a powerful method for representing terrains in procedural generation,
 
 \subsubsection{Implicit height fields}
 
-\begin{wrapfigure}{L}{0.4\textwidth}
-    \includegraphics[width=\linewidth]{primitives_representation.png}
-    \caption{Primitives composition}
-    \label{fig:erosion-primitives-representation}
-\end{wrapfigure}
+% \begin{wrapfigure}{L}{0.4\textwidth}
+%     \includegraphics[width=\linewidth]{primitives_representation.png}
+%     \caption{Primitives composition}
+%     \label{fig:erosion-primitives-representation}
+% \end{wrapfigure}
 
-Implicit height fields represent the terrain as a mathematical function that provides a height value at any given point in the domain. These functions can be procedural or closed-form expressions, allowing for compact storage and infinite precision in theory. The elevation function allows for easy manipulation of terrain features, making it ideal for generating terrains that require smooth, continuous surfaces. However, the primary disadvantage is the computational complexity involved in evaluating the function, especially for large or highly detailed terrains. The challenge lies in constructing functions that can realistically represent large-scale terrains with complex landforms.
+\AltTextImage{
+    Implicit height fields represent the terrain as a mathematical function that provides a height value at any given point in the domain. These functions can be procedural or closed-form expressions, allowing for compact storage and infinite precision in theory. The elevation function allows for easy manipulation of terrain features, making it ideal for generating terrains that require smooth, continuous surfaces. However, the primary disadvantage is the computational complexity involved in evaluating the function, especially for large or highly detailed terrains. The challenge lies in constructing functions that can realistically represent large-scale terrains with complex landforms.
+}{primitives_representation.png}{Primitives composition}{fig:erosion-primitives-representation}
 
-This representation, inherently multi-scale from their mathematical nature, will be the main support for our \cref{chap:semantic-representation}'s environment generations.
+This representation, inherently multi-scale from its mathematical nature, will be the main support for our \cref{chap:semantic-representation}'s environment generations.
 
 \subsubsection{Discrete height fields}
 Discrete height fields, or explicit height fields, are one of the most prevalent methods for terrain representation. These models consist of a 2D grid where each cell contains a height value, representing the elevation at that point. Height fields are particularly advantageous because they are simple to implement and are directly compatible with many rendering techniques and hardware, but also due to their closeness with image processing, a domain studied for many decades now. As the deep learning architectures used in \cref{chap:coral-island} are designed for image generation, the first contribution of this manuscript uses exclusively this representation.
@@ -101,9 +103,9 @@ The erosion simulation presented in \cref{chap:erosion} evolves in the 3D space 
 \subsubsection{Implicit volumetric models}
 \AltTextImageR{
     Implicit volumetric models describe the terrain's shape and features using an implicit function. The terrain is represented by a mathematical function $f: \R^3 \to \R$ that determines the terrain surface by evaluating to an isovalue, often zero. This function provides a continuous representation of the terrain, with points inside the terrain returning positive values and while points in the air evaluate to negative values. It allows for the seamless representation of complex terrain features, including caves, overhangs, and varying geological structures, which are impossible to represent with  elevation models.
-
-    One of the key advantages of implicit models is their ability to produce smooth surfaces without the need for discrete polygonal meshes, which can result in realistic and natural-looking terrains. However, the computational complexity of evaluating the implicit function, especially for large terrains, can be a significant drawback. Additionally, converting an implicit surface into a mesh for rendering can be challenging and resource-intensive \cite{Araujo2015}.
 }{Csg_tree.png}{Constructive Solid Geometry (CSG) uses boolean operators (union, intersection, difference) to construct 3D models. }{fig:intro-CSG}
+
+One of the key advantages of implicit models is their ability to produce smooth surfaces without the need for discrete polygonal meshes, which can result in realistic and natural-looking terrains. However, the computational complexity of evaluating the implicit function, especially for large terrains, can be a significant drawback. Additionally, converting an implicit surface into a mesh for rendering can be challenging and resource-intensive \cite{Araujo2015}.
 
 \subsubsection{Layered models}
 Layered models are a type of volumetric representation that encode different material layers within the terrain and are defined by a function $\mu : \R^3 \to \material$, where $\material$ denotes the material type at any given point in 3D space. This allows for a detailed representation of the terrain's internal composition, which can be crucial for applications requiring realistic geological simulations. Each layer is defined by its thickness or elevation, and multiple layers can be stacked to represent complex geological formations. These layers might include materials like bedrock, sand, soil, or water, each contributing to the overall structure of the terrain. Layered models are particularly useful in simulations that involve processes like erosion or sedimentation, where the interaction between different material layers affects the physical process.
@@ -281,14 +283,14 @@ The erosion process is directly impacted by the small-scale. Reef structures tra
 % Procedural terrain should include reef features (crest, slopes, flats) at appropriate elevations and roughness to inform hydrodynamic or erosion simulations. Abstract resistance fields derived from morphology guide flow routing and energy dissipation in particle-based erosion models. Adjacent zones (seagrass/mangrove) can be placed based on reef buffering.
 
 
-Overall, from these behaviours, we consider that corals act as important dynamic ecological agents, engaging in feedback loops with their environment. Modeling them requires accounting for spatial diffusion via diverse reproductive modes, competition for resources, and bidirectional environmental influences. We will describe ecological agent simulation in \cref{chap:semantic-representation}'s state of the art section.
+Overall, from these behaviours, we consider that corals act as important dynamic ecological agents, engaging in feedback loops with their environment. Modeling them requires accounting for spatial diffusion via diverse reproductive modes, competition for resources, and bidirectional environmental influences. We will describe ecological agent simulation in \cref{chap:semantic-representation}'s state of the art section. Note that in this chapter coral representations will be greatly upscaled for visual reasons.
 
 
 \subsection{Coral reefs' shape}
 In \citep{Darwin1842}, Darwin outlined his atoll reefs formation theory, inspired by his Beagle voyage. He proposed that Earth's crust movements under the oceans created atolls. Darwin described a three-stage process in atoll formation: a fringing reef forms around a sinking volcanic island, evolving into a barrier reef, and finally an atoll reef as subsidence continues.
 
 \subsubsection{Fringing reefs}
-Fringing reefs are the most common and widespread coral reefs. They form narrow bands near the shore and are usually attached directly to land. Sometimes, they are separated by a shallow, narrow lagoon. Their coastal location makes them accessible but also exposes them to land- and sea-based stressors.
+Fringing reefs are the most common and widespread coral reefs. Thy form narrow bands near the shore and are usually attached directly to land. Sometimes, they are separated by a shallow, narrow lagoon. Their coastal location makes them accessible but also exposes them to land- and sea-based stressors.
 
 \AltTextImage{
     Their structure includes the reef flat, reef crest, and reef slope. The reef flat is shallow, calm, and closest to shore. The reef crest is higher, exposed at low tide, and faces strong wave action. Only hardy corals survive there. The reef slope descends into deeper water where coral diversity and density increase. It offers habitat for many marine organisms due to more light and water movement.
@@ -322,30 +324,30 @@ Fringing reefs are the most common and widespread coral reefs. They form narrow 
 
     The outer reef slope, with its exposure to the open ocean, is home to species that are adapted to strong currents and waves, including large predatory fish and robust coral species. In contrast, the sheltered lagoon provides a haven for more delicate species, such as seagrasses, small fish, and invertebrates, which rely on the calmer waters for feeding and reproduction. This diversity of habitats within a relatively small area makes atolls particularly important for marine biodiversity.
 
-\subsubsection{Other types of coral reefs and structures}
-\AltTextImage{
-    Patch reefs are small, isolated coral formations found in lagoons, between larger reefs, or in shallow coastal waters. They grow in sheltered areas that support coral but not larger reef structures. Simpler and more isolated than larger reefs, they are often circular or irregular. They form where water depth, light, and wave action favor coral growth. The formation of patch reefs is influenced by a combination of biological and physical factors. Coral larvae settle in suitable areas where they can establish colonies and grow over time. They often develop in locations where the water is clear, and the substrate is stable, such as rocky outcrops or fossil coral ridges.
-    % Patch reefs are smaller, isolated coral formations that occur within lagoons, between larger reef systems, or in shallow coastal waters. These reefs are typically found in the sheltered environments of lagoons, where conditions are favorable for coral growth but do not support the development of larger reef structures.
+% \subsubsection{Other types of coral reefs and structures}
+% \AltTextImage{
+%     Patch reefs are small, isolated coral formations found in lagoons, between larger reefs, or in shallow coastal waters. They grow in sheltered areas that support coral but not larger reef structures. Simpler and more isolated than larger reefs, they are often circular or irregular. They form where water depth, light, and wave action favor coral growth. The formation of patch reefs is influenced by a combination of biological and physical factors. Coral larvae settle in suitable areas where they can establish colonies and grow over time. They often develop in locations where the water is clear, and the substrate is stable, such as rocky outcrops or fossil coral ridges.
+%     % Patch reefs are smaller, isolated coral formations that occur within lagoons, between larger reef systems, or in shallow coastal waters. These reefs are typically found in the sheltered environments of lagoons, where conditions are favorable for coral growth but do not support the development of larger reef structures.
 
-    % Patch reefs are characterized by their simplicity and isolation compared to their larger counterparts. These small, often circular or irregularly shaped coral assemblages form in areas where the physical and environmental conditions, such as water depth, light availability, and wave action, allow for the localized growth of coral colonies.
+%     % Patch reefs are characterized by their simplicity and isolation compared to their larger counterparts. These small, often circular or irregularly shaped coral assemblages form in areas where the physical and environmental conditions, such as water depth, light availability, and wave action, allow for the localized growth of coral colonies.
 
-    % The formation of patch reefs is influenced by a combination of biological and physical factors. Coral larvae settle in suitable areas where they can establish colonies and grow over time. They often develop in locations where the water is clear, and the substrate is stable, such as rocky outcrops fossil coral ridges.
-}{coral-patch-belize.png}{Parch reefs behind the barrier reef of Belize}{fig:intro-patch-reef-Belize}
+%     % The formation of patch reefs is influenced by a combination of biological and physical factors. Coral larvae settle in suitable areas where they can establish colonies and grow over time. They often develop in locations where the water is clear, and the substrate is stable, such as rocky outcrops fossil coral ridges.
+% }{coral-patch-belize.png}{Parch reefs behind the barrier reef of Belize}{fig:intro-patch-reef-Belize}
 
-\AltTextImage{
-    Spurs and grooves are alternating ridges (spurs) and channels (grooves) found on the fore reef slope, which is the part of the reef that faces the open ocean. This distinctive pattern is formed primarily by the action of waves and currents, which erode and shape the coral over time. Spurs, the ridges of coral that extend seaward, help to break up and dissipate the energy of incoming waves. The grooves, or channels between these ridges, serve as pathways for water and sediment to flow back into the ocean after waves break on the reef. This spurred and grooved topography is crucial for the reef's ability to protect the coastline, as it reduces the energy of waves before they reach the more fragile parts of the reef and the shore.
-}{Spurs-and-groove-Broomfield-Reef.jpg}{Sprurs-and-grooves patterns in Broomfield Reef, Australia - Photo credit: AIMS}{fig:intro-spurs-and-grooves-Broomfield}
+% \AltTextImage{
+%     Spurs and grooves are alternating ridges (spurs) and channels (grooves) found on the fore reef slope, which is the part of the reef that faces the open ocean. This distinctive pattern is formed primarily by the action of waves and currents, which erode and shape the coral over time. Spurs, the ridges of coral that extend seaward, help to break up and dissipate the energy of incoming waves. The grooves, or channels between these ridges, serve as pathways for water and sediment to flow back into the ocean after waves break on the reef. This spurred and grooved topography is crucial for the reef's ability to protect the coastline, as it reduces the energy of waves before they reach the more fragile parts of the reef and the shore.
+% }{Spurs-and-groove-Broomfield-Reef.jpg}{Sprurs-and-grooves patterns in Broomfield Reef, Australia - Photo credit: AIMS}{fig:intro-spurs-and-grooves-Broomfield}
 
-\AltTextImage{
-    Pinnacles are vertical, column-like coral structures rising from the seafloor, found on fore reef slopes or in lagoons. They add three-dimensional complexity to reefs and vary from small outcrops to tall columns near the surface. Their formation depends on local conditions like strong currents and hard substrate for coral larvae.
+% \AltTextImage{
+%     Pinnacles are vertical, column-like coral structures rising from the seafloor, found on fore reef slopes or in lagoons. They add three-dimensional complexity to reefs and vary from small outcrops to tall columns near the surface. Their formation depends on local conditions like strong currents and hard substrate for coral larvae.
 
-% Bommies are isolated outcrops or large coral heads, also called coral knolls. They rise from the seafloor and occur in lagoons or on reef slopes. Often large and scattered across lagoons or near reef edges, they are key to the reef's topographic complexity.
-    % Pinnacles are vertical, column-like coral formations that rise from the seafloor, often found on the fore reef slope or within lagoons. These towering structures add significant three-dimensional complexity to the reef system. Pinnacles can vary greatly in size, from small outcrops to large, towering columns that reach close to the water's surface. The formation of pinnacles is often influenced by localized environmental conditions, such as strong currents or the availability of hard substrate for coral larvae to settle on.
+% % Bommies are isolated outcrops or large coral heads, also called coral knolls. They rise from the seafloor and occur in lagoons or on reef slopes. Often large and scattered across lagoons or near reef edges, they are key to the reef's topographic complexity.
+%     % Pinnacles are vertical, column-like coral formations that rise from the seafloor, often found on the fore reef slope or within lagoons. These towering structures add significant three-dimensional complexity to the reef system. Pinnacles can vary greatly in size, from small outcrops to large, towering columns that reach close to the water's surface. The formation of pinnacles is often influenced by localized environmental conditions, such as strong currents or the availability of hard substrate for coral larvae to settle on.
 
-    % Bommies are isolated outcrops or large coral heads that rise from the seafloor, typically within lagoons or on the reef slope. These features, sometimes referred to as coral knolls, can be quite large and are often found scattered across the lagoon or near the outer edges of the reef. Bommies are important structural components of the reef as they contribute to the overall topographic complexity of the environment. 
-}{Pinnacle-Chumphon.jpg}{Chumphon pinnacle, Kho Toa, Tailand - Photo credit: Allie Vautin}{fig:intro-pinnacle-Chumphon}
+%     % Bommies are isolated outcrops or large coral heads that rise from the seafloor, typically within lagoons or on the reef slope. These features, sometimes referred to as coral knolls, can be quite large and are often found scattered across the lagoon or near the outer edges of the reef. Bommies are important structural components of the reef as they contribute to the overall topographic complexity of the environment. 
+% }{Pinnacle-Chumphon.jpg}{Chumphon pinnacle, Kho Toa, Tailand - Photo credit: Allie Vautin}{fig:intro-pinnacle-Chumphon}
 
-
+% In this document, more specifically in \cref{chap:semantic-representation}, coral representations will be greatly upscaled for visual reasons.
 
 
 
