@@ -114,9 +114,9 @@ We prove this by induction on the number of derivatives of $f$.
     where $P_{n+1}$ is again a smooth function of $x$ and $e^{-kx}$, obtained via product, chain, and sum rules. Importantly, we do not need the explicit form of $P_{n+1}$, it suffices to know it is smooth.
 
     At $x = 0$, both numerator and denominator vanish, but to the same order: the denominator vanishes to order $n+2$ due to the Taylor expansion
-    \[
-        1 - e^{-kx} = kx + \frac{k^2 x^2}{2} + \cdots,
-    \]
+    \begin{align}
+        1 - e^{-kx} = kx - \frac{k^2 x^2}{2} + \frac{k^3 x^3}{6} - \frac{k^4 x^4}{24} + \frac{k^5 x^5}{120} + O(x^6)
+    \end{align}
     and $P_{n+1}(x, e^{-kx})$ also vanishes to order at least $n+2$ due to the construction. Thus, any singularity at $x = 0$ is removable, and $f^{(n+1)}$ can be continuously extended there.
 \end{Itemize}
 
@@ -155,19 +155,19 @@ with
 
 \subsection*{Second derivatives}
 \begin{align}
-    \frac{\partial^2}{\partial a^2} \smoothmax(a, b) = \frac{\partial^2}{\partial b^2} \smoothmax(a, b) = - f_2(a, b) \\
+    \frac{\partial^2}{\partial a^2} \smoothmax(a, b) = \frac{\partial^2}{\partial b^2} \smoothmax(a, b) = - g_2(a, b) \\
     \frac{\partial^2}{\partial a \partial b} \smoothmax(a, b) = \frac{\partial^2}{\partial b \partial a} \smoothmax(a, b) = g_2(a, b)
 \end{align}
 
 where the second derivative of the core function is given by:
 \begin{align}
-    f_2(a, b) = \begin{cases}
+    g_2(a, b) = \begin{cases}
         \frac{4ke^{2ka}e^{2kb} \left( e^{2ka} (ka-kb-1) + e^{2kb}(ka - kb + 1) \right)}{\left(e^{2kb}-e^{2ka} \right)^3} &\text{if } a \neq b \\
         0  &\text{if } a = b
     \end{cases}
 \end{align}
 
-The expression is algebraically heavy, but all terms are composed of simple exponentials, products, and powers, making it fast and safe to compute in practice, and the redundant components an be cached. At $x = 0$, we have $h''(0) = 0$ by symmetry and smoothness of the underlying expression.
+The expression is algebraically heavy, but all terms are composed of simple exponentials, products, and powers, making it fast and safe to compute in practice, and the redundant components an be cached. At $x = 0$, we have $g_2(0) = 0$ by symmetry and smoothness of the underlying expression.
 
 A $\smoothmin$ operator can be derived directly from the $\smoothmax$ by reversing the sign of the sharpness parameter $k_{\text{smoothmin}} = - k_{\text{smoothmax}}$.
 
