@@ -16,7 +16,7 @@
 % - Some works include soil materials in their process \\
 % - But no semantic information is preserved \\
 % - Many fields use topologic maps to describe the environment \\
-% ** see Travel books \\
+%  see Travel books \\
 % - Our method to abstract the geometry and focus on the symbolic \\
 % - ...
 This chapter introduces a novel method for procedural terrain generation, which leverages a sparse representation of environmental features to produce landscapes that are lightweight, plausible and adaptable to user desires. The method differs from traditional terrain generation approaches by emphasising multi-scale user interaction and incorporating expert knowledge to model the evolution of terrain features over time. By representing terrain features as discrete entities, or "\glosses{EnvObj}", the method enables dynamic interaction between these entities and their surrounding environment, represented through continuous scalar and vector fields. The generation process is iterative and allows for user-guided modifications at any iteration, including the introduction of environmental events that can influence the terrain's evolution. The proposed approach is particularly flexible, capable of generating underwater landscapes with a focus on large-scale plausibility and detailed, localised feature representation.
@@ -31,73 +31,110 @@ This chapter introduces a novel method for procedural terrain generation, which 
 
 \section{Introduction}
 
-% \begin{figure}%[ht]
-% \includegraphics[width=0.5 \linewidth]{./geologyMadagascar.jpeg}
-% \includegraphics[width=0.5 \linewidth]{./CliffErosionBidefordAndScalby.jpg}
-% \includegraphics[width=0.5 \linewidth]{./PerthCanyon.jpg}
-% \includegraphics[width=0.5 \linewidth]{./QasrLibya.jpg}
-% \caption{Four examples of topographic maps used in earth science. From left to right and top to bottom: Sedimentary distribution off Madagascar island \cite{Pratt2017}, evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}, localisation of key parameters of Perth Submarine Canyon, Australia \cite{Huang2014}, and geological features distribution of karstic landscape at Qasr Libya, Libya \cite{ElAmawy2009}}
-% \label{fig:env-obj-presentation}
-% \end{figure}
+Procedural ecosystem generation in computer graphics remains largely bifurcated: classical terrain algorithms produce heightfields or meshes without semantic structure, and plant-placement systems adopt fixed-radius or zone-of-influence rules for foliage alone. Meanwhile, full ecosystem simulators, though rich in biotic and abiotic processes, are too costly for real-time or interactive content creation. Consequently, no prior work combines sparse, semantic primitives for both living and non-living features, multi-material field coupling driven to steady state, and multi-scale, user-interactive authoring into a single, lightweight ecosystem generator.
 
-% Slight introduction
-Virtual terrain generators often deliver raw geometry or grids, but field experts need the symbolic cues they draw on topographic or bathymetric maps (canyon heads, reef crests, dune ridges). Topographic maps are indispensable tools for biologists, geologists, or oceanologists (who refer to their sub-sea equivalents as "bathymetric charts"). These maps are displayed in 2D but provide 3D information about elevation (or depth). They can also use symbology to represent multi-scale elements that must remain legible. In cartography, map symbols are defined as geometric primitives such as points, polylines, polygons, and (more rarely) polyhedrons. Map symbols are essential compression devices: they strip away geometric detail while preserving the relationships that matter.
+To fill this gap, we introduce a pipeline that constructs both biotic (corals, algae, trees) and abiotic (islands, rivers, canyons) elements by instantiating \glosses{EnvObj} (points, curves, regions) which read from and write to continuous environmental fields (elevation, water flow, resource stocks) in an iterative, steady-state diffusion loop. At each step, \glosses{EnvObj} candidates spawn or die via expert-tuned generation and fitness rules, and users can inject global geomorphological events or manually refine any primitive, all while maintaining interactive performance for thousands of objects.
 
-This abstraction helps us grasp the relationship between different features, and can therefore enable the deduction of physical rules in the evolution of a terrain through the process of observation. In fields where full mechanistic modelling is out of reach (earth science, biology, urbanism, ...), the deduction of rules through observation plays an important role in the understanding of phenomena and explication of situations. Consequently, symbolic maps act as a cognitive bridge: they let experts infer governing processes and develop testable hypotheses even when full mechanistic simulation or controlled experiments are impossible.
 
-In this way, geologists can study the distribution of peaks in a mountain range or the location of soil types in an area (\cref{fig:env-obj-topo-madagascar}), which in turn helps them infer the probable locations of karst networks (\cref{fig:env-obj-topo-karst}), for example. Using the same abstraction tools, a biologist may study the effect of natural or artificial reefs on coastal erosion (\cref{fig:env-obj-topo-coasts}), or understand more clearly the interactions inside an ecosystem. Oceanologists may also deduce, in a similar manner, the formation of canyons and fans from old river systems (\cref{fig:env-obj-topo-canyon}). In short, the same minimalist notation empowers diverse fields to reason about terrain. This cross-disciplinary utility is the key inspiration for the \glosses{EnvObj} representation introduced in this chapter.
+\begin{figure}
+    \autofitgraphics[]{CliffErosionBidefordAndScalby.jpg, geologyMadagascar.jpeg}
+     \autofitgraphics[]{QasrLibya.jpg, PerthCanyon.jpg}
+    \caption{Examples of cartographies used in different fields of natural science. From left to right, and top to bottom: Evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}; sedimentary distribution over Madagascar island \cite{Pratt2017}; geological features distribution of karstic landscape at Qasr Libya, Libya \cite{ElAmawy2009}; localisation of key parameters of Perth Submarine Canyon, Australia \cite{Huang2014}}
+    \label{fig:env-obj-symbolics-on-maps}
+\end{figure}
 
-%--- AltTextImage R (coastlines) ------------------------------------
-\AltTextImageR{%
-The use of parametric lines representing coasts of islands or continents is common because it is intuitive to understand the concept of interaction using curves. It also shows an easy way to present the evolution of this interaction with respect to time, as the continuous change of shape can be interpreted by our mind as a moving shape, providing a sense of velocity of change (\cref{fig:env-obj-topo-coasts}). While real coastlines are fractal, a representation using a continuous line is sufficient to be able to imagine the real scene. A more detailed representation would however be harder to read, without any significant improvement in interpretability, and would age quickly as the coast evolves.
+We draw qualitative inspiration from cartographic symbology, where topographic and bathymetric charts employ 0D points (volcanoes, observatories), 1D lines (canyon heads, reef crests), and 2D regions (soil or sediment covers) to strip away geometric complexity and preserve the spatial relationships that underpin expert reasoning (see \cref{fig:env-obj-symbolics-on-maps}). Like these map primitives, our \gloss{EnvObj} abstractions enable a “sketch-first, refine-later” workflow: designers begin with a coarse semantic layout, then progressively zoom in, from mountain ridges down to individual boulders or coral colonies, without ever losing global coherence.
 
-Any element, like a coastline, then has an organic evolution over time, just like biological elements that can grow, shrink, and morph continuously. We see that one of the main differences between the evolution of organic elements, like the borders of a forest, and non-organic elements, like the borders of an island, lies in the time scale.
-}{./CliffErosionBidefordAndScalby.jpg}{Evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}}{fig:env-obj-topo-coasts}
+In the following state of the art, we first review classical radius-based heuristics used for ecosystem generation in Computer graphics (FRN, ZOI), and ecological-field theories (EFT) and reaction-diffusion that inform our local interaction and diffusion mechanisms. We then present our \glosses{EnvObj}-\glosses{EnvVal} pipeline in detail and demonstrate its use for underwater coral-reef environments. %both terrestrial mountain scenes and underwater coral-reef environments.
 
-%--- AltTextImage L (Madagascar soils) --------------------------------
-\AltTextImageL{%
-Symbology can be used to represent simultaneously large elements like regions with a specific type of soil, and very small and sparse elements like volcanic peaks or buildings from \cref{fig:env-obj-topo-madagascar}. We can find, on a single map, elements represented in 0D (sparse points, like volcanoes and buildings), 1D (curves like plate boundaries and shear zones) and 2D (regions like the sedimentary cover and tectonic plates).
-
-The geometric shape used to describe an element may vary depending on the scale at which the cartographer wishes to represent it, or depending on the focus of the map. Observatories are presented as single points (0D) in an island-scale map, but could appear as regions (2D) on city-scale maps. Beaches may be represented as curves, points or regions if the objective is to present their distribution, position, or shapes.
-}{./geologyMadagascar.jpeg}{Sedimentary distribution over Madagascar island \cite{Pratt2017}}{fig:env-obj-topo-madagascar}
-
-%--- AltTextImage R (karst) -------------------------------------------
-\AltTextImageR{%
-A combination of multiple disciplines can be represented in a single topographic map to provide context about an area. We can find examples of representations with urbanism, geology, hydrology, and topography mixed together. Every discipline is linked with all others with relative strength. Urban regions are strongly affected by geology and topography, while hydrology is directly impacted by topography. In this example, the karst geology is influenced by hydrology and geology, because karst features develop where limestone and underground drainage coincide. This also means that the presence of karst features can imply the presence (or a high probability of presence) of limestone and underground water flows, without the need to display them on a map.
-
-Without its 3D representation, a karst expert may be able to visualise in 3D from \cref{fig:env-obj-topo-karst} a possible ground surface around dolines and lapies without additional information.
-}{./QasrLibya.jpg}{Geological features distribution of karstic landscape at Qasr Libya, Libya \cite{ElAmawy2009}}{fig:env-obj-topo-karst}
-
-%--- AltTextImage L (canyon) ------------------------------------------
-\AltTextImageL{%
-The presence of symbols in a topographic map does not imply the presence of an element in the real world. We often encounter indicative symbols like the head and foot of a canyon, or the area affected by an element, which have no real geometry. However, the presence of these symbols brings useful information. The head buffer displayed in \cref{fig:env-obj-topo-canyon} helps explain the deformation of the shelf break line. Looking from the other side, the deformation on the shelf break implies the presence of a canyon head.
-}{./PerthCanyon.jpg}{Localisation of key parameters of Perth Submarine Canyon, Australia \cite{Huang2014}}{fig:env-obj-topo-canyon}
-
-Parallelly, terrain artists typically sketch the global shape of the terrain they will model beforehand, such that they can check, before the modelling stage, that the consistency and plausibility of the terrain will hold. Looking at a simplified map before starting the modelling step allows the designer to modify the overall shape of the terrain at a large scale, before the 3D geometry comes into play, generating too many control points or vertices to deal with. Our goal is to offer that same "sketch-first, refine-later" experience in a procedural setting: users should be able to draft a coarse landscape, evaluate its plausibility, then zoom in and iteratively refine features, from a mountain ridge down to an individual boulder, without ever losing global coherence.
-
-As seen in the previous examples, by simplifying surface details we can concentrate more effectively on gaining a deep understanding of the underlying processes that shape the terrain. This deeper understanding allows us to apply the insights to a wide variety of terrain types, facilitating broader and more versatile applications of our knowledge.
-
-In the context of generation of underwater environments, the elements to consider span several orders of magnitude in size. From a single coral colony to a volcanic island, the use of topographic maps lets biologists, geomorphologists, and hydrologists study the evolution of an area. The procedural construction of such landscapes should match the tools that experts use already to stay intuitive.
-
-The question which leads to our solution is one of multi-scale user interaction: Is it possible to provide an interaction means for terrain generation allowing the user to interact with a small structure like a rock in the same manner as with a large structure like a mountain?
-
-In this work, we seek a large-scale representation of the terrain to generate a landscape that satisfies their needs while keeping the possibility to apply large modifications. Robotician users need first to create a large landscape that can contain interesting configurations, select a smaller region that has features in a disposition that fits their requirements, and then refine it again. In the optic of generating a large-scale terrain in which we could focus the generation effort in a certain region, we wished to be able to see a coarse representation that can be computed quickly.
-
-Starting from an initial configuration or imposing conditions on the desired output terrain, the algorithm we propose lets the different terrain features evolve as a multi-agent system in which the user can apply modifications or new constraints on the state of the environment. The resulting configuration is an environment conforming to the constraints given by the user over the distribution of features present in the scene.
-
-We design our terrain generation method so that it is versatile enough to handle both terrestrial and aquatic environments. This dual capability will allow the method to apply to landscapes above the water level, such as mountains and valleys, as well as to submerged terrains, such as oceanic canyons and coral landscapes.
-
-Because many geographical terms and computer science terms are deceptive cognates, we therefore try to find middle ground in the naming of our introduced structures to avoid, as much as possible, any ambiguity between the research fields.
+Unlike full-fledged ecosystem simulations, which model temporal dynamics (population growth, predator-prey interactions, nutrient cycling, and fluid flows, ...) over successive time steps to study emergent behavior, our work centers on ecosystem generation, where the goal is to produce a plausible, editable snapshot of a landscape by iteratively placing and culling semantic primitives (\glosses{EnvObj}) that read from and write to steady-state environmental fields; this generation process trades off dynamic fidelity for interactive performance and multi-scale user control, delivering plausible biotic and abiotic scene layouts without the overhead of continuous process simulation.
 
 Building on these observations, this chapter contributes:
 \begin{Itemize}
 \Item{} \hide{\Gloss{EnvObj} formalism:} We introduce a sparse, domain-agnostic symbol set (points, curves, regions) that both read continuous environmental fields and write local modifications back to them, creating a closed feedback loop.
 
-\Item{} \hide{Analytic field coupling:} A decay-stabilised reaction–diffusion solver for scalar "materials" and analytical deformation of the vector-flow field yield interactive, steady-state updates without heavy fluid or erosion simulation.
+\Item{} \hide{Analytic field coupling:} A decay-stabilised reaction-diffusion solver for scalar "materials" and analytical deformation of the vector-flow field yield interactive, steady-state updates without heavy fluid or erosion simulation.
 
-\Item{} \hide{Multi-scale authoring:} A focus-and-refine pipeline lets users jump from kilometre-scale planning to sub-metre edits while preserving global coherence. We demonstrate this on both coral-reef islands and terrestrial mountain scenes.
+\Item{} \hide{Multi-scale authoring:} A focus-and-refine pipeline lets users jump from kilometre-scale planning to sub-metre edits while preserving global coherence. %We demonstrate this on both coral-reef islands and terrestrial mountain scenes.
 
 \end{Itemize}
+
+
+
+
+
+
+
+
+% \section{Introduction}
+
+% % \begin{figure}%[ht]
+% % \includegraphics[width=0.5 \linewidth]{./geologyMadagascar.jpeg}
+% % \includegraphics[width=0.5 \linewidth]{./CliffErosionBidefordAndScalby.jpg}
+% % \includegraphics[width=0.5 \linewidth]{./PerthCanyon.jpg}
+% % \includegraphics[width=0.5 \linewidth]{./QasrLibya.jpg}
+% % \caption{Four examples of topographic maps used in earth science. From left to right and top to bottom: Sedimentary distribution off Madagascar island \cite{Pratt2017}, evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}, localisation of key parameters of Perth Submarine Canyon, Australia \cite{Huang2014}, and geological features distribution of karstic landscape at Qasr Libya, Libya \cite{ElAmawy2009}}
+% % \label{fig:env-obj-presentation}
+% % \end{figure}
+
+% % Slight introduction
+% Virtual terrain generators often deliver raw geometry or grids, but field experts need the symbolic cues they draw on topographic or bathymetric maps (canyon heads, reef crests, dune ridges). Topographic maps are indispensable tools for biologists, geologists, or oceanologists (who refer to their sub-sea equivalents as "bathymetric charts"). These maps are displayed in 2D but provide 3D information about elevation (or depth). They can also use symbology to represent multi-scale elements that must remain legible. In cartography, map symbols are defined as geometric primitives such as points, polylines, polygons, and (more rarely) polyhedrons. Map symbols are essential compression devices: they strip away geometric detail while preserving the relationships that matter.
+
+% This abstraction helps us grasp the relationship between different features, and can therefore enable the deduction of physical rules in the evolution of a terrain through the process of observation. In fields where full mechanistic modelling is out of reach (earth science, biology, urbanism, ...), the deduction of rules through observation plays an important role in the understanding of phenomena and explication of situations. Consequently, symbolic maps act as a cognitive bridge: they let experts infer governing processes and develop testable hypotheses even when full mechanistic simulation or controlled experiments are impossible.
+
+% In this way, geologists can study the distribution of peaks in a mountain range or the location of soil types in an area (\cref{fig:env-obj-topo-madagascar}), which in turn helps them infer the probable locations of karst networks (\cref{fig:env-obj-topo-karst}), for example. Using the same abstraction tools, a biologist may study the effect of natural or artificial reefs on coastal erosion (\cref{fig:env-obj-topo-coasts}), or understand more clearly the interactions inside an ecosystem. Oceanologists may also deduce, in a similar manner, the formation of canyons and fans from old river systems (\cref{fig:env-obj-topo-canyon}). In short, the same minimalist notation empowers diverse fields to reason about terrain. This cross-disciplinary utility is the key inspiration for the \glosses{EnvObj} representation introduced in this chapter.
+
+% %--- AltTextImage R (coastlines) ------------------------------------
+% \AltTextImageR{%
+% The use of parametric lines representing coasts of islands or continents is common because it is intuitive to understand the concept of interaction using curves. It also shows an easy way to present the evolution of this interaction with respect to time, as the continuous change of shape can be interpreted by our mind as a moving shape, providing a sense of velocity of change (\cref{fig:env-obj-topo-coasts}). While real coastlines are fractal, a representation using a continuous line is sufficient to be able to imagine the real scene. A more detailed representation would however be harder to read, without any significant improvement in interpretability, and would age quickly as the coast evolves.
+
+% Any element, like a coastline, then has an organic evolution over time, just like biological elements that can grow, shrink, and morph continuously. We see that one of the main differences between the evolution of organic elements, like the borders of a forest, and non-organic elements, like the borders of an island, lies in the time scale.
+% }{./CliffErosionBidefordAndScalby.jpg}{Evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}}{fig:env-obj-topo-coasts}
+
+% %--- AltTextImage L (Madagascar soils) --------------------------------
+% \AltTextImageL{%
+% Symbology can be used to represent simultaneously large elements like regions with a specific type of soil, and very small and sparse elements like volcanic peaks or buildings from \cref{fig:env-obj-topo-madagascar}. We can find, on a single map, elements represented in 0D (sparse points, like volcanoes and buildings), 1D (curves like plate boundaries and shear zones) and 2D (regions like the sedimentary cover and tectonic plates).
+
+% The geometric shape used to describe an element may vary depending on the scale at which the cartographer wishes to represent it, or depending on the focus of the map. Observatories are presented as single points (0D) in an island-scale map, but could appear as regions (2D) on city-scale maps. Beaches may be represented as curves, points or regions if the objective is to present their distribution, position, or shapes.
+% }{./geologyMadagascar.jpeg}{Sedimentary distribution over Madagascar island \cite{Pratt2017}}{fig:env-obj-topo-madagascar}
+
+% %--- AltTextImage R (karst) -------------------------------------------
+% \AltTextImageR{%
+% A combination of multiple disciplines can be represented in a single topographic map to provide context about an area. We can find examples of representations with urbanism, geology, hydrology, and topography mixed together. Every discipline is linked with all others with relative strength. Urban regions are strongly affected by geology and topography, while hydrology is directly impacted by topography. In this example, the karst geology is influenced by hydrology and geology, because karst features develop where limestone and underground drainage coincide. This also means that the presence of karst features can imply the presence (or a high probability of presence) of limestone and underground water flows, without the need to display them on a map.
+
+% Without its 3D representation, a karst expert may be able to visualise in 3D from \cref{fig:env-obj-topo-karst} a possible ground surface around dolines and lapies without additional information.
+% }{./QasrLibya.jpg}{Geological features distribution of karstic landscape at Qasr Libya, Libya \cite{ElAmawy2009}}{fig:env-obj-topo-karst}
+
+% %--- AltTextImage L (canyon) ------------------------------------------
+% \AltTextImageL{%
+% The presence of symbols in a topographic map does not imply the presence of an element in the real world. We often encounter indicative symbols like the head and foot of a canyon, or the area affected by an element, which have no real geometry. However, the presence of these symbols brings useful information. The head buffer displayed in \cref{fig:env-obj-topo-canyon} helps explain the deformation of the shelf break line. Looking from the other side, the deformation on the shelf break implies the presence of a canyon head.
+% }{./PerthCanyon.jpg}{Localisation of key parameters of Perth Submarine Canyon, Australia \cite{Huang2014}}{fig:env-obj-topo-canyon}
+
+% Parallelly, terrain artists typically sketch the global shape of the terrain they will model beforehand, such that they can check, before the modelling stage, that the consistency and plausibility of the terrain will hold. Looking at a simplified map before starting the modelling step allows the designer to modify the overall shape of the terrain at a large scale, before the 3D geometry comes into play, generating too many control points or vertices to deal with. Our goal is to offer that same "sketch-first, refine-later" experience in a procedural setting: users should be able to draft a coarse landscape, evaluate its plausibility, then zoom in and iteratively refine features, from a mountain ridge down to an individual boulder, without ever losing global coherence.
+
+% As seen in the previous examples, by simplifying surface details we can concentrate more effectively on gaining a deep understanding of the underlying processes that shape the terrain. This deeper understanding allows us to apply the insights to a wide variety of terrain types, facilitating broader and more versatile applications of our knowledge.
+
+% In the context of generation of underwater environments, the elements to consider span several orders of magnitude in size. From a single coral colony to a volcanic island, the use of topographic maps lets biologists, geomorphologists, and hydrologists study the evolution of an area. The procedural construction of such landscapes should match the tools that experts use already to stay intuitive.
+
+% The question which leads to our solution is one of multi-scale user interaction: Is it possible to provide an interaction means for terrain generation allowing the user to interact with a small structure like a rock in the same manner as with a large structure like a mountain?
+
+% In this work, we seek a large-scale representation of the terrain to generate a landscape that satisfies their needs while keeping the possibility to apply large modifications. Robotician users need first to create a large landscape that can contain interesting configurations, select a smaller region that has features in a disposition that fits their requirements, and then refine it again. In the optic of generating a large-scale terrain in which we could focus the generation effort in a certain region, we wished to be able to see a coarse representation that can be computed quickly.
+
+% Starting from an initial configuration or imposing conditions on the desired output terrain, the algorithm we propose lets the different terrain features evolve as a multi-agent system in which the user can apply modifications or new constraints on the state of the environment. The resulting configuration is an environment conforming to the constraints given by the user over the distribution of features present in the scene.
+
+% We design our terrain generation method so that it is versatile enough to handle both terrestrial and aquatic environments. This dual capability will allow the method to apply to landscapes above the water level, such as mountains and valleys, as well as to submerged terrains, such as oceanic canyons and coral landscapes.
+
+% Because many geographical terms and computer science terms are deceptive cognates, we therefore try to find middle ground in the naming of our introduced structures to avoid, as much as possible, any ambiguity between the research fields.
+
+% Building on these observations, this chapter contributes:
+% \begin{Itemize}
+% \Item{} \hide{\Gloss{EnvObj} formalism:} We introduce a sparse, domain-agnostic symbol set (points, curves, regions) that both read continuous environmental fields and write local modifications back to them, creating a closed feedback loop.
+
+% \Item{} \hide{Analytic field coupling:} A decay-stabilised reaction-diffusion solver for scalar "materials" and analytical deformation of the vector-flow field yield interactive, steady-state updates without heavy fluid or erosion simulation.
+
+% \Item{} \hide{Multi-scale authoring:} A focus-and-refine pipeline lets users jump from kilometre-scale planning to sub-metre edits while preserving global coherence. %We demonstrate this on both coral-reef islands and terrestrial mountain scenes.
+
+% \end{Itemize}
 
 
 
@@ -113,16 +150,16 @@ Building on these observations, this chapter contributes:
 \section{State of the art}
 \label{sec:env-obj-related-works}
 
-Simulating ecosystems involves a range of modelling approaches, each balancing biological realism and computational efficiency. Broadly, models can treat populations as continuous fields using reaction–diffusion equations, or model each organism individually through agent-based methods. For clarity, we discuss existing work in three conceptual families: site-based (grid or tessellation) models, individual-based models, and continuous field models, each emphasising a different balance between local detail and scalability. Site-based models discretise space to model local interactions efficiently. In contrast, individual-based models (IBMs) capture fine-scale behaviours and heterogeneity, often using spatial interaction rules such as fixed-radius, zone-of-influence, or field-based methods. Ecological Field Models (EFMs) bridge these approaches by representing environmental properties as continuous fields influenced by organisms, enabling dynamic feedback between species and their surroundings. These diverse frameworks provide flexible tools for capturing complex ecological processes at varying scales and resolutions.
+Simulating ecosystems involves a range of modelling approaches, each balancing biological realism and computational efficiency. Broadly, models can treat populations as continuous fields using reaction-diffusion equations, or model each organism individually through agent-based methods. For clarity, we discuss existing work in three conceptual families: site-based (grid or tessellation) models, individual-based models, and continuous field models, each emphasising a different balance between local detail and scalability. Site-based models discretise space to model local interactions efficiently. In contrast, individual-based models (IBMs) capture fine-scale behaviours and heterogeneity, often using spatial interaction rules such as fixed-radius, zone-of-influence, or field-based methods. Ecological Field Models (EFMs) bridge these approaches by representing environmental properties as continuous fields influenced by organisms, enabling dynamic feedback between species and their surroundings. These diverse frameworks provide flexible tools for capturing complex ecological processes at varying scales and resolutions.
 
-Our method extends the Environmental Objects framework of \citep{Grosbellet2016}. We lift it from an urban-scene dressing tool to a scale-agnostic ecosystem engine that treats abiotic and biotic entities uniformly and supports user-guided "zoom-and-refine" workflows.
+Our method extends the Environmental Objects framework of \citep{Grosbellet2016} by including diffusion in their effect scalar fields and Ecological Field Theory (EFT) to instantiate objects at fitting positions in the scene. We lift it from an urban-scene dressing tool to a scale-agnostic ecosystem engine that treats abiotic and biotic entities uniformly and supports user-guided "zoom-and-refine" workflows.
 
 % --------------------------------------------------------------------
 \subsection{Ecosystem simulation}
 
 Two main philosophies emerge in the literature: modelling dense populations as continuous media \cite{Turing1952}, or representing each individual explicitly \cite{Czaran1998}. The former excels in broad predictions; the latter in local realism.
 
-From a large-scale perspective, where billions of individuals are indistinguishable (e.g. grass shoots, bacteria, whole populations), we treat species as continua and borrow reaction–diffusion models from physics and chemistry.
+From a large-scale perspective, where billions of individuals are indistinguishable (e.g. grass shoots, bacteria, whole populations), we treat species as continua and borrow reaction-diffusion models from physics and chemistry.
 
 Conversely, when the number of individuals is smaller or the density is low enough, Individual-Based Models become appropriate. These methods treat organisms as agents that sense and interact with neighbours, making decisions such as spawning, growth, and death.
 
@@ -152,7 +189,7 @@ N_{t+1}(x,y) = f(N_t(x,y), \Bar{N}(x, y), E_t(x, y))
 \end{align}
 where $N_t(x, y)$ is the state variable at cell coordinates $(x, y)$ at time $t$, $\Bar{N}(x, y)$ is the neighbourhood of the cell at coordinates $(x, y)$, $E_t(x, y)$ is the explicit environmental factors like precipitation and soil nutrients, and $f$ is the update function that describes the biological changes given the current state, the neighbourhood and the environmental factors around a cell.
 
-Grid-based models are particularly suited for simulations involving diffusion-like processes or phenomena with clear spatial boundaries. Classic examples in ecology include modelling vegetation dynamics in arid ecosystems, spatially explicit predator–prey interactions, forest-fire spread, and habitat fragmentation effects. Additionally, grid-based representations form the basis for Cellular Automata models, where cells exhibit discrete states (e.g. occupied, empty, burning), updated synchronously according to predefined state-transition rules.
+Grid-based models are particularly suited for simulations involving diffusion-like processes or phenomena with clear spatial boundaries. Classic examples in ecology include modelling vegetation dynamics in arid ecosystems, spatially explicit predator-prey interactions, forest-fire spread, and habitat fragmentation effects. Additionally, grid-based representations form the basis for Cellular Automata models, where cells exhibit discrete states (e.g. occupied, empty, burning), updated synchronously according to predefined state-transition rules.
 
 Grid-based models are commonly used due to computational simplicity, easy integration with geographic information systems (GIS), and suitability for parallel computing. They facilitate large-scale ecological modelling by clearly defining spatial relationships and boundary conditions, thus making them practical for exploring broad-scale ecological hypotheses or management scenarios.
 
@@ -178,14 +215,14 @@ They inherently define spatial neighbourhoods without arbitrary distances or pre
 
 Unlike grids, Voronoi cells automatically adjust spatial resolution according to entity density, allowing finer resolution in densely populated areas and coarser resolution in sparse ones.
 
-However, Voronoi–Delaunay models also present several limitations and challenges:
+However, Voronoi-Delaunay models also present several limitations and challenges:
 \begin{Itemize}
 \Item{} Dynamic updating of Voronoi diagrams and Delaunay triangulations is computationally more intensive than fixed-grid models, especially in large-scale or highly dynamic ecosystems where individuals frequently appear, disappear, or move.
 \Item{} Voronoi models implicitly assume isotropic interactions (competition or resource usage is equal in all directions) and strictly distance-based territories, neglecting directional biases like prevailing winds, slopes, or anisotropic resource gradients.
 \end{Itemize}
 
 
-Generalised topological maps represent ecosystems using abstract spatial relationships and connectivity structures, emphasising the importance of spatial relationships or interactions rather than explicit geometric positions or shapes \cite{Urban2009}. Unlike grid-based or Voronoi–Delaunay tessellation models, generalised topological maps prioritise topological relationships over exact geometric distances or spatial coordinates (\cref{fig:env-obj-grid-based-models}, right). Formally, these maps can be defined as graphs or networks $G = (V, E)$, where vertices $V$ represent spatial entities (e.g. habitat patches, resources, individuals, or territories), and edges $E$ define ecological interactions, such as connectivity, dispersal pathways, competitive influence, or predator–prey relations \cite{Hamonic2021,Minor2008,Peterson2024}.
+Generalised topological maps represent ecosystems using abstract spatial relationships and connectivity structures, emphasising the importance of spatial relationships or interactions rather than explicit geometric positions or shapes \cite{Urban2009}. Unlike grid-based or Voronoi-Delaunay tessellation models, generalised topological maps prioritise topological relationships over exact geometric distances or spatial coordinates (\cref{fig:env-obj-grid-based-models}, right). Formally, these maps can be defined as graphs or networks $G = (V, E)$, where vertices $V$ represent spatial entities (e.g. habitat patches, resources, individuals, or territories), and edges $E$ define ecological interactions, such as connectivity, dispersal pathways, competitive influence, or predator-prey relations \cite{Hamonic2021,Minor2008,Peterson2024}.
 
 By abstracting space into relational networks, these maps enable efficient representation and analysis of ecological processes in scenarios where exact geometry may be unknown, less relevant, or overly complex. They are particularly valuable in modelling metapopulation dynamics, habitat connectivity, or animal movement patterns, where the critical ecological factor is the presence or absence of connectivity rather than explicit spatial positions. Furthermore, generalised topological approaches facilitate integration with network theory, providing tools to analyse ecological resilience, robustness, fragmentation, and connectivity dynamics directly through graph-based metrics (e.g. connectivity indices, centrality measures, or modularity analyses) \cite{Lemiere2023,Gaucherel2012}.
 
@@ -252,7 +289,7 @@ with $G_i$ the growth of the tree, $G_{\text{max}, i}$ the maximal potential gro
 
 \AltTextImage{
 The ZOI model typically assumes symmetric (isotropic) competition, meaning all trees compete equally in every direction, and the competition effect between two trees is reciprocal if their zones and dimensions are similar. However, ecological realism can be increased by adopting an asymmetric (anisotropic) version of the model, which acknowledges that competition is often directionally biased or size-dependent (\cref{fig:env-obj-zoi-scheme}). For asymmetric competition, the equation is modified by introducing weighting based on differences in tree size or dominance, for example:
-}{FON-asymmetric-field-Peters2020.png}{A limitation of individual-based models is that the influence of each entity is often assumed to be isotropic, ignoring environmental factors.}{fig:env-obj-fon-asymmetric-scheme}
+}{FON-asymmetric-field-Peters2020-s.png}{A limitation of individual-based models is that the influence of each entity is often assumed to be isotropic, ignoring environmental factors. Left: competition in ZOI models is identical for each entity; right: a flow direction (black arrows) induce a deformed competition for resources. Asymmetric interaction area is much more complex to compute. }{fig:env-obj-fon-asymmetric-scheme}
 
 \begin{align}
 C_{ij} = \frac{ \Area_{\text{overlap}, ij} }{ \Area_{\text{ZOI}, i} } f(DBH_i, DBH_j)
@@ -328,7 +365,7 @@ From a computer graphics perspective, EFMs share similarities with techniques us
 
 EFMs are based on the fundamental idea that organisms are not isolated agents but rather integral components of their environment, influencing and being influenced by it in a spatially explicit manner (\cref{fig:env-obj-ecological-field-models} shows the effect of multiple vegetation entities on the humidity, shade, and nutrient fields of the environment). The core ecological principles behind EFMs include two key points:
 \begin{Itemize}
-\Item{Continuous organism–environment interactions:} Organisms modify their surroundings in ways that extend beyond their immediate location. Environmental factors such as soil nutrients, water availability, light exposure, and chemical signals influence other species gradually across space.
+\Item{Continuous organism-environment interactions:} Organisms modify their surroundings in ways that extend beyond their immediate location. Environmental factors such as soil nutrients, water availability, light exposure, and chemical signals influence other species gradually across space.
 \Item{Environmental feedback:} Species respond to spatially varying gradients rather than direct neighbour-based interactions, as seen in phototropism (guiding growth toward light) \cite{Pirk2012} or root development towards nutrient-rich soils \cite{Li2023}.
 \end{Itemize}
 
@@ -588,7 +625,7 @@ In an ecosystem simulation, each actor of the ecosystem has an impact on all oth
 Instead, we adopt the standard EFM strategy: every \gloss{EnvObj} writes to local \glosses{EnvVal} through its \gloss{EnvModif}.
 Each object then reads those values later, turning the global complexity into a linear complexity per simulation step and thus remaining interactive even for thousands of objects.
 
-We bundle the currently supported fields under the unified term "environment", denoted as $\environment = (\height,; \Water,; \Wlevel,; \material)$,
+We bundle the currently supported fields under the unified term "environment", denoted as $\environment = (\height, \; \Water, \; \Wlevel, \; \material)$,
 where $\height$ (height) and $\Wlevel$ (water level) are scalars, $\Water$ (water currents) is a 2D vector field, and $\material$ (\glosses{EnvMat}) is a vector of per-point resource stocks (sand, salt, moisture, limestone, ...).
 
 These \glosses{EnvMat} are conceptual reservoirs used by rule sets. They need not be visualised nor stored as layered textures.
@@ -635,7 +672,10 @@ We assume a \gloss{SteadyState} regime, guaranteed by a decay rate~$\decay \in;]
 
 \begin{figure}[H]
 \includegraphics{pipeline.pdf}
-\caption{Overview of the pipeline of the method. The user provides as input an initial height field and sets the water level, as well as a definition of the \glosses{EnvMat} properties and \glosses{EnvObj} properties that will be used in the iterative process. These inputs are initialised as an initial set of \glosses{EnvObj} and scalar fields that represent the \glosses{EnvVal}. In the iterative loop, new \glosses{EnvObj} are instantiated using the current state of the environment at their optimal position. The existing \glosses{EnvObj} in the terrain re-evaluate their \gloss{FitnessFunc} to grow or die and update the \glosses{EnvVal} locally. At each iteration, \glosses{GeoEvent} can update the \glosses{EnvVal}, while the user can interact directly with the \glosses{EnvObj}. The result of the whole process is a set of \glosses{EnvObj}, which is a sparse representation of the features of the scene.}
+% \caption{Overview of the pipeline of the method: The user provides as input an initial height field and sets the water level, as well as a definition of the \glosses{EnvMat} properties and \glosses{EnvObj} properties that will be used in the iterative process. These inputs are initialised as an initial set of \glosses{EnvObj} and scalar fields that represent the \glosses{EnvVal}. In the iterative loop, new \glosses{EnvObj} are instantiated using the current state of the environment at their optimal position. The existing \glosses{EnvObj} in the terrain re-evaluate their \gloss{FitnessFunc} to grow or die and update the \glosses{EnvVal} locally. At each iteration, \glosses{GeoEvent} can update the \glosses{EnvVal}, while the user can interact directly with the \glosses{EnvObj}. The result of the whole process is a set of \glosses{EnvObj}, which is a sparse representation of the features of the scene.}
+
+\caption{Overview of the pipeline of the method. Three different inputs are required at initialization (left): a base terrain and a given water level directly given by the user for each generated scene, a set of properties for the \glosses{EnvMat} available (\cref{sec:env-obj-pipeline}), and the properties and generation rules of \glosses{EnvObj} available (\cref{sec:env-obj-environmental-objects}), established with experts. The generation process (middle) iteratively proceed in three steps: instantiating new \glosses{EnvObj} (\cref{sec:env-obj-generation-rules}), evaluating the fitness of each entity with respect to user modifications (\cref{sec:env-obj-interaction}), and updating the environment until stabilisation (\cref{sec:env-obj-materials}) with user-defined geomorphological events (\cref{sec:env-obj-events}). When the scene suits the user, the sparse representation of \glosses{EnvObj} in the scene is returned and can be rendered (right). }
+% The user provides as input an initial height field and sets the water level, as well as a definition of the \glosses{EnvMat} properties and \glosses{EnvObj} properties that will be used in the iterative process. These inputs are initialised as an initial set of \glosses{EnvObj} and scalar fields that represent the \glosses{EnvVal}. In the iterative loop, new \glosses{EnvObj} are instantiated using the current state of the environment at their optimal position. The existing \glosses{EnvObj} in the terrain re-evaluate their \gloss{FitnessFunc} to grow or die and update the \glosses{EnvVal} locally. At each iteration, \glosses{GeoEvent} can update the \glosses{EnvVal}, while the user can interact directly with the \glosses{EnvObj}. The result of the whole process is a set of \glosses{EnvObj}, which is a sparse representation of the features of the scene.}
 \label{fig:env-obj-pipeline}
 \end{figure}
 
@@ -830,7 +870,7 @@ At every global iteration, each object re-evaluates $\fitnessFunc$. If $\fitness
 \section{\Glosses{EnvModif}}
 \label{sec:env-obj-materials}
 
-Every instantiated \gloss{EnvObj} contributes a local \gloss{EnvModif} tuple $\environmentModif_o=(\heightModif_o,;\waterModif_o,;\materialModif_o)$, affecting elevation, flow, and resource fields respectively. At the end of each iteration we assemble the provisional environment:
+Every instantiated \gloss{EnvObj} contributes a local \gloss{EnvModif} tuple $\environmentModif_o=(\heightModif_o, \;\waterModif_o, \;\materialModif_o)$, affecting elevation, flow, and resource fields respectively. At the end of each iteration we assemble the provisional environment:
 \begin{align}
 \environment^{\star} = \environment + {\sum_{o\in\objects}}\environmentModif_o,
 \end{align}
@@ -1068,7 +1108,7 @@ $\Wobj$ is a deformation field defined as the accumulation of flow primitives. T
 }{riverscape-primitives-Peytavie2019.png, riverscape-result-Peytavie2019.png}{\cite{Peytavie2019} uses a sparse representation of a river surface to include details at the water surface that can be aggregated in a construction tree.}{fig:env-obj-peytavie-river-primitives}
 
 \AltTextImage{
-On the other hand, \cite{Wejchert1991} showed that simply summing flow primitives generates velocity fields that approximate Navier–Stokes dynamics (\cref{fig:env-obj-wejchert-flow}, bottom). Because their method affects motion rather than visible geometry, this additive approach offers a good trade-off between plausibility, user control, and computation time.
+On the other hand, \cite{Wejchert1991} showed that simply summing flow primitives generates velocity fields that approximate Navier-Stokes dynamics (\cref{fig:env-obj-wejchert-flow}, bottom). Because their method affects motion rather than visible geometry, this additive approach offers a good trade-off between plausibility, user control, and computation time.
 In our method, we adopt a similar additive approach to combine Kelvinlet-based primitives. Our goal is to define a deformation field, and as such, summation offers an effective and intuitive way to accumulate the influence of multiple localised deformations at various scales, without requiring additional structure to resolve overlaps.  
 }{aerodynamics-primitives-Wejchert1991.png, aerodynamics-addition-Wejchert1991.png}{\cite{Wejchert1991} propose to describe the flow field of the environment by a sum of primitives, resulting in a simulation of wind field controllable by the user at very small memory cost.}{fig:env-obj-wejchert-flow}
 % To model the localized influence of environment objects on water currents, we adopt Kelvinlets, a family of closed-form, continuous deformation functions derived from the fundamental solutions to the equations of linear elasticity in an infinite medium.
@@ -1082,7 +1122,7 @@ In our method, we adopt a similar additive approach to combine Kelvinlet-based p
 
 Kelvinlets were introduced to computer graphics as an efficient means of producing physically plausible and interactive deformations \cite{DeGoes2017}. In our context, they provide a smooth and compact representation of flow alterations, ideal for integrating environmental features into vector field modelling.
 
-Kelvinlets are based on the Kelvin solution, which is the Green's function of the Navier–Cauchy equations of linear elasticity. It describes the displacement $\tensor{u}(\p)$ at a point $\p \in \R^3$ caused by a force applied at $\q$, in an isotropic, homogeneous elastic material:
+Kelvinlets are based on the Kelvin solution, which is the Green's function of the Navier-Cauchy equations of linear elasticity. It describes the displacement $\tensor{u}(\p)$ at a point $\p \in \R^3$ caused by a force applied at $\q$, in an isotropic, homogeneous elastic material:
 \begin{align}
 \mu \nabla^2 \tensor{u} + (\lambda + \mu) \nabla(\nabla \cdot \tensor{u}) + \delta(\p - \q) \force = 0
 \end{align}
