@@ -7,7 +7,9 @@
 	%  % \centering
     % \caption{Our method can produce different scenes including coral reef islands and canyons at multiple scales using \glosses{EnvObj} to represent terrain features.}
 	\label{fig:env-obj-teaser}
+    \caption{Three underwater scenes using our \glosses{EnvObj} representation. From left to right: an island cut in half by a canyon, the inside of a canyon with rocks and corals, a island with corals, algae and a trench. }
 }
+
 \abstract
 \label{chap:env-obj-abstract}
 % - Terrain generation usually focus on geometry processing \\
@@ -133,11 +135,11 @@ Below, we review the three modelling families (site-based, individual-based, fie
 \begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{grid-based-modeling-teaser.png}
-    \caption{Site-based models partition the environment into discrete regions with locally uniform properties. Examples include regular grids, Voronoi cells, and generalised topological maps \cite{Nelson2012,Lemiere2023}.}
+    \caption{Site-based models partition the environment into discrete regions with locally uniform properties. Examples include (left) regular grids, (middle) Voronoi cells, and (right) generalised topological maps \cite{Nelson2012,Lemiere2023}.}
     \label{fig:env-obj-grid-based-models}
 \end{figure}
 
-Site-based models represent the environment as discrete regions with uniform properties, interacting primarily with their immediate neighbours (Fig.~\ref{fig:env-obj-grid-based-models}). The concept generalises to other tessellations such as Voronoi diagrams or arbitrary graphs.
+Site-based models represent the environment as discrete regions with uniform properties, interacting primarily with their immediate neighbours (\cref{fig:env-obj-grid-based-models}). The concept generalises to other tessellations such as Voronoi diagrams or arbitrary graphs.
 
 % ..........................................................
 \subsubsubsection{Grid-based models}
@@ -199,7 +201,7 @@ Despite these limitations, generalized topological maps remain valuable tools, e
 \begin{figure}[H]
     \centering
     \includegraphics[]{individual-based-modeling-teaser.png}
-    \caption{The individual-based models focus the attention on each element of the scene, with interaction with the neighboring entities. Choosing this point of view allows for more precision on the positionning of each tree \cite{Alsweis2006}, but also on the life cycle and geometry of the individuals \cite{Peytavie2024a}. }
+    \caption{The individual-based models focus the attention on each element of the scene, with interaction with the neighboring entities. Choosing this point of view allows for more precision on (left) the positionning of each tree \cite{Alsweis2006}, but also on (right) the life cycle and geometry of the individuals \cite{Peytavie2024a}. }
     \label{fig:env-obj-individual-based-models}    
 \end{figure}
 
@@ -227,7 +229,7 @@ In the Fixed-Radius Neighborhood (FRN) method, the first appearance of a distanc
 
     In this framework, competition between adjacent trees is quantified by calculating the fractional overlap between their influence zones (visible in \cref{fig:env-obj-zoi-scheme}). 
 
-    }{ZOI-Peters2020.png}{ZOI is represented by regions around entities. The intersection between two circular regions (radii) define the competion between the two entities \hide{ (from \cite{Peters2020})}}{fig:env-obj-zoi-scheme}
+    }{ZOI-Peters2020.png}{ZOI is represented by regions around entities. The intersection between two circular regions (radii) define the competion between the two entities \hide{ (from \cite{Peters2020})}. Top: Symmetric competition (equal resource sharing, the competition at the intersection is divided in two); bottom: Asymmetric competition (larger entity capture more resource, like light for example). }{fig:env-obj-zoi-scheme}
 
 Mathematically, the intensity of competition $C_{ij}$ exerted by a neighboring tree $j$ on a focal tree $i$ is expressed as:
 \begin{align}
@@ -249,7 +251,7 @@ with $G_i$ the growth of the tree and $G_{\text{max}, i}$ the maximal potential 
 
 \AltTextImage{
 
-    The ZOI model typically assumes symmetric (isotropic) competition, meaning all trees compete equally in every direction, and the competition effect between two trees is reciprocal if their zones and dimensions are similar. However, ecological realism can be increased by adopting an asymmetric (anisotropic) version of the model, which acknowledges that competition is often directionally biased or size-dependent. For asymmetric competition, the equation is modified by introducing weighting based on differences in tree size or dominance, for example:
+    The ZOI model typically assumes symmetric (isotropic) competition, meaning all trees compete equally in every direction, and the competition effect between two trees is reciprocal if their zones and dimensions are similar. However, ecological realism can be increased by adopting an asymmetric (anisotropic) version of the model, which acknowledges that competition is often directionally biased or size-dependent (\cref{fig:env-obj-zoi-scheme}). For asymmetric competition, the equation is modified by introducing weighting based on differences in tree size or dominance, for example:
 }{FON-asymmetric-field-Peters2020.png}{The main inconvenient of methods using individual-based models is that the influence of each entity is supposed isotropic, without taking into account the environmental factors. \hide{(from \cite{Peters2020})} }{fig:env-obj-fon-asymmetric-scheme}
 
 \begin{align}
@@ -271,16 +273,17 @@ Empirical studies across diverse forest ecosystems have demonstrated that the ZO
     In the FON approach, competition intensity affecting a given focal tree is calculated by summing the competitive effects of neighboring trees, typically as a weighted function of their size and distance (\cref{fig:env-obj-fon-scheme}). 
 }{FON-Peters2020.png}{The FON model proposed a smoother version of the ZOI, such that the intersection between the two radii also take into account the distance from the tree trunk. \hide{(from \cite{Peters2020})}}{fig:env-obj-fon-scheme}
 
-A commonly used formulation of competition intensity $FON_i$ for a tree $i$ at the distance $r$ from the trunk is expressed as 
-\begin{align}
-    FON_i(r) = \begin{dcases}
-        1 & \text{for } 0 \leq r < \text{RBH}, \\
-        e^{-\curve(r - \text{RBH})} & \text{for } \text{RBH} \leq r \leq R, \\
-        0 & \text{otherwise}
-    \end{dcases}
-\end{align}
-with RBH the radius at breast height (half of the DBH) and $R$ the radius of influence of the tree (usually proposed to be $R = a \sqrt{\text{RBH}}$ given a scaling parameter $a$) and $\curve$ an attenuation coefficient, defined for each species. 
-
+\AltTextImage{
+    A commonly used formulation of competition intensity $FON_i$ for a tree $i$ at the distance $r$ from the trunk is expressed as 
+    \begin{align}
+        FON_i(r) = \begin{dcases}
+            1 & \text{for } 0 \leq r < \text{RBH}, \\
+            e^{-\curve(r - \text{RBH})} & \text{for } \text{RBH} \leq r \leq R, \\
+            0 & \text{otherwise}
+        \end{dcases}
+    \end{align}
+    with RBH the radius at breast height (half of the DBH) and $R$ the radius of influence of the tree (usually proposed to be $R = a \sqrt{\text{RBH}}$ given a scaling parameter $a$) and $\curve$ an attenuation coefficient, defined for each species. 
+}{DBH-measure.png}{DBH (and RBH) is measured at 1.3m of a tree.}{fig:env-obj-dbh}
 
 \AltTextImage{
     The overall competition at any point of space may now be described as:
@@ -301,11 +304,11 @@ The FON method does not rely explicitly on geometric overlap and is thus flexibl
 \AltTextImage{
     By designing non-monotonous field functions around trees, an emergence of different behaviour can appear. \cite{Lane2002} proposed to apply a "deformation kernel" on the distance function, resulting in a larger variety of patterns like the clustering of bushes and the competition of larger trees (\cref{fig:env-obj-kernels-Lane2002}, top left). From this idea, the definition of deformation kernels for each pair of species (\cref{fig:env-obj-kernels-Lane2002}, top right, with kernels for two species) allows the system to include the ecological interaction between the different species in the terrain. As a result, the simulation of the ecosystem can introduce intra-species clumping while keeping inter-species segregation.
 
-}{kernel-matrices-Lane2002.png}{The deformation of neighborhood kernels enables the modelling of different behaviour for species and inter-species interactions}{fig:env-obj-kernels-Lane2002}
+}{kernel-matrices-Lane2002.png}{The deformation of neighborhood kernels enables the modelling of different behaviour for species and inter-species interactions. Top-left: different kernels generate different layouts; Top-right: a matrix $M$ encode a distance kernel for each pair of species; Bottom: using a single matrix provides a way to control the interaction of different species (here, two) in a scene. }{fig:env-obj-kernels-Lane2002}
 
 \AltTextImage{
     On the other hand, learning the spatial distribution of distances between individuals from examples can be used as a statistical metric to introduce interactive tools for ecosystem generation \citep{Emilien2015a} (\cref{fig:env-obj-worldbrush-Emilien2015}). In this work, given a user-provided example, the system learns the parameters such as the histogram of distances inter- and intra-species from one region and reproduce these distribution in another regions. This method then does not limit to trees, but may include any scene element like houses and roads, as well as the integration of other metrics than distances such as the terrain slope.
-}{worldbrush-Emilien2015.png}{Using statistical distribution from an input terrain, \cite{Emilien2015a} resynthesize a different terrain with similar distributions. }{fig:env-obj-worldbrush-Emilien2015}
+}{worldbrush-Emilien2015.png}{Using statistical distribution from an input terrain, \cite{Emilien2015a} resynthesize a different terrain with similar distributions. Here, two distributions given (delimited by blue rectangular boundary): uniform distribution (top) and clustered distribution (bottom). Difference of distribution lies from the "void" part the interest region. }{fig:env-obj-worldbrush-Emilien2015}
 
 While the FON model provides a biologically detailed representation of competition, its computational complexity makes it significantly more challenging to implement in large-scale simulations. Unlike the ZOI model, which relies on predefined geometric overlaps that can be calculated efficiently, the FON approach requires integrating a continuously decaying competition function over an arbitrary area of influence. This necessitates evaluating the function at multiple points across overlapping zones, increasing computational demand. Moreover, the additive nature of FON, where each tree contributes to the total competition field at every spatial point, further exacerbates the cost, scaling poorly in dense forest stands. The necessity of numerical integration or spatial discretization makes FON computationally expensive compared to ZOI, which only requires simple geometric calculations. Consequently, while FON is useful for small-scale or highly detailed ecological studies, it is generally impractical for large-scale forest simulations.
 
@@ -316,7 +319,7 @@ While the FON model provides a biologically detailed representation of competiti
 \begin{figure}[H]
     \centering
     \autofitgraphics[width = .8\linewidth]{ecological-fields-example-shade-Wu1985.png, ecological-fields-example-water-Wu1985.png, ecological-fields-example-nutrients-Wu1985.png}
-    \caption{Ecological Field models represents the environment as a mathematical function where environmental properties like humidity, shade and nutrients are seen as distinct fields (in the figure, respectively from left to right). }
+    \caption{Ecological Field models represents the environment as a mathematical function where environmental properties like humidity, shade and nutrients are seen as distinct fields (in the figure, respectively from left to right) created by the presence of tree, bushes and flowers. }
     \label{fig:env-obj-ecological-field-models}    
 \end{figure}
 
@@ -408,7 +411,7 @@ assuming $\theta_0$ and $\alpha_0$ to be global scalar fields for temperature an
 
 \AltTextImage{
     Using the field values, the system instantiates small details like leaves by sampling the space with candidate "anchor positions". If the field values satisfy certain conditions at the anchor position $\p_i$, the small scale objects can be instantiated at this position (for example, for leaves: $\alpha(\p_i) l(\p_i) < d_i$ using the occlusion field $\alpha$, the leaves deposition field $l$ and the distance of the anchor position to the depositing surface $d_i$ as shown in \cref{fig:env-obj-leaves-instances}). This method can then be easily extended to modify the geometry or texture of the object based on the field values like the heat field or the humidity field, to manually move or rotate each of the objects, or even integrate user-defined density fields to populate entangled details on the ground \cite{Guerin2016}. 
-}{EnvObjs-leaves-instances-Grosbellet2016.png}{Leaves are instanced if the fields are sufficient and the geometry and texture are altered depending on the environment}{fig:env-obj-leaves-instances}
+}{EnvObjs-leaves-instances-Grosbellet2016.png}{Leaves are instanced if the field values are fitted for leaves presence, and the geometry and texture are altered depending on the environment. }{fig:env-obj-leaves-instances}
 
 \AltTextImage{
     On the other hand, the geometry of large objects can be altered using the scalar fields. The authors present a simulation of snow deposition on the objects by displacing the vertices $i$ in the direction of the normals $\vec n_i$ by an amount depending on the environment (\cref{fig:env-obj-snow-Grosbellet2016}):
@@ -416,7 +419,7 @@ assuming $\theta_0$ and $\alpha_0$ to be global scalar fields for temperature an
         \p_i' = \p_i + \left( \alpha(\p_i) s(\p_i) g(d(\p_i)) - \theta(\p_i) \right) \vec n_i
     \end{align}
     with $s$ the "snow field", and $g$ a snow elevation function based on the distance between the original vertex and the border of the mesh.
-}{EnvObjs-snow-Grosbellet2016.png}{Snow deposition is a displacement of vertices along the normals of the mesh}{fig:env-obj-snow-Grosbellet2016}
+}{EnvObjs-snow-Grosbellet2016.png}{Snow deposition is a displacement of vertices along the normals of the mesh (left), modulated by the value of fields such as occlusion (middle) and heat (right). }{fig:env-obj-snow-Grosbellet2016}
 
 \AltTextImage{
     In addition to the EFM framework, the environmental effects from environmental objects are not limited by points geometry as the scalar functions may use a spline primitive or be extended to volume primitives (\cref{fig:env-obj-heat-field-effect}). Translated to the ecological domain, this methodology extends the EFM as the inclusion of water bodies, essential for realistic vegetation simulation, can be taken into account by considering environmental effects from rivers and lakes which are often modeled as splines and regions in 3D modeling \cite{Emilien2015,Genevaux2013,Genevaux2015}.
@@ -1120,12 +1123,12 @@ The proposed formulation offers a terrain-aware approach to modeling water curre
 
 \AltTextImage{
     $\Wobj$ is a deformation field defined as the accumulation of flow primitives. The use of analytical primitives to represent localized variations within large-scale scenes has been explored in various contexts such as the edition of wind fields (\cite{Wejchert1991}, \cref{fig:env-obj-wejchert-flow}) and authoring of rivers' water surface geometry (\cite{Peytavie2019}, \cref{fig:env-obj-peytavie-river-primitives}). In the latter, flow primitives are primarily used to generate the geometry of the water surface, but the same primitives can also be reused to produce a flow field, enabling effects such as floating debris or leaves drifting along the surface. Because geometry is sensitive to overlapping influences, the authors. organize primitives into a blending tree, where merge and replace operations control how individual contributions interact. 
-}{riverscape-primitives-Peytavie2019.png, riverscape-result-Peytavie2019.png}{\cite{Peytavie2019} uses a sparse representation of a river surface to include details at the water surface.}{fig:env-obj-peytavie-river-primitives}
+}{riverscape-primitives-Peytavie2019.png, riverscape-result-Peytavie2019.png}{\cite{Peytavie2019} uses a sparse representation of a river surface to include details at the water surface that can be aggregated in a construction tree.}{fig:env-obj-peytavie-river-primitives}
 \AltTextImage{
     On the other hand, \cite{Wejchert1991} showed that simply summing flow primitives generates velocity fields that approximate Navier-Stokes dynamics (\cref{fig:env-obj-wejchert-flow}, bottom). Because their method affects motion rather than visible geometry, this additive approach offers a good trade-off between plausibility, user control and computation time.
 
     In our method, we adopt a similar additive approach to combine Kelvinlet-based primitives. Our goal is to define a deformation field and as such, summation offers an effective and intuitive way to accumulate the influence of multiple localized deformations at various scales, without requiring additional structure to resolve overlaps.
-}{aerodynamics-primitives-Wejchert1991.png, aerodynamics-addition-Wejchert1991.png}{\cite{Wejchert1991} propose to describe the flowfield of the environment by a combination of primitives, resulting in a simulation of wind field controllable by the user at very small memory cost.}{fig:env-obj-wejchert-flow}
+}{aerodynamics-primitives-Wejchert1991.png, aerodynamics-addition-Wejchert1991.png}{\cite{Wejchert1991} propose to describe the flowfield of the environment by a sum of primitives, resulting in a simulation of wind field controllable by the user at very small memory cost.}{fig:env-obj-wejchert-flow}
 % To model the localized influence of environment objects on water currents, we adopt Kelvinlets, a family of closed-form, continuous deformation functions derived from the fundamental solutions to the equations of linear elasticity in an infinite medium.
 
 
@@ -1155,7 +1158,7 @@ where $\lambda$ and $\mu$ are the Lamé parameters, with $\mu$ also known as the
     \frac{a \eps^2}{2 r_\eps^3} \identity \right] \force
     \end{align*}
     with $a = \frac{1}{4 \pi \mu}$ and $b = \frac{a}{4 (1 - \upsilon)}$ provided $\mu$ a shear modulus and $\upsilon$ a Poisson ratio provided for each Kelvinlet, $s$ a scaling factor and $\force$ the force vector of the grab operation. These values are tunable per object to simulate different material or flow resistance behaviors.
-}{kelvinlets-grab-demo-DeGoes2017.png, kelvinlets-demo-DeGoes2017.png}{\cite{DeGoes2017} presents four types of deformations using Kelvinets, resulting in organic pinch-like interaction with the original field. Top: a grab on a \textcopyright Disney/Pixar character. From left to right: a twist, a scale and a pinch operation. }{fig:env-obj-kelvinlets-demo}
+}{kelvinlets-grab-demo-DeGoes2017.png, kelvinlets-demo-DeGoes2017.png}{\cite{DeGoes2017} presents four types of deformations using Kelvinets, resulting in organic pinch-like interaction with the original field. Top: a grab on a \textcopyright Disney/Pixar character. Bottom, from left to right: a twist, a scale and a pinch operation. }{fig:env-obj-kelvinlets-demo}
 
 Deformations defined on curves use $\q = \closestCp$ with $\closestCp$ the closest point on the curve from the point $\p$ and $\force = \curve'(\p)$. We can then define $\tensor{u}_o(\p) = s_\eps(\q - \p) + g_\eps(\p - \q)$.
 Finally, we can retrieve the velocity field from the objects, with a per-object coefficient $\lambda_o$ for the strength of its flow effects (due to its size, porosity, surface roughness, ...):
