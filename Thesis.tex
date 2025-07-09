@@ -3,12 +3,15 @@
 %%%% Modèle proposé par colin.avogadri@umontpellier.fr %%%%
 %%%% 3 Février 2022 %%%%
 
-\documentclass[english,12pt,a4paper,openany,twoside]{book}
+% \documentclass[english,12pt,a4paper,openany,twoside]{book}
+\documentclass[english,12pt,a4paper]{book}
 \let\cleardoublepage\clearpage
 
 \input{packages}
 
-\usepackage[Sonny]{fncychap} %% Pour changer le style de chapitre
+% \usepackage[Sonny]{fncychap} %% Pour changer le style de chapitre
+\usepackage[Lenny]{fncychap}
+
 \pagestyle{fancy}
 %\fancyhf{}
 %\fancyhead[RE,RO]{\chaptername \thechapter . \chaptermark}
@@ -32,6 +35,23 @@
 \begin{document}
 \pagenumbering{roman}
 \include{PageDeGarde.tex}
+
+
+
+\fontsize{11pt}{13pt}\selectfont
+\setlength{\parindent}{0pt}  % default is 15pt
+\setlength{\parskip}{8pt}  % vertical space between paragraphs
+% \titlespacing*{\section}
+%   {0pt}{12pt plus 4pt minus 2pt}{6pt plus 2pt minus 1pt}
+% \titlespacing*{\subsection}
+%   {0pt}{10pt plus 3pt minus 2pt}{4pt plus 1pt minus 1pt}
+% \titlespacing*{\subsubsection}
+%   {0pt}{8pt plus 2pt minus 1pt}{2pt plus 1pt minus 1pt}
+\titlespacing*{\section}{0pt}{\parskip}{\parskip}
+\titlespacing*{\subsection}{0pt}{\parskip}{\parskip}
+\titlespacing*{\subsubsection}{0pt}{\parskip}{\parskip}
+
+
 \setcounter{tocdepth}{1}
 \tableofcontents
 % \setcounter{tocdepth}{7}
@@ -66,7 +86,7 @@
 \addcontentsline{toc}{chapter}{References}
 \printbibliography[title=References]
 
-\glsaddallunused
+% \glsaddallunused
 % \printglossary
 % \printglossary[type=\acronymtype]
 %\bibliography{../references_terrain}

@@ -3,7 +3,8 @@
 % Define \zzcommand for conditional commands
 \def\zzcommand#1{\let#1\undefined\newcommand#1}
 
-\captionsetup[figure]{textfont=it, labelfont=bf}
+\DeclareCaptionFormat{capformat}{\fontsize{11pt}{13pt}\selectfont#1#2#3}
+\captionsetup[figure]{textfont=it, labelfont=bf, format=capformat}
 \renewcommand{\floatpagefraction}{.8}
 \renewcommand{\topfraction}{.9}
 \renewcommand{\bottomfraction}{.8}
@@ -158,10 +159,40 @@
 \zzcommand{\cellalign}{cl}
 \newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
 
-\DeclareCiteCommand{\cite}[\mkbibparens]
-  {\usebibmacro{prenote}\usebibmacro{cite:init}}%
+
+% % "Old" citation style
+% \DeclareCiteCommand{\cite}[\mkbibparens]
+%   {\usebibmacro{prenote}\usebibmacro{cite:init}}%
+%   {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}%
+%   \printtext[bibhyperref]{[\printfield{labelalpha}]}}%  \printtext[bibhyperref]{\usebibmacro{cite}}}%
+%   {\multicitedelim}%
+%   {\usebibmacro{postnote}}
+
+% \newbibmacro*{citefullbody}{%
+%   \printnames{labelname}%
+%   \setunit{\addcomma\space}%
+%   \textit{\printfield[]{title}}~(\printfield{year})%
+% }
+
+% \DeclareCiteCommand{\citep}
+% {\usebibmacro{prenote}\usebibmacro{cite:init}}%
+% {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}%
+% \printtext[bibhyperref]{\usebibmacro{citefullbody}}}%
+% {\multicitedelim}%
+% {\usebibmacro{postnote}}
+
+
+% \DeclareCiteCommand{\citeProgram}[\mkbibparens]
+%   {\usebibmacro{prenote}\usebibmacro{cite:init}}
+%   {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}\printtext[bibhyperref]{\mkbibemph{\printfield{title}},~\printdate}}
+%   {\multicitedelim}
+%   {\usebibmacro{postnote}}
+
+% "New" citation style
+\DeclareCiteCommand{\cite}[]
+  {\usebibmacro{prenote}}%
   {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}%
-  \printtext[bibhyperref]{\usebibmacro{cite}}}%
+  \printtext[bibhyperref]{[\printfield{labelalpha}]}}%  \printtext[bibhyperref]{\usebibmacro{cite}}}%
   {\multicitedelim}%
   {\usebibmacro{postnote}}
 
@@ -172,7 +203,7 @@
 }
 
 \DeclareCiteCommand{\citep}
-{\usebibmacro{prenote}\usebibmacro{cite:init}}%
+{\usebibmacro{prenote}}%
 {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}%
 \printtext[bibhyperref]{\usebibmacro{citefullbody}}}%
 {\multicitedelim}%
@@ -180,7 +211,7 @@
 
 
 \DeclareCiteCommand{\citeProgram}[\mkbibparens]
-  {\usebibmacro{prenote}\usebibmacro{cite:init}}
+  {\usebibmacro{prenote}}
   {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}\printtext[bibhyperref]{\mkbibemph{\printfield{title}},~\printdate}}
   {\multicitedelim}
   {\usebibmacro{postnote}}
@@ -222,10 +253,11 @@
 \zzcommand{\Item}[1]{%
   \ifblank{#1}%
     {\item $\bullet$ }% Case when #1 is empty
-    {\item \textit{#1}}% Case when #1 is not empty
+    {\item \textbf{#1}}% Case when #1 is not empty
 }
 
 \newlength{\currentparindent}
+\newlength{\currentparskip}
 \newlength{\contentheightofalttextimage}
 \newlength{\contentheightofalttextimagecaption}
 \newsavebox{\alttextbox}
@@ -243,6 +275,7 @@
 \zzcommand{\AltTextImageR}[4]{% 
   \setcounter{AltTextImageCurrentSide}{1}
   \setlength{\currentparindent}{\parindent}%
+  \setlength{\currentparskip}{\parskip}%
   % \newsavebox{\alttextbox}
     \sbox{\alttextbox}{\vbox{\hsize=0.55\linewidth #1}}%
     \setlength{\contentheightofalttextimage}{\ht\alttextbox}%
@@ -252,6 +285,7 @@
   \noindent
   \begin{minipage}[t]{0.55\linewidth}
     \setlength{\parindent}{\currentparindent}
+    \setlength{\parskip}{\currentparskip}
     #1
   \end{minipage}%
   \hfill % Add horizontal space between text and image
@@ -283,11 +317,13 @@
   \label{#4}
   \end{minipage}%
   \captionsetup{width=\linewidth}
+  \smallskip
 }
 % \AltTextImageL{item_content}{placeholder.pdf}{caption}{label}
 \zzcommand{\AltTextImageL}[4]{% 
   \setcounter{AltTextImageCurrentSide}{0}
   \setlength{\currentparindent}{\parindent}%
+  \setlength{\currentparskip}{\parskip}%
     \sbox{\alttextbox}{\vbox{\hsize=0.55\linewidth #1}}%
     \setlength{\contentheightofalttextimage}{\ht\alttextbox}%
 
@@ -325,9 +361,11 @@
   \hfill % Add horizontal space between text and image
   \begin{minipage}[t]{0.55\linewidth}
     \setlength{\parindent}{\currentparindent}
+    \setlength{\parskip}{\currentparskip}
     #1
   \end{minipage}%
   \captionsetup{width=\linewidth}
+  \smallskip
 }
 \ExplSyntaxOff
 % \AltTextImage{item_content}{placeholder.pdf}{caption}{label}

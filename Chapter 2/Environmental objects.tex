@@ -12,13 +12,6 @@
 
 \abstract
 \label{chap:env-obj-abstract}
-% - Terrain generation usually focus on geometry processing \\
-% - Some works include soil materials in their process \\
-% - But no semantic information is preserved \\
-% - Many fields use topologic maps to describe the environment \\
-%  see Travel books \\
-% - Our method to abstract the geometry and focus on the symbolic \\
-% - ...
 This chapter introduces a novel method for procedural terrain generation, which leverages a sparse representation of environmental features to produce landscapes that are lightweight, plausible and adaptable to user desires. The method differs from traditional terrain generation approaches by emphasising multi-scale user interaction and incorporating expert knowledge to model the evolution of terrain features over time. By representing terrain features as discrete entities, or "\glosses{EnvObj}", the method enables dynamic interaction between these entities and their surrounding environment, represented through continuous scalar and vector fields. The generation process is iterative and allows for user-guided modifications at any iteration, including the introduction of environmental events that can influence the terrain's evolution. The proposed approach is particularly flexible, capable of generating underwater landscapes with a focus on large-scale plausibility and detailed, localised feature representation.
 \pagebreak
 
@@ -43,7 +36,7 @@ To fill this gap, we introduce a pipeline that constructs both biotic (corals, a
     \label{fig:env-obj-symbolics-on-maps}
 \end{figure}
 
-We draw qualitative inspiration from cartographic symbology, where topographic and bathymetric charts employ 0D points (volcanoes, observatories), 1D lines (canyon heads, reef crests), and 2D regions (soil or sediment covers) to strip away geometric complexity and preserve the spatial relationships that underpin expert reasoning (see \cref{fig:env-obj-symbolics-on-maps}). Like these map primitives, our \gloss{EnvObj} abstractions enable a “sketch-first, refine-later” workflow: designers begin with a coarse semantic layout, then progressively zoom in, from mountain ridges down to individual boulders or coral colonies, without ever losing global coherence.
+We draw qualitative inspiration from cartographic symbology, where topographic and bathymetric charts employ 0D points (volcanoes, observatories), 1D lines (canyon heads, reef crests), and 2D regions (soil or sediment covers) to strip away geometric complexity and preserve the spatial relationships that underpin expert reasoning (see \cref{fig:env-obj-symbolics-on-maps}). Similarly to these map primitives, our \gloss{EnvObj} abstractions enable a “sketch-first, refine-later” workflow: designers begin with a coarse semantic layout, then progressively zoom in, from mountain ridges down to individual boulders or coral colonies, without ever losing global coherence.
 
 In the following state of the art, we first review classical radius-based heuristics used for ecosystem generation in Computer graphics (FRN, ZOI), and ecological-field theories (EFT) and reaction-diffusion that inform our local interaction and diffusion mechanisms. We then present our \glosses{EnvObj}-\glosses{EnvVal} pipeline in detail and demonstrate its use for underwater coral-reef environments. %both terrestrial mountain scenes and underwater coral-reef environments.
 
@@ -88,12 +81,12 @@ Building on these observations, this chapter contributes:
 % \AltTextImageR{%
 % The use of parametric lines representing coasts of islands or continents is common because it is intuitive to understand the concept of interaction using curves. It also shows an easy way to present the evolution of this interaction with respect to time, as the continuous change of shape can be interpreted by our mind as a moving shape, providing a sense of velocity of change (\cref{fig:env-obj-topo-coasts}). While real coastlines are fractal, a representation using a continuous line is sufficient to be able to imagine the real scene. A more detailed representation would however be harder to read, without any significant improvement in interpretability, and would age quickly as the coast evolves.
 
-% Any element, like a coastline, then has an organic evolution over time, just like biological elements that can grow, shrink, and morph continuously. We see that one of the main differences between the evolution of organic elements, like the borders of a forest, and non-organic elements, like the borders of an island, lies in the time scale.
+% Any element, such as a coastline, then has an organic evolution over time, just like biological elements that can grow, shrink, and morph continuously. We see that one of the main differences between the evolution of organic elements, such as the borders of a forest, and non-organic elements, such as the borders of an island, lies in the time scale.
 % }{./CliffErosionBidefordAndScalby.jpg}{Evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}}{fig:env-obj-topo-coasts}
 
 % %--- AltTextImage L (Madagascar soils) --------------------------------
 % \AltTextImageL{%
-% Symbology can be used to represent simultaneously large elements like regions with a specific type of soil, and very small and sparse elements like volcanic peaks or buildings from \cref{fig:env-obj-topo-madagascar}. We can find, on a single map, elements represented in 0D (sparse points, like volcanoes and buildings), 1D (curves like plate boundaries and shear zones) and 2D (regions like the sedimentary cover and tectonic plates).
+% Symbology can be used to represent simultaneously large elements such as regions with a specific type of soil, and very small and sparse elements such as volcanic peaks or buildings from \cref{fig:env-obj-topo-madagascar}. We can find, on a single map, elements represented in 0D (sparse points, such as volcanoes and buildings), 1D (curves such as plate boundaries and shear zones) and 2D (regions such as the sedimentary cover and tectonic plates).
 
 % The geometric shape used to describe an element may vary depending on the scale at which the cartographer wishes to represent it, or depending on the focus of the map. Observatories are presented as single points (0D) in an island-scale map, but could appear as regions (2D) on city-scale maps. Beaches may be represented as curves, points or regions if the objective is to present their distribution, position, or shapes.
 % }{./geologyMadagascar.jpeg}{Sedimentary distribution over Madagascar island \cite{Pratt2017}}{fig:env-obj-topo-madagascar}
@@ -107,7 +100,7 @@ Building on these observations, this chapter contributes:
 
 % %--- AltTextImage L (canyon) ------------------------------------------
 % \AltTextImageL{%
-% The presence of symbols in a topographic map does not imply the presence of an element in the real world. We often encounter indicative symbols like the head and foot of a canyon, or the area affected by an element, which have no real geometry. However, the presence of these symbols brings useful information. The head buffer displayed in \cref{fig:env-obj-topo-canyon} helps explain the deformation of the shelf break line. Looking from the other side, the deformation on the shelf break implies the presence of a canyon head.
+% The presence of symbols in a topographic map does not imply the presence of an element in the real world. We often encounter indicative symbols such as the head and foot of a canyon, or the area affected by an element, which have no real geometry. However, the presence of these symbols brings useful information. The head buffer displayed in \cref{fig:env-obj-topo-canyon} helps explain the deformation of the shelf break line. Looking from the other side, the deformation on the shelf break implies the presence of a canyon head.
 % }{./PerthCanyon.jpg}{Localisation of key parameters of Perth Submarine Canyon, Australia \cite{Huang2014}}{fig:env-obj-topo-canyon}
 
 % Parallelly, terrain artists typically sketch the global shape of the terrain they will model beforehand, such that they can check, before the modelling stage, that the consistency and plausibility of the terrain will hold. Looking at a simplified map before starting the modelling step allows the designer to modify the overall shape of the terrain at a large scale, before the 3D geometry comes into play, generating too many control points or vertices to deal with. Our goal is to offer that same "sketch-first, refine-later" experience in a procedural setting: users should be able to draft a coarse landscape, evaluate its plausibility, then zoom in and iteratively refine features, from a mountain ridge down to an individual boulder, without ever losing global coherence.
@@ -187,7 +180,7 @@ Mathematically, grid-based ecological dynamics are commonly described using disc
 \begin{align}
 N_{t+1}(x,y) = f(N_t(x,y), \Bar{N}(x, y), E_t(x, y))
 \end{align}
-where $N_t(x, y)$ is the state variable at cell coordinates $(x, y)$ at time $t$, $\Bar{N}(x, y)$ is the neighbourhood of the cell at coordinates $(x, y)$, $E_t(x, y)$ is the explicit environmental factors like precipitation and soil nutrients, and $f$ is the update function that describes the biological changes given the current state, the neighbourhood and the environmental factors around a cell.
+where $N_t(x, y)$ is the state variable at cell coordinates $(x, y)$ at time $t$, $\Bar{N}(x, y)$ is the neighbourhood of the cell at coordinates $(x, y)$, $E_t(x, y)$ is the explicit environmental factors such as precipitation and soil nutrients, and $f$ is the update function that describes the biological changes given the current state, the neighbourhood and the environmental factors around a cell.
 
 Grid-based models are particularly suited for simulations involving diffusion-like processes or phenomena with clear spatial boundaries. Classic examples in ecology include modelling vegetation dynamics in arid ecosystems, spatially explicit predator-prey interactions, forest-fire spread, and habitat fragmentation effects. Additionally, grid-based representations form the basis for Cellular Automata models, where cells exhibit discrete states (e.g. occupied, empty, burning), updated synchronously according to predefined state-transition rules.
 
@@ -218,7 +211,7 @@ Unlike grids, Voronoi cells automatically adjust spatial resolution according to
 However, Voronoi-Delaunay models also present several limitations and challenges:
 \begin{Itemize}
 \Item{} Dynamic updating of Voronoi diagrams and Delaunay triangulations is computationally more intensive than fixed-grid models, especially in large-scale or highly dynamic ecosystems where individuals frequently appear, disappear, or move.
-\Item{} Voronoi models implicitly assume isotropic interactions (competition or resource usage is equal in all directions) and strictly distance-based territories, neglecting directional biases like prevailing winds, slopes, or anisotropic resource gradients.
+\Item{} Voronoi models implicitly assume isotropic interactions (competition or resource usage is equal in all directions) and strictly distance-based territories, neglecting directional biases such as prevailing winds, slopes, or anisotropic resource gradients.
 \end{Itemize}
 
 
@@ -244,7 +237,7 @@ Despite these limitations, generalised topological maps remain valuable tools, e
 \label{fig:env-obj-individual-based-models}
 \end{figure}
 
-In contrast to aggregated or spatially discrete models like grid-based and cellular automata methods, Individual-Based Models (IBMs) explicitly represent each organism or ecological entity as a distinct unit \cite{Crooks2017}. Thanks to increased computational power, IBMs have gained popularity due to their ability to capture individual variability, spatial heterogeneity, and detailed ecological dynamics. In IBMs, each organism is modelled independently, enabling fine-grained representation of processes such as birth, growth, reproduction, mortality, dispersal, and competition, each potentially influenced by local environmental conditions or interactions with neighbouring individuals \cite{Chng2013,Peytavie2024a}.
+In contrast to aggregated or spatially discrete models such as grid-based and cellular automata methods, Individual-Based Models (IBMs) explicitly represent each organism or ecological entity as a distinct unit \cite{Crooks2017}. Thanks to increased computational power, IBMs have gained popularity due to their ability to capture individual variability, spatial heterogeneity, and detailed ecological dynamics. In IBMs, each organism is modelled independently, enabling fine-grained representation of processes such as birth, growth, reproduction, mortality, dispersal, and competition, each potentially influenced by local environmental conditions or interactions with neighbouring individuals \cite{Chng2013,Peytavie2024a}.
 
 IBMs inherently capture the variability and heterogeneity of natural ecosystems, thus providing ecological realism by explicitly modelling individual variability in life histories, behaviour, and spatial positioning \cite{McLane2011,Zhang2020}. As such, IBMs are particularly effective for simulating complex ecological processes, including species interactions, competition, predation, dispersal, and responses to spatially heterogeneous environments (\cref{fig:env-obj-individual-based-models}, right).
 
@@ -264,7 +257,7 @@ The computer graphics community represents the FRN constraint using Poisson Disk
 
 \AltTextImage{
 \subsubsubsection{Zone of Influence}
-The Zone of Influence (ZOI) model is an ecological method designed to quantify competition among trees by modelling their interactions as gradual rather than binary processes \cite{Czaran1998}. In contrast to simpler binary approaches such as Fixed-Radius Neighbourhood (FRN), the ZOI model assigns each tree a circular influence zone, typically defined based on measurable attributes like diameter at breast height (DBH), crown dimensions, or species-specific ecological characteristics.
+The Zone of Influence (ZOI) model is an ecological method designed to quantify competition among trees by modelling their interactions as gradual rather than binary processes \cite{Czaran1998}. In contrast to simpler binary approaches such as Fixed-Radius Neighbourhood (FRN), the ZOI model assigns each tree a circular influence zone, typically defined based on measurable attributes such as diameter at breast height (DBH), crown dimensions, or species-specific ecological characteristics.
 
 In this framework, competition between adjacent trees is quantified by calculating the fractional overlap between their influence zones (visible in \cref{fig:env-obj-zoi-scheme}). 
 
@@ -298,7 +291,7 @@ with $f(DBH_i, DBH_j)$ a function that introduces asymmetry due to differences i
 
 The ZOI model is theoretically rooted in the understanding that trees compete gradually and continuously, rather than abruptly. However, it does rely on simplifying assumptions, such as circular, isotropic zones, homogeneous environmental conditions, and static radii within measurement intervals, which can limit its applicability to ecological scenarios involving directional resource gradients or heterogeneous environments (\cref{fig:env-obj-fon-asymmetric-scheme}).
 
-Empirical studies across diverse forest ecosystems have demonstrated that the ZOI approach significantly improves predictions of tree growth, survival, and mortality compared to simpler binary models like FRN. The nuanced representation of competition offered by ZOI models better captures complex ecological dynamics, particularly in mixed-species stands, uneven-aged forests, or structurally diverse ecosystems.
+Empirical studies across diverse forest ecosystems have demonstrated that the ZOI approach significantly improves predictions of tree growth, survival, and mortality compared to simpler binary models such as FRN. The nuanced representation of competition offered by ZOI models better captures complex ecological dynamics, particularly in mixed-species stands, uneven-aged forests, or structurally diverse ecosystems.
 
 \AltTextImage{
 \subsubsubsection{Field of Neighbourhood}
@@ -339,7 +332,7 @@ By designing non-monotonic field functions around trees, emergent behaviours can
 }{kernel-matrices-Lane2002.png}{The deformation of neighbourhood kernels enables modelling of different behaviours for species and their interactions. Top-left: different kernels generate different layouts; Top-right: a matrix $M$ encodes a distance kernel for each pair of species; Bottom: using a single matrix provides a way to control the interaction of two species in a scene.}{fig:env-obj-kernels-Lane2002}
 
 \AltTextImage{
-Alternatively, learning the spatial distribution of distances between individuals from examples can be used as a statistical metric to introduce interactive tools for ecosystem generation \citep{Emilien2015a} (\cref{fig:env-obj-worldbrush-Emilien2015}). In this work, given a user-provided example, the system learns parameters such as the histogram of inter- and intra-species distances from one region and reproduces these distributions in another region. This method is not limited to vegetation, but may include any scene elements like houses and roads, and can integrate other metrics such as terrain slope.
+Alternatively, learning the spatial distribution of distances between individuals from examples can be used as a statistical metric to introduce interactive tools for ecosystem generation \citep{Emilien2015a} (\cref{fig:env-obj-worldbrush-Emilien2015}). In this work, given a user-provided example, the system learns parameters such as the histogram of inter- and intra-species distances from one region and reproduces these distributions in another region. This method is not limited to vegetation, but may include any scene elements such as houses and roads, and can integrate other metrics such as terrain slope.
 }{worldbrush-Emilien2015.png}{Using statistical distribution from an input terrain, \cite{Emilien2015a} synthesise a different terrain with similar distributions. Two examples are given (delimited by blue rectangular boundaries): uniform distribution (top) and clustered distribution (bottom). Differences in distribution arise from the voids in the regions of interest.}{fig:env-obj-worldbrush-Emilien2015}
 
 While the FON model provides a biologically detailed representation of competition, its computational complexity makes it significantly more challenging to implement in large-scale simulations. Unlike the ZOI model, which relies on predefined geometric overlaps that can be calculated efficiently, the FON approach requires integrating a continuously decaying competition function over an arbitrary area of influence. This necessitates evaluating the function at multiple points across overlapping zones, increasing computational demand. Moreover, the additive nature of FON, where each tree contributes to the total competition field at every spatial point, further exacerbates the cost, scaling poorly in dense forest stands. The necessity of numerical integration or spatial discretisation makes FON computationally expensive compared to ZOI, which only requires simple geometric calculations. Consequently, while FON is useful for small-scale or highly detailed ecological studies, it is generally impractical for large-scale forest simulations.
@@ -349,7 +342,7 @@ While the FON model provides a biologically detailed representation of competiti
 \begin{figure}[H]
 \centering
 \autofitgraphics[width = .8\linewidth]{ecological-fields-example-shade-Wu1985.png, ecological-fields-example-water-Wu1985.png, ecological-fields-example-nutrients-Wu1985.png}
-\caption{Ecological Field Models represent the environment as a mathematical function where environmental properties like humidity, shade, and nutrients are seen as distinct fields (in the figure, respectively from left to right) created by the presence of trees, bushes, and flowers.}
+\caption{Ecological Field Models represent the environment as a mathematical function where environmental properties such as humidity, shade, and nutrients are seen as distinct fields (in the figure, respectively from left to right) created by the presence of trees, bushes, and flowers.}
 \label{fig:env-obj-ecological-field-models}
 \end{figure}
 
@@ -419,7 +412,7 @@ The Environmental Objects' method presents a hierarchical framework for authorin
 \end{Itemize}
 By employing skeletal implicit primitives and procedural blending techniques, the framework enables the efficient simulation of environmental changes while allowing for real-time scene modifications.
 
-In this method, each 3D model can be associated with "procedural effects", which regroup scalar fields representing changes in the environment. These fields are defined using skeleton-based implicit primitives, allowing the environment properties to be changed along a path instead of only using points like the initial EFM. This enables the system to represent, for example, the diffusion of heat around a pipe, which is not possible with the latter. The computation of an environment property is then an agglomeration of all the scalar fields associated with the given property. The authors propose computing all scalar fields, like the heat field $\theta$, at any position $\p$ by the accumulation of objects' fields, in a similar manner as \cref{eq:env-obj-eco-field-computation}:
+In this method, each 3D model can be associated with "procedural effects", which regroup scalar fields representing changes in the environment. These fields are defined using skeleton-based implicit primitives, allowing the environment properties to be changed along a path instead of only using points like the initial EFM. This enables the system to represent, for example, the diffusion of heat around a pipe, which is not possible with the latter. The computation of an environment property is then an agglomeration of all the scalar fields associated with the given property. The authors propose computing all scalar fields, such as the heat field $\theta$, at any position $\p$ by the accumulation of objects' fields, in a similar manner as \cref{eq:env-obj-eco-field-computation}:
 \begin{align}
 \theta(\p) = \theta_0(\p) + \sum_{i=1}^{n}{ \theta_i(\p)}
 \end{align}
@@ -430,7 +423,7 @@ and the occlusion field $\alpha$ as the product of all objects' occlusion fields
 assuming $\theta_0$ and $\alpha_0$ to be global scalar fields for temperature and shade, symbolising the baseline environmental state in the ecological domain.
 
 \AltTextImage{
-Using the field values, the system instantiates small details like leaves by sampling the space with candidate "anchor positions". If the field values satisfy certain conditions at the anchor position $\p_i$, the small-scale objects can be instantiated at this position (for example, for leaves: $\alpha(\p_i) l(\p_i) < d_i$ using the occlusion field $\alpha$, the leaves deposition field $l$ and the distance of the anchor position to the depositing surface $d_i$ as shown in \cref{fig:env-obj-leaves-instances}). This method can then be easily extended to modify the geometry or texture of the object based on the field values like the heat field or the humidity field, to manually move or rotate each of the objects, or even integrate user-defined density fields to populate entangled details on the ground \cite{Guerin2016}.
+Using the field values, the system instantiates small details such as leaves by sampling the space with candidate "anchor positions". If the field values satisfy certain conditions at the anchor position $\p_i$, the small-scale objects can be instantiated at this position (for example, for leaves: $\alpha(\p_i) l(\p_i) < d_i$ using the occlusion field $\alpha$, the leaves deposition field $l$ and the distance of the anchor position to the depositing surface $d_i$ as shown in \cref{fig:env-obj-leaves-instances}). This method can then be easily extended to modify the geometry or texture of the object based on the field values such as the heat field or the humidity field, to manually move or rotate each of the objects, or even integrate user-defined density fields to populate entangled details on the ground \cite{Guerin2016}.
 }{EnvObjs-leaves-instances-Grosbellet2016.png}{Leaves are instanced if the field values are fitted for leaves presence, and the geometry and texture are altered depending on the environment. }{fig:env-obj-leaves-instances}
 
 \AltTextImage{
@@ -495,7 +488,7 @@ However, when diffusion is anisotropic, the diffusion coefficient varies dependi
 \frac{\partial u (x, t)}{\partial t} = \nabla \cdot (\tensor{D} \nabla u(x, t)) + R(u)
 \end{align}
 
-The tensor $\tensor{D}$ can now encompass the effect of relief and environmental factors like wind and currents in the spread of a species. When diffusion is isotropic, $\tensor{D} = D\tensor{I}$, reducing the equation to the classic isotropic form.
+The tensor $\tensor{D}$ can now encompass the effect of relief and environmental factors such as wind and currents in the spread of a species. When diffusion is isotropic, $\tensor{D} = D\tensor{I}$, reducing the equation to the classic isotropic form.
 
 Anisotropic diffusion is particularly useful in ecological modelling where movement rates are not uniform due to environmental structures or organism behaviour. For example, wind influences the spread of pollen, seeds, and insect populations, leading to anisotropic diffusion. Similarly, marine organisms or pollutants diffuse anisotropically in ocean currents.
 Invasive species may spread preferentially along corridors such as rivers or roads, causing asymmetric diffusion. In ecosystems where microorganisms move in response to chemical gradients (chemotaxis), anisotropic diffusion better models movement patterns.
@@ -515,7 +508,7 @@ where $\tensor{D(*)}$  is a diffusion tensor dynamically defined by any relevant
             D_2&, x \in \text{hostile patch}
         \end{dcases}
     \end{align}
-    \Item{} An anomalous diffusion like the inclusion of Lévy flight term, incorporating random long distance jumps can be expressed as $\tensor{D(*)} = \tensor{D} u^m + \noise L(t)$ \cite{Humphries2014,Chechkin2008}.
+    \Item{} An anomalous diffusion such as the inclusion of Lévy flight term, incorporating random long distance jumps can be expressed as $\tensor{D(*)} = \tensor{D} u^m + \noise L(t)$ \cite{Humphries2014,Chechkin2008}.
 \end{Itemize}
 
 This generalized form enables the integration of anisotropic effects, landscape heterogeneity, and adaptive movement behaviors within reaction-diffusion models, making it highly applicable to ecological and biological systems.
@@ -568,7 +561,7 @@ Mathematically, the advection-diffusion-reaction equation (or "scalar transport 
 \frac{\partial u}{\partial t} + \field{v} \cdot \nabla u = \nabla \cdot \left( \tensor{D} \nabla u \right) + R(u)
 \end{align}
 
-In physics, the transport of a property like heat is coupled by the diffusion process, and the advection term $\field{v} \cdot \nabla u$ may be incorporated in the diffusion coefficient $\tensor{D}$ to form the "convection term". In this work we will separate the advection term and the diffusion term for clarity.
+In physics, the transport of a property such as heat is coupled by the diffusion process, and the advection term $\field{v} \cdot \nabla u$ may be incorporated in the diffusion coefficient $\tensor{D}$ to form the "convection term". In this work we will separate the advection term and the diffusion term for clarity.
 
 Wind is a major dispersal mechanism for many plant species, affecting seed distribution, plant competition, and biodiversity. The dispersal efficiency of seeds and pollen depends on wind velocity, turbulence, and interactions with terrain features. In flat landscapes, wind disperses seeds relatively uniformly; however, in complex terrains, wind speed and direction are influenced by topography, vegetation cover, and atmospheric conditions. Wind channelled through valleys may enhance seed deposition in lowland areas, while mountain ridges and abrupt elevation changes can create wind shadows, reducing dispersal effectiveness.
 
@@ -639,7 +632,7 @@ These \glosses{EnvMat} are conceptual reservoirs used by rule sets. They need no
 \label{fig:env-obj-assets}
 \end{figure}
 
-A geographical feature, also called object or entity, is defined as a discrete phenomenon located at or near the Earth's surface, relevant in geography and geographic information science (GIScience). It represents geographic information that can be depicted in maps, geographic information systems (GIS), and other forms of geographic media. This term includes both natural and human-made objects, ranging from tangible items like buildings or trees to intangible concepts like neighbourhoods or savanna. Features are distinct entities with defined boundaries, differentiating them from continuous geographic masses or processes occurring over time. They can be categorised as natural features, such as ecosystems, biomes, water bodies, and landforms, or artificial features, such as settlements, administrative regions, and engineered constructs. As the term "feature" is overused in computer science, we will use the term \gloss{EnvObj} in this work.
+A geographical feature, also called object or entity, is defined as a discrete phenomenon located at or near the Earth's surface, relevant in geography and geographic information science (GIScience). It represents geographic information that can be depicted in maps, geographic information systems (GIS), and other forms of geographic media. This term includes both natural and human-made objects, ranging from tangible items (e.g. buildings or trees) to intangible concepts (e.g. neighbourhoods or savanna). Features are distinct entities with defined boundaries, differentiating them from continuous geographic masses or processes occurring over time. They can be categorised as natural features, such as ecosystems, biomes, water bodies, and landforms, or artificial features, such as settlements, administrative regions, and engineered constructs. As the term "feature" is overused in computer science, we will use the term \gloss{EnvObj} in this work.
 
 \AltTextImage{
 Each \gloss{EnvObj} is anchored by a skeleton (a point, curve, or region in the cartographic sense) which captures its footprint while postponing heavy geometry generation (\cref{fig:env-objs_example-scheme1}).
@@ -734,7 +727,7 @@ For notational simplicity, we abbreviate $\fitnessFunc(\environment(\p))$ and $\
 \label{fig:env-obj-procedural-erosion}
 \end{figure}
 
-"Darwinian fitness" refers to an organism's ability to survive and reproduce in its environment. It is a measure of how well-suited an organism is to its surroundings, and those with higher fitness are more likely to pass on their genes to the next generation. In a similar vein, the \gloss{FitnessFunc} of a \gloss{EnvObj} evaluates its suitability at a location in the terrain, extending the meaning to living features like forests and corals and non-living elements such as rivers, mountains, karsts, etc.
+"Darwinian fitness" refers to an organism's ability to survive and reproduce in its environment. It is a measure of how well-suited an organism is to its surroundings, and those with higher fitness are more likely to pass on their genes to the next generation. In a similar vein, the \gloss{FitnessFunc} of a \gloss{EnvObj} evaluates its suitability at a location in the terrain, extending the meaning to living features such as forests and corals and non-living elements such as rivers, mountains, karsts, etc.
 
 The fitness function $\fitnessFunc$ quantitatively evaluates how well a given environment location satisfies the requirements of an environment object (\gloss{EnvObj}). In other words, $\fitnessFunc$ returns a numeric score representing the suitability of local environmental conditions for that object. This function considers various environmental variables such as altitude, the presence of specific materials, water current strength, and their respective gradients. Crucially, $\fitnessFunc$ is defined separately for each \gloss{EnvObj} class, allowing it to be tailored to the unique needs and tolerances of different object types. Higher $\fitnessFunc$ values indicate more favourable sites for the object, while lower values correspond to less suitable or inhospitable locations.
 
@@ -918,7 +911,7 @@ The effects of varying the different material properties of sand spread from roc
 
 \begin{figure}
 \autofitgraphics[]{2025-06-20__09-50-22_render_top_view-with-shade.png, 2025-06-20__09-50-22_render_top_view-with-shade-with-flow-with-objects.png }
-\caption{While we do consider shade (red) as being a material just like sand or pebbles, setting the influence of water currents and slope to null makes it independent of the environment, staying at the position of the \gloss{EnvObj} that generates it.}
+\caption{While we do consider shade (red) as being a material in the same manner as sand or pebbles, setting the influence of water currents and slope to null makes it independent of the environment, staying at the position of the \gloss{EnvObj} that generates it.}
 \label{fig:env-obj-shade}
 \end{figure}
 
@@ -1075,7 +1068,7 @@ The proposed formulation offers a terrain-aware approach to modelling water curr
 
 Unlike black-box physics-based solvers (discussed further in \cref{chap:erosion}), the analytical formulation of $\Wsimu$ exposes intuitive parameters such as flow direction, elevation sensitivity, and gradient deviation that can be directly adjusted by the user, making it especially suitable for terrain generation pipelines where user intent or artistic direction must be encoded. The solver is also computationally efficient and supports on-demand evaluation, avoiding the need for dense precomputed data and aligning well with the requirements of real-time systems, streaming terrains, and interactive editors.
 
-While the model assumes steady-state flow and does not simulate dynamic phenomena like rainfall, flooding, or erosion, these effects can be layered atop the static flow if needed, preserving a lightweight design that still conveys physically plausible behaviour. Finally, our system is purposefully modular: $\Wsimu$ addresses large-scale flow patterns, while small-scale variations such as turbulence, vortices, or flow deviations caused by discrete features are handled separately by the $\Wobj$ term, allowing each component to specialise in its relevant spatial scale.
+While the model assumes steady-state flow and does not simulate dynamic phenomena such as rainfall, flooding, or erosion, these effects can be layered atop the static flow if needed, preserving a lightweight design that still conveys physically plausible behaviour. Finally, our system is purposefully modular: $\Wsimu$ addresses large-scale flow patterns, while small-scale variations such as turbulence, vortices, or flow deviations caused by discrete features are handled separately by the $\Wobj$ term, allowing each component to specialise in its relevant spatial scale.
 
 % One of the principal motivations for this formulation is its ability to incorporate terrain-awareness directly into the water current model. In natural environments, the underlying topography is the dominant factor determining flow direction, especially in the absence of dynamic fluid interactions. By analyzing the terrain gradient at multiple spatial scales, the solver accounts for both broad elevation patterns and finer landform features. This leads to a more nuanced and plausible flow field that conforms to hills, valleys, and river paths without requiring a full physical simulation.
 
@@ -1380,7 +1373,7 @@ We limited our work to the use of 2D scalar fields as they are more easily diffe
 
 % \section{Method}
 % \label{sec:env-obj-method}
-% The overall pipeline of the method is based on simple incremental generation like most rule-based systems. In this type of system, the final state is defined either by reaching equilibrium, or by verifying specific conditions, such as a maximum number of iterations. 
+% The overall pipeline of the method is based on simple incremental generation such as most rule-based systems. In this type of system, the final state is defined either by reaching equilibrium, or by verifying specific conditions, such as a maximum number of iterations. 
 % We define our pipeline in three phases (\cref{fig:env-obj-pipeline}): the initialization phase that describe the generation and simulation rules, the iterative phase generating populating the terrain with our \glosses{EnvObj} and finally the output.
 
 
