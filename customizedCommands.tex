@@ -209,10 +209,13 @@
 {\multicitedelim}%
 {\usebibmacro{postnote}}
 
-
-\DeclareCiteCommand{\citeProgram}[\mkbibparens]
+% \zzcommand{\citeProgram}[1]{
+%   \footcite{#1}
+% }
+\DeclareCiteCommand{\citeProgram}[]
   {\usebibmacro{prenote}}
-  {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}\printtext[bibhyperref]{\mkbibemph{\printfield{title}},~\printdate}}
+  % {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}\printtext[bibhyperref]{\mkbibemph{\printfield{title}},~\printdate}}
+  {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}\printtext[bibhyperref]{\printfield{title}~(\printdate)}}
   {\multicitedelim}
   {\usebibmacro{postnote}}
 
@@ -688,6 +691,9 @@
   \end{adjustbox}%
   \endgroup
 }
+
+% \citet{ref}
+\zzcommand{\citet}[1]{\citep{#1}}
 
 % \delete{text_to_remove}
 \zzcommand{\delete}[1]

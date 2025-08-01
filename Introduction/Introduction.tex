@@ -69,11 +69,9 @@ Pour augmenter le réalisme et l'impact visuel des paysages synthétiques géné
 %     \autofitgraphics[]{TeaserChap1.png, TeaserChap2.png, TeaserChap3.png}
 % }
 
-Over the past 50 years, terrain generation has emerged as an increasingly active domain within the field of computer graphics. As the demand for more realistic, faster, and automated processes has grown, terrain generation techniques have evolved to meet these needs. As these objectives are progressively achieved, a new trend has started to emerge in which focus is pushed towards user control. The focus of this work is on one specific branch of terrain generation: interactive creation and modelling of landscapes.
+Over the past 50 years, terrain generation has emerged as an increasingly active domain within the field of computer graphics. As the demand for realistic and automated processes has grown to support the creation of ever-larger and more detailed landscapes effortlessly, terrain generation techniques have evolved accordingly. As these goals are progressively achieved, a new trend shifts the focus towards greater user control. This work is focused on a specific branch of terrain generation: interactive creation and modelling of landscapes.
 
 Landscape generation finds applications in diverse fields such as biology, geology, and robotics. Additionally, it has become a central tool in the entertainment industry, particularly in video games and cinema, where creating realistic and dynamic environments is key for immersive experiences. The ability to generate landscapes that help in understanding natural rules and testing hypotheses makes this the ideal tool for both researchers and industries.
-
-What sets this work apart is its emphasis on underwater landscapes or "seascapes", an area still overlooked but important in domains such as marine biology, oceanography, and underwater robotics. Furthermore, the extension of these techniques to new areas of the entertainment industry, such as video games and cinema, presents new opportunities for innovation.
 
 However, this exploration of the domain comes with significant challenges. Finding a balance between automation and the user's creative desires is essential, as is the ability to manage scaling effectively.
 
@@ -81,20 +79,25 @@ The central question guiding this research is: "How can we efficiently guide the
 
 Maintaining control over the creative process is essential. Each generated result should feel unique, meet the user's expectations, be explainable, and be easily correctable without requiring a complete regeneration. This approach ensures that the user remains at the centre of the creative process, with the tools and algorithms serving to enhance their objectives, rather than replacing the users themselves.
 
-\section{Challenges in underwater environment generation for robotics}
+What sets this work apart is its emphasis on underwater landscapes or "seascapes", an area only slightly touched upon in Computer Graphics, but important in domains such as marine biology, oceanography, and underwater robotics. Furthermore, the extension of these techniques to new areas for the entertainment industry, such as video games and cinema, opens the door to novel visual experiences and storytelling techniques that take full advantage of the unique aesthetic and physical characteristics of underwater environments.
 
-This thesis is developed alongside the creation of an autonomous underwater marine biology observation robot display in \cref{fig:intro-REMI}. In this context, virtual environments are essential since field experiments are costly and prone to failure. Digital twins of the robot and its environment allow simulations of material malfunctions and rare or unpredictable scenarios.
+This thesis is developed alongside the creation of an autonomous underwater marine biology observation robot display in \cref{fig:intro-REMI}. In this context, virtual environments are essential since field experiments are costly and prone to failure. Digital twins of the robot and its environment allow robotics simulations of material malfunctions and rare or unpredictable scenarios.
+
+\section{Underwater environment generation for robotics}
 
 \AltTextImage{
-To accurately model a robotic mission, robotics simulators (such as Gazebo and Isaac Sim) needs the geometry of the terrain, fauna, and flora that the device and its sensors might encounter. It also requires intrinsic material parameters to simulate sensor behaviour and external forces acting on the robot.
+    To accurately model robotic mission, robotics simulators (such as Gazebo and Isaac Sim) need the geometry of the terrain, fauna, and flora the robot might encounter.They also need material parameters to realistically simulate sensor behavior and external forces acting on the robot.
+% To accurately model a robotic mission, robotics simulators (such as Gazebo and Isaac Sim) needs the geometry of the terrain, fauna, and flora that the device and its sensors might encounter. It also requires intrinsic material parameters to simulate sensor behaviour and external forces acting on the robot.
 
-Scene geometry must be scaled appropriately to match both the robot, which operates at centimetre precision, and the mission area, which may cover thousands of square metres. Underwater environments also demand consideration of the third dimension. The materials used in the simulation need to respond correctly to light and sound waves, accounting for porosity, granularity, and reflectance, which can distort sensor signals. Water currents strongly affect navigation and require advanced modelling for realistic and interactive simulation.
+Scene geometry must be accurately scaled, from centimeter-level robot precision to mission areas spanningthousands of square meters. Underwater environments also require considering depth. Simulated materials should realistically respond to light and sound, taking into account porosity, granularity and reflectance. These factors significantly affect sensor's accuracy.
+% Scene geometry must be scaled appropriately to match both the robot, which operates at centimetre precision, and the mission area, which may cover thousands of square metres. Underwater environments also demand consideration of the third dimension (depth). The materials used in the simulation need to respond correctly to light and sound, accounting for porosity, granularity, and reflectance, which can distort sensor signals. 
+Water currents strongly affect navigation. Realistic and interactive simulation thus requires advanced currents modelling.
 
 }{REMI-robot.png}{Our underwater semi-AUV robot REMI executing a transect in Mayotte's lagoon.}{fig:intro-REMI}
 
-Designing virtual test fields involves creating surfaces and obstacles, and also the ability to replay simulations with identical or slightly altered configurations. Adding randomness while preserving the designer's intent presents an additional challenge in maintaining control while introducing variability.
+Designing virtual test fields involves creating surfaces and obstacles, and the ability to replay simulations with identical or slightly modified setups. Adding randomness while preserving the designer's intent presents another challenge. % in maintaining control while introducing variability.
 
-\section{Challenges in underwater environment generation for biology}
+\section{Underwater environment generation for biology}
 
 Virtual environments play a crucial role in biological research by enabling the observation and study of interactions within ecosystems. Biology relies heavily on phenomenology, where understanding emerges from observing how entities behave and interact under specific conditions.
 
@@ -107,7 +110,7 @@ To be useful, simulations must closely follow biological rules while also incorp
 
 These environments must also operate across multiple spatial scales. Simulations should cover large areas to reflect full ecosystems while still capturing fine-grained interactions between closely located entities.
 
-\section{Challenges of environment generation in Computer Graphics}
+\section{Underwater environment generation in Computer Graphics}
 
 Overall, this work lies in the domain of Computer Graphics (CG), specifically in the fields of modelling and interaction.
 
@@ -124,17 +127,17 @@ In \cref{chap:background} we will first introduce the fundamentals of procedural
 
 % \subsubsubsection{Automatic generation of coral reef islands}
 \AltTextImageR{
-In \cref{chap:coral-island}, we propose a user-guided method for the procedural creation of coral reef islands. Users sketch the island shape and elevation from two projections and define a wind field that simulates long-term environmental deformation. The system models coral growth and outputs heightmaps that are further used to train a conditional generative adversarial network (cGAN) for diversified generation. This method enables fast and controllable generation of varied reef island configurations.
-}{Chapter 1/figures/3_results.png}{Example of island generated in \cref{chap:coral-island}. }{fig:intro-example-cgan}
+In \cref{chap:coral-island}, we propose a user-guided method for the procedural creation of coral reef islands as we see in \cref{fig:intro-example-cgan}. Users sketch the island shape and elevation from two projections and define a wind field that simulates long-term environmental deformation. The system models coral growth and outputs heightmaps that are further used to train a conditional generative adversarial network (cGAN) for diversified generation. This method enables fast and controllable generation of varied reef island configurations.
+}{Introduction/figures/cGAN-example.png}{Example of island generated in \cref{chap:coral-island}. }{fig:intro-example-cgan}
 
 % \subsubsubsection{Semantic terrain representation}
 \AltTextImageR{
-The semantic representation we present in \cref{chap:semantic-representation} aims to design the features of a terrain with an abstraction of the 3D aspect of the surface. We introduce \glosses{EnvObj} and their simplified representation from the real world, which we used to obtain a symbolic representation of the terrain features, biotic and abiotic, that are present in the scene. Using symbolism allows us to focus on the interactions between the different elements to generate a plausible ecosystem without the high computational needs of running an accurate multiphysics simulation. Moreover, the simplified representation used allows the user to manipulate the shape of the final terrain without having to choose a specific terrain representation.
+The semantic representation we present in \cref{chap:semantic-representation} aims to design the features of a terrain with an abstraction of the 3D aspect of the surface. We introduce \glosses{EnvObj} and their simplified representation from the real world, which we used to obtain a symbolic representation of the terrain features, biotic and abiotic, that are present in the scene (such as the canyon, rocks and corals in \cref{fig:intro-example-env-obj}). Using symbolism allows us to focus on the interactions between the different elements to generate a plausible ecosystem without the high computational needs of running an accurate multiphysics simulation. Moreover, the simplified representation used allows the user to manipulate the layout of the final terrain without having to choose a specific terrain representation.
 }{Chapter 2/figures/Canyon5.png}{Example of ecosystem generated in \cref{chap:semantic-representation}. }{fig:intro-example-env-obj}
 
 % \subsubsubsection{Erosion simulation}
 \AltTextImageR{
-To increase the realism and the visual impact of the generated synthetic landscapes, the use of terrain enhancement techniques is often required. In \cref{chap:erosion}, we tackled the specific challenge of running erosion simulations, a type of enhancement that mimics the effects of water, wind, and erosive forces on a virtual terrain to improve the believability of the final landscape. A particle-based erosion method is proposed, designed to be generalisable for flexibility on multiple levels, and its implementation is oriented towards speed and parallelisation. The main flexibility of our method is to be applicable to multiple terrain representations, agnostic to the fluid solver used, and generalised for both landscapes and seascapes.
+To increase the realism and the visual impact of the generated synthetic landscapes, the use of terrain enhancement techniques is often required. In \cref{chap:erosion}, we tackled the specific challenge of running erosion simulations, a type of enhancement that mimics the effects of water, wind, and erosive forces on a virtual terrain to improve the believability of the final landscape. A particle-based erosion method is proposed, designed to be generalisable for flexibility on multiple scales, and its implementation is oriented towards speed and parallelisation. The main flexibility of our method is to be applicable to multiple terrain representations, agnostic to the fluid solver used, and generalised for both landscapes and seascapes. \cref{fig:intro-example-erosion} illustrates our method simulating coastal erosion, operating at the air-water interface on a voxel grid.
 }{Chapter 3/results/karst.pdf}{Example of sea caves generated in \cref{chap:erosion}. }{fig:intro-example-erosion}
 
 

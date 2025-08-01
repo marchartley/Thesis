@@ -7,6 +7,15 @@
     Boolean operations such as union, intersection, and difference are fundamental in logic and have been widely adopted in computer graphics, particularly in Constructive Solid Geometry (CSG). In this context, they are used to combine geometric primitives into complex shapes. However, while Boolean functions are naturally discontinuous, modern rendering pipelines typically favor smoothness to enable effects such as anti-aliasing, gradient shading, and physical simulation. This has led to the development of smooth operators: continuous, differentiable approximations of Boolean functions. The ideal objective is to construct operators that are not only smooth but infinitely differentiable, also known as functions belonging to the class $C^\infty$.
 }
 
+\teaser{
+    \autofitgraphics{Sphere_k_10.png, Sphere_k_20.png, Sphere_k_100.png, Sphere_k_1000.png}
+    \autofitcaptions{k=10, k=20, k=100, k=1000}
+    \autofitgraphics{MultiSpheres_k_10.png, MultiSpheres_k_20.png, MultiSpheres_k_100.png, MultiSpheres_k_1000.png}
+    \autofitcaptions{k=10, k=20, k=100, k=1000}
+    \caption{Top: Smooth union of a sphere of radius 0.1 with a plane rendered with Shadertoy shows the effect of the sharpness parameter $k$. Lower values blends smoothly while larger values approximate the boolean union operator. Bottom: Multiple spheres blended together with the same setup with the same $k$ values by chaining our $\smoothmax$ operator. }
+    \label{fig:smoothmax-rendered-example}
+}
+
 \section{Definition of the Smoothmax function $\smoothmax$}
 
 In \cref{subsubsec:height-functions-blending}, we introduced the operator $\smoothmax: \R^2 \to \R$ as a smooth approximation of the $\max$ operator, defined with the sharpness parameter $k > 0$ as:
@@ -167,7 +176,7 @@ where the second derivative of the core function is given by:
     \end{cases}
 \end{align}
 
-The expression is algebraically heavy, but all terms are composed of simple exponentials, products, and powers, making it fast and safe to compute in practice, and the redundant components an be cached. At $x = 0$, we have $g_2(0) = 0$ by symmetry and smoothness of the underlying expression.
+The expression is algebraically heavy, but all terms are composed of simple exponentials, products, and powers, making it fast and safe to compute in practice, and the redundant components can be cached (in particular $e^{2ka}$ and $e^{2kb}$). At $x = 0$, we have $g_2(0) = 0$ by symmetry and smoothness of the underlying expression.
 
 A $\smoothmin$ operator can be derived directly from the $\smoothmax$ by reversing the sign of the sharpness parameter $k_{\text{smoothmin}} = - k_{\text{smoothmax}}$.
 
@@ -206,7 +215,7 @@ We evaluate each operator by chaining it over $n$ inputs drawn randomly from $[0
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{compare_chaining.pdf}
+    \includegraphics{compare_chaining.pdf}
     \caption{Mean absolute error as more values are chained together ($k = 5$).}
 \end{figure}
 
@@ -230,7 +239,7 @@ We also test how each function converges to $\max(a, b)$ as sharpness $k$ increa
 
 \begin{figure}[H]
     \centering
-    \autofitgraphics[width=0.8\linewidth]{compare_sharpness-low-values.pdf, compare_sharpness.pdf}
+    \autofitgraphics{compare_sharpness-low-values.pdf, compare_sharpness.pdf}
     \caption{Approximation error as a function of $k$.}
     \label{fig:smoothmax-sharpness}
 \end{figure}
@@ -262,4 +271,4 @@ Overall, \texttt{smoothmax} performs best across the board:
     \item It is fast to compute and numerically stable.
 \end{itemize}
 
-This makes it a practical and robust replacement for $\max(a, b)$ in graphics and simulation tasks where smoothness matters.
+This makes it a practical and robust replacement for $\max(a, b)$ in graphics and simulation tasks where smoothness matters (such as raymarching, as presented in \cref{fig:smoothmax-rendered-example}).
