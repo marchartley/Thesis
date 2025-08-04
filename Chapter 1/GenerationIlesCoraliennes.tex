@@ -182,21 +182,21 @@ In our approach, we translate the core principles of Darwin's theory into a proc
 
 In generating synthetic coral reef islands, we adopt a set of simplifying assumptions that are interpreted by the formation process from Darwin's theory and field observations:
 \begin{Itemize}
-\AltTextImage{
-\Item{Radial symmetry and radial arrangement of features:} Real volcanic islands aren't perfect circles and reefs aren't exact rings, but they do grow outward in roughly concentric belts (looking at the island in \cref{fig:coral-island-radial-symmetry-assumption}, we see the typical layout mountain-beach-lagoon-reef-ocean). By anchoring our sketch-to-terrain engine on a radially organised layout, we give the user a single, intuitive handle on overall island shape, while keeping distance computations simple and efficient.
+    \AltTextImage{
+        \Item{Radial symmetry and radial arrangement of features:} Real volcanic islands aren't perfect circles and reefs aren't exact rings, but they do grow outward in roughly concentric belts (looking at the island in \cref{fig:coral-island-radial-symmetry-assumption}, we see the typical layout mountain-beach-lagoon-reef-ocean). By anchoring our sketch-to-terrain engine on a radially organised layout, we give the user a single, intuitive handle on overall island shape, while keeping distance computations simple and efficient.
 
-    \Item{Uniform profile shape:} Real islands have ridges, valleys, local bumps, and many other features varying the altitude. We collapse all of that into a single elevation curve from centre to edge, making the profile-view sketch a one-dimensional drawing, so users can modify elevation with a single stroke.
-}
-{Tuvuca_island.png}{Aerial view of Tuvuca Island, Lau Archipelago, Fiji.}{fig:coral-island-radial-symmetry-assumption}
+        \Item{Uniform profile shape:} Real islands have ridges, valleys, local bumps, and many other features varying the altitude. We collapse all of that into a single elevation curve from centre to edge, making the profile-view sketch a one-dimensional drawing, so users can modify elevation with a single stroke.
+    }
+    {Tuvuca_island.png}{Aerial view of Tuvuca Island, Lau Archipelago, Fiji.}{fig:coral-island-radial-symmetry-assumption}
 
-\AltTextImage{
-    \Item{Subsidence and coral "keep up" growth:} Actual reefs respond to light, nutrients, and biology, but the dominant effect is that corals grow vertically to stay near the photic zone. By decoupling coral growth from subsidence and simply keeping reef heights in a fixed band beneath the surface, we capture Darwin's essence with minimal parameters.
+    \AltTextImage{
+        \Item{Subsidence and coral "keep up" growth:} Actual reefs respond to light, nutrients, and biology, but the dominant effect is that corals grow vertically to stay near the photic zone. By decoupling coral growth from subsidence and simply keeping reef heights in a fixed band beneath the surface, we capture Darwin's essence with minimal parameters.
 
-    \Item{Wind and wave deformation:} In nature, coastal erosion results from sediment transport and complex hydrodynamics \cite{Terry2013}. We replace that with a simple vector field that the user paints on, which allows radial symmetry to be broken in a controllable way, without running a full erosion simulator.
+        \Item{Wind and wave deformation:} In nature, coastal erosion results from sediment transport and complex hydrodynamics \cite{Terry2013}. We replace that with a simple vector field that the user paints on, which allows radial symmetry to be broken in a controllable way, without running a full erosion simulator.
 
-    \Item{Independence of islands:} Archipelagos can share currents, sediments, or flood each other's lagoons, but simulating those interactions is expensive and hard to control. Treating each island as an isolated entity means multi-island scenes are just blends of individual islands, keeping the system fast and predictable.
-}
-{Mauritius_wind.png}{Mauritius is deformed. We see a deep slope on the west side while the east side has a gentle slope. The wind rose, showing in which direction the mean wind velocity is pointing, is correlated with this deformation.}{fig:coral-island-wind-deformation-assumption}
+        \Item{Independence of islands:} Archipelagos can share currents, sediments, or flood each other's lagoons, but simulating those interactions is expensive and hard to control. Treating each island as an isolated entity means multi-island scenes are just blends of individual islands, keeping the system fast and predictable.
+    }
+    {Mauritius_wind.png}{Mauritius is deformed. We see a deep slope on the west side while the east side has a gentle slope. The wind rose, showing in which direction the mean wind velocity is pointing, is correlated with this deformation.}{fig:coral-island-wind-deformation-assumption}
 
 \end{Itemize}
 
@@ -216,10 +216,10 @@ However, each of these techniques has its strengths and limitations, particularl
 \subsubsection{Noise-based terrain generation}
 
 \begin{figure}[ht]
-\centering
-\includegraphics[width = \linewidth]{noise_examples3.pdf}
-\caption{Three different results of an island generated from noise functions. In each case, the initial height field is the same, computed through flow noise. The falloff masks are also generated with a combination of fBm noise mitigated by the Euclidean distance from the image centre, warp noise and gamma correction. The only parameter modified for each example is the gamma correction. The results are very different, and hardly controllable. It is also difficult to represent lagoons and reefs using this method.}
-\label{fig:coral-island-noise-example}
+    \centering
+    \includegraphics[width = \linewidth]{noise_examples3.pdf}
+    \caption{Three different results of an island generated from noise functions. In each case, the initial height field is the same, computed through flow noise. The falloff masks are also generated with a combination of fBm noise mitigated by the Euclidean distance from the image centre, warp noise and gamma correction. The only parameter modified for each example is the gamma correction. The results are very different, and hardly controllable. It is also difficult to represent lagoons and reefs using this method.}
+    \label{fig:coral-island-noise-example}
 \end{figure}
 
 Noise-based procedural generation remains one of the most widely used techniques for creating natural-looking terrains. Perlin noise \cite{Perlin1985}, Simplex noise \cite{Perlin2001}, and the Diamond-square algorithm \cite{Fournier1982} are foundational algorithms that generate pseudo-random yet continuous variations across a grid, producing terrain features that resemble organic landscapes. These techniques have been widely adopted in computer graphics and game development due to their efficiency and visual appeal.
@@ -294,14 +294,15 @@ Sketch-based terrain generation often begins with user-defined curves that act a
     One of the earliest and most influential works in this domain was introduced by \cite{Gain2009} (\cref{fig:coral-island-Gain2009}), enabling users to sketch silhouettes, ridges, and spine curves to define complex terrain structures. The method employs multiresolution surface deformation and propagates wavelet-based noise from the sketched features to their surroundings, allowing users to generate detailed, natural-looking terrains from minimal input. This approach demonstrated the effectiveness of combining intuitive sketch input with procedural detail synthesis.
 
     We draw direct inspiration from this work's dual-view sketching strategy, combining top-view and profile sketches, which closely aligns with our concentric curve and height-profile input approach.
-
-    Expanding on this idea, \cite{Hnaidi2010} proposed a technique based on diffusion equations. In their method, curves are annotated with geometric constraints (elevation, slope, and roughness), and a diffusion process is used to interpolate these constraints across the terrain surface. This results in smooth, continuous elevation fields that conform to user-defined features such as rivers, ridgelines, or cliffs. The use of parameterised curves as terrain anchors allows for precise control over landform shaping, while maintaining a high degree of automation.
-
-}{sketchingGain2009-vertical.png}{\cite{Gain2009} propose to edit terrains through sketching by diffusing a noisy height function over a bounded region, effectively modelling mountain ranges.}{fig:coral-island-Gain2009}
+}{sketchingGain2009-s.png}{\cite{Gain2009} propose to edit terrains through sketching by diffusing a noisy height function over a bounded region (left), effectively modelling mountain ranges (right).}{fig:coral-island-Gain2009}
 
 \AltTextImage{
-In a different interaction paradigm, \cite{Tasse2014} introduced a first-person sketching interface, where users draw terrain silhouettes from a particular camera viewpoint (\cref{fig:coral-island-Tasse2014}). These silhouettes are then projected into 3D, and a deformation algorithm adjusts the terrain so that the drawn features are visible exactly as intended from the user's perspective. This method supports complex silhouettes with occlusions, T-junctions, and cusps, and represents a more immersive and perceptually grounded approach to sketch-based terrain editing.
-}{sketchingTasse2014-vertical.png}{\cite{Tasse2014} use sketching in association with camera position and direction to constrain the edition of height fields.}{fig:coral-island-Tasse2014}
+    Expanding on this idea, \cite{Hnaidi2010} proposed a technique based on diffusion equations. In their method, curves are annotated with geometric constraints (elevation, slope, and roughness), and a diffusion process is used to interpolate these constraints across the terrain surface. This results in smooth, continuous elevation fields that conform to user-defined features such as rivers, ridgelines, or cliffs (\cref{fig:coral-island-Hnaidi2010}). The use of parameterised curves as terrain anchors allows for precise control over landform shaping, while maintaining a high degree of automation.
+}{sketching-Hnaidi2010.png}{\cite{Hnaidi2010} defines the surface by elevation curves with constrained slopes, forming with ease river beds and cliffs.}{fig:coral-island-Hnaidi2010}
+
+\AltTextImage{
+    In a different interaction paradigm, \cite{Tasse2014} introduced a first-person sketching interface, where users draw terrain silhouettes from a particular camera viewpoint (\cref{fig:coral-island-Tasse2014}). These silhouettes are then projected into 3D, and a deformation algorithm adjusts the terrain so that the drawn features are visible exactly as intended from the user's perspective. This method supports complex silhouettes with occlusions, T-junctions, and cusps, and represents a more immersive and perceptually grounded approach to sketch-based terrain editing.
+}{sketchingTasse2014-s.png}{\cite{Tasse2014} use sketching in association with camera position and direction to constrain the edition of height fields.}{fig:coral-island-Tasse2014}
 
 These methods demonstrate the expressive power of curves as terrain-defining elements. By enabling users to sketch intuitive shapes and constraints, they bridge the gap between artistic intent and procedural complexity. Curve-driven approaches remain foundational in terrain modelling, particularly when user control over large-scale structure is essential. While we do not use the diffusion model, the idea of sketch-defined elevation constraints along curves informs our use of user-defined shape boundaries.
 
@@ -310,9 +311,9 @@ These methods demonstrate the expressive power of curves as terrain-defining ele
 While curve-driven techniques provide intuitive shape design, constraint-based and gradient-based approaches focus on exerting precise control over terrain features through formal specifications such as elevation values, slopes, or gradient fields. These methods prioritise structural accuracy and procedural consistency, making them particularly suited to applications that demand terrain realism, integration with geographic data, or fine-grained editing capabilities.
 
 \AltTextImage{
-A representative example of constraint-based modelling is presented by \cite{Gasch2020}, who propose a method for procedural terrain generation that respects user-defined elevation constraints (\cref{fig:coral-island-Gasch2020}). Their system allows users to fix values at specific control points (e.g., paths, landmarks) and then employs a system of equations to propagate these constraints throughout the terrain. The method integrates these constraints with a noise-based procedural function to preserve natural randomness while conforming to user intent. This approach is especially valuable when generating terrains that must align with real-world data or gameplay constraints.
+    A representative example of constraint-based modelling is presented by \cite{Gasch2020}, who propose a method for procedural terrain generation that respects user-defined elevation constraints (\cref{fig:coral-island-Gasch2020}). Their system allows users to fix values at specific control points (e.g., paths, landmarks) and then employs a system of equations to propagate these constraints throughout the terrain. The method integrates these constraints with a noise-based procedural function to preserve natural randomness while conforming to user intent. This approach is especially valuable when generating terrains that must align with real-world data or gameplay constraints.
 
-We do not adopt their constraint-solving mechanism, but conceptually relate our profile sketch input to a localised height constraint.
+    We do not adopt their constraint-solving mechanism, but conceptually relate our profile sketch input to a localised height constraint.
 
 }{sketching-Gasch2020.png}{\cite{Gasch2020} use a top-view sketch to apply constraints (a) on the noise function modelling a terrain, creating an intuitive means to create paths and roads in the resulting terrain (b and c).}{fig:coral-island-Gasch2020}
 
@@ -323,7 +324,7 @@ We do not adopt their constraint-solving mechanism, but conceptually relate our 
 \AltTextImage{
 Building on the need for more intuitive editing, \cite{Guerin2022} introduce a novel paradigm by modelling terrain in the gradient domain. Rather than specifying elevation values directly, users interact with slope-based representations, allowing for the manipulation of terrain inclination and the integration of local edits into global terrain structure (\cref{fig:coral-island-Guerin2022}). By controlling terrain gradients and reconstructing elevation through integration, this method enables seamless blending between regions and supports a more natural editing workflow, particularly for sculpting realistic mountain ridges, valleys, or plateaus.
 This gradient-domain editing approach offers interesting insights, but is not directly used, as we operate in the elevation domain with semantic control.
-}{sketching-Guerin2022-vertical.png}{\cite{Guerin2022} apply gradient and height constraints on curves and diffuse them on the terrain to create landscapes with lightweight and multi-scale representations.}{fig:coral-island-Guerin2022}
+}{sketching-Guerin2022.png}{\cite{Guerin2022} apply gradient (left) and height (right) constraints on curves and diffuse them on the terrain to create landscapes with lightweight and multi-scale representations.}{fig:coral-island-Guerin2022}
 
 Both approaches offer complementary strengths: constraint-based methods ensure precise adherence to user-defined features or data sources, while gradient-based systems provide fluid, perceptual control over terrain shaping. Together, they represent a shift toward high-level modelling tools that maintain procedural expressiveness while granting users a deeper degree of terrain control.
 
