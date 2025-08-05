@@ -190,11 +190,11 @@
 
 % "New" citation style
 \DeclareCiteCommand{\cite}[]
-  {\usebibmacro{prenote}}%
+  {\usebibmacro{prenote}\bibopenbracket}%
   {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}%
-  \printtext[bibhyperref]{[\printfield{labelalpha}]}}%  \printtext[bibhyperref]{\usebibmacro{cite}}}%
+  \printtext[bibhyperref]{\printfield{labelalpha}}}%  \printtext[bibhyperref]{\usebibmacro{cite}}}%
   {\multicitedelim}%
-  {\usebibmacro{postnote}}
+  {\bibclosebracket\usebibmacro{postnote}}
 
 \newbibmacro*{citefullbody}{%
   \printnames{labelname}%
@@ -220,6 +220,7 @@
   {\usebibmacro{postnote}}
 
 \AtEveryBibitem{\clearfield{url}}
+\AtEveryBibitem{\clearfield{abstract}}
 \AtEveryBibitem{\clearfield{doi}}
 \AtEveryBibitem{\clearfield{note}} % Notes from Mendeley
 \newtotcounter{citenum}
@@ -240,16 +241,36 @@
 \setlength\bibitemsep{1.2\itemsep}
 
 \newcounter{AltTextImageCurrentSide}
+\newcounter{ItemizeDepthCounter}
+\newlength{\ItemizeLeftMargin}
+\newlength{\ItemizeIndentPerLevel}
+\newlength{\ItemizeExtraIndent}
+\setlength{\ItemizeIndentPerLevel}{1em}
 
 % \begin{Itemize}
 %     \Item{$1} $2
 % \end{Itemize}
 \newenvironment{Itemize}
-{    
+{%
   \setcounter{AltTextImageCurrentSide}{0}
-  \begin{itemize}[label={}, leftmargin=\parindent, itemindent=1.0em, itemsep=0em, topsep=0em] %, left=2em, itemsep=0.5em]} % Custom settings
+  \stepcounter{ItemizeDepthCounter}
+  \setlength{\ItemizeLeftMargin}{0pt}
+  \setlength{\ItemizeExtraIndent}{\ItemizeIndentPerLevel}
+  \multiply\ItemizeExtraIndent by \numexpr\value{ItemizeDepthCounter}-1\relax
+  \addtolength{\ItemizeLeftMargin}{\ItemizeExtraIndent}
+  \begin{itemize}[
+    label={}, 
+    leftmargin=\ItemizeLeftMargin,
+    itemindent=1em,
+    itemsep=0em,
+    topsep=0em
+  ]
 }
-{\end{itemize}\bigbreak}
+{%
+  \end{itemize}
+  \addtocounter{ItemizeDepthCounter}{-1}
+  \ifthenelse{\value{ItemizeDepthCounter} > 0}{}{\bigbreak}
+}
 
 % Define new command \Itemthat applies italics to the title only
 % \Item{text}

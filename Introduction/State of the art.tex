@@ -50,7 +50,7 @@ Terrain refers to the physical features and configuration of a specific area of 
 
     In addition to "terrain generation", other terms such as "landscape generation", "world generation", and "environment generation" can be used to describe the creation of virtual landscapes. These terms are interchangeable and all refer to the process of generating physical terrain along with natural and artificial elements. However, by convention and for simplicity, the term "terrain generation" is most commonly used in the Computer Graphics field. Despite its original focus on the physical features of the land, "terrain generation" has evolved to encompass a broader range of environmental elements, making it a convenient and widely accepted term for describing the comprehensive process of creating virtual environments.
 
-}{Multi-representations-at-once-heightmap.png, Multi-representations-at-once-divided.png}{An initial height map (top) can be converted into multiple terrain representations (bottom, from left to right): height field, layered model, density-voxel model (rendered with Marching Cubes), binary-voxel model}{fig:intro-multiple-representations}
+}{Multi-representations-at-once-heightmap.png, Multi-representations-at-once-divided.png}{An initial height map (top) can be converted into multiple terrain representations (bottom, from left to right): discrete height field, layered model, density-voxel model (rendered with Marching Cubes), binary-voxel model}{fig:intro-multiple-representations}
 
 The terrain shown in \cref{fig:intro-multiple-representations} has been converted into different representations we used in our works; next section presents these representations with their main advantages and inconvenients.
 
@@ -65,8 +65,7 @@ This chapter therefore introduces only the models that will be used in the remai
 \cite{Galin2019} for a comprehensive survey.
 
 % \paragraph*{Other representations.}
-For completeness, we note that several families do not appear in our later chapters, including irregular meshes / TINs (Triangulated Irregular Networks), multiresolution structures such as quad- or octrees, and point-based splats or surfels.
-These alternatives are relevant in the broader terrain-modelling literature, but lie outside the scope of the procedural techniques developed in this thesis.
+For completeness, we note that several families do not appear in our later chapters, including irregular meshes and TINs (Triangulated Irregular Networks), and point-based splats or surfels \cite{Yang2005, Zhu2008, Arnone2021, Atas2022, Chen2024, Chen2025}. These alternatives are relevant in the broader terrain-modelling literature, but lie outside the scope of the procedural techniques developed in this thesis.
 
 %---------------------------------------------------------------------
 \subsection{2.5D representations (Elevation models)}
@@ -79,8 +78,7 @@ These alternatives are relevant in the broader terrain-modelling literature, but
   \label{fig:erosion-elevation-representation}
 \end{figure}
 
-Elevation models describe the terrain by a height field
-$h : \R^{2}  \to  \R$, assigning a single elevation value to every planimetric location. Because each $(x,y)$ has only one height, such models cannot express overhangs or caves; we therefore refer to them as "2.5D". Mathematically, height fields are analogous to images, making them amenable to decades of image-processing techniques. Their favourable memory footprint and analytic simplicity explain their preponderance in open-world games, GIS, and remote sensing.
+Elevation models describe the terrain by a height field $h : \R^{2}  \to  \R$, assigning a single elevation value to every planimetric location. Because each $(x,y)$ has only one height, such models cannot express overhangs or caves; we therefore refer to them as "2.5D". Mathematically, height fields are analogous to images, making them amenable to decades of image-processing techniques. Their favourable memory footprint and analytic simplicity explain their preponderance in open-world games, GIS, and remote sensing.
 
 \begin{figure}
     \autofitgraphics[width=.5\linewidth]{Terrain_representations/heightmap_high-res_628x628.png}
@@ -94,16 +92,13 @@ $h : \R^{2}  \to  \R$, assigning a single elevation value to every planimetric l
 %.....................................................................
 \subsubsection{Discrete height fields}
 %.....................................................................
-Discrete height fields, often called "heightmaps", store sampled elevations on a regular grid. Formally, they are a function
-$h_{ \text{d}} : \mathbb{Z}^{2} \to \R$ defined only on integer lattice points. To render or analyse the terrain at arbitrary positions we reconstruct a continuous surface $ \tilde{h}_{ \text{d}} : \R^{2} \to \R$
-using interpolation (linear, bilinear, bicubic, ...). Their raster nature aligns with GPUs and with convolutional neural architectures; our first contribution (\cref{chap:coral-island}) relies on this representation to fit the greyscale image format. Discrete grids scale to large terrains with modest memory footprint, but fixes the dimensions and resolution of the domain. %, but they cannot represent multi-valued geometry (overhangs, caves) and the choice of interpolation affects smoothness and aliasing.
+Discrete height fields, often called "heightmaps", store sampled elevations on a regular grid (\cref{fig:erosion-elevation-representation}, right). Formally, they are a function $h_{ \text{d}} : \mathbb{Z}^{2} \to \R$ defined only on integer lattice points. To render or analyse the terrain at arbitrary positions we reconstruct a continuous surface $ \tilde{h}_{ \text{d}} : \R^{2} \to \R$ using interpolation (linear, bilinear, bicubic, ...). Their raster nature aligns with GPUs and with convolutional neural architectures; our first contribution (\cref{chap:coral-island}) relies on this representation to fit the greyscale image format. Discrete grids scale to large terrains with modest memory footprint, but fixes the dimensions and resolution of the domain. %, but they cannot represent multi-valued geometry (overhangs, caves) and the choice of interpolation affects smoothness and aliasing.
 
 %.....................................................................
 \subsubsection{Implicit height fields}
 %.....................................................................
 \AltTextImage{
-    An implicit height field represents the terrain by a closed-form or procedural function
-    $h_{ \text{i}} : \R^{2} \to \R$ that can be evaluated at any $(x,y)$. Because no samples are stored, the representation is compact and inherently multi-scale, and it supports analytic operations (derivatives, spectral synthesis, Booleans). These properties make it the backbone of the semantic terrain synthesis developed in \cref{chap:semantic-representation}. The drawback is runtime cost: densely evaluating a complex function over a large domain is computationally expensive and may require acceleration structures.
+    An implicit height field represents the terrain by a closed-form or procedural function $h_{ \text{i}} : \R^{2} \to \R$ that can be evaluated at any $(x,y)$ (\cref{fig:erosion-elevation-representation}, left). Because no samples are stored, the representation is compact and inherently multi-scale (in opposition of discrete height fields, as visible in \cref{fig:sota-representations-heights-resolutions}), and it supports analytic operations (derivatives, spectral synthesis, Booleans). These properties make it the backbone of the semantic terrain synthesis developed in \cref{chap:semantic-representation}. The drawback is runtime cost: densely evaluating a complex function over a large domain is computationally expensive, but allow "on-demand" evaluation.
 }{primitives_representation.png}{Primitives composition}{fig:erosion-primitives-representation}
 
 Beyond the construction-tree model of \cite{Genevaux2015} (\cref{fig:erosion-primitives-representation}), several other implicit 2.5D terrain representations are commonly employed: gradient-noise fractals (e.g., Perlin, Simplex or FBM) provide fast, tileable, and stochastic detail; spectral or analytic formulas (e.g., ridge-noise, domain warps or erosion kernels) enable semantically tuned landforms ; feature-curve diffusion techniques allow users to define ridges and rivers via polylines which are then diffused into the height field ; vector-primitive models blend geometric shapes like ellipsoids or plates directly into the terrain surface ; and radial-basis-function (RBF) implicits fit a sparse set of control points with smooth Hermite interpolants for interactive editing .
@@ -117,7 +112,7 @@ Beyond the construction-tree model of \cite{Genevaux2015} (\cref{fig:erosion-pri
 %     \Item{RBF implicits:} sparse control points fitted with Hermite radial basis functions for interactive editing.
 % \end{Itemize}
 
-These alternatives are surveyed in depth in \cref{chap:coral-island}.
+These alternatives are surveyed in depth in \cref{chap:coral-island}' State-of-the-Art.
 
 %---------------------------------------------------------------------
 \subsection{3D representations (Volumetric models)}
@@ -129,8 +124,8 @@ We organise them into three families: implicit fields, discrete voxel grids, and
 \subsubsection{Implicit volumetric models}
 %.....................................................................
 \AltTextImageR{
-    An implicit model defines a signed or unsigned scalar field $f_{ \text{i}} : \R^{3} \to \R$; the terrain surface is the isosurface $f_{ \text{i}}(\mathbf x)=0$. Positive values typically denote solid matter, negative values air. Because the field is continuous, implicit models enable smooth blends, Constructive Solid Geometry (CSG) operations, and multi-scale detail synthesis. Their main drawbacks are the cost of dense evaluation and the need to polygonise (e.g.\ Marching Cubes) for rasterisation \cite{Araujo2015}.
-}{Csg_tree.png}{CSG tree combining implicit primitives.}{fig:intro-CSG}
+    An implicit model defines a signed or unsigned scalar field $f_{ \text{i}} : \R^{3} \to \R$; the terrain surface is the isosurface $f_{ \text{i}}(\mathbf x)=0$. Positive values typically denote solid matter, negative values air. Because the field is continuous, implicit models enable smooth blends, Constructive Solid Geometry (CSG) operations (\cref{fig:intro-CSG}), and multi-scale detail synthesis. Their main drawbacks are the cost of dense evaluation and the need to polygonise (e.g.\ Marching Cubes) for rasterisation \cite{Araujo2015}.
+}{Csg_tree.png}{CSG tree combining implicit primitives with intersection (left), unions (right) and difference (top) operations.}{fig:intro-CSG}
     
 Signed-distance fields (SDFs) store the shortest distance to the surface and are widely used for real-time deformation and global illumination. Adaptively-sampled distance fields (ADF) \cite{Frisken2000} refine the grid where detail is needed, while sparse voxel SDFs such as OpenVDB scale to billions of voxels. Radial-basis implicit volumes offer smooth interpolation from scattered samples.
 
@@ -140,7 +135,7 @@ Signed-distance fields (SDFs) store the shortest distance to the surface and are
 A voxel grid partitions space into a regular lattice $\Z^{3}$; each lattice point $v=(i,j,k)$ stores a datum describing the local state of the terrain. Because grids are topologically simple and cache-friendly, they interface well with GPU rasterisers, cellular-automata solvers, and image-processing operators extended to 3-D. The main drawback is cubic memory growth; sparse and hierarchical encodings (SVO, DAG, OpenVDB) alleviate this when the occupied volume is far below the bounding box
 \cite{Laine2010,Villanueva2017,Museth2013}.
 
-Voxel grids support Boolean set operations, distance transforms, morphological filters, and mesh extraction (Marching Cubes, Dual Contouring) in a very similar fashion as the their 2D conterparts in image processing (binary images, indexed images, and greyscale images).
+Voxel grids support boolean set operations, distance transforms, morphological filters, and mesh extraction (Marching Cubes, Dual Contouring) in a very similar fashion as the their 2D conterparts in image processing (binary images, indexed images, and greyscale images).
 
 % \begin{figure}
 %     \autofitgraphics{voxels-binary-density.png}
@@ -150,13 +145,10 @@ Voxel grids support Boolean set operations, distance transforms, morphological f
 
 
 \AltTextImage{
-%=====================================================================
-\subsubsubsection{Binary voxel grids}
-%=====================================================================
-\emph{Definition.} $o : \mathbb Z^{3} \to \{0,1\}$.
-
-Binary voxel grids record pure occupancy. 
-Their single-bit payload makes them the lightest form of volumetric storage, and simple bit-packing enables SIMD flood-fills or cellular automata. When combined with Sparse Voxel Octrees or voxel DAGs they scale to scenes containing $10^{12}$ voxels while keeping GPU residency practical \cite{Laine2010,Villanueva2017}. The downside is blocky surfaces: without post-processing, silhouettes follow axis-aligned voxel faces (see \cref{fig:intro-voxels-binary-density}, left). Smoothing kernels or surface nets can mitigate this at the cost of losing exact occupancy.
+    %=====================================================================
+    \subsubsubsection{Binary voxel grids}
+    %=====================================================================
+    Binary voxel grids record pure occupancy, defined as $o : \mathbb Z^{3} \to \{0,1\}$. Their single-bit payload makes them the lightest form of volumetric storage, and simple bit-packing enables SIMD flood-fills or cellular automata. When combined with Sparse Voxel Octrees or voxel DAGs they scale to scenes containing $10^{12}$ voxels while keeping GPU residency practical \cite{Laine2010,Villanueva2017}. The downside is blocky surfaces: without post-processing, silhouettes follow axis-aligned voxel faces (see \cref{fig:intro-voxels-binary-density}, left). Smoothing kernels or surface nets can mitigate this at the cost of losing exact occupancy.
 }{voxels-binary-density.png}{Binary surface (left) vs.\ density-grid isosurface (right). Density grids preserve curved boundaries without refining the lattice.}{fig:intro-voxels-binary-density}
 
 
@@ -164,17 +156,13 @@ Their single-bit payload makes them the lightest form of volumetric storage, and
     %=====================================================================
     \subsubsubsection{Material voxel grids}
     %=====================================================================
-    \emph{Definition.} $\mu : \mathbb Z^{3} \to \mathcal M$ ($\mathcal M$ = finite material set).
-
-    Material grids extend binary occupancy with categorical information (stone, sand, water …). They are the volumetric analogue of indexed images and form the basis of block-based worlds such as \citeProgram{Minecraft2011}. Each update affects exactly one cell, making editing and cellular-automata simulation intuitive. The obvious limitation is abrupt boundaries: transitions remain voxel-aligned unless additional blending or layered constructs are introduced.
+    Material grids extend binary occupancy with categorical information (stone, sand, water, ...) with $\mu : \mathbb Z^{3} \to \mathcal M$ (with $\mathcal M$ a material from a finite material set). They are the volumetric analogue of indexed images and form the basis of block-based worlds such as \citeProgram{Minecraft2011} (\cref{fig:intro-material-voxels-minecraft}). Each update affects exactly one cell, making editing and cellular-automata simulation intuitive. The obvious limitation is abrupt boundaries: transitions remain voxel-aligned.
 }{material-voxels-minecraft.png}{Each cell of the voxel grid is encoded with a material, visible by different textures. }{fig:intro-material-voxels-minecraft}
 
 %=====================================================================
 \subsubsubsection{Density voxel grids}
 %=====================================================================
-\emph{Definition.} $d : \mathbb Z^{3} \to \R$ (typically a signed distance or occupancy fraction).
-
-Storing a real-valued scalar per voxel enables implicit isosurfaces inside the grid. Marching Cubes or Dual Contouring produce triangle meshes with sub-voxel geometric accuracy, while the grid still supports topology-aware editing via direct field arithmetic. Applications range from high-fidelity VFX terrain in OpenVDB \cite{Museth2013} to destructive game mechanics and GPU-based fluid coupling. Memory cost is higher (4-8 bytes/voxel), but sparsity structures or narrow-band storage tame the overhead \cite{Frisken2000}.
+Storing a real-valued scalar per voxel enables implicit isosurfaces inside the grid, defined as $d : \mathbb Z^{3} \to \R$ with $d$ typically an occupacy fraction or a signed distance. Marching Cubes or Dual Contouring produce triangle meshes with sub-voxel geometric accuracy (\cref{fig:intro-voxels-binary-density}, right), while the grid still supports topology-aware editing via direct field arithmetic. Applications range from high-fidelity VFX terrain in OpenVDB \cite{Museth2013} to destructive game mechanics and GPU-based fluid coupling. Memory cost is higher (4 or 8 bytes per voxel), but sparsity structures or narrow-band storage tame the overhead \cite{Frisken2000}.
 
 
 
@@ -182,8 +170,13 @@ Storing a real-valued scalar per voxel enables implicit isosurfaces inside the g
 \subsubsection{Layered models}
 %.....................................................................
 \AltTextImage{
-    Layered terrain stores a per-column stack $\mu_{ \text{layer}} : \mathbb Z^{2} \to [(\mathcal M,h)]_{n}$, originally proposed by \cite{Peytavie2009b} for simulating sediment layers. Each layer has a material, thickness and optional porosity, letting erosion algorithms remove or deposit entire strata efficiently.
-}{Layer-representation.png}{Layer representation as described in \cite{Peytavie2009b}}{fig:intro-layers}
+    \cite{Benes2001} introduced a layered-based terrain representation in which the landscape is discretized as a 2D grid of vertical material stacks, each composed of horizontal strata representing a single homogeneous material (e.g., water, sand, bedrock, ... presented in \cref{fig:intro-layers}). The terrain surface is given by the height of the top layer in each stack. 
+}{Layer-representation.png}{Layer representation as described in \cite{Benes2001}. \cite{Peytavie2009b} allows air and water strata to be inserted between solid material strata. }{fig:intro-layers}
+\AltTextImage{
+    \cite{Peytavie2009b} improved the structure in two critical ways. First, they introduce an explicit air layer that may be inserted between solid strata to allow true 3D features such as caves, overhangs, and arches. Second, they couple this discrete stack data with a convolution-based implicit surface field $f(\p)$, defined as the normalized local volume fraction of solid material $\mathcal{V}_\mathcal{M}$ within a cubic kernel $\mathcal{V}_\Omega$. The zero-level set $\mathcal{V}_\mathcal{M} = \frac{1}{2} \mathcal{V}_\Omega$ is polygonized to form a smooth, editable surface mesh (see \cref{fig:intro-layers-hybrid}, using the empty volume $\mathcal{V}_\emptyset = \mathcal{V}_\Omega - \mathcal{V}_\mathcal{M}$). 
+    %Terrain edits or erosion operations are applied to this implicit field, which in turn updates the underlying material stacks, followed by a stabilization step (e.g.\ enforcing repose-angle constraints among sand and rock layers). The result is a hybrid volumetric/implicit terrain model that supports interactive editing, multiple materials, and true 3D geological structures.
+    % Layered terrain stores a per-column stack $\mu_{ \text{layer}} : \mathbb Z^{2} \to [(\mathcal M,h)]_{n}$, originally proposed by \cite{Peytavie2009b} for simulating sediment layers. Each layer has a material, thickness and optional porosity, letting erosion algorithms remove or deposit entire strata efficiently.
+}{Terrain_representations/Layer-representation-implicit.png}{The implicit volume (right, red) computed from layers-based terrain (left) is obtain by computing all points $\p$ for which a cubic kernel support (middle) contains more solid material $\mathcal{V}_\mathcal{M}$ than fluid material $\mathcal{V}_\Omega$ in \cite{Peytavie2009b}}{fig:intro-layers-hybrid}
 
 
 
@@ -304,19 +297,35 @@ Storing a real-valued scalar per voxel enables implicit isosurfaces inside the g
 
 \section{User interaction for procedural terrain generation}
 % \subsection{Realism-speed-control balance}
-Procedural algorithms are designed to find a balance between three main objectives: controllability, realism, and computation speed.
-In our work, we positioned our focus on the inclusion of the user in the generation process, resulting in a need to focus our attention on controllability for authoring without frustration, and computation speed in order to visualise results quickly, allowing to interactively interact with the system to obtain the best possible outputs. In this section we will briefly present the tools available for interacting with a procedural system.
+Procedural algorithms are designed to find a balance between three main objectives: controllability, realism, and computation speed. In our work, we positioned our focus on the inclusion of the user in the generation process, resulting in a need to focus our attention on controllability for authoring landscapes, and computation speed in order to visualise results quickly, allowing to interactively interact with the system to obtain the best possible outputs. In this section we will briefly present the tools available for interacting with a procedural system.
 
-Procedural terrain generation algorithms usually take parameters into account in order to generate something that fits the user's needs. The tools that let the user interact with the different parameters are essential to include efficiently the user in the process.
-
-The parameters that a user can play with can have many natures, and require a large variety of visual tools to interact with them. In the different natures of parameters, we can typically find:
+Procedural terrain generation algorithms typically rely on user-defined parameters to produce results that meet specific needs. To effectively involve users in the creation process, it is essential to provide tools that allow intuitive interaction with these parameters. These parameters vary widely in nature, and each type benefits from different kinds of interaction tools. They can be broadly categorized from global to local, as follows:
 \begin{Itemize}
-    \Item{Noise parameters:} Abstract values used in the equation ruling the noise functions.
-    \Item{Physical constants:} Constants that are used in physics simulations. They are often adjusted by the user to exaggerate certain features, force some phenomena, etc... As they are constants, the parametrisation of these values is often done inside the source code, as spinboxes, or inside a configuration file.
-    \Item{Densities and distributions:} Marking areas that are affected by a process, or where a seed can be used is useful to control a procedural algorithm. This is referred to as "masking", but due to its binary nature, we can find sharp and unnatural transitions from the use of binary masks. We often use weighted masks to provide more control over probabilities that a seed appears at one point. The control of the masks is usually done through greyscale images or by a "brush tool" that can modify the value directly on the surface of a 2D or 3D object. As virtual terrains are generally represented by a regular 2D grid, the use of brushes is a façade to the manipulation of a greyscale image.
-    \Item{Structures placement:} Placing a specific terrain feature inside a terrain may be useful to finalise the generation of a landscape, or to add obstacles that will affect a physics simulation. This is usually implemented by clicking on the surface of the terrain, to provide the initial $xyz$ position, and then using translation and rotation tools to adjust the placement. If many elements are added, we usually use the previous strategy, involving masking, to add all the structures.
-    \Item{Manual manipulation of the terrain:} In order to customise at a lower level the surface of the terrain, the user may be able to alter the surface of the terrain by using brushes. Clicking or dragging a brush on the surface usually results in the rise or lowering of the surface level around the brush. This process modifies the field representing the terrain. Procedural brushes can imply more complex behaviours, and may use the velocity of the brush stroke in its input.
+    \Item{Global procedural parameters:} Values that reshape the whole terrain field at once. \\
+    This category groups together:
+        \begin{Itemize}
+            \Item{Noise parameters} (e.g., frequency, amplitude, octaves) that drive the terrain base-shape variation.
+            \Item{Physical constants} (e.g., erosion sediment capacity, wind strength) used by simulation passes.
+        \end{Itemize}
+        These numbers are usually exposed through spinboxes, sliders, or configuration files.
+
+    \Item{Regional controls (masks and density maps):} Greyscale or weighted maps that localise subsequent generators, telling them where to act and with what intensity. \\
+    Users paint or import these masks with brush tools, which are often using weighted values to avoid the hard edges of binary masks.
+
+    \Item{Assets and features placement:} Interactive positioning (or scattering) of discrete assets such as rock arches, buildings, or river splines. \\  
+    Users click to set an initial $xyz$ location, then translate, rotate, or duplicate as needed.
+
+    \Item{Surface sculpting (manual and procedural brushes):} Point-level edits that raise, lower, smooth, or terrace the height field. \\
+    Users control the brush effect through parameters like radius, intensity, and falloff shape.
 \end{Itemize}
+% \begin{Itemize}
+%     \Item{Noise parameters:} Abstract values used in the equation ruling the noise functions.
+%     \Item{Physical constants:} Constants that are used in physics simulations. They are often adjusted by the user to exaggerate certain features, force some phenomena, etc... As they are constants, the parametrisation of these values is often done inside the source code, as spinboxes, or inside a configuration file.
+%     \Item{Masks and density maps:} Marking areas that are affected by a process, or where a seed can be used is useful to control a procedural algorithm. This is referred to as "masking", but due to its binary nature, we can find sharp and unnatural transitions from the use of binary masks. We often use weighted masks to provide more control over probabilities that a seed appears at one point. The control of the masks is usually done through greyscale images or by a "brush tool" that can modify the value directly on the surface of a 2D or 3D object. As virtual terrains are generally represented by a regular 2D grid, the use of brushes is a façade to the manipulation of a greyscale image.
+%     \Item{Assets and features placement:} Placing a specific terrain feature inside a terrain may be useful to finalise the generation of a landscape, or to add obstacles that will affect a physics simulation. This is usually implemented by clicking on the surface of the terrain, to provide the initial $xyz$ position, and then using translation and rotation tools to adjust the placement. If many elements are added, we usually use the previous strategy, involving masking, to add all the structures.
+%     \Item{Manual manipulation of the terrain:} In order to customise at a lower level the surface of the terrain, the user may be able to alter the surface of the terrain by using brushes. Clicking or dragging a brush on the surface usually results in the rise or lowering of the surface level around the brush. This process modifies the field representing the terrain. Procedural brushes can imply more complex behaviours, and may use the velocity of the brush stroke in its input.
+% \end{Itemize}
+
 
 Each developer uses different strategies for each type of parameters as the needs or objectives of each application are different. Providing the user with too many parameters can be overwhelming, while too few can limit the output possibilities. In the meantime, providing unintuitive parameters such as dimensionless values often results in a trial-and-error strategy, requiring the generation algorithm to be run many times before finding the appropriate values. This implies that the algorithms must be able to be executed fast. On the opposite side, removing some user controls to use hard-coded constants instead can greatly increase the speed. Finally, an algorithm that aims to be fast or let the user control many parameters may reduce the realism of the output. Most algorithms try to strike a balance between realism, speed, and control.
 
@@ -335,9 +344,9 @@ On the other hand, speed is about the efficiency of content generation within ac
 The execution speed of a procedural algorithm is crucial as the user will fine-tune the parameters before being satisfied.
 Optimising speed involves using efficient algorithms and parallel processing. Almost all recent works achieve fast execution times thanks to high parallelisation on GPU. Other types of algorithm may rely on a refinement paradigm, generating a coarse result at first and then iteratively adding finer details, such that the global output shape is available long before the real final result.
 
-Control refers to how much users can influence or direct the procedural generation process to meet their specific needs or preferences. This includes parameters fine-tuning, allowing users to modify parameters such as the noise function parameters or the simulation parameters, and artistic control tools, made for artists and designers, to guide the generation process with the use of masks and brushes, allowing for combination and mixing of different algorithms.
+% Control refers to how much users can influence or direct the procedural generation process to meet their specific needs or preferences. This includes parameters fine-tuning, allowing users to modify parameters such as the noise function parameters or the simulation parameters, and artistic control tools, made for artists and designers, to guide the generation process with the use of masks and brushes, allowing for combination and mixing of different algorithms.
 
-Managing diverse and sometimes conflicting user expectations, such as balancing creative freedom with the demand for realistic outcomes, requires careful consideration. Additionally, it is essential to balance the complexity of procedural systems to ensure they remain user-friendly, avoiding overwhelming users or producing results that feel artificial or inconsistent.
+% Managing diverse and sometimes conflicting user expectations, such as balancing creative freedom with the demand for realistic outcomes, requires careful consideration. Additionally, it is essential to balance the complexity of procedural systems to ensure they remain user-friendly, avoiding overwhelming users or producing results that feel artificial or inconsistent.
 
 
 \section{Coral biology}
@@ -353,30 +362,32 @@ Coral polyps are tiny, soft-bodied marine invertebrates that secrete calcium car
 From a terrain generation perspective, the \ch{CaCO_3} secretion underlies the elevation of reef structures and the light-dependence of the polyps implies depth-based constraints on where reef heights appear, relative to water level. Moreover, coral-built substrate produced by accumulated skeleton, or "dead coral", increases landscape resistance to erosion.
 
 % \subsection{Coral colony morphologies and zonation}
-Coral colonies adopt varied growth forms adapted to local conditions (light, water motion, depth). The main shapes are listed below:
+Coral colonies adopt varied growth forms adapted to local conditions (light, water motion, depth). Classifying coral species has been done in many different forms \cite{Kovacs2020}: by coverage \cite{Kuchler1986, Bauer2009, Purkis2019}, by dominant taxa \cite{Stoddart1969}, or by coral growth morphology \cite{Mumby1999,Goltenboth2006}. We will use the classification of hard corals from \cite{Goltenboth2006} to describe five different coral morphologies and their typical properties in reefs:
 
 \begin{Itemize}
-\AltTextImage{
-\Item{Massive:} These corals form large boulder-like shapes that can reach several metres in diameter under calm conditions (\cref{fig:intro-Porite}). Found on reef slopes and back-reefs in low to moderate energy, up to ~30 m depth, tolerating moderate to low light, their slow growth persists over centuries. They are foundational reef-builders of the reef, providing long-term structural stability and substrate for other organisms to settle, while hosting diverse fishes in their crevices. Their bulk buffers wave energy, alters flow to form sediment-depositing lee zones, stabilises the substrate, and produces oxygen over large surfaces.
-}{graphics-oceanus_corals-_MG_9848_LuisLamar.jpg}{Large \textit{Porite lobata} - Photo credit: Luis Lamar}{fig:intro-Porite}
+    \AltTextImage{
+        \Item{Massive:} These corals form large boulder-like shapes that can reach several metres in diameter under calm conditions (\cref{fig:intro-Porite}). Found on reef slopes and back-reefs in low to moderate energy, up to about 30 m depth, tolerating moderate to low light, their slow growth persists over centuries in stable conditions \cite{Coward2020}. They are foundational reef-builders of the reef, providing long-term structural stability and substrate for other organisms to settle, while hosting diverse fishes in their crevices. Their bulk buffers wave energy, alters flow to form sediment-depositing lee zones, stabilises the substrate, and produces oxygen over large surfaces \cite{Baldock2014}.
+    }{graphics-oceanus_corals-_MG_9848_LuisLamar.jpg}{Large \textit{Porite lobata} - Photo credit: Luis Lamar}{fig:intro-Porite}
 
-\AltTextImage{
-    \Item{Branching:} These corals exhibit tree-like branches with lengths often exceeding 1-2 m (\cref{fig:intro-Staghorn}). They occupy shallow reef surfaces, up to ~20 m deep in high-light, high-energy environments. Fast-growing, they rapidly deposit carbonate, create 3D nurseries for juvenile fish, and support biodiversity. Their high rugosity increases turbulence and drag, altering currents, trapping sediment, and producing oxygen. Fragile branches break in storms, aiding dispersal via fragmentation.
-}{staghorn-coral-large.jpg}{A field of staghorn coral - Photo credit: NOAA}{fig:intro-Staghorn}
+    \AltTextImage{
+        \Item{Branching:} These corals exhibit tree-like branches with lengths often exceeding 1-2 m (\cref{fig:intro-Staghorn}). They occupy shallow reef surfaces, up to 20 m deep in high-light, high-energy environments. Fast-growing, they rapidly deposit carbonate, create 3D nurseries for juvenile fish, and support biodiversity. Their high rugosity increases turbulence and drag, altering currents, trapping sediment, and producing oxygen \cite{Baldock2014, Oh2025}. Fragile branches break in storms, aiding dispersal via fragmentation \cite{Muko2013}
+    }{staghorn-coral-large.jpg}{A field of staghorn coral - Photo credit: NOAA}{fig:intro-Staghorn}
 
-\AltTextImage{
-    \Item{Foliose:} These corals form leaf-like laminae often spanning over a metre wide (\cref{fig:intro-Pavona}). They inhabit back-reefs and reef flats between 2 to 20 m depth with moderate flow and light. They provide microhabitats, surface for symbionts, trap sediment, and contribute moderate carbonate. 
-}{Pavona_cactus_colonia_in_situ.jpg}{\textit{Pavona cactus} - Photo credit: Benzoni, F.}{fig:intro-Pavona}
+    \AltTextImage{
+        \Item{Foliose:} These corals form leaf-like laminae often spanning over a metre wide (\cref{fig:intro-Pavona}). They inhabit back-reefs and reef flats between 2 to 20 m depth with moderate flow and light. They provide microhabitats, surface for symbionts, trap sediment, and contribute moderate carbonate. 
+    }{Pavona_cactus_colonia_in_situ.jpg}{\textit{Pavona cactus} - Photo credit: Benzoni, F.}{fig:intro-Pavona}
 
-\AltTextImage{
-    \Item{Table/Plate:} These corals develop broad plates up to 3 m wide in shallow, well-lit reef crest and upper fore-reef zones above 15 m deep (\cref{fig:intro-Acropora}). They maximise photosynthesis and carbonate production, offer horizontal habitats and shaded refuges, and support encrusting life beneath which alters water flow by causing divergence above and shadows below, redistributing sediment, and producing oxygen. Fragile in storms, they form rubble that aids colonisation when fragmented.
-}{Acropora_pulchra.jpg}{Example of an \textit{Acropora pulchra}, forming a large table - Photo credit: Albert Kok}{fig:intro-Acropora}
+    \AltTextImage{
+        \Item{Table/Plate:} These corals develop broad plates up to 3 m wide in shallow, well-lit reef crest and upper fore-reef zones above 15 m deep (\cref{fig:intro-Acropora}). They maximise photosynthesis and carbonate production, offer horizontal habitats and shaded refuges, and support encrusting life beneath which alters water flow by causing divergence above and shadows below, redistributing sediment, and producing oxygen. Fragile in storms, they form rubble that aids colonisation when fragmented.
+    }{Acropora_pulchra.jpg}{Example of an \textit{Acropora pulchra}, forming a large table - Photo credit: Albert Kok}{fig:intro-Acropora}
 
-\AltTextImage{
-    \Item{Encrusting:} These corals grow as thin mats tightly adhering to substrate for about a metre wide and up to 40 m deep, tolerating various flow regimes. By resisting breakage and binding rubbles, they stabilise the substrate and cohesion, reducing erosion. \textit{Psammocora}, displayed in \cref{fig:intro-Psammocora}, spans over a part of massive coral and the soil surface, protecting the covered coral from erosion and stabilising the colony, but blocking the sunlight from reaching it.
-}{Psammocora.jpg}{\textit{Psammocora} - Photo credit: Michael Paletta}{fig:intro-Psammocora}
+    \AltTextImage{
+        \Item{Encrusting:} These corals grow as thin mats tightly adhering to substrate for about a metre wide and up to 40 m deep, tolerating various flow regimes. By resisting breakage and binding rubbles, they stabilise the substrate and cohesion, reducing erosion. \textit{Psammocora}, displayed in \cref{fig:intro-Psammocora}, spans over a part of massive coral and the soil surface, protecting the covered coral from erosion and stabilising the colony, but blocking the sunlight from reaching it.
+    }{Psammocora.jpg}{\textit{Psammocora} - Photo credit: Michael Paletta}{fig:intro-Psammocora}
 
 \end{Itemize}
+
+% Although coral morphology is diverse, ecological surveys and modelling studies often organize corals into a small number of dominant growth-form categories—typically massive, encrusting, branching, plate (laminar/tabular), and foliose. These forms capture the structurally and functionally significant variation in reef assemblages (e.g. Swierts & Vermeij 2016; Kramer et al. 2020; Oh et al. 2025).
 
 % Zonation: each form appears in depth- and energy-specific bands (massive on slopes; branching on crest/fore-reef; foliose on flats/back-reef; table in shallow flats; encrusting in deeper/stable). This results in a necessity of depth/light/slope masks to assign morphology types; this yields realistic spatial patterns in generated reefs. Moreover, different morphologies define habitat templates and resistance fields; in EFT, they become entity types with distinct parameter sets.
 
