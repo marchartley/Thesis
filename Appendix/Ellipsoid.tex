@@ -1,152 +1,427 @@
-\zzcommand{\ct}{\cos \angl}
-\zzcommand{\cct}{\cos^2 \angl}
-\zzcommand{\st}{\sin \angl}
-\zzcommand{\sst}{\sin^2 \angl}
+\chapter{Matrix formulation of a rotated ellipsoid's upper shell}
+\label{app:ellipsoid-matrix}
 
-\zzcommand{\cp}{\cos \anglTwo}
-\zzcommand{\ccp}{\cos^2 \anglTwo}
-\zzcommand{\sp}{\sin \anglTwo}
-\zzcommand{\ssp}{\sin^2 \anglTwo}
-
-
-\chapter{Computation of ellipsoids in 2.5D}
-\label{chap:computation-ellipsoid}
-
-\shortAbstract{
-    In the erosion process on a height field, we may want to represent the impact of a particle collision on a surface as a half sphere that we flatten to increase or lower the surface of the ground. The scaling should happen in the direction of the ground normal. In three dimensions, we may use the implicit formulation of an ellipsoid to achieve this, but in 2.5D this computation become trickier. We will first introduce the conversion to transform the 2D ellipse surface into a 1D function, then proceed with the 3D surface of an ellipsoid into a 2D function, such that it may be then used in the case of 2.5D terrain functions.
+\shortAbstract{ 
+    In this appendix we derive, in a concise matrix form, the height-field representation $z = f(x,y)$ of an arbitrarily oriented ellipsoid.  The result is a closed-form formula for the upper (and lower) shell that is readily evaluated in $O(1)$ for any query point $(x,y)$, making it well suited to deposition/erosion on 2.5-D height fields.
 }
 
-\section{Simplified to ellipses}
+%-----------------------------------------------------------------
+\section{Implicit equation in global coordinates}
+Let the global position be the column vector $ \vec{r} = [ x,\;y,\;z ]^{\mathsf T}\in\mathbb R^{3}$. An ellipsoid of semi-axes $a,b,c>0$, expressed in its local (unrotated) frame, satisfies the implicit equation
 
-We will first illustrate the computation in a reduced dimension. In this case, we look at an ellipse.
-The common equation for an ellipse is function of $x$, $y$, the half-length $a$ and half-width $b$:
+\begin{equation}
+    \label{eq:app-canonical-ellipsoid}
+    \vec{r'}^{\mathsf T} A \vec{r'} = 1
+    \quad\text{with}\quad 
+    A = \operatorname{diag}\!\left(1/a^{2}, 1/b^{2}, 1/c^{2}\right),
+\end{equation}
+where $\vec{r'} = [x',y',z']^{\mathsf T}$ are local coordinates.
+
+Let $R$ be the rotation matrix that takes global coordinates into the ellipsoid frame; hence
+
+\begin{equation}
+    \label{eq:app-rprime}
+    \vec{r'} \;=\; R^{\mathsf T}  \vec{r}.
+\end{equation}
+Substituting~\ref{eq:app-rprime} into \ref{eq:app-canonical-ellipsoid} and defining $Q \;=\; R A R^{\mathsf T}$, we obtain the ellipsoid in global coordinates:
+
+\begin{equation}
+    \label{eq:app-global-implicit}
+     \vec{r}^{\mathsf T} Q  \vec{r} \;=\; 1.
+\end{equation}
+Because $A$ is diagonal and $R$ orthogonal, $Q$ is symmetric ($Q^{\mathsf T}=Q$).  Write
+
 \begin{align}
-    \label{eq:ellipsoid_simplified-ellipse}
-    \frac{x^2}{a^2} + \frac{y^2}{b^2} = 1
+    Q \;=\;
+    \begin{bmatrix}
+    Q_{11} & Q_{12} & Q_{13}\\
+    Q_{12} & Q_{22} & Q_{23}\\
+    Q_{13} & Q_{23} & Q_{33}
+    \end{bmatrix}.
 \end{align}
 
-We can generalize the equation to translate the center of the ellipse to the position $(x_0, y_0)$ by setting $x'=(x-x_0)$ and $y'=(y-y_0)$ and apply a rotation $\angl$:
+Expanding \cref{eq:app-global-implicit} gives the familiar quadratic form
+
+\begin{equation}
+    \label{eq:app-expanded}
+    Q_{11}x^{2} + Q_{22}y^{2} + Q_{33}z^{2}
+    + 2Q_{12}xy + 2Q_{13}xz + 2Q_{23}yz \;=\; 1.
+\end{equation}
+
+%-----------------------------------------------------------------
+\section{Solving for the height field $z=f(x,y)$}
+For a height-field terrain we treat $x$ and $y$ as known query coordinates and solve~\eqref{eq:app-expanded} for $z$. Collecting terms yields a quadratic in $z$:
+
 \begin{align}
-    \label{eq:ellipsoid_general-ellipse}
-    \frac{(x' \ct + y' \st)^2}{a^2} + \frac{(x' \st - y' \ct)^2}{b^2} = 1
+    A' z^{2} + B' z + C' \;=\; 0,
+    \quad\text{with}\quad
+    \begin{cases}
+        A' &= Q_{33},\\
+        B' &= 2\left(Q_{13}x + Q_{23}y\right),\\
+        C' &= Q_{11}x^{2} + 2Q_{12}xy + Q_{22}y^{2} - 1.
+    \end{cases}
+    \label{eq:app-quadratic-coeffs}
+\end{align}
+The discriminant
+
+\begin{align}
+    \Delta(x,y) \;=\; B'^{2} - 4A'C'
+\end{align}
+is non-negative exactly inside the projected ellipse; outside, the surface is not defined.  Assuming $A'>0$ (always true for proper ellipsoids),
+
+\begin{align}
+    \text{upper shell:}\quad
+    z &= f(x,y)
+    \;=\;
+    \frac{-B' + \sqrt{\Delta}}{2A'},
+    \label{eq:app-upper}\\[4pt]
+    \text{lower shell:}\quad
+    z &= \frac{-B' - \sqrt{\Delta}}{2A'}.
+    \label{eq:app-lower}
 \end{align}
 
-For the rest of the operations, we will consider $x_0=0$ and $y_0=0$ for concisness.
-However this function takes $x$ and $y$ as parameters while we would like to remove $y$ from the equation to lower the 2D shape in a 1D function $f(x)$.
+\cref{eq:app-upper} is the function you can add to (or subtract from) a height map to model deposition or erosion produced by an ellipsoidal particle impact.
 
-Isolating the variable $y$ transforms the formulation into a quadratic equation:
+%-----------------------------------------------------------------
+\section{Practical notes}
+
+\begin{itemize}
+\item \textbf{Pre-computation.} For a fixed ellipsoid, compute $Q$ once and cache the six independent coefficients $Q_{11},Q_{22},Q_{33},Q_{12},Q_{13},Q_{23}$. Each height query then requires only a handful of multiplies, an addition, and a square root.
+
+\item \textbf{Domain mask.} Evaluate $\Delta(x,y)$; if $\Delta<0$ the point lies outside the projected ellipse and $f(x,y)$ should be treated as undefined (or simply return the original terrain height).
+
+\item \textbf{Volume check.} Integrating~\eqref{eq:app-upper} over the projected ellipse yields $V = \tfrac23\pi abc$, i.e.\ half the ellipsoid volume, confirming consistency with the canonical formulation.
+
+\end{itemize}
+
+
+%-----------------------------------------------------------------
+\section{Alignment with the local terrain}
+\label{app:ellipsoid-alignment}
+
+For each impact position $(x_0,y_0)$ the terrain offers only a scalar height $H(x_0,y_0)$, but its first-order tangent plane is fully determined by the lateral derivatives
+
 \begin{align}
-    \label{eq:ellipsoid_full-ellipse}
-    y^2 \left( \frac{\sst}{a^2} + \frac{\cct}{b^2} \right) + 2yx \ct \st \left( \frac{1}{a^2} - \frac{1}{b^2} \right) + x^2 \left( \frac{\cct}{a^2} + \frac{\sst}{b^2} \right) - 1 = 0
+    \partial_x H \;=\;
+    \frac{H(x_0+\delta,y_0)-H(x_0-\delta,y_0)}{2\delta},
+    \qquad
+    \partial_y H \;=\;
+    \frac{H(x_0,y_0+\delta)-H(x_0,y_0-\delta)}{2\delta}.
 \end{align}
 
-We want to solve the quadratic equation using the form 
+A convenient unit normal of that plane is
+
+\begin{equation}
+    \label{eq:app-terrain-normal}
+    \vec n \;=\; 
+    \operatorname{normalize}
+    \left[ -\partial_x H,\; -\partial_y H,\; 1 \right]^{\mathsf T}.
+\end{equation}
+
+We choose the ellipsoid's local $z'$-axis to coincide with $\vec n$ so that the body "hugs" the terrain.  An orthonormal basis $\{ \vec e_x',\vec e_y',\vec e_z' \}$ is built as
+
+\begin{equation}
+    \vec e_z' = \vec n,
+    \quad
+    \vec e_x' = 
+    \operatorname{normalize}\!\left[ 1,0,-\partial_x H \right]^{\mathsf T},
+    \quad
+    \vec e_y' = \vec e_z' \times \vec e_x'.
+\end{equation}
+
+Finally the rotation matrix that maps global coordinates into the ellipsoid frame is
+
+\begin{equation}
+    \label{eq:app-rotation-from-normal} R \;=\;
+    \left[ 
+    \vec e_x' \;\; \vec e_y' \;\; \vec e_z'
+    \right].
+\end{equation}
+
+Note that $R$ varies per impact point and must be recomputed whenever the ellipsoid moves across the height field.
+
+%-----------------------------------------------------------------
+\section{Local cutting plane}
+\label{app:ellipsoid-cutting-plane}
+To ensure the ellipsoid interacts only with the half-space above the approximate terrain, we clip by the plane
+
 \begin{align}
-    Ay^2 + By + C = 0
+    z' = z_0, 
+    \quad\text{with}\; z_0 = 0.
 \end{align}
 
-Decomposing the equation \eqref{eq:ellipsoid_full-ellipse}, we find
+In global space that plane is
+
 \begin{align}
-    A &= \frac{\sst}{a^2} + \frac{\cct}{b^2} \\
-    B &= 2x \ct \st \left( \frac{1}{a^2} - \frac{1}{b^2} \right) \\
-    C &= x^2 \left( \frac{\cct}{a^2} + \frac{\sst}{b^2} \right) - 1
+    \vec n^{\mathsf T}( \vec{r}- \vec{r}_0)=0,
+    \quad
+     \vec{r}_0 = 
+    \begin{bmatrix} 
+        x_0 \\ 
+        y_0 \\ 
+        H(x_0,y_0)
+    \end{bmatrix},
 \end{align}
 
+because $\vec n$ is the third column of $R$.  Thus an admissible point on the ellipsoid satisfies both
 
-Solving $f(x)$ gets us to 
 \begin{align}
-    \label{eq:ellipsoid_final-ellipse}
-    f(x) = \frac{-B + \sqrt{B^2 - 4 A C}}{2 A}
+     \vec{r}^{\mathsf T}Q \vec{r} \le 1,
+    \qquad z' = \left(R^{\mathsf T} \vec{r}\right)_3 \;\ge\; 0.
 \end{align}
 
-The function $f(x)$ provides us with the "upper shell" of the ellipse at the position $x$.
+The volume that survives the clip is exactly one half of the original ellipsoid, $V_\text{clip} = \frac{2}{3} \pi abc$, matching a physical "contact cap".  Using $z_0=0$ keeps the formulas simple and still lets you realise thicker/thinner caps by scaling the axis $c$.
 
-Since the function is directly related to the domain of the ellipse, we can compute the bounds of the function by identifying the two points where the tangent is vertical. From the general ellipse formulation (\eqref{eq:ellipsoid_general-ellipse}), we get 
+%-----------------------------------------------------------------
+\section{Updating the height field}
+\label{app:ellipsoid-height-update}
+
+Denote the pre-impact terrain by $H(x,y)$ and the clipped ellipsoid height by $f_{\smash{+}}(x,y)$ given by \cref{eq:app-upper} to \cref{eq:app-terrain-normal}.  We distinguish two operations:
+
+\paragraph{Deposition.} 
+Material is added wherever the ellipsoid cap sits above the terrain:
+
+\begin{equation} 
+    H_{\text{new}}(x,y) \;=\;
+    \max\left( H(x,y),\; f_{+}(x,y)+H(x_0,y_0) \right).
+\end{equation}
+
+\paragraph{Erosion.} 
+Material is removed wherever the terrain rises into the cap's volume:
+
+\begin{equation} 
+    H_{\text{new}}(x,y) \;=\;
+    \min\left( H(x,y),\; f_{+}(x,y)+H(x_0,y_0) \right).
+\end{equation}
+
+These max/min updates preserve the single-valued nature of the height field, avoid undercuts, and guarantee that the modified surface never falls below (deposition) nor rises above (erosion) the contact cap defined by the clipped ellipsoid. A full implementation simply queries $f_{+}(x,y)$ on a stencil around
+$(x_0,y_0)$ and applies the above formula, giving physically plausible addition or removal of material with $O(N)$ complexity for an $N$-cell stencil.
+
+%=================================================================
+
+
+
+
+
+%-----------------------------------------------------------------
+\subsection*{Closed-form height of the upper shell}
+
+With the abbreviations of \cref{eq:app-quadratic-coeffs}, insert $A'=Q_{33}$, $B'=2(Q_{13}x+Q_{23}y)$ and $C'=Q_{11}x^{2}+2Q_{12}xy+Q_{22}y^{2}-1$ directly into \cref{eq:app-upper}.  Dividing numerator and denominator by 2 yields a compact expression that involves only the six independent entries of $Q$:
+
+\begin{equation}
+    \label{eq:app-upper-final}
+    f(x,y)\;=\;
+    \frac{
+    -\left(Q_{13}x+Q_{23}y\right)
+    +\sqrt{
+        \left(Q_{13}x+Q_{23}y\right)^{2}
+        -Q_{33}\left(Q_{11}x^{2}+2Q_{12}xy+Q_{22}y^{2}-1\right)
+    }
+    }{Q_{33}},
+    \qquad
+    \Delta(x,y)\ge 0.
+\end{equation}
+
+\cref{eq:app-upper-final} is the final, rotation-agnostic formula for the height of the upper ellipsoid shell measured above the $(x,y)$-plane.
+
+%-----------------------------------------------------------------
+\subsection*{Partial derivatives}
+
+The surface is implicitly defined by $\Phi(x,y,z)=A'z^{2}+B'z+C'=0$ with $A',B',C'$ as above. Implicit differentiation gives, for any coordinate~$u$,
+
 \begin{align}
-    \label{eq:ellipsoid_ellipse-bounds}
-    x_{\text{min}} &= -\sqrt{a^2 \cct + b^2 \sst} \\
-    x_{\text{max}} &= +\sqrt{a^2 \cct + b^2 \sst} \\
-    y_{\text{max}} &= \sqrt{a^2 \sst + b^2 \cct} \\
-    y_{\text{min}} &= \min\left( f(x_{\text{min}}), f(x_{\text{max}}) \right)
+    \Phi_x + \Phi_z f_x = 0
+    \quad\Longrightarrow\quad
+    f_x = -\frac{\partial_x\Phi}{\partial_z\Phi},
 \end{align}
 
-The area under the curve is half the area of an ellipse, such that 
+and analogously for $f_y$. Because $A'$ is constant in $(x,y)$,
+
 \begin{align}
-    \int_{x_{\text{min}}}^{x_{\text{max}}} f(x) \,dx = \frac{\pi a b}{2}
+\partial_z\Phi \;=\; 2A'f + B' 
+                 \;=\; 2\left(Q_{33}f + Q_{13}x+Q_{23}y\right).
 \end{align}
 
-Finally, we consider the ground locally linear with a rotation $\angl$ such that the ground surface is defined as $g(x) = x \tan(\angl)$. So the amount of material that is being added as such can be computed as 
+The required horizontal derivatives are
+
 \begin{align}
-    \text{Area} = \int \max \left( f(x) - g(x), 0 \right) \, dx
-\end{align}
-We correct the added area by scaling the added matter:
-\begin{align}
-    \Tilde{g}(x) = g(x) + \frac{\max \left( f(x) - g(x), 0 \right)}{\text{Area}} \pi a b
-\end{align}
-
-
-
-
-
-
-
-
-
-
-\section{Complex case for ellipsoids}
-We will use a similar method to translate this idea from the ellipse to the ellipsoid.
-
-First, the common equation of an ellipsoid is defined as $x$, $y$, $z$, and $a$, $b$, $c$ respectively the half-length, half-width and half-depth of the ellipsoid:
-\begin{align}
-    \label{eq:ellipsoid_simplified-ellipsoid}
-    \frac{x^2}{a^2} + \frac{y^2}{b^2} + \frac{z^2}{c^2} = 1
+    \partial_x B' &= 2Q_{13}, &\qquad \\
+    \partial_x C' &= 2Q_{11}x + 2Q_{12}y,\\
+    \partial_y B' &= 2Q_{23}, &\qquad \\
+    \partial_y C' &= 2Q_{12}x + 2Q_{22}y.
 \end{align}
 
-We can generalize the equation to translate the center of the ellipse to the position $(x_0, y_0, z_0)$ by setting $x'=(x-x_0)$, $y'=(y-y_0)$ and $z'=(z-z_0)$ and apply a rotation $(\angl, \anglTwo)$. Once again, we will consider $x_0=0$, $y_0=0$ and $z_0=0$, but including them becomes trivial:
+Hence
+
 \begin{align}
-    \label{eq:ellipsoid_general-ellipsoid}
-      &\frac{\left( x \cp\ct + y \sp - z \cp\st \right)^2}{a^2} \\
-    + &\frac{\left( -x\sp\ct + y\cp + z\sp\st \right)^2}{b^2} \\
-    + &\frac{\left( x\st + z\ct \right)^2}{c^2} - 1 = 0
+    \label{eq:app-fx}
+    f_x &= -\frac{Q_{13}f + Q_{11}x + Q_{12}y}{Q_{33}f + Q_{13}x + Q_{23}y}, \\
+    \label{eq:app-fy}
+    f_y &= -\frac{Q_{23}f + Q_{12}x + Q_{22}y}{Q_{33}f + Q_{13}x + Q_{23}y}.
 \end{align}
 
-We would like to remove $z$ from the equation to lower the 3D shape in a 2D function $f(x,y)$.
+The gradient $(f_x,f_y,-1)$ (or its normalized version) supplies the local normal, slopes, or analytic curvature, which is useful, for example, in terrain  shading, adaptive meshing, or erosion flux models.
 
-Isolating the variable $z$ transforms the formulation into a quadratic equation that we will directly decompose in the form $Az^2 + Bz + C = 0$:
-\begin{align}
-    A &= \left( \frac{\ccp\sst}{a^2} + \frac{\ssp\sst}{b^2} + \frac{\cct}{c^2} \right) \\
-    B &= -2x\left( \frac{\ccp\ct\st}{a^2} + \frac{\ssp\cct\st}{b^2} - \frac{\st\ct}{c^2} \right) \\ &+ 2y \left( -\frac{\sp\cp\st}{a^2} + \frac{\cp\st\sp}{b^2} \right) \\
-    C &= x^2 \left( \frac{\ccp\cct}{a^2} + \frac{\ssp\cct}{b^2} + \frac{\sst}{c^2} \right) + y^2 \left( \frac{\ssp}{a^2} + \frac{\ccp}{b^2} \right)
-\end{align}
 
-Solving $f(x, y)$ gets us, once again, to 
-\begin{align}
-    \label{eq:ellipsoid_final-ellipsoid}
-    f(x) = \frac{-B + \sqrt{B^2 - 4 A C}}{2 A}
-\end{align}
 
-The function $f(x, y)$ provides us with the "upper shell" of the ellipsoid at the position $(x, y)$.
 
-While the function heavily relies on the trigonometric functions $\cos$ and $\sin$, we need to keep in mind that $\angl$ and $\anglTwo$ are set for the ellipsoid, meaning that we can compute the value of $\cp, \ccp, \sp, \ssp, \ct, \cct, \st$ and $\sst$ once and use them for any point $(x, y)$.
 
-% For finding the domain of definition of the function $f$, we solve the inequality $B^2 - 4 A C \geq 0$.
+
+
+
+
+
+
+
+% \zzcommand{\ct}{\cos \angl}
+% \zzcommand{\cct}{\cos^2 \angl}
+% \zzcommand{\st}{\sin \angl}
+% \zzcommand{\sst}{\sin^2 \angl}
+
+% \zzcommand{\cp}{\cos \anglTwo}
+% \zzcommand{\ccp}{\cos^2 \anglTwo}
+% \zzcommand{\sp}{\sin \anglTwo}
+% \zzcommand{\ssp}{\sin^2 \anglTwo}
+
+
+% \chapter{Computation of ellipsoids in 2.5D}
+% \label{chap:computation-ellipsoid}
+
+% \shortAbstract{
+%     In the erosion process on a height field, we may want to represent the impact of a particle collision on a surface as a half sphere that we flatten to increase or lower the surface of the ground. The scaling should happen in the direction of the ground normal. In three dimensions, we may use the implicit formulation of an ellipsoid to achieve this, but in 2.5D this computation become trickier. We will first introduce the conversion to transform the 2D ellipse surface into a 1D function, then proceed with the 3D surface of an ellipsoid into a 2D function, such that it may be then used in the case of 2.5D terrain functions.
+% }
+
+% \section{Simplified to ellipses}
+
+% We will first illustrate the computation in a reduced dimension. In this case, we look at an ellipse.
+% The common equation for an ellipse is function of $x$, $y$, the half-length $a$ and half-width $b$:
 % \begin{align}
-%     \label{eq:ellipsoid_ellipsoid-bounds}
-%     \left( -c^2 y (a^2 - b^2) \frac{\sin(2\anglTwo)}{2} + x \left( -a^2 b^2 + a^2 c^2 \sin^2(\anglTwo) + b^2 c^2 \cos^2(\anglTwo) \right) \cos(\angl) \right)^2 \sin^2(\angl) - \left( -a^2 b^2 c^2 + c^2 y \left( -x (a^2 - b^2) \left( \sin(2\anglTwo - \angl) + \sin(2\anglTwo + \angl) \right)/2 + y \left( a^2 \cos^2(\anglTwo) + b^2 \sin^2(\anglTwo) \right) \right) + x^2 \left( a^2 b^2 \sin^2(\angl) + a^2 c^2 \sin^2(\anglTwo) \cos^2(\angl) + b^2 c^2 \cos^2(\anglTwo) \cos^2(\angl) \right) \right)
+%     \label{eq:ellipsoid_simplified-ellipse}
+%     \frac{x^2}{a^2} + \frac{y^2}{b^2} = 1
 % \end{align}
 
-The volume under the function is half the volume of an ellipsoid, such that 
-\begin{align}
-    \int_{x_{\text{min}}}^{x_{\text{max}}} \int_{y_{\text{min}}}^{y_{\text{max}}} f(x, y) \,dx \,dy = \frac{2 \pi a b c}{3}
-\end{align}
+% We can generalize the equation to translate the center of the ellipse to the position $(x_0, y_0)$ by setting $x'=(x-x_0)$ and $y'=(y-y_0)$ and apply a rotation $\angl$:
+% \begin{align}
+%     \label{eq:ellipsoid_general-ellipse}
+%     \frac{(x' \ct + y' \st)^2}{a^2} + \frac{(x' \st - y' \ct)^2}{b^2} = 1
+% \end{align}
 
-[TO BE CONTINUED...?]
+% For the rest of the operations, we will consider $x_0=0$ and $y_0=0$ for concisness.
+% However this function takes $x$ and $y$ as parameters while we would like to remove $y$ from the equation to lower the 2D shape in a 1D function $f(x)$.
+
+% Isolating the variable $y$ transforms the formulation into a quadratic equation:
+% \begin{align}
+%     \label{eq:ellipsoid_full-ellipse}
+%     y^2 \left( \frac{\sst}{a^2} + \frac{\cct}{b^2} \right) + 2yx \ct \st \left( \frac{1}{a^2} - \frac{1}{b^2} \right) + x^2 \left( \frac{\cct}{a^2} + \frac{\sst}{b^2} \right) - 1 = 0
+% \end{align}
+
+% We want to solve the quadratic equation using the form 
+% \begin{align}
+%     Ay^2 + By + C = 0
+% \end{align}
+
+% Decomposing the equation \eqref{eq:ellipsoid_full-ellipse}, we find
+% \begin{align}
+%     A &= \frac{\sst}{a^2} + \frac{\cct}{b^2} \\
+%     B &= 2x \ct \st \left( \frac{1}{a^2} - \frac{1}{b^2} \right) \\
+%     C &= x^2 \left( \frac{\cct}{a^2} + \frac{\sst}{b^2} \right) - 1
+% \end{align}
+
+
+% Solving $f(x)$ gets us to 
+% \begin{align}
+%     \label{eq:ellipsoid_final-ellipse}
+%     f(x) = \frac{-B + \sqrt{B^2 - 4 A C}}{2 A}
+% \end{align}
+
+% The function $f(x)$ provides us with the "upper shell" of the ellipse at the position $x$.
+
+% Since the function is directly related to the domain of the ellipse, we can compute the bounds of the function by identifying the two points where the tangent is vertical. From the general ellipse formulation (\eqref{eq:ellipsoid_general-ellipse}), we get 
+% \begin{align}
+%     \label{eq:ellipsoid_ellipse-bounds}
+%     x_{\text{min}} &= -\sqrt{a^2 \cct + b^2 \sst} \\
+%     x_{\text{max}} &= +\sqrt{a^2 \cct + b^2 \sst} \\
+%     y_{\text{max}} &= \sqrt{a^2 \sst + b^2 \cct} \\
+%     y_{\text{min}} &= \min\left( f(x_{\text{min}}), f(x_{\text{max}}) \right)
+% \end{align}
+
+% The area under the curve is half the area of an ellipse, such that 
+% \begin{align}
+%     \int_{x_{\text{min}}}^{x_{\text{max}}} f(x)  dx = \frac{\pi a b}{2}
+% \end{align}
 
 % Finally, we consider the ground locally linear with a rotation $\angl$ such that the ground surface is defined as $g(x) = x \tan(\angl)$. So the amount of material that is being added as such can be computed as 
 % \begin{align}
-%     \text{Area} = \int \max \left( f(x) - g(x), 0 \right) \, dx
+%     \text{Area} = \int \max \left( f(x) - g(x), 0 \right)   dx
 % \end{align}
 % We correct the added area by scaling the added matter:
 % \begin{align}
 %     \Tilde{g}(x) = g(x) + \frac{\max \left( f(x) - g(x), 0 \right)}{\text{Area}} \pi a b
 % \end{align}
+
+
+
+
+
+
+
+
+
+
+% \section{Complex case for ellipsoids}
+% We will use a similar method to translate this idea from the ellipse to the ellipsoid.
+
+% First, the common equation of an ellipsoid is defined as $x$, $y$, $z$, and $a$, $b$, $c$ respectively the half-length, half-width and half-depth of the ellipsoid:
+% \begin{align}
+%     \label{eq:ellipsoid_simplified-ellipsoid}
+%     \frac{x^2}{a^2} + \frac{y^2}{b^2} + \frac{z^2}{c^2} = 1
+% \end{align}
+
+% We can generalize the equation to translate the center of the ellipse to the position $(x_0, y_0, z_0)$ by setting $x'=(x-x_0)$, $y'=(y-y_0)$ and $z'=(z-z_0)$ and apply a rotation $(\angl, \anglTwo)$. Once again, we will consider $x_0=0$, $y_0=0$ and $z_0=0$, but including them becomes trivial:
+% \begin{align}
+%     \label{eq:ellipsoid_general-ellipsoid}
+%       &\frac{\left( x \cp\ct + y \sp - z \cp\st \right)^2}{a^2} \\
+%     + &\frac{\left( -x\sp\ct + y\cp + z\sp\st \right)^2}{b^2} \\
+%     + &\frac{\left( x\st + z\ct \right)^2}{c^2} - 1 = 0
+% \end{align}
+
+% We would like to remove $z$ from the equation to lower the 3D shape in a 2D function $f(x,y)$.
+
+% Isolating the variable $z$ transforms the formulation into a quadratic equation that we will directly decompose in the form $Az^2 + Bz + C = 0$:
+% \begin{align}
+%     A &= \left( \frac{\ccp\sst}{a^2} + \frac{\ssp\sst}{b^2} + \frac{\cct}{c^2} \right) \\
+%     B &= -2x\left( \frac{\ccp\ct\st}{a^2} + \frac{\ssp\cct\st}{b^2} - \frac{\st\ct}{c^2} \right) \\ &+ 2y \left( -\frac{\sp\cp\st}{a^2} + \frac{\cp\st\sp}{b^2} \right) \\
+%     C &= x^2 \left( \frac{\ccp\cct}{a^2} + \frac{\ssp\cct}{b^2} + \frac{\sst}{c^2} \right) + y^2 \left( \frac{\ssp}{a^2} + \frac{\ccp}{b^2} \right)
+% \end{align}
+
+% Solving $f(x, y)$ gets us, once again, to 
+% \begin{align}
+%     \label{eq:ellipsoid_final-ellipsoid}
+%     f(x) = \frac{-B + \sqrt{B^2 - 4 A C}}{2 A}
+% \end{align}
+
+% The function $f(x, y)$ provides us with the "upper shell" of the ellipsoid at the position $(x, y)$.
+
+% While the function heavily relies on the trigonometric functions $\cos$ and $\sin$, we need to keep in mind that $\angl$ and $\anglTwo$ are set for the ellipsoid, meaning that we can compute the value of $\cp, \ccp, \sp, \ssp, \ct, \cct, \st$ and $\sst$ once and use them for any point $(x, y)$.
+
+% % For finding the domain of definition of the function $f$, we solve the inequality $B^2 - 4 A C \geq 0$.
+% % \begin{align}
+% %     \label{eq:ellipsoid_ellipsoid-bounds}
+% %     \left( -c^2 y (a^2 - b^2) \frac{\sin(2\anglTwo)}{2} + x \left( -a^2 b^2 + a^2 c^2 \sin^2(\anglTwo) + b^2 c^2 \cos^2(\anglTwo) \right) \cos(\angl) \right)^2 \sin^2(\angl) - \left( -a^2 b^2 c^2 + c^2 y \left( -x (a^2 - b^2) \left( \sin(2\anglTwo - \angl) + \sin(2\anglTwo + \angl) \right)/2 + y \left( a^2 \cos^2(\anglTwo) + b^2 \sin^2(\anglTwo) \right) \right) + x^2 \left( a^2 b^2 \sin^2(\angl) + a^2 c^2 \sin^2(\anglTwo) \cos^2(\angl) + b^2 c^2 \cos^2(\anglTwo) \cos^2(\angl) \right) \right)
+% % \end{align}
+
+% The volume under the function is half the volume of an ellipsoid, such that 
+% \begin{align}
+%     \int_{x_{\text{min}}}^{x_{\text{max}}} \int_{y_{\text{min}}}^{y_{\text{max}}} f(x, y)  dx  dy = \frac{2 \pi a b c}{3}
+% \end{align}
+
+% [TO BE CONTINUED...?]
+
+% % Finally, we consider the ground locally linear with a rotation $\angl$ such that the ground surface is defined as $g(x) = x \tan(\angl)$. So the amount of material that is being added as such can be computed as 
+% % \begin{align}
+% %     \text{Area} = \int \max \left( f(x) - g(x), 0 \right)   dx
+% % \end{align}
+% % We correct the added area by scaling the added matter:
+% % \begin{align}
+% %     \Tilde{g}(x) = g(x) + \frac{\max \left( f(x) - g(x), 0 \right)}{\text{Area}} \pi a b
+% % \end{align}

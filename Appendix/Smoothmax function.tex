@@ -211,57 +211,72 @@ We compare these functions across four benchmarks: chaining behavior, sharpness 
 
 \subsection*{Chaining behavior}
 
-We evaluate each operator by chaining it over $n$ inputs drawn randomly from $[0, 100]$. The true maximum is compared to the approximate maximum, and errors are averaged over 100 trials per $n$.
+We evaluate each operator by chaining it over $n$ inputs drawn randomly from $[0, 100]$. The true maximum is compared to the approximate maximum, and errors are averaged over 100 trials per $n$. \cref{fig:smoothmax-chained-error} shows that our smooth maximum operator consistently provide an accuracy multiple order of magnitude higher than the Smooth Absolute Max operator, and similar order of magnitude than the LogSumExp operator. 
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics{compare_chaining.pdf}
     \caption{Mean absolute error as more values are chained together ($k = 5$).}
+    \label{fig:smoothmax-chained-error}
 \end{figure}
 
-\begin{table}[H]
-\centering
-\begin{tabular}{l|ccc}
-    \toprule
-    Function & Mean error & Std dev & 95th percentile \\
-    \midrule
-    Smoothmax & $7.91 \times 10^{-3}$ & $1.93 \times 10^{-2}$ & $6.02 \times 10^{-2}$ \\
-    LogSumExp & $1.15 \times 10^{-2}$ & $2.62 \times 10^{-2}$ & $6.30 \times 10^{-2}$ \\
-    AbsMax    & $5.01 \times 10^{1}$  & $1.81 \times 10^{1}$  & $7.77 \times 10^{1}$ \\
-    \bottomrule
-\end{tabular}
-\caption{Error statistics over the aggregation of 50 random values in [0, 100] ($k = 5$)}
+\begin{table}
+    \centering
+    \begin{tabular}{l|ccc}
+        \toprule
+        Function & Mean error & Std dev & 95th percentile \\
+        \midrule
+        Smoothmax & $\mathbf{7.91 \times 10^{-3}}$ & $\mathbf{1.93 \times 10^{-2}}$ & $\mathbf{6.02 \times 10^{-2}}$ \\
+        LogSumExp & $1.15 \times 10^{-2}$ & $2.62 \times 10^{-2}$ & $6.30 \times 10^{-2}$ \\
+        AbsMax    & $5.01 \times 10^{1}$  & $1.81 \times 10^{1}$  & $7.77 \times 10^{1}$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Error statistics over the aggregation of 50 random values in [0, 100] ($k = 5$). For all, lower is better. }
+    \label{tab:smoothmax-avg-error}
 \end{table}
 
 \subsection*{Precision and sharpness}
 
-We also test how each function converges to $\max(a, b)$ as sharpness $k$ increases. We fix two very close inputs $a = 1.0000$ and $b = 1.0001$ and sweep $k$ over several orders of magnitude. We see in \cref{fig:smoothmax-sharpness} that for small values of $k$, the AbsMax operator is closer to the ground truth, but as $k$ tends to exaggerated high values, our smoothmax operator gets significantly more accurate.
+We also test how each function converges to $\max(a, b)$ as sharpness $k$ increases. We fix two very close inputs $a = 1.0000$ and $b = 1.0001$ and sweep $k$ over several orders of magnitude. We see in \cref{fig:smoothmax-sharpness} (top) that for small values of $k$, the AbsMax operator is closer to the ground truth, but as $k$ tends to exaggerated high values, our smoothmax operator gets significantly more accurate. When fixing $a = 1.0000$ and $b = 1.01$ or $b = 2.0$, AbsMax operator's error becomes higher by multiple order of magnitude, while the LogSumExp and our Smoothmax operators have identical behaviours.
 
 \begin{figure}[H]
     \centering
-    \autofitgraphics{compare_sharpness-low-values.pdf, compare_sharpness.pdf}
-    \caption{Approximation error as a function of $k$.}
+    % \autofitgraphics{compare_sharpness-low-values.pdf, compare_sharpness.pdf}
+    \autofitgraphics{compare_sharpness_diff_0-0001.pdf}
+    \autofitgraphics{compare_sharpness_diff_0-01.pdf}
+    \autofitgraphics{compare_sharpness_diff_1-0.pdf}
+    % \autofitgraphics{compare_sharpness_diff_100-0.pdf}
+    \caption{Approximation error as a function of $k$ for different values of $a$ and $b$ compared to $\max(a, b)$. Error is greater for smaller differences between $a$ and $b$. Left shows that our operator is comparable to all other operators for sharpness values below 100; right show that for large sharpness values, our smooth maximum operator behave similarly as LogSumExp, while the Smooth Absolute Maximum operator stagnate with a lower accuracy than the others (error of Smooth Absolute Maximum is too large to be displayed when the difference between $a$ and $b$ exceeds 0.001). }
     \label{fig:smoothmax-sharpness}
 \end{figure}
 
 \subsection*{Runtime benchmark}
 
-To get a rough idea of performance, we measured the average time (in microseconds) for a single call of each function over 10000 repetitions, using scalar inputs and $k = 5$. This test was conducted with using Python 3.10 and NumPy 1.25 on a Linux system with a modern multi-core CPU and 14GB of RAM. 
+To get a rough idea of performance, we measured the average time (in microseconds) for a single call of each function over 10 000 repetitions, using scalar inputs and $k = 5$. Results are presented in \cref{tab:smoothmax-time}. This test was conducted with using Python 3.10 and NumPy 1.25 on a Linux system with a modern multi-core CPU and 14GB of RAM. We note that the LogSumExp function is more time consuming as it contains two exponential componants and a log function, with a risk of overflow that for large values of $a$, $b$ or $k$. On the other hand, our Smoothmax function contains a single unique exponential componant that quickly fall to 0 for large values of $k$ or difference between $a$ and $b$, keeping it stable (\cref{fig:smoothmax-precision-per-floating-point} presents floating point overflows).
 
 \begin{table}[H]
-\centering
-\begin{tabular}{l|c}
-    \toprule
-    Function & Time \\
-    \midrule
-    Smoothmax & 1.40 \\
-    LogSumExp & 2.68 \\
-    AbsMax    & 1.80 \\
-    \bottomrule
-\end{tabular}
-\caption{Average runtime per call (in $\mu$s)}
+    \centering
+    \begin{tabular}{l|c}
+        \toprule
+        Function & Time \\
+        \midrule
+        Smoothmax & 1.40 \\
+        LogSumExp & 2.68 \\
+        AbsMax    & 1.80 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Average runtime per call (in $\mu$s)}
+    \label{tab:smoothmax-time}
 \end{table}
 
+\begin{figure}
+    \autofitgraphics[width=.7\linewidth]{compare_accuracy_with_floating-point-precision_k_5.pdf}
+    \autofitgraphics[width=.7\linewidth]{compare_accuracy_with_floating-point-precision_k_10.pdf}
+    \autofitgraphics[width=.7\linewidth]{compare_accuracy_with_floating-point-precision_k_50.pdf}
+    \autofitgraphics[width=.7\linewidth]{compare_accuracy_with_floating-point-precision_k_50_max-values_1000.pdf}
+    \caption{Comparison of error between the LogSumExp, Smooth AbsMax and our Smoothmax operators when chaining the operators on data between 0 and 100 while restricting the floating point precision, with from top top bottom respectively $k=5$, $k=10$, $k=50$ and $k=50$. Note that on the bottom plot we chained the operators for values between 0 and 1000, which raise overflows for LogSumExp (thus the data not displayed for 'float64' and 'float16'). }
+    \label{fig:smoothmax-precision-per-floating-point}
+\end{figure}
 \midConclusion
 
 Overall, \texttt{smoothmax} performs best across the board:
@@ -271,4 +286,4 @@ Overall, \texttt{smoothmax} performs best across the board:
     \item It is fast to compute and numerically stable.
 \end{itemize}
 
-This makes it a practical and robust replacement for $\max(a, b)$ in graphics and simulation tasks where smoothness matters (such as raymarching, as presented in \cref{fig:smoothmax-rendered-example}).
+This makes it a practical and robust replacement for $\max(a, b)$ in simulation and graphics tasks where smoothness matters (such as raymarching, as presented in \cref{fig:smoothmax-rendered-example}).
