@@ -1,266 +1,236 @@
-\chapter{Matrix formulation of a rotated ellipsoid's upper shell}
+\chapter{Computation of ellipsoids in 2.5D}
 \label{app:ellipsoid-matrix}
 
-\shortAbstract{ 
-    In this appendix we derive, in a concise matrix form, the height-field representation $z = f(x,y)$ of an arbitrarily oriented ellipsoid.  The result is a closed-form formula for the upper (and lower) shell that is readily evaluated in $O(1)$ for any query point $(x,y)$, making it well suited to deposition/erosion on 2.5-D height fields.
+\shortAbstract{
+    We construct a closed-form height query $z=f(x,y)$ for a rotated ellipsoid, to be used as a deposition/erosion primitive on height fields. The derivation stays in matrix form, gives the operator’s projected footprint, aligns the ellipsoid to the terrain normal, clips it in the local frame to keep a consistent cap, and ends with simple update rules and partial derivatives.
 }
 
-%-----------------------------------------------------------------
-\section{Implicit equation in global coordinates}
-Let the global position be the column vector $ \vec{r} = [ x,\;y,\;z ]^{\mathsf T}\in\mathbb R^{3}$. An ellipsoid of semi-axes $a,b,c>0$, expressed in its local (unrotated) frame, satisfies the implicit equation
-
-\begin{equation}
-    \label{eq:app-canonical-ellipsoid}
-    \vec{r'}^{\mathsf T} A \vec{r'} = 1
-    \quad\text{with}\quad 
-    A = \operatorname{diag}\!\left(1/a^{2}, 1/b^{2}, 1/c^{2}\right),
-\end{equation}
-where $\vec{r'} = [x',y',z']^{\mathsf T}$ are local coordinates.
-
-Let $R$ be the rotation matrix that takes global coordinates into the ellipsoid frame; hence
-
-\begin{equation}
-    \label{eq:app-rprime}
-    \vec{r'} \;=\; R^{\mathsf T}  \vec{r}.
-\end{equation}
-Substituting~\ref{eq:app-rprime} into \ref{eq:app-canonical-ellipsoid} and defining $Q \;=\; R A R^{\mathsf T}$, we obtain the ellipsoid in global coordinates:
-
-\begin{equation}
-    \label{eq:app-global-implicit}
-     \vec{r}^{\mathsf T} Q  \vec{r} \;=\; 1.
-\end{equation}
-Because $A$ is diagonal and $R$ orthogonal, $Q$ is symmetric ($Q^{\mathsf T}=Q$).  Write
-
+We start from a representation that already contains the ellipsoid’s orientation, so that subsequent steps only query a single object. Let $\vec r=[x,y,z]^\transpose \in\mathbb{R}^3$ be global coordinates. In the local (unrotated) frame, an ellipsoid with semi-axes $a,b,c>0$ satisfies
 \begin{align}
-    Q \;=\;
+    \label{eq:app-canonical-ellipsoid}
+    \vec r'^\transpose  A \vec r' = 1 \\
+    A=\operatorname{diag}\!\left(1/a^2, 1/b^2, 1/c^2\right)
+\end{align}
+with local coordinates $\vec r'=[x',y',z']^\transpose $. If $R\in \mathrm{SO}(3)$ maps global to local coordinates, i.e.\ $\vec r'=R^\transpose \vec r$, then substituting into \cref{eq:app-canonical-ellipsoid} and setting $Q=RAR^\transpose $ gives a single symmetric matrix that describes the rotated ellipsoid in global coordinates:
+\begin{align}
+    \label{eq:app-global-implicit}
+    \vec r^\transpose  Q \vec r = 1 \\
+    Q =
     \begin{bmatrix}
-    Q_{11} & Q_{12} & Q_{13}\\
-    Q_{12} & Q_{22} & Q_{23}\\
-    Q_{13} & Q_{23} & Q_{33}
+        Q_{11} & Q_{12} & Q_{13}\\
+        Q_{12} & Q_{22} & Q_{23}\\
+        Q_{13} & Q_{23} & Q_{33}
     \end{bmatrix}.
 \end{align}
 
-Expanding \cref{eq:app-global-implicit} gives the familiar quadratic form
-
-\begin{equation}
+Expanding the scalar form,
+\begin{align}
     \label{eq:app-expanded}
-    Q_{11}x^{2} + Q_{22}y^{2} + Q_{33}z^{2}
-    + 2Q_{12}xy + 2Q_{13}xz + 2Q_{23}yz \;=\; 1.
-\end{equation}
+    Q_{11}x^2 + Q_{22}y^2 + Q_{33}z^2 + 2Q_{12}xy + 2Q_{13}xz + 2Q_{23}yz = 1.
+\end{align}
 
-%-----------------------------------------------------------------
-\section{Solving for the height field $z=f(x,y)$}
-For a height-field terrain we treat $x$ and $y$ as known query coordinates and solve~\eqref{eq:app-expanded} for $z$. Collecting terms yields a quadratic in $z$:
-
+A height field asks for $z$ at a given $(x,y)$. We therefore isolate $z$ in \cref{eq:app-expanded} and obtain a quadratic equation
 \begin{align}
-    A' z^{2} + B' z + C' \;=\; 0,
-    \quad\text{with}\quad
-    \begin{cases}
-        A' &= Q_{33},\\
-        B' &= 2\left(Q_{13}x + Q_{23}y\right),\\
-        C' &= Q_{11}x^{2} + 2Q_{12}xy + Q_{22}y^{2} - 1.
-    \end{cases}
     \label{eq:app-quadratic-coeffs}
+    A' z^2 + B' z + C' = 0,
+    \qquad
+    A' = Q_{33},\quad
+    B' = 2(Q_{13}x + Q_{23}y),\quad
+    C' = Q_{11}x^2 + 2Q_{12}xy + Q_{22}y^2 - 1.
 \end{align}
-The discriminant
 
+Writing $\Delta(x,y)=B'^2-4A'C'$ for the discriminant, the surface exists where $\Delta\ge 0$ and the two shells are
 \begin{align}
-    \Delta(x,y) \;=\; B'^{2} - 4A'C'
-\end{align}
-is non-negative exactly inside the projected ellipse; outside, the surface is not defined.  Assuming $A'>0$ (always true for proper ellipsoids),
-
-\begin{align}
-    \text{upper shell:}\quad
-    z &= f(x,y)
-    \;=\;
-    \frac{-B' + \sqrt{\Delta}}{2A'},
-    \label{eq:app-upper}\\[4pt]
-    \text{lower shell:}\quad
-    z &= \frac{-B' - \sqrt{\Delta}}{2A'}.
+    \label{eq:app-upper}
+    \text{upper:}\quad z = f(x,y) = \frac{-B' + \sqrt{ \Delta }}{ 2A' } \\
     \label{eq:app-lower}
+    \text{lower:}\quad z = \frac{-B' - \sqrt{\Delta}}{2A'}
 \end{align}
 
-\cref{eq:app-upper} is the function you can add to (or subtract from) a height map to model deposition or erosion produced by an ellipsoidal particle impact.
-
-%-----------------------------------------------------------------
-\section{Practical notes}
-
-\begin{itemize}
-\item \textbf{Pre-computation.} For a fixed ellipsoid, compute $Q$ once and cache the six independent coefficients $Q_{11},Q_{22},Q_{33},Q_{12},Q_{13},Q_{23}$. Each height query then requires only a handful of multiplies, an addition, and a square root.
-
-\item \textbf{Domain mask.} Evaluate $\Delta(x,y)$; if $\Delta<0$ the point lies outside the projected ellipse and $f(x,y)$ should be treated as undefined (or simply return the original terrain height).
-
-\item \textbf{Volume check.} Integrating~\eqref{eq:app-upper} over the projected ellipse yields $V = \tfrac23\pi abc$, i.e.\ half the ellipsoid volume, confirming consistency with the canonical formulation.
-
-\end{itemize}
-
-
-%-----------------------------------------------------------------
-\section{Alignment with the local terrain}
-\label{app:ellipsoid-alignment}
-
-For each impact position $(x_0,y_0)$ the terrain offers only a scalar height $H(x_0,y_0)$, but its first-order tangent plane is fully determined by the lateral derivatives
-
+Substituting the coefficients yields a compact expression that depends only on the six independent entries of $Q$:
 \begin{align}
-    \partial_x H \;=\;
-    \frac{H(x_0+\delta,y_0)-H(x_0-\delta,y_0)}{2\delta},
-    \qquad
-    \partial_y H \;=\;
-    \frac{H(x_0,y_0+\delta)-H(x_0,y_0-\delta)}{2\delta}.
-\end{align}
-
-A convenient unit normal of that plane is
-
-\begin{equation}
-    \label{eq:app-terrain-normal}
-    \vec n \;=\; 
-    \operatorname{normalize}
-    \left[ -\partial_x H,\; -\partial_y H,\; 1 \right]^{\mathsf T}.
-\end{equation}
-
-We choose the ellipsoid's local $z'$-axis to coincide with $\vec n$ so that the body "hugs" the terrain.  An orthonormal basis $\{ \vec e_x',\vec e_y',\vec e_z' \}$ is built as
-
-\begin{equation}
-    \vec e_z' = \vec n,
-    \quad
-    \vec e_x' = 
-    \operatorname{normalize}\!\left[ 1,0,-\partial_x H \right]^{\mathsf T},
-    \quad
-    \vec e_y' = \vec e_z' \times \vec e_x'.
-\end{equation}
-
-Finally the rotation matrix that maps global coordinates into the ellipsoid frame is
-
-\begin{equation}
-    \label{eq:app-rotation-from-normal} R \;=\;
-    \left[ 
-    \vec e_x' \;\; \vec e_y' \;\; \vec e_z'
-    \right].
-\end{equation}
-
-Note that $R$ varies per impact point and must be recomputed whenever the ellipsoid moves across the height field.
-
-%-----------------------------------------------------------------
-\section{Local cutting plane}
-\label{app:ellipsoid-cutting-plane}
-To ensure the ellipsoid interacts only with the half-space above the approximate terrain, we clip by the plane
-
-\begin{align}
-    z' = z_0, 
-    \quad\text{with}\; z_0 = 0.
-\end{align}
-
-In global space that plane is
-
-\begin{align}
-    \vec n^{\mathsf T}( \vec{r}- \vec{r}_0)=0,
-    \quad
-     \vec{r}_0 = 
-    \begin{bmatrix} 
-        x_0 \\ 
-        y_0 \\ 
-        H(x_0,y_0)
-    \end{bmatrix},
-\end{align}
-
-because $\vec n$ is the third column of $R$.  Thus an admissible point on the ellipsoid satisfies both
-
-\begin{align}
-     \vec{r}^{\mathsf T}Q \vec{r} \le 1,
-    \qquad z' = \left(R^{\mathsf T} \vec{r}\right)_3 \;\ge\; 0.
-\end{align}
-
-The volume that survives the clip is exactly one half of the original ellipsoid, $V_\text{clip} = \frac{2}{3} \pi abc$, matching a physical "contact cap".  Using $z_0=0$ keeps the formulas simple and still lets you realise thicker/thinner caps by scaling the axis $c$.
-
-%-----------------------------------------------------------------
-\section{Updating the height field}
-\label{app:ellipsoid-height-update}
-
-Denote the pre-impact terrain by $H(x,y)$ and the clipped ellipsoid height by $f_{\smash{+}}(x,y)$ given by \cref{eq:app-upper} to \cref{eq:app-terrain-normal}.  We distinguish two operations:
-
-\paragraph{Deposition.} 
-Material is added wherever the ellipsoid cap sits above the terrain:
-
-\begin{equation} 
-    H_{\text{new}}(x,y) \;=\;
-    \max\left( H(x,y),\; f_{+}(x,y)+H(x_0,y_0) \right).
-\end{equation}
-
-\paragraph{Erosion.} 
-Material is removed wherever the terrain rises into the cap's volume:
-
-\begin{equation} 
-    H_{\text{new}}(x,y) \;=\;
-    \min\left( H(x,y),\; f_{+}(x,y)+H(x_0,y_0) \right).
-\end{equation}
-
-These max/min updates preserve the single-valued nature of the height field, avoid undercuts, and guarantee that the modified surface never falls below (deposition) nor rises above (erosion) the contact cap defined by the clipped ellipsoid. A full implementation simply queries $f_{+}(x,y)$ on a stencil around
-$(x_0,y_0)$ and applies the above formula, giving physically plausible addition or removal of material with $O(N)$ complexity for an $N$-cell stencil.
-
-%=================================================================
-
-
-
-
-
-%-----------------------------------------------------------------
-\subsection*{Closed-form height of the upper shell}
-
-With the abbreviations of \cref{eq:app-quadratic-coeffs}, insert $A'=Q_{33}$, $B'=2(Q_{13}x+Q_{23}y)$ and $C'=Q_{11}x^{2}+2Q_{12}xy+Q_{22}y^{2}-1$ directly into \cref{eq:app-upper}.  Dividing numerator and denominator by 2 yields a compact expression that involves only the six independent entries of $Q$:
-
-\begin{equation}
     \label{eq:app-upper-final}
-    f(x,y)\;=\;
+    f(x,y)=
     \frac{
-    -\left(Q_{13}x+Q_{23}y\right)
-    +\sqrt{
-        \left(Q_{13}x+Q_{23}y\right)^{2}
-        -Q_{33}\left(Q_{11}x^{2}+2Q_{12}xy+Q_{22}y^{2}-1\right)
-    }
-    }{Q_{33}},
+    -(Q_{13}x+Q_{23}y)
+    +\sqrt{(Q_{13}x+Q_{23}y)^2 - Q_{33} \left(Q_{11}x^2 + 2Q_{12}xy + Q_{22}y^2 - 1\right)}
+    }{Q_{33}}
+    % \qquad \Delta\ge 0.
+\end{align}
+
+% \footnote{Near the silhouette, evaluate the upper root as $z=\tfrac{2C'}{-B'-\mathrm{sign}(B')\sqrt{\Delta}}$ to avoid cancellation, and clamp $\Delta\leftarrow \max(\Delta,0)$ in floating point.}
+
+It is convenient to make the planar domain explicit. Eliminating $z$ from \cref{eq:app-global-implicit} gives the projected footprint via a Schur complement:
+\begin{align}
+    M =
+    \begin{bmatrix}
+    Q_{11} & Q_{12}\\
+    Q_{12} & Q_{22}
+    \end{bmatrix}
+    -
+    \frac{1}{Q_{33}}
+    \begin{bmatrix}
+    Q_{13}\\ Q_{23}
+    \end{bmatrix}
+    \begin{bmatrix}
+    Q_{13} & Q_{23}
+    \end{bmatrix},
     \qquad
-    \Delta(x,y)\ge 0.
-\end{equation}
+    \text{so that}\quad
+    \begin{bmatrix}x & y\end{bmatrix} M \begin{bmatrix}x\\ y\end{bmatrix} \le 1.
+\end{align}
+This ellipse in $(x,y)$ is exactly equivalent to $\Delta(x,y)\ge 0$ and provides a cheap mask in implementations.
 
-\cref{eq:app-upper-final} is the final, rotation-agnostic formula for the height of the upper ellipsoid shell measured above the $(x,y)$-plane.
-
-%-----------------------------------------------------------------
-\subsection*{Partial derivatives}
-
-The surface is implicitly defined by $\Phi(x,y,z)=A'z^{2}+B'z+C'=0$ with $A',B',C'$ as above. Implicit differentiation gives, for any coordinate~$u$,
-
+For terrain applications, the ellipsoid should "follow" the local slope. We orient it by the terrain normal at a query point $(x_0,y_0)$, with
 \begin{align}
-    \Phi_x + \Phi_z f_x = 0
-    \quad\Longrightarrow\quad
-    f_x = -\frac{\partial_x\Phi}{\partial_z\Phi},
+    \label{eq:app-terrain-normal}
+    \vec n=\operatorname{normalize} [-\partial_x H, -\partial_y H, 1]^\transpose .
+\end{align}
+We build the local frame as
+\begin{align}
+    \vec e_z'=\vec n,
+    \qquad
+    \vec e_x'=\operatorname{normalize} [1,0,-\partial_x H]^\transpose ,
+    \qquad
+    \vec e_y'=\vec e_z'\times \vec e_x',
 \end{align}
 
-and analogously for $f_y$. Because $A'$ is constant in $(x,y)$,
+and set
 
 \begin{align}
-\partial_z\Phi \;=\; 2A'f + B' 
-                 \;=\; 2\left(Q_{33}f + Q_{13}x+Q_{23}y\right).
+    \label{eq:app-rotation-from-normal}
+    R=[ \vec e_x'\ \ \vec e_y'\ \ \vec e_z' ],
 \end{align}
 
-The required horizontal derivatives are
+which feeds back into \cref{eq:app-global-implicit} and therefore into \cref{eq:app-quadratic-coeffs}–\cref{eq:app-upper-final}. This alignment changes both the footprint and the height response in a way that is consistent with the local terrain.
 
+A rotated upper shell can lie above the ground on one side and below on the other; height fields cannot represent overhangs. To keep a single, consistent cap, we clip in the local frame by the plane $z'=0$. Writing $\vec r_0=[x_0,y_0,H(x_0,y_0)]^\transpose $, the plane in global coordinates is $\vec n^\transpose (\vec r-\vec r_0)=0$, since $\vec n$ is the third column of $R$. Admissible points then satisfy
 \begin{align}
-    \partial_x B' &= 2Q_{13}, &\qquad \\
-    \partial_x C' &= 2Q_{11}x + 2Q_{12}y,\\
-    \partial_y B' &= 2Q_{23}, &\qquad \\
-    \partial_y C' &= 2Q_{12}x + 2Q_{22}y.
+    \vec r^\transpose Q\vec r \le 1,
+    \qquad
+    \left(R^\transpose (\vec r-\vec r_0)\right)_3 \ge 0,
 \end{align}
 
-Hence
+which enforces compatibility with a single-valued height field. With $z'=0$ through the local center, the retained volume is exactly one half of the ellipsoid, $V_{\text{clip}}=\tfrac{2}{3}\pi abc$.
+
+Turning the cap into an update of the terrain is then a direct comparison between the cap height and the current surface. Let $f_{+}(x,y)$ denote the clipped upper shell height and set $H_0=H(x_0,y_0)$. We use
+\begin{align}
+    \text{deposition:} \quad H_{\text{new}}(x,y)=\max\left(H(x,y), f_{+}(x,y)+H_0\right) \\
+    \text{erosion:}\quad H_{\text{new}}(x,y)=\min\left(H(x,y), f_{+}(x,y)+H_0\right)
+\end{align}
+which preserves the single-valued surface and avoids undercuts.
+
+For shading and transport we also need slopes of the cap. Writing $\Phi(x,y,z)=A'z^2+B'z+C'=0$ with the coefficients in \cref{eq:app-quadratic-coeffs}, implicit differentiation gives
+\begin{align}
+    f_x=-\frac{\partial_x\Phi}{\partial_z\Phi},
+    \qquad
+    f_y=-\frac{\partial_y\Phi}{\partial_z\Phi} \\
+    \partial_z\Phi=2A' f + B' = 2\left(Q_{33} f + Q_{13}x + Q_{23}y\right),
+\end{align}
+and
+\begin{align}
+    \partial_x B'=2Q_{13},\quad
+    \partial_x C'=2Q_{11}x+2Q_{12}y,
+    \qquad
+    \partial_y B'=2Q_{23},\quad
+    \partial_y C'=2Q_{12}x+2Q_{22}y,
+\end{align}
+
+so that
 
 \begin{align}
     \label{eq:app-fx}
-    f_x &= -\frac{Q_{13}f + Q_{11}x + Q_{12}y}{Q_{33}f + Q_{13}x + Q_{23}y}, \\
+    f_x = -\frac{Q_{13}f + Q_{11}x + Q_{12}y}{Q_{33}f + Q_{13}x + Q_{23}y} \\
     \label{eq:app-fy}
-    f_y &= -\frac{Q_{23}f + Q_{12}x + Q_{22}y}{Q_{33}f + Q_{13}x + Q_{23}y}.
+    f_y = -\frac{Q_{23}f + Q_{12}x + Q_{22}y}{Q_{33}f + Q_{13}x + Q_{23}y}
 \end{align}
 
-The gradient $(f_x,f_y,-1)$ (or its normalized version) supplies the local normal, slopes, or analytic curvature, which is useful, for example, in terrain  shading, adaptive meshing, or erosion flux models.
+In practice, for a fixed ellipsoid $(a,b,c)$ at $(x_0,y_0)$, one computes $R$ from the terrain normal by \cref{eq:app-terrain-normal}-\cref{eq:app-rotation-from-normal}, forms $Q=RAR^\transpose $ and the footprint matrix $M$, and then, for each $(x,y)$ in a stencil around $(x_0,y_0)$, skips points with $[x\ \ y] M [x\ \ y]^\transpose >1$, evaluates $f$ by \cref{eq:app-quadratic-coeffs}-\cref{eq:app-upper-final} (upper root), and applies the deposition/erosion rule above. Caching the six independent entries of $Q$ (and $M$) makes the loop entirely local and $O(1)$ per sample.
+
+
+
+\section*{Normalization to a specific volume change}
+
+We often want the primitive to produce a prescribed volume change $\totalErosion>0$ (magnitude of material added/removed). Because the ellipsoid is built in its \emph{local} principal frame and then rotated, we rely on the fact that rotation does not change volumes. Let the semi-axes be $(a,b,c)$ in the local frame, the clipping plane be $z'=z_0$ with $z_0\in[0,c]$ (default $z_0=0$), and denote by
+\[
+V(z_0)=\iint \bigl(z_{\text{ellip}}(x,y)-z_{\text{plane}}(x,y)\bigr)_+\,dx\,dy
+\]
+the cap volume above the plane, where $(\cdot)_+=\max(\cdot,0)$ and the integral is over the planar footprint. In the local frame one has the closed form
+\begin{align}
+\label{eq:app-cap-volume}
+V(z_0)=\pi a b\Bigl(\frac{2c}{3}-z_0+\frac{z_0^3}{3c^2}\Bigr),\qquad V(0)=\frac{2}{3}\pi a b c.
+\end{align}
+This expression is strictly decreasing in $z_0\in[0,c)$ since $V'(z_0)=-\pi a b\bigl(1-(z_0/c)^2\bigr)<0$.
+
+For implementation on a height field, it is convenient to separate the cap into a \emph{plane} and a \emph{thickness}. With $\vec r_0=[x_0,y_0,H(x_0,y_0)]^\top$, terrain normal $\vec n=[n_x,n_y,n_z]^\top$ as in \cref{eq:app-terrain-normal}, and the local offset $z_0\ge 0$, the clipping plane in global coordinates is
+\begin{align}
+\label{eq:app-cap-plane}
+\vec n^\top(\vec r-\vec r_0)=z_0
+\ \Longleftrightarrow\
+z_{\text{plane}}(x,y)=H_0+\frac{z_0-n_x(x-x_0)-n_y(y-y_0)}{n_z},\quad H_0=H(x_0,y_0).
+\end{align}
+Let $z_{\text{ellip}}(x,y)$ denote the upper shell from \cref{eq:app-upper-final} (evaluated with the centered coordinates used in the chapter). The (nonnegative) cap thickness is
+\begin{align}
+\label{eq:app-cap-thickness}
+g_{z_0}(x,y)=\bigl(z_{\text{ellip}}(x,y)-z_{\text{plane}}(x,y)\bigr)_+.
+\end{align}
+The three strategies below differ only in how they achieve $\iint g\,dx\,dy=\totalErosion$.
+
+\subsection*{Strategy A: top-view amplitude scaling}
+Keep $(a,b,c)$ and the plane $z'=z_0$ fixed and scale the thickness by a single factor $\lambda$:
+\begin{align}
+\label{eq:app-stratA}
+\lambda=\frac{\totalErosion}{V(z_0)},\qquad
+f_A(x,y)=z_{\text{plane}}(x,y)+\lambda\,g_{z_0}(x,y).
+\end{align}
+With the default half-ellipsoid ($z_0=0$),
+\begin{align}
+\lambda=\frac{3\,\totalErosion}{2\pi a b c}.
+\end{align}
+This preserves the footprint and simply scales peak height and slopes.
+
+\subsection*{Strategy B: axis-scaled ($c$ only)}
+Change the vertical semi-axis to $c'$ so that the \emph{geometric} half-cap volume equals $\totalErosion$, and do not apply an amplitude scale:
+\begin{align}
+\label{eq:app-stratB}
+c'=\frac{3\,\totalErosion}{2\pi a b},\qquad
+A=\operatorname{diag}\!\left(1/a^2,\,1/b^2,\,1/{c'}^{2}\right),\quad Q=RAR^\top,
+\end{align}
+then recompute \cref{eq:app-upper-final}--\cref{eq:app-fy} and use
+\begin{align}
+f_B(x,y)=z_{\text{plane}}(x,y)+g_{0}(x,y)\quad\text{with $c$ replaced by $c'$ and $z_0=0$}
+\end{align}
+This exactly normalizes the half-volume. Note that changing $c$ modifies $Q$ and therefore the projected footprint $M$ via the Schur complement.
+
+\subsection*{Strategy C: cut by plane (solve for $z_0$)}
+Keep $(a,b,c)$ fixed and choose the clipping offset $z_0$ so that the cap volume equals $\totalErosion$:
+\begin{align}
+\label{eq:app-stratC}
+\text{find }z_0\in[0,c]\ \text{such that}\ V(z_0)=\totalErosion,\qquad f_C(x,y)=z_{\text{plane}}(x,y)+g_{z_0}(x,y).
+\end{align}
+Since $V$ in \cref{eq:app-cap-volume} is monotone, $z_0$ is unique. A robust choice is bisection on $[0,c]$; Newton is also effective with
+\begin{align}
+z_0^{(k+1)}=z_0^{(k)}-\frac{V(z_0^{(k)})-\totalErosion}{V'(z_0^{(k)})},\qquad
+V'(z_0)=-\pi a b\Bigl(1-\frac{z_0^2}{c^2}\Bigr).
+\end{align}
+This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifting the plane.
+
+\subsection*{Applying the strategies}
+In the deposition/erosion rules, replace $f_{+}(x,y)$ by $f_A$, $f_B$, or $f_C$ from \cref{eq:app-stratA,eq:app-stratB,eq:app-stratC}. Use $\totalErosion$ as a \emph{magnitude}; the sign is handled by the $\max/\min$ update:
+\begin{align}
+\text{deposition: } H_{\text{new}}(x,y)=\max\!\bigl(H(x,y),\,f_\star(x,y)\bigr),\qquad
+\text{erosion: } H_{\text{new}}(x,y)=\min\!\bigl(H(x,y),\,f_\star(x,y)\bigr),
+\end{align}
+with $f_\star\in\{f_A,f_B,f_C\}$. Strategy~C requires $\totalErosion\le V(0)$ if we restrict to $z_0\in[0,c]$; otherwise use Strategy~A or~B (or allow $z_0<0$ to include more than half the ellipsoid).
+
+\subsection*{Notes on stability}
+Clamp the discriminant $\Delta\leftarrow\max(\Delta,0)$ when evaluating \cref{eq:app-upper-final}, and near the silhouette use the more stable form
+\[
+z=\frac{2C'}{-B'-\operatorname{sign}(B')\sqrt{\Delta}}
+\]
+for the upper root to avoid cancellation. Ensure $n_z>0$ in \cref{eq:app-cap-plane} (the height-field assumption); if $n_z$ becomes too small, cap the slope or resample the operator at a coarser scale.
+
+
 
 
 
@@ -425,3 +395,270 @@ The gradient $(f_x,f_y,-1)$ (or its normalized version) supplies the local norma
 % % \begin{align}
 % %     \Tilde{g}(x) = g(x) + \frac{\max \left( f(x) - g(x), 0 \right)}{\text{Area}} \pi a b
 % % \end{align}
+
+
+
+
+% \chapter{Matrix formulation of a rotated ellipsoid's upper shell}
+% \label{app:ellipsoid-matrix}
+
+% \shortAbstract{ 
+%     In this appendix we derive, in a concise matrix form, the height-field representation $z = f(x,y)$ of an arbitrarily oriented ellipsoid.  The result is a closed-form formula for the upper (and lower) shell that is readily evaluated in $O(1)$ for any query point $(x,y)$, making it well suited to deposition/erosion on 2.5-D height fields.
+% }
+
+% %-----------------------------------------------------------------
+% \section{Implicit equation in global coordinates}
+% Let the global position be the column vector $ \vec{r} = [ x,\;y,\;z ]^\transpose \in\mathbb R^{3}$. An ellipsoid of semi-axes $a,b,c>0$, expressed in its local (unrotated) frame, satisfies the implicit equation
+
+% \begin{equation}
+%     \label{eq:app-canonical-ellipsoid}
+%     \vec{r'}^\transpose  A \vec{r'} = 1
+%     \quad\text{with}\quad 
+%     A = \operatorname{diag}\!\left(1/a^{2}, 1/b^{2}, 1/c^{2}\right),
+% \end{equation}
+% where $\vec{r'} = [x',y',z']^\transpose $ are local coordinates.
+
+% Let $R$ be the rotation matrix that takes global coordinates into the ellipsoid frame; hence
+
+% \begin{equation}
+%     \label{eq:app-rprime}
+%     \vec{r'} \;=\; R^\transpose   \vec{r}.
+% \end{equation}
+% Substituting~\ref{eq:app-rprime} into \ref{eq:app-canonical-ellipsoid} and defining $Q \;=\; R A R^\transpose $, we obtain the ellipsoid in global coordinates:
+
+% \begin{equation}
+%     \label{eq:app-global-implicit}
+%      \vec{r}^\transpose  Q  \vec{r} \;=\; 1.
+% \end{equation}
+% Because $A$ is diagonal and $R$ orthogonal, $Q$ is symmetric ($Q^\transpose =Q$).  Write
+
+% \begin{align}
+%     Q \;=\;
+%     \begin{bmatrix}
+%     Q_{11} & Q_{12} & Q_{13}\\
+%     Q_{12} & Q_{22} & Q_{23}\\
+%     Q_{13} & Q_{23} & Q_{33}
+%     \end{bmatrix}.
+% \end{align}
+
+% Expanding \cref{eq:app-global-implicit} gives the familiar quadratic form
+
+% \begin{equation}
+%     \label{eq:app-expanded}
+%     Q_{11}x^{2} + Q_{22}y^{2} + Q_{33}z^{2}
+%     + 2Q_{12}xy + 2Q_{13}xz + 2Q_{23}yz \;=\; 1.
+% \end{equation}
+
+% %-----------------------------------------------------------------
+% \section{Solving for the height field $z=f(x,y)$}
+% For a height-field terrain we treat $x$ and $y$ as known query coordinates and solve~\eqref{eq:app-expanded} for $z$. Collecting terms yields a quadratic in $z$:
+
+% \begin{align}
+%     A' z^{2} + B' z + C' \;=\; 0,
+%     \quad\text{with}\quad
+%     \begin{cases}
+%         A' &= Q_{33},\\
+%         B' &= 2\left(Q_{13}x + Q_{23}y\right),\\
+%         C' &= Q_{11}x^{2} + 2Q_{12}xy + Q_{22}y^{2} - 1.
+%     \end{cases}
+%     \label{eq:app-quadratic-coeffs}
+% \end{align}
+% The discriminant
+
+% \begin{align}
+%     \Delta(x,y) \;=\; B'^{2} - 4A'C'
+% \end{align}
+% is non-negative exactly inside the projected ellipse; outside, the surface is not defined.  Assuming $A'>0$ (always true for proper ellipsoids),
+
+% \begin{align}
+%     \text{upper shell:}\quad
+%     z &= f(x,y)
+%     \;=\;
+%     \frac{-B' + \sqrt{\Delta}}{2A'},
+%     \label{eq:app-upper}\\begin{align}4pt]
+%     \text{lower shell:}\quad
+%     z &= \frac{-B' - \sqrt{\Delta}}{2A'}.
+%     \label{eq:app-lower}
+% \end{align}
+
+% \cref{eq:app-upper} is the function you can add to (or subtract from) a height map to model deposition or erosion produced by an ellipsoidal particle impact.
+
+% %-----------------------------------------------------------------
+% \section{Practical notes}
+
+% \begin{itemize}
+% \item \textbf{Pre-computation.} For a fixed ellipsoid, compute $Q$ once and cache the six independent coefficients $Q_{11},Q_{22},Q_{33},Q_{12},Q_{13},Q_{23}$. Each height query then requires only a handful of multiplies, an addition, and a square root.
+
+% \item \textbf{Domain mask.} Evaluate $\Delta(x,y)$; if $\Delta<0$ the point lies outside the projected ellipse and $f(x,y)$ should be treated as undefined (or simply return the original terrain height).
+
+% \item \textbf{Volume check.} Integrating~\eqref{eq:app-upper} over the projected ellipse yields $V = \tfrac23\pi abc$, i.e.\ half the ellipsoid volume, confirming consistency with the canonical formulation.
+
+% \end{itemize}
+
+
+% %-----------------------------------------------------------------
+% \section{Alignment with the local terrain}
+% \label{app:ellipsoid-alignment}
+
+% For each impact position $(x_0,y_0)$ the terrain offers only a scalar height $H(x_0,y_0)$, but its first-order tangent plane is fully determined by the lateral derivatives
+
+% \begin{align}
+%     \partial_x H \;=\;
+%     \frac{H(x_0+\delta,y_0)-H(x_0-\delta,y_0)}{2\delta},
+%     \qquad
+%     \partial_y H \;=\;
+%     \frac{H(x_0,y_0+\delta)-H(x_0,y_0-\delta)}{2\delta}.
+% \end{align}
+
+% A convenient unit normal of that plane is
+
+% \begin{equation}
+%     \label{eq:app-terrain-normal}
+%     \vec n \;=\; 
+%     \operatorname{normalize}
+%     \left[ -\partial_x H,\; -\partial_y H,\; 1 \right]^\transpose .
+% \end{equation}
+
+% We choose the ellipsoid's local $z'$-axis to coincide with $\vec n$ so that the body "hugs" the terrain.  An orthonormal basis $\{ \vec e_x',\vec e_y',\vec e_z' \}$ is built as
+
+% \begin{equation}
+%     \vec e_z' = \vec n,
+%     \quad
+%     \vec e_x' = 
+%     \operatorname{normalize}\!\left[ 1,0,-\partial_x H \right]^\transpose ,
+%     \quad
+%     \vec e_y' = \vec e_z' \times \vec e_x'.
+% \end{equation}
+
+% Finally the rotation matrix that maps global coordinates into the ellipsoid frame is
+
+% \begin{equation}
+%     \label{eq:app-rotation-from-normal} R \;=\;
+%     \left[ 
+%     \vec e_x' \;\; \vec e_y' \;\; \vec e_z'
+%     \right].
+% \end{equation}
+
+% Note that $R$ varies per impact point and must be recomputed whenever the ellipsoid moves across the height field.
+
+% %-----------------------------------------------------------------
+% \section{Local cutting plane}
+% \label{app:ellipsoid-cutting-plane}
+% To ensure the ellipsoid interacts only with the half-space above the approximate terrain, we clip by the plane
+
+% \begin{align}
+%     z' = z_0, 
+%     \quad\text{with}\; z_0 = 0.
+% \end{align}
+
+% In global space that plane is
+
+% \begin{align}
+%     \vec n^\transpose ( \vec{r}- \vec{r}_0)=0,
+%     \quad
+%      \vec{r}_0 = 
+%     \begin{bmatrix} 
+%         x_0 \\ 
+%         y_0 \\ 
+%         H(x_0,y_0)
+%     \end{bmatrix},
+% \end{align}
+
+% because $\vec n$ is the third column of $R$.  Thus an admissible point on the ellipsoid satisfies both
+
+% \begin{align}
+%      \vec{r}^\transpose Q \vec{r} \le 1,
+%     \qquad z' = \left(R^\transpose  \vec{r}\right)_3 \;\ge\; 0.
+% \end{align}
+
+% The volume that survives the clip is exactly one half of the original ellipsoid, $V_\text{clip} = \frac{2}{3} \pi abc$, matching a physical "contact cap".  Using $z_0=0$ keeps the formulas simple and still lets you realise thicker/thinner caps by scaling the axis $c$.
+
+% %-----------------------------------------------------------------
+% \section{Updating the height field}
+% \label{app:ellipsoid-height-update}
+
+% Denote the pre-impact terrain by $H(x,y)$ and the clipped ellipsoid height by $f_{\smash{+}}(x,y)$ given by \cref{eq:app-upper} to \cref{eq:app-terrain-normal}.  We distinguish two operations:
+
+% \subsection*{Deposition.} 
+% Material is added wherever the ellipsoid cap sits above the terrain:
+
+% \begin{equation} 
+%     H_{\text{new}}(x,y) \;=\;
+%     \max\left( H(x,y),\; f_{+}(x,y)+H(x_0,y_0) \right).
+% \end{equation}
+
+% \subsection*{Erosion.} 
+% Material is removed wherever the terrain rises into the cap's volume:
+
+% \begin{equation} 
+%     H_{\text{new}}(x,y) \;=\;
+%     \min\left( H(x,y),\; f_{+}(x,y)+H(x_0,y_0) \right).
+% \end{equation}
+
+% These max/min updates preserve the single-valued nature of the height field, avoid undercuts, and guarantee that the modified surface never falls below (deposition) nor rises above (erosion) the contact cap defined by the clipped ellipsoid. A full implementation simply queries $f_{+}(x,y)$ on a stencil around
+% $(x_0,y_0)$ and applies the above formula, giving physically plausible addition or removal of material with $O(N)$ complexity for an $N$-cell stencil.
+
+% %=================================================================
+
+
+
+
+
+% %-----------------------------------------------------------------
+% \subsection*{Closed-form height of the upper shell}
+
+% With the abbreviations of \cref{eq:app-quadratic-coeffs}, insert $A'=Q_{33}$, $B'=2(Q_{13}x+Q_{23}y)$ and $C'=Q_{11}x^{2}+2Q_{12}xy+Q_{22}y^{2}-1$ directly into \cref{eq:app-upper}.  Dividing numerator and denominator by 2 yields a compact expression that involves only the six independent entries of $Q$:
+
+% \begin{equation}
+%     \label{eq:app-upper-final}
+%     f(x,y)\;=\;
+%     \frac{
+%     -\left(Q_{13}x+Q_{23}y\right)
+%     +\sqrt{
+%         \left(Q_{13}x+Q_{23}y\right)^{2}
+%         -Q_{33}\left(Q_{11}x^{2}+2Q_{12}xy+Q_{22}y^{2}-1\right)
+%     }
+%     }{Q_{33}},
+%     \qquad
+%     \Delta(x,y)\ge 0.
+% \end{equation}
+
+% \cref{eq:app-upper-final} is the final, rotation-agnostic formula for the height of the upper ellipsoid shell measured above the $(x,y)$-plane.
+
+% %-----------------------------------------------------------------
+% \subsection*{Partial derivatives}
+
+% The surface is implicitly defined by $\Phi(x,y,z)=A'z^{2}+B'z+C'=0$ with $A',B',C'$ as above. Implicit differentiation gives, for any coordinate~$u$,
+
+% \begin{align}
+%     \Phi_x + \Phi_z f_x = 0
+%     \quad\Longrightarrow\quad
+%     f_x = -\frac{\partial_x\Phi}{\partial_z\Phi},
+% \end{align}
+
+% and analogously for $f_y$. Because $A'$ is constant in $(x,y)$,
+
+% \begin{align}
+% \partial_z\Phi \;=\; 2A'f + B' 
+%                  \;=\; 2\left(Q_{33}f + Q_{13}x+Q_{23}y\right).
+% \end{align}
+
+% The required horizontal derivatives are
+
+% \begin{align}
+%     \partial_x B' &= 2Q_{13}, &\qquad \\
+%     \partial_x C' &= 2Q_{11}x + 2Q_{12}y,\\
+%     \partial_y B' &= 2Q_{23}, &\qquad \\
+%     \partial_y C' &= 2Q_{12}x + 2Q_{22}y.
+% \end{align}
+
+% Hence
+
+% \begin{align}
+%     \label{eq:app-fx}
+%     f_x &= -\frac{Q_{13}f + Q_{11}x + Q_{12}y}{Q_{33}f + Q_{13}x + Q_{23}y}, \\
+%     \label{eq:app-fy}
+%     f_y &= -\frac{Q_{23}f + Q_{12}x + Q_{22}y}{Q_{33}f + Q_{13}x + Q_{23}y}.
+% \end{align}
+
+% The gradient $(f_x,f_y,-1)$ (or its normalized version) supplies the local normal, slopes, or analytic curvature, which is useful, for example, in terrain  shading, adaptive meshing, or erosion flux models.

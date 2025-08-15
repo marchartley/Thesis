@@ -8,17 +8,17 @@
 }
 
 \teaser{
-    \autofitgraphics{Sphere_k_10.png, Sphere_k_20.png, Sphere_k_100.png, Sphere_k_1000.png}
-    \autofitcaptions{k=10, k=20, k=100, k=1000}
-    \autofitgraphics{MultiSpheres_k_10.png, MultiSpheres_k_20.png, MultiSpheres_k_100.png, MultiSpheres_k_1000.png}
-    \autofitcaptions{k=10, k=20, k=100, k=1000}
-    \caption{Top: Smooth union of a sphere of radius 0.1 with a plane rendered with Shadertoy shows the effect of the sharpness parameter $k$. Lower values blends smoothly while larger values approximate the boolean union operator. Bottom: Multiple spheres blended together with the same setup with the same $k$ values by chaining our $\smoothmax$ operator. }
+    \autofitgraphics[]{Sphere_k_10.png, Sphere_k_20.png, Sphere_k_100.png, Sphere_k_1000.png}
+    \autofitcaptions[]{k=10, k=20, k=100, k=1000}
+    \autofitgraphics[]{MultiSpheres_k_10.png, MultiSpheres_k_20.png, MultiSpheres_k_100.png, MultiSpheres_k_1000.png}
+    \autofitcaptions[]{k=10, k=20, k=100, k=1000}
+    \caption{Top: Smooth union of a sphere of radius 0.1 with a plane rendered with Shadertoy shows the effect of the sharpness parameter $k$. Lower values blends smoothly while larger values approximate the boolean union operator. Bottom: Multiple spheres blended together with the same setup with the same $k$ values by chaining the $\smoothmax$ operator. }
     \label{fig:smoothmax-rendered-example}
 }
 
-\section{Definition of the Smoothmax function $\smoothmax$}
+\section{Definition of the \texttt{Smoothmax} function}
 
-In \cref{subsubsec:height-functions-blending}, we introduced the operator $\smoothmax: \R^2 \to \R$ as a smooth approximation of the $\max$ operator, defined with the sharpness parameter $k > 0$ as:
+In \cref{subsubsec:height-functions-blending}, we introduced the \texttt{smoothmax} operator $\smoothmax: \R^2 \to \R$ as a smooth approximation of the $\max$ operator, defined with the sharpness parameter $k > 0$ as:
 
 \begin{align}
     \smoothmax(a, b) = a + \frac{1}{2} \cdot \frac{b - a}{1 + e^{-k(b - a)}} + \frac{1}{2} \cdot \frac{b - a}{1 - e^{-k(b - a)}}
@@ -135,6 +135,39 @@ By induction, $f^{(n)}$ exists and is continuous for all $n \geq 0$, so $f \in C
 
 Moreover, since $f(x) = \frac{x}{1 - e^{-kx}}$ is composed of analytic functions with a removable singularity at $x = 0$, $f$ is real-analytic on $\R$. Consequently, $\smoothmax$ is also real-analytic on $\R^2$.
 
+\section{Operator's symmetry}
+We will briefly prove the symmetry of $\smoothmax$ by showing that $\smoothmax(a, b) = \smoothmax(b, a)$. The case of $a = b$ is obviously true.
+
+Let's note $x = b - a$, and decompose $\smoothmax(a, b) = a + g(x)$. We want to show that for all $a, b$ we have
+\begin{align}
+    & \smoothmax(a, b) - \smoothmax(b, a) = 0 \\
+    \iff& a + g(x) = (a + x) + g(-x) \\
+    \iff& g(x) - g(-x) = x
+\end{align}
+
+By rearranging the function $g$, we obtain 
+\begin{align}
+    g(x) &= \frac{x}{2} \left( \frac{1}{1 - e^{-kx}} + \frac{1}{1 + e^{-kx}} \right) \\
+    &= \frac{x}{2} \left( \frac{1 - e^{-kx}}{(1 + e^{-kx})(1 - e^{-kx})} + \frac{1 + e^{-kx}}{(1 + e^{-kx})(1 - e^{-kx})} \right) \\
+    &= \frac{x}{2} \cdot \frac{2}{1 - e^{-2kx}} \\
+    &= \frac{x}{1 - e^{-2kx}}
+\end{align}
+
+
+Developing
+\begin{align}
+    g(x) - g(-x) = \frac{x}{1 - e^{-2kx}} - \frac{-x}{1 - e^{2kx}}
+\end{align}
+
+Let $r = e^{2kx} > 0$ :
+\begin{align}
+    g(x) - g(-x) &= \frac{x}{(1 - e^{-2kx})} \cdot \frac{e^{2kx}}{e^{2kx}} + \frac{x}{1 - r} \\
+    &= x \left( \frac{r}{r - 1} + \frac{1}{1 - r} \right) \\
+    &= x \left( \frac{1 - r}{1 - r} \right) = x
+\end{align}
+
+We shown that $g(x) - g(-x) = x$, resulting in the proof that $\smoothmax(a, b) = \smoothmax(b, a)$ for all $a, b$.
+
 \section{Practical expressions for $\smoothmax(a, b)$ and its derivatives}
 \label{sec:smoothmax-practical-forms}
 
@@ -185,7 +218,7 @@ A $\smoothmin$ operator can be derived directly from the $\smoothmax$ by reversi
 \section{Comparison with other smooth maximum functions}
 \label{sec:comparison-smoothmax}
 
-To evaluate the practical performance of our \texttt{smoothmax} operator, we compared it with two commonly used alternatives:
+To evaluate the practical performance of the \texttt{smoothmax} operator, we compared it with two commonly used alternatives:
 
 \begin{itemize}
     \item \textbf{LogSumExp:}
@@ -200,7 +233,7 @@ To evaluate the practical performance of our \texttt{smoothmax} operator, we com
     \end{align}
     A symmetric blend of the average and the absolute difference.
 
-    \item \textbf{Smoothmax (ours):}
+    \item \textbf{Smoothmax:}
     \begin{align}
         \smoothmax(a, b) = a + \frac{b - a}{2} \left( \frac{1}{1 + e^{-k(b - a)}} + \frac{1}{1 - e^{-k(b - a)}} \right)
     \end{align}
@@ -211,7 +244,7 @@ We compare these functions across four benchmarks: chaining behavior, sharpness 
 
 \subsection*{Chaining behavior}
 
-We evaluate each operator by chaining it over $n$ inputs drawn randomly from $[0, 100]$. The true maximum is compared to the approximate maximum, and errors are averaged over 100 trials per $n$. \cref{fig:smoothmax-chained-error} shows that our smooth maximum operator consistently provide an accuracy multiple order of magnitude higher than the Smooth Absolute Max operator, and similar order of magnitude than the LogSumExp operator. 
+We evaluate each operator by chaining it over $n$ inputs drawn randomly from $[0, 100]$. The true maximum is compared to the approximate maximum, and errors are averaged over 100 trials per $n$. \cref{fig:smoothmax-chained-error} shows that the \texttt{smoothmax} operator consistently provide an accuracy multiple order of magnitude higher than the Smooth Absolute Max operator, and similar order of magnitude than the LogSumExp operator. 
 
 \begin{figure}
     \centering
@@ -237,7 +270,7 @@ We evaluate each operator by chaining it over $n$ inputs drawn randomly from $[0
 
 \subsection*{Precision and sharpness}
 
-We also test how each function converges to $\max(a, b)$ as sharpness $k$ increases. We fix two very close inputs $a = 1.0000$ and $b = 1.0001$ and sweep $k$ over several orders of magnitude. We see in \cref{fig:smoothmax-sharpness} (top) that for small values of $k$, the AbsMax operator is closer to the ground truth, but as $k$ tends to exaggerated high values, our smoothmax operator gets significantly more accurate. When fixing $a = 1.0000$ and $b = 1.01$ or $b = 2.0$, AbsMax operator's error becomes higher by multiple order of magnitude, while the LogSumExp and our Smoothmax operators have identical behaviours.
+We also test how each function converges to $\max(a, b)$ as sharpness $k$ increases. We fix two very close inputs $a = 1.0000$ and $b = 1.0001$ and sweep $k$ over several orders of magnitude. We see in \cref{fig:smoothmax-sharpness} (top) that for small values of $k$, the AbsMax operator is closer to the ground truth, but as $k$ tends to exaggerated high values, the \texttt{smoothmax} operator gets significantly more accurate. When fixing $a = 1.0000$ and $b = 1.01$ or $b = 2.0$, AbsMax operator's error becomes higher by multiple order of magnitude, while the LogSumExp and the \texttt{smoothmax} operators have identical behaviours.
 
 \begin{figure}[H]
     \centering
@@ -246,13 +279,13 @@ We also test how each function converges to $\max(a, b)$ as sharpness $k$ increa
     \autofitgraphics{compare_sharpness_diff_0-01.pdf}
     \autofitgraphics{compare_sharpness_diff_1-0.pdf}
     % \autofitgraphics{compare_sharpness_diff_100-0.pdf}
-    \caption{Approximation error as a function of $k$ for different values of $a$ and $b$ compared to $\max(a, b)$. Error is greater for smaller differences between $a$ and $b$. Left shows that our operator is comparable to all other operators for sharpness values below 100; right show that for large sharpness values, our smooth maximum operator behave similarly as LogSumExp, while the Smooth Absolute Maximum operator stagnate with a lower accuracy than the others (error of Smooth Absolute Maximum is too large to be displayed when the difference between $a$ and $b$ exceeds 0.001). }
+    \caption{Approximation error as a function of $k$ for different values of $a$ and $b$ compared to $\max(a, b)$. Error is greater for smaller differences between $a$ and $b$. Left shows that the operator is comparable to all other operators for sharpness values below 100; right show that for large sharpness values, the \texttt{smoothmax} operator behave similarly as LogSumExp, while the Smooth Absolute Maximum operator stagnate with a lower accuracy than the others (error of Smooth Absolute Maximum is too large to be displayed when the difference between $a$ and $b$ exceeds 0.001). }
     \label{fig:smoothmax-sharpness}
 \end{figure}
 
 \subsection*{Runtime benchmark}
 
-To get a rough idea of performance, we measured the average time (in microseconds) for a single call of each function over 10 000 repetitions, using scalar inputs and $k = 5$. Results are presented in \cref{tab:smoothmax-time}. This test was conducted with using Python 3.10 and NumPy 1.25 on a Linux system with a modern multi-core CPU and 14GB of RAM. We note that the LogSumExp function is more time consuming as it contains two exponential componants and a log function, with a risk of overflow that for large values of $a$, $b$ or $k$. On the other hand, our Smoothmax function contains a single unique exponential componant that quickly fall to 0 for large values of $k$ or difference between $a$ and $b$, keeping it stable (\cref{fig:smoothmax-precision-per-floating-point} presents floating point overflows).
+To get a rough idea of performance, we measured the average time (in microseconds) for a single call of each function over 10 000 repetitions, using scalar inputs and $k = 5$. Results are presented in \cref{tab:smoothmax-time}. This test was conducted with using Python 3.10 and NumPy 1.25 on a Linux system with a modern multi-core CPU and 14GB of RAM. We note that the LogSumExp function is more time consuming as it contains two exponential componants and a log function, with a risk of overflow that for large values of $a$, $b$ or $k$. On the other hand, the \texttt{smoothmax} operator contains a single unique exponential componant that quickly fall to 0 for large values of $k$ or difference between $a$ and $b$, keeping it stable (\cref{fig:smoothmax-precision-per-floating-point} presents floating point overflows).
 
 \begin{table}[H]
     \centering
@@ -274,7 +307,7 @@ To get a rough idea of performance, we measured the average time (in microsecond
     \autofitgraphics[width=.7\linewidth]{compare_accuracy_with_floating-point-precision_k_10.pdf}
     \autofitgraphics[width=.7\linewidth]{compare_accuracy_with_floating-point-precision_k_50.pdf}
     \autofitgraphics[width=.7\linewidth]{compare_accuracy_with_floating-point-precision_k_50_max-values_1000.pdf}
-    \caption{Comparison of error between the LogSumExp, Smooth AbsMax and our Smoothmax operators when chaining the operators on data between 0 and 100 while restricting the floating point precision, with from top top bottom respectively $k=5$, $k=10$, $k=50$ and $k=50$. Note that on the bottom plot we chained the operators for values between 0 and 1000, which raise overflows for LogSumExp (thus the data not displayed for 'float64' and 'float16'). }
+    \caption{Comparison of error between the LogSumExp, Smooth AbsMax and the \texttt{smoothmax} operators when chaining the operators on data between 0 and 100 while restricting the floating point precision, with from top top bottom respectively $k=5$, $k=10$, $k=50$ and $k=50$. Note that on the bottom plot we chained the operators for values between 0 and 1000, which raise overflows for LogSumExp (thus the data not displayed for 'float64' and 'float16'). }
     \label{fig:smoothmax-precision-per-floating-point}
 \end{figure}
 \midConclusion
@@ -287,3 +320,11 @@ Overall, \texttt{smoothmax} performs best across the board:
 \end{itemize}
 
 This makes it a practical and robust replacement for $\max(a, b)$ in simulation and graphics tasks where smoothness matters (such as raymarching, as presented in \cref{fig:smoothmax-rendered-example}).
+
+\section{Relationship to prior work}
+
+After deriving the formula
+\begin{align}
+    \smoothmax(a,b) = a + \frac{b - a}{1-e^{-2k(b - a)}}
+\end{align}
+we found it is algebraically equivalent to Quílez's "sigmoid" smooth-min function \cite{Quilez2013} under the standard transformation $\smoothmax(a,b; k) = -\smoothmin(-a,-b;k_\text{Quilez})$ with the parameter mapping $k_\text{Quilez} = \frac{1}{2k}$. Accordingly, we do not claim novelty for the functional form. Our contributions are the rigorous smoothness/analyticity proofs, closed-form derivatives with $a = b$ limits, and numerically stable implementations and benchmarks.

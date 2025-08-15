@@ -130,6 +130,7 @@
 \let\endorigfigure\endfigure
 
 \renewenvironment{figure}[1][tbp]{%
+    \captionsetup{width=\linewidth}
     \origfigure[#1]%
     \centering
 }{%
@@ -138,10 +139,10 @@
 
 % \teaser{/* Inside commands of the figure* environment */}
 \zzcommand{\teaser}[1]{
-    \begin{figure*}[ht]
-        \centering
+  \begin{figure}[ht]
+    \centering
         #1
-    \end{figure*}
+    \end{figure}
 }
 
 % \minitoc
@@ -219,7 +220,7 @@
   {\multicitedelim}
   {\usebibmacro{postnote}}
 
-\AtEveryBibitem{\clearfield{url}}
+% \AtEveryBibitem{\clearfield{url}}
 \AtEveryBibitem{\clearfield{abstract}}
 \AtEveryBibitem{\clearfield{doi}}
 \AtEveryBibitem{\clearfield{note}} % Notes from Mendeley
@@ -456,6 +457,8 @@
 \zzcommand{\eqref}[1]{\cref{#1}}
 % \to 
 \zzcommand{\to}{\mapsto}
+% \transpose
+\zzcommand{\transpose}{\mathsf T}
 
 % \crefAnnex{label}
 \zzcommand{\crefAnnex}[1]{%
@@ -720,6 +723,17 @@
   \docsvlist{#1}%
   \end{adjustbox}%
   \endgroup
+}
+\newcommand{\setfitratios}[1]{%
+  \setcounter{fitImgCount}{0}%
+  \def\fitTotalRatio{0}%
+  \renewcommand{\do}[1]{%
+    \stepcounter{fitImgCount}%
+    \expandafter\xdef\csname fitRatio\thefitImgCount\endcsname{##1}%
+    \pgfmathparse{\fitTotalRatio + ##1}%
+    \xdef\fitTotalRatio{\pgfmathresult}%
+  }%
+  \docsvlist{#1}%
 }
 
 % \citet{ref}
