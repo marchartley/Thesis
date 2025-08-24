@@ -247,7 +247,6 @@ We compare these functions across four benchmarks: chaining behavior, sharpness 
 We evaluate each operator by chaining it over $n$ inputs drawn randomly from $[0, 100]$. The true maximum is compared to the approximate maximum, and errors are averaged over 100 trials per $n$. \cref{fig:smoothmax-chained-error} shows that the \texttt{smoothmax} operator consistently provide an accuracy multiple order of magnitude higher than the Smooth Absolute Max operator, and similar order of magnitude than the \texttt{LogSumExp} operator. 
 
 \begin{figure}
-    \centering
     \includegraphics{compare_chaining.pdf}
     \caption{Mean absolute error as more values are chained together ($k = 5$).}
     \label{fig:smoothmax-chained-error}
@@ -272,8 +271,7 @@ We evaluate each operator by chaining it over $n$ inputs drawn randomly from $[0
 
 We also test how each function converges to $\max(a, b)$ as sharpness $k$ increases. We fix two very close inputs $a = 1.0000$ and $b = 1.0001$ and sweep $k$ over several orders of magnitude. We see in \cref{fig:smoothmax-sharpness} (top) that for small values of $k$, the \texttt{AbsMax} operator is closer to the ground truth, but as $k$ tends to exaggerated high values, the \texttt{smoothmax} operator gets significantly more accurate. When fixing $a = 1.0000$ and $b = 1.01$ or $b = 2.0$, \texttt{AbsMax} operator's error becomes higher by multiple order of magnitude, while the \texttt{LogSumExp} and the \texttt{smoothmax} operators have identical behaviours.
 
-\begin{figure}[H]
-    \centering
+\begin{figure}
     % \autofitgraphics{compare_sharpness-low-values.pdf, compare_sharpness.pdf}
     \autofitgraphics{compare_sharpness_diff_0-0001.pdf}
     \autofitgraphics{compare_sharpness_diff_0-01.pdf}
