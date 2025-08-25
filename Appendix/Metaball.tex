@@ -9,8 +9,8 @@
 %     In this section we develop in more detail the formulation used for metaballs used in \cref{chap:erosion} for the simulation of particle erosion on implicit terrains.
 % }
 
-% We use the following formula to evaluate a metaball in space with a center $c$ and of radius $\Radius$:
-% $$ g(\p) = 1 - \frac{||\p - c||}{\Radius} $$
+% We use the following formula to evaluate a metaball in space with a center $\center$ and of radius $\Radius$:
+% $$ g(\p) = 1 - \frac{||\p - \center||}{\Radius} $$
 % using the euclidean distance.
 
 % We have a total amount $\totalErosion$ to define in this space, so the final metaball function $f$ needs to satisfy the equations \eqref{eq:erosion-function_f_is_metaball} and \eqref{eq:erosion-int_function_f_is_erosion}:
@@ -21,7 +21,7 @@
 % \int_{\p \in V_{3D}}{f \, dp} &= \totalErosion
 % \end{align}
 
-% First, let's exploit the radial symmetry of the metaball and rewrite $g(\p) = 1 - r$ by using the spherical coordinates of the point $\p - c$.
+% First, let's exploit the radial symmetry of the metaball and rewrite $g(\p) = 1 - r$ by using the spherical coordinates of the point $\p - \center$.
 
 % We can then integrate $g$ over the volume $V_{3D}$ as 
 % \begin{align}
@@ -42,7 +42,7 @@
 % From \eqref{eq:erosion-function_f_is_metaball} we finally get 
 % \begin{align} 
 % \label{eq:erosion-proofErosionMetaball}
-% f(\p) = \frac{3 \totalErosion}{\pi} \left(1 - \frac{||\p - c||}{\Radius} \right)
+% f(\p) = \frac{3 \totalErosion}{\pi} \left(1 - \frac{||\p - \center||}{\Radius} \right)
 % \end{align}
 % , representing the rate of change on the evaluation function of the terrain surface.
 
@@ -58,9 +58,9 @@
 
 \section{Linear metaball derivation}
 
-We use the following formula to evaluate a metaball in space with a center $c$ and radius $\Radius$:
+We use the following formula to evaluate a metaball in space with a center $\center$ and radius $\Radius$:
 \begin{equation}
-    g(\p) = \max\!\left(1 - \frac{\abs{\p - c}}{\Radius},\,0\right),
+    g(\p) = \max\!\left(1 - \frac{\abs{\p - \center}}{\Radius},\,0\right),
 \end{equation}
 where the Euclidean distance is used, and $g$ is clamped to zero outside the sphere of radius $\Radius$.
 
@@ -69,13 +69,13 @@ We have a total amount $\totalErosion$ to define in this space, so the final met
     \label{eq:erosion-function_f_is_metaball}
     f(\p) &= \lambda\, g(\p), \\
     \label{eq:erosion-int_function_f_is_erosion}
-    \int_{\p \in B_{\Radius}(c)} f(\p) \, d\p &= \totalErosion,
+    \int_{\p \in B_{\Radius}(\center)} f(\p) \, d\p &= \totalErosion,
 \end{align}
-where $B_{\Radius}(c)$ denotes the ball of radius $\Radius$ centered at $c$.
+where $B_{\Radius}(\center)$ denotes the ball of radius $\Radius$ centered at $\center$.
 
-Exploiting radial symmetry, we set $r = \abs{\p - c} / \Radius \in [0,1]$ and write $g(\p) = 1 - r$.  
-In spherical coordinates of the normalized point $(\p - c)/\Radius$, the volume element is $\Radius^3\, r^2 \sin(\angl)\, dr\, d\angl\, d\anglTwo$.  
-The integral of $g$ over $B_{\Radius}(c)$ becomes
+Exploiting radial symmetry, we set $r = \abs{\p - \center} / \Radius \in [0,1]$ and write $g(\p) = 1 - r$.  
+In spherical coordinates of the normalized point $(\p - \center)/\Radius$, the volume element is $\Radius^3\, r^2 \sin(\angl)\, dr\, d\angl\, d\anglTwo$.  
+The integral of $g$ over $B_{\Radius}(\center)$ becomes
 \begin{align}
     &\Radius^3 \int_{0}^{1} \int_{0}^{\pi} \int_{0}^{2\pi} (1 - r) \, r^2 \, \sin(\angl)\, dr\, d\angl\, d\anglTwo \nonumber \\
     &= \Radius^3 \left[ \int_{0}^{1} (1 - r) r^2 \, dr \right]
@@ -94,19 +94,19 @@ From \eqref{eq:erosion-function_f_is_metaball}, the normalized linear metaball i
 \begin{equation} 
     \label{eq:erosion-proofErosionMetaball}
     f(\p) = \frac{3 \,\totalErosion}{\pi\,\Radius^3} \;
-    \max\!\left(1 - \frac{\abs{\p - c}}{\Radius},\,0\right),
+    \max\!\left(1 - \frac{\abs{\p - \center}}{\Radius},\,0\right),
 \end{equation}
 representing the rate of change applied to the terrain's evaluation function.
 
 \subsection*{Derivatives}
-Let $\rho = \abs{\p - c}$, $r=\rho/\Radius$, and $\vec{u} = (\p - c)/\rho$ (the unit radial vector).  
+Let $\rho = \abs{\p - \center}$, $r=\rho/\Radius$, and $\vec{u} = (\p - \center)/\rho$ (the unit radial vector).  
 For $0 < r < 1$,
 \begin{equation}
     \nabla f(\p) = -\frac{\lambda}{\Radius} \, \vec{u},
     \qquad
     \Delta f(\p) = -\frac{2\lambda}{\Radius^2\, r}.
 \end{equation}
-We define by convention $\nabla f(c) = 0$.  
+We define by convention $\nabla f(\center) = 0$.  
 The function $f$ is only $C^0$: the derivative $\phi'(r)$ of its radial profile is discontinuous at $r=0$ and $r=1$, and the Laplacian diverges as $r \to 0$.
 
 The integration in voxel space is out of the scope of this appendix; a numerical solution is instead proposed in \cref{sec:erosion-application_on_voxels}.
@@ -117,7 +117,7 @@ The integration in voxel space is out of the scope of this appendix; a numerical
 
 The linear falloff in \cref{eq:erosion-proofErosionMetaball} is only one possible choice of radial profile. We write
 \begin{equation}
-    x = \frac{\abs{\p - c}}{\Radius}, \qquad
+    x = \frac{\abs{\p - \center}}{\Radius}, \qquad
     g(\p) = \phi(x),
 \end{equation}
 where $\phi : [0,\infty) \to \mathbb{R}_{\ge 0}$ is compactly supported, i.e. $\phi(x) = 0$ for $x \ge 1$. If a smoother boundary is desired, pick $\phi$ such that $\phi(1) = 0$ and $\phi'(1) = 0$ (or higher-order vanishing derivatives).
@@ -132,16 +132,16 @@ so that, given the total amount $\totalErosion$, the normalization reads
     \label{eq:metaball-general-J}
     \lambda = \frac{\totalErosion}{4\pi\,\Radius^3\,J_\phi},
     \qquad
-    f(\p) = \lambda\,\phi\!\left(\frac{\abs{\p - c}}{\Radius}\right).
+    f(\p) = \lambda\,\phi\!\left(\frac{\abs{\p - \center}}{\Radius}\right).
 \end{align}
 
-For implementation, it is convenient to record the radial derivatives once. Let $\rho=\abs{\p - c}$, $x=\rho/\Radius$, and $\vec{u}=(\p-c)/\rho$ (defined for $\rho>0$). For $0<x<1$,
+For implementation, it is convenient to record the radial derivatives once. Let $\rho=\abs{\p - \center}$, $x=\rho/\Radius$, and $\vec{u}=(\p-\center)/\rho$ (defined for $\rho>0$). For $0<x<1$,
 \begin{equation}
     \nabla f(\p) = \frac{\lambda}{\Radius}\,\phi'(x)\,\vec{u},
     \qquad
     \Delta f(\p) = \frac{\lambda}{\Radius^2}\!\left[\phi''(x) + \frac{2}{x}\,\phi'(x)\right].
 \end{equation}
-By convention, we set $\nabla f(c)=0$. The smoothness at $x=0$ and $x=1$ depends on $\phi$; if $\phi'(0)\neq 0$ or $\phi'(1)\neq 0$, the gradient is discontinuous at the corresponding point.
+By convention, we set $\nabla f(\center)=0$. The smoothness at $x=0$ and $x=1$ depends on $\phi$; if $\phi'(0)\neq 0$ or $\phi'(1)\neq 0$, the gradient is discontinuous at the corresponding point.
 
 \newcommand{\kernelcard}[8]{%
 \begin{minipage}[t]{0.45\linewidth}
@@ -169,7 +169,7 @@ By convention, we set $\nabla f(c)=0$. The smoothness at $x=0$ and $x=1$ depends
       slope_#2.png%
     }
     \caption{Top left: #1 profile. Top right: deposition on a plane $f_\text{plane}(x, y)=-y$ with $\totalErosion=0.1$ and $\Radius=0.75$. Bottom left: erosion with $\totalErosion=-0.5$ and $\Radius=0.75$. Bottom right: multiple eroding metaballs on an inclined plane. }
-    % \caption{#1 profile. Visuals are 2D slices through $c$; image parameters use $Q\equiv\totalErosion$ and $R\equiv\Radius$.}
+    % \caption{#1 profile. Visuals are 2D slices through $\center$; image parameters use $Q\equiv\totalErosion$ and $R\equiv\Radius$.}
   \end{figure}
   \end{minipage}
 }
@@ -248,8 +248,8 @@ Any other compactly supported $\phi$ can be used: we just need to compute $J_\ph
 
 
 
-% We use the following formula to evaluate a metaball in space with a center $c$ and of radius $\Radius$:
-% $$ g(\p) = \max\!\left(1 - \frac{\abs{\p - c}}{\Radius},\,0\right) $$
+% We use the following formula to evaluate a metaball in space with a center $\center$ and of radius $\Radius$:
+% $$ g(\p) = \max\!\left(1 - \frac{\abs{\p - \center}}{\Radius},\,0\right) $$
 % using the Euclidean distance, and clamped to zero outside the sphere of radius $\Radius$.
 
 % We have a total amount $\totalErosion$ to define in this space, so the final metaball function $f$ needs to satisfy the equations \eqref{eq:erosion-function_f_is_metaball} and \eqref{eq:erosion-int_function_f_is_erosion}:
@@ -259,9 +259,9 @@ Any other compactly supported $\phi$ can be used: we just need to compute $J_\ph
 %     \label{eq:erosion-int_function_f_is_erosion}
 %     \int_{\p \in V_{3D}} f(\p) \, d\p &= \totalErosion
 % \end{align}
-% where $V_{3D}$ is the ball of radius $\Radius$ centered at $c$.
+% where $V_{3D}$ is the ball of radius $\Radius$ centered at $\center$.
 
-% First, let's exploit the radial symmetry of the metaball and rewrite $g(\p) = 1 - r$ by using the spherical coordinates of the normalized point $(\p - c)/\Radius$, where $r \in [0,1]$.
+% First, let's exploit the radial symmetry of the metaball and rewrite $g(\p) = 1 - r$ by using the spherical coordinates of the normalized point $(\p - \center)/\Radius$, where $r \in [0,1]$.
 
 % The volume element in these coordinates is $\Radius^3\, r^2 \sin(\angl)\, dr\, d\angl\, d\anglTwo$, so we can integrate $g$ over the volume $V_{3D}$ as 
 % \begin{align}
@@ -293,7 +293,7 @@ Any other compactly supported $\phi$ can be used: we just need to compute $J_\ph
 % \begin{align} 
 %     \label{eq:erosion-proofErosionMetaball}
 %     f(\p) = \frac{3 \,\totalErosion}{\pi\,\Radius^3} \;
-%     \max\!\left(1 - \frac{\abs{\p - c}}{\Radius},\,0\right)
+%     \max\!\left(1 - \frac{\abs{\p - \center}}{\Radius},\,0\right)
 % \end{align}
 % representing the rate of change on the evaluation function of the terrain surface.
 
@@ -302,9 +302,9 @@ Any other compactly supported $\phi$ can be used: we just need to compute $J_\ph
 
 % \section*{Other possible radial falloff functions}
 
-% The linear falloff used above, $g(\p)=\max\!\left(1-\frac{\abs{\p - c}}{\Radius},0\right)$ is only one choice, we thought to be the simplest. More generally, let
+% The linear falloff used above, $g(\p)=\max\!\left(1-\frac{\abs{\p - \center}}{\Radius},0\right)$ is only one choice, we thought to be the simplest. More generally, let
 % \begin{align}
-%     x=\frac{\abs{\p - c}}{\Radius},\qquad
+%     x=\frac{\abs{\p - \center}}{\Radius},\qquad
 %     g(\p)=\phi(x),
 % \end{align}
 
@@ -315,7 +315,7 @@ Any other compactly supported $\phi$ can be used: we just need to compute $J_\ph
 %     \qquad
 %     \lambda=\frac{\totalErosion}{4\pi\,\Radius^3\,J_\phi}
 %     \qquad
-%     f(\p)=\lambda\,\phi\!\left(\frac{\abs{\p - c}}{\Radius}\right)
+%     f(\p)=\lambda\,\phi\!\left(\frac{\abs{\p - \center}}{\Radius}\right)
 % \end{align}
 
 % Below are convenient choices with closed-form $J_\phi=\int_0^1\phi(x)x^2\,dq$ and the resulting $\lambda$.

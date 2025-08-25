@@ -5,6 +5,7 @@
 \appendtographicspath{{./Chapter 1/Results/} }
 \appendtographicspath{{./Chapter 1/Results/Procedural/} }
 \appendtographicspath{{./Chapter 1/figures/Smoothmax/} }
+\appendtographicspath{{./Chapter 1/figures/vector_field/} }
 
 \chapter{Automatic generation of coral reef islands}
 \label{chap:coral-island}
@@ -547,15 +548,15 @@ In this sketch, the user defines the overall horizontal layout of the island, in
 
 The profile-view sketch defines the vertical elevation profile of the island along any radial direction, offering control over the island's height. In this view, the user specifies the elevation of different regions of the island, such as the island peak, beach, lagoon, abyss, and everything in between, by drawing the corresponding profile curve.
 
-The regions' outlines correspond to key terrain transitions: the highest point of the island (centre), the island border, the beach, the lagoon, and the deep-sea abyss. We use these milestones to interpolate a continuous 1D height function $\heightProfile(\distRegions_\p)$, where $\distRegions$ represents a non-uniform region distance from the island's centre, and $h = \heightProfile(\distRegions_\p)$ gives the height at each point. This continuous profile ensures smooth elevation transitions across the island.
+The regions' outlines correspond to key terrain transitions: the highest point of the island (centre), the island border, the beach, the lagoon, and the deep-sea abyss. We use these milestones to interpolate a continuous 1D height function $\heightProfile(\distRegions_\p)$, where $\distRegions_\p$ represents a non-uniform region distance from the island's centre, and $h = \heightProfile(\distRegions_\p)$ gives the height at each point. This continuous profile ensures smooth elevation transitions across the island.
 
 By combining the top-view and profile-view sketches, our method generates a full 3D terrain model that accurately reflects the user's design by revolution modelling.
 
 The generation of the coral reef island terrain begins by transforming the user-defined top-view and profile-view sketches into a coherent 3D height field. This process combines the radial layout of the top-view sketch with the elevation information provided by the profile-view sketch, creating a terrain that accurately represents the desired features (i.e. the island, beaches, lagoons, and abyss).
 
-For any point $\p \in \R^2$ on the terrain, we define its polar coordinates relative to the center of the island $c$ as
-$$ \radius_\p = \|\p - c\|, \qquad \angl_\p = \operatorname{atan2}(\p.y - c.y,\; \p.x - c.x) $$
-% For any point $\p$ on the terrain, we compute polar coordinates $(\radius_\p, \angl_\p)$ with $\radius_\p = \norm{\p - c}$ and $\angl_\p = \arctan\left(\frac{\p.y - c.y}{\p.x - c.x}\right)$. 
+For any point $\p \in \R^2$ on the terrain, we define its polar coordinates relative to the center of the island $\center$ as
+$$ \radius_\p = \|\p - \center\|, \qquad \angl_\p = \operatorname{atan2}(\p.y - \center.y,\; \p.x - \center.x) $$
+% For any point $\p$ on the terrain, we compute polar coordinates $(\radius_\p, \angl_\p)$ with $\radius_\p = \norm{\p - \center}$ and $\angl_\p = \arctan\left(\frac{\p.y - \center.y}{\p.x - \center.x}\right)$. 
 The radial distance $\radius_\p$ determines which region the point belongs to (island, beach, lagoon, reef, or abyss) based on the user-defined radial limits. Those outlines from the top-view sketch provide the exact boundaries between regions.
 
 Each point's height is computed using the profile function $\heightProfile(\distRegions_\p)$. Instead of using the raw radial distance $\radius_\p$, we define a parametric region distance $\distRegions_\p$ that maps each point to a normalised position along the concentric regions (see \cref{fig:coral-island-parametric-distance}). The radial space is divided by user-defined boundaries $\Radius_0, \Radius_1, \dots, \Radius_n$, corresponding to the island centre, border, beach, lagoon, reef, and abyss.
@@ -570,7 +571,7 @@ Each point's height is computed using the profile function $\heightProfile(\dist
     \begin{align}
         h(\p) = \heightProfile(\distRegions_\p)
     \end{align}
-}{outlines-top-view-x-bar.pdf, outlines-result-x-bar.pdf}{The $\tilde{x}$ parameter is used to stretch the 1D height function $\heightProfile(x)$ to fit the distances from the centre to the outlines of each region defined in the top-view sketch.}{fig:coral-island-parametric-distance}
+}{outlines-top-view-x-bar.pdf, outlines-result-x-bar.pdf}{The $\tilde{x}_\p$ parameter is used to stretch the 1D height function $\heightProfile(x)$ to fit the distances from the centre to the outlines of each region defined in the top-view sketch.}{fig:coral-island-parametric-distance}
 
 
 
@@ -578,7 +579,7 @@ This approach ensures that the height field accurately follows the elevation pro
 
 % \begin{figure}[H]
 % \autofitgraphics[]{outlines-top-view-x-bar.pdf, outlines-result-x-bar.pdf}
-% \caption{The $\tilde{x}$ parameter is used to stretch the 1D height function $\heightProfile(x)$ to fit the distances from the centre to the outlines of each region defined in the top-view sketch. }
+% \caption{The $\tilde{x}_\p$ parameter is used to stretch the 1D height function $\heightProfile(x)$ to fit the distances from the centre to the outlines of each region defined in the top-view sketch. }
 % \label{fig:coral-island-parametric-distance}
 % \end{figure}
 
@@ -605,10 +606,69 @@ The wind field is represented as a series of strokes drawn by the user on a 2D c
 
 As the user draws a stroke, a set of control points are generated along the curve, with the option to adjust the stroke's width. The width of each stroke determines the area of influence around the curve, where wider strokes result in broader deformations of the terrain.
 The deformation strength decreases with distance from the curve using a Gaussian falloff function using the stroke width as standard deviation, ensuring that the terrain transitions smoothly from deformed regions to non-deformed areas.
-Once the strokes are applied to the velocity field, we displace each points of the terrain accordingly. The height field, originally generated from the user's sketches, is modified by the wind field to create non-radial features, breaking the initial radial symmetry and producing a more organic island shape.
+Once the strokes are applied to the velocity field, we displace each points of the terrain accordingly. The height field, originally generated from the user's sketches, is modified by the wind field to create non-radial features, breaking the initial radial symmetry and producing a more organic island shape (\cref{fig:coral-island-wind-stroke-edition}).
 
 
-
+\begin{figure} 
+    \autofitgraphics[]{
+        1i-init-top-view.pdf, 
+        1i-init-side-view.pdf, 
+        1o_1.png, 
+        % 1o_2.png, 
+        1o_3-s.png}
+    \autofitcaptions[]{Top view, Side view, Height field, Result}
+    \autofitgraphics[width=.6\linewidth]{3i-s.pdf, 3o_1.png, 3o_3-s.png}
+    \autofitgraphics[width=.6\linewidth]{5i-s.pdf, 5o_1.png, 5o_3-s.png}
+    \autofitgraphics[width=.6\linewidth]{7i-s.pdf, 7o_1.png, 7o_3-s.png}
+    \autofitcaptions[fontscale=1.5]{Deformation, Height field, Result}
+    % \autofitgraphics[width=.6\linewidth]{1i-init.pdf}
+    % \autofitgraphics[trim={0 0 0 0.5cm}, clip]{
+    %     1i-s.pdf, 
+    %     % 2i-s.pdf, 
+    %     3i-s.pdf, 
+    %     % 4i-s.pdf, 
+    %     5i-s.pdf, 
+    %     % 6i-s.pdf, 
+    %     7i-s.pdf, 
+    %     % 8i-s.pdf, 
+    %     % 9i-s.pdf
+    % }
+    % \autofitgraphics[]{
+    %     1o_1.png,
+    %     % 2o_1.png,
+    %     3o_1.png,
+    %     % 4o_1.png,
+    %     5o_1.png,
+    %     % 6o_1.png,
+    %     7o_1.png,
+    %     % 8o_1.png,
+    %     % 9o_1.png,
+    % }
+    % \autofitgraphics[]{
+    %     1o_3-s.png,
+    %     % 2o_3-s.png,
+    %     3o_3-s.png,
+    %     % 4o_3-s.png,
+    %     5o_3-s.png,
+    %     % 6o_3-s.png,
+    %     7o_3-s.png,
+    %     % 8o_3-s.png,
+    %     % 9o_3.png
+    % }
+    % % \autofitgraphics[]{
+    % %     1o_2-s.png,
+    % %     % 2o_2-s.png,
+    % %     3o_2-s.png,
+    % %     % 4o_2-s.png,
+    % %     5o_2-s.png,
+    % %     % 6o_2-s.png,
+    % %     7o_2-s.png,
+    % %     % 8o_2-s.png,
+    % %     % 9o_2-s.png,
+    % % }
+    \caption{Top row: A circular island layout and a given profile sketch creates a simple round island height field. Each following row shows a progression in an edition session, conserving the initial top-view and side-view sketch, by manipulating the deformation field (blue lines) with respectively 3, 7 and 20 user strokes (red arrows). The final result breaks the initial radial symmetry of the island layout. }
+    \label{fig:coral-island-wind-stroke-edition}
+\end{figure}
 
 
 
@@ -624,7 +684,7 @@ Once the strokes are applied to the velocity field, we displace each points of t
 
 % For any point $\p$ on the terrain, the system first computes the polar coordinates $(\radius_\p, \angl_\p)$, where $\radius_\p$ is the radial distance from the island's center, and $\angl_\p$ is the angular component. The radial distance $\radius_\p$ is used to determine which region the point belongs to (island, beach, lagoon, reef, or abyss). The user-defined outlines in the profile sketch specify the radial limits between these regions.
 
-% Each point's height is determined by the profile function $\heightProfile(\distRegions_\p)$, where $\distRegions$ represents a "piecewise parametric distance" from the island's center. The piecewise parametric distance works by dividing the radial distance from the center into segments, defined by these region boundaries. Each segment corresponds to a distinct region of the terrain, and within each segment, the distance $\distRegions$ is interpolated between the region boundaries. For a point $\p$ lying between two boundaries $\Radius_{i}$ and $\Radius_{i+1}$, the distance $\distRegions_\p$ is calculated as:
+% Each point's height is determined by the profile function $\heightProfile(\distRegions_\p)$, where $\distRegions_\p$ represents a "piecewise parametric distance" from the island's center. The piecewise parametric distance works by dividing the radial distance from the center into segments, defined by these region boundaries. Each segment corresponds to a distinct region of the terrain, and within each segment, the distance $\distRegions_\p$ is interpolated between the region boundaries. For a point $\p$ lying between two boundaries $\Radius_{i}$ and $\Radius_{i+1}$, the distance $\distRegions_\p$ is calculated as:
 
 % \begin{align}
 %     \distRegions_\p = i + \frac{\radius_\p - \Radius_{i}}{\Radius_{i + 1} - \Radius_{i}}
@@ -691,7 +751,7 @@ This process introduces variations in the terrain, distorting the coastline, cre
     \label{fig:coral-island-resistance-function}
 \end{figure}
 
-To ensure that certain regions of the terrain such as deep-water areas remain relatively unaffected by the wind, a resistance function $\resistance(\distRegions_\p)$ is applied. The resistance function modulates the effect of the deformation based on the previously computed piecewise parametric distance $\distRegions$, with the same interaction means as the $\heightProfile$ function.
+To ensure that certain regions of the terrain such as deep-water areas remain relatively unaffected by the wind, a resistance function $\resistance(\distRegions_\p)$ is applied. The resistance function modulates the effect of the deformation based on the previously computed piecewise parametric distance $\distRegions_\p$, with the same interaction means as the $\heightProfile$ function.
 
 We define the resistance function $\resistance(\distRegions_\p)$ similarly to the profile function, and use it to modulate the magnitude of the displacement at each point. For example, regions near the coastline (such as the beach and lagoon) have lower resistance, allowing for significant deformation (simulating coastal erosion from wave energy), while regions farther away (such as the abyss) have higher resistance, limiting the wind and coastal erosion impact.
 
@@ -770,14 +830,14 @@ We define distinct reef zones anchored at specific depths:
     \Item{} Fore reef sloping to abyss: $h_\text{abyss} = -100$,m.
 \end{Itemize}
 
-Each reef subregion is defined over a parametric domain $x \in [0, 1]$, with $x=0$ the beginning of the reef region and $x=1$ its end, directly inputting the parametric distance $x = \distRegions - i_{\text{reef}}$. For instance:
+Each reef subregion is defined over a parametric domain $x \in [0, 1]$, with $x=0$ the beginning of the reef region and $x=1$ its end, directly inputting the parametric distance $x = \distRegions_\p - i_{\text{reef}}$. For instance:
 \begin{Itemize}
     \Item{} Back reef: $x_{\text{back,start}} = 0$, $x_{\text{back,end}} = 0.5$,
     \Item{} Reef crest: $x_{\text{crest,start}} = 0.75$, $x_{\text{crest,end}} = 0.8$,
     \Item{} Abyss begins at $x_{\text{abyss,start}} = 1$.
 \end{Itemize}
 
-We model transition zones between these regions using a smoothstep operator:
+We model transition zones between these regions using a smoothstep operator \cite{Perlin2002}:
 \begin{align}
     \smooth(x) = 3x^2 - 2x^3.
 \end{align}
@@ -812,7 +872,7 @@ The complete coral height field, as displayed in \cref{fig:coral-island-reef-fun
     \autofitgraphics[]{smoothmax_all-k_large.png, smoothmax_all-k_short.png}
     % \autofitgraphics[]{blend_function_low_approx.png, blend_function_high_approx.png}
     % \autofitgraphics[]{blend_compare_closeup_low.png, blend_compare_closeup_high.png}
-    \caption{Blending two functions $f: \R \to \R$ (black, dotted) and $g: \R \to \R$ (blue, dotted) with the $\max$ operator (red), causing discontinuities when $f(x)=g(x)$, and with the $\smoothmax$ operator (green) with various sharpness values $k$, resolving the issue at the cost of slight overestimations with low values of $k$. Left presents a zoom on the domain $x \in [0.5, 1.3]$. }
+    \caption{Blending two functions $f: \R \to \R$ (black, dotted) and $g: \R \to \R$ (blue, dotted) with the $\max$ operator (red), causing discontinuities when $f(x)=g(x)$, and with the $\smoothmax$ operator (green) with various sharpness values $k$, resolving the issue at the cost of slight overestimations with low values of $k$. Right presents a zoom on the domain $x \in [0.5, 1.3]$. }
     \label{fig:coral-island-blend-function-island}
 \end{figure}
 
@@ -836,7 +896,7 @@ The final step is to blend the subsided height field $\heightSubsid(\p)$ with th
 
 To achieve this, we use a smooth maximum function, which smoothly blends the two height fields, ensuring that the coral regions dominates where coral growth is present, while the subsided island terrain dominates in other regions. This blending method ensures that the transition between the coral and subsided regions is smooth and visually consistent.
 
-We define our smooth max function $\smoothmax: a, b \in \R^2$ as the mean of two functions, $\smoothmax^-$ and $\smoothmax^+$, adapted from Ingo Quilez's smooth min function, that respectively underestimate and overestimate the function $\max$:
+We define our smooth maximum function $\smoothmax(a, b) \in \R$ for $(a, b) \in \R^2$ as the mean of two functions, $\smoothmax^-$ and $\smoothmax^+$ (shown in \cref{fig:coral-island-blend-function-island-with-upper}), adapted from Inigo Quilez's smooth min function \cite{Quilez2013}, that respectively underestimate and overestimate the function $\max$:
 
 \begin{align}
     \smoothmax^-(a, b) &= a + \frac{b - a}{1 + \exp\left(-k \cdot (b - a) \right)} \\

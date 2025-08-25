@@ -392,7 +392,7 @@ In this section, we describe how to apply detachment and deposition to different
 
 We use Verlet integration for the particle physics \cite{Verlet1967}, with low error rate and stability even for high $dt$, reducing computation time for negligible imprecision \cite{Baraff1998, Swope1982}.
 
-For all the representations, the amount of material absorbed by the particle, i.e. the erosion value $\erosionAmount$ from \eqref{eq:erosion-erosionAmount}, is taken around the particle at a radius $\particleSize$, meaning that the modification of the terrain by a particle at position $c$ will only occur for the positions $\p$ satisfying $||\p - c|| < \particleSize$. At the same time, the amount $\depositAmount$ from \eqref{eq:erosion-deltaDepositon} is deposited, resulting in a change $\totalErosion = \depositAmount - \erosionAmount$.
+For all the representations, the amount of material absorbed by the particle, i.e. the erosion value $\erosionAmount$ from \eqref{eq:erosion-erosionAmount}, is taken around the particle at a radius $\particleSize$, meaning that the modification of the terrain by a particle at position $\center$ will only occur for the positions $\p$ satisfying $||\p - \center|| < \particleSize$. At the same time, the amount $\depositAmount$ from \eqref{eq:erosion-deltaDepositon} is deposited, resulting in a change $\totalErosion = \depositAmount - \erosionAmount$.
 
 In our simulation, while the dynamics are informed by physical principles, the particle size is conceptualised within a dimensionless framework. This provides the flexibility to adapt our results to various real-world scales, ensuring the applicability of our model across diverse scenarios.  
 Note that, for a 2.5D terrain, we can consider that half of the sphere surrounding the particle is affected, which has a volume of $V_{2.5D} = \frac{2 \pi \particleSize^3}{3}$, while a 3D terrain is affected by the full sphere $V_{3D} = \frac{4 \pi \particleSize^3}{3}$ (as illustrated in \cref{fig:erosion-erosion-heightfield}). In the following sections, we will describe the strategies used to modify the amount of matter for different representations. 
@@ -408,7 +408,7 @@ Note that, for a 2.5D terrain, we can consider that half of the sphere surroundi
 
 On a height field defined by $h(\p) = z$, the intersection point with the surface is verified at $\p_z = h(\p)$, and the normal can be computed at the intersection point. 
 
-For this representation, the half-sphere is scaled in the $z$ direction to fit $\alpha \volume = \totalErosion$ using $\alpha = \frac{\totalErosion}{\volume}$. We then decrease the height $h'(\p)$ at all points $\p$ by the height of the scaled half-sphere at position $\p$. Given the height of the scaled half-sphere of centre $c$ and the distance of the particle to the centre $d = ||\p - c||$ by $h_\text{half sphere}(\p) = \alpha \sqrt{\particleSize^2 - d^2}$ for all $\p$ such that $d \leq \particleSize$, the radius around a particle.
+For this representation, the half-sphere is scaled in the $z$ direction to fit $\alpha \volume = \totalErosion$ using $\alpha = \frac{\totalErosion}{\volume}$. We then decrease the height $h'(\p)$ at all points $\p$ by the height of the scaled half-sphere at position $\p$. Given the height of the scaled half-sphere of centre $\center$ and the distance of the particle to the centre $d = ||\p - \center||$ by $h_\text{half sphere}(\p) = \alpha \sqrt{\particleSize^2 - d^2}$ for all $\p$ such that $d \leq \particleSize$, the radius around a particle.
 
 This change of height can be sampled at all points of the 2D grid by reducing the height by 
 
@@ -478,7 +478,7 @@ In the case of gradient-based representation, we propose to use the partial deri
     \nabla h' = - \frac{\totalErosion}{\frac{2}{3}\particleSize^3} \frac{1}{\sqrt{\particleSize^2 - d^2} } \vec{CP}
 \end{align}
 
-with $\vec{CP}$ the vector from the position $\p$ to evaluate to the centre of the erosion point $c$.
+with $\vec{CP}$ the vector from the position $\p$ to evaluate to the centre of the erosion point $\center$.
 Now the new gradient field can be computed as: 
 
 \begin{align*}
@@ -504,7 +504,7 @@ We consider "density-voxel" grids defined on $f: \Z^3 \to [-1, 1]$, for which a 
 This definition allows us to erode them smoothly.  
 Since this kind of grid is a discretisation of a scalar function, we could directly use \eqref{eq:erosion-erosionMetaball}, as described previously, but we take advantage of the discrete nature of the representation to avoid expensive computation. 
 
-We apply the erosion from a particle at position $c$ on all points $\p$ in the volume, proportionally to the distance from the centre of the sphere $d = ||\p - c||$, to find an approximation to the real erosion value per voxel $\totalErosion_{approx} = \totalErosion \frac{1 - d}{\particleSize}$.  
+We apply the erosion from a particle at position $\center$ on all points $\p$ in the volume, proportionally to the distance from the centre of the sphere $d = ||\p - \center||$, to find an approximation to the real erosion value per voxel $\totalErosion_{approx} = \totalErosion \frac{1 - d}{\particleSize}$.  
 Using their discrete nature, we rectify this value to sum up the total erosion value to $\totalErosion$ by dividing each value by the sum of the distances. We now consider eroding the "empty" voxels since their density can drop to $-1$. We then have for all surrounding voxels: 
 
 \begin{align}

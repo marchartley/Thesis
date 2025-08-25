@@ -673,16 +673,48 @@
   \fitNimages{#2}%
 }
 \newcounter{fitCapIndex}
+% \NewDocumentCommand{\autofitcaptions}{O{} m}{%
+%   \ifblank{#1}
+%     {\def\fitraiseamount{2ex}} % default
+%     {\def\fitraiseamount{#1}}  % use passed value
+%   \setcounter{fitCapIndex}{0}%
+%   \begin{adjustbox}{width=\fitrowwidth}%
+%     \renewcommand{\do}[1]{%
+%       \stepcounter{fitCapIndex}%
+%       \pgfmathsetmacro{\relwidth}{\csname fitRatio\thefitCapIndex\endcsname / \fitTotalRatio}%
+%       \raisebox{\fitraiseamount}{\parbox[t]{\relwidth\linewidth}{\centering ##1}}%
+%     }%
+%     \docsvlist{#2}%
+%   \end{adjustbox}%
+%   \vspace{-\fitraiseamount}%
+% }
+% Key–value options for \autofitcaptions
+\pgfkeys{
+  /autofitcaptions/.is family, /autofitcaptions,
+  raise/.store in=\fitraiseamount,
+  fontscale/.store in=\fitfontscale,
+  % defaults
+  raise=2ex,
+  fontscale=1,
+  % Back-compat: if the user passes a lone token like [1.5ex],
+  % treat it as raise=<that>
+  .unknown/.code = {\def\fitraiseamount{#1}}
+}
+
 \NewDocumentCommand{\autofitcaptions}{O{} m}{%
-  \ifblank{#1}
-    {\def\fitraiseamount{2ex}} % default
-    {\def\fitraiseamount{#1}}  % use passed value
+  % Load defaults, then apply user-specified options (if any)
+  \pgfkeys{/autofitcaptions, raise=2ex, fontscale=1}%
+  \ifblank{#1}{}{%
+    \pgfkeys{/autofitcaptions, #1}%
+  }%
   \setcounter{fitCapIndex}{0}%
   \begin{adjustbox}{width=\fitrowwidth}%
     \renewcommand{\do}[1]{%
       \stepcounter{fitCapIndex}%
       \pgfmathsetmacro{\relwidth}{\csname fitRatio\thefitCapIndex\endcsname / \fitTotalRatio}%
-      \raisebox{\fitraiseamount}{\parbox[t]{\relwidth\linewidth}{\centering ##1}}%
+      \raisebox{\fitraiseamount}{%
+        \parbox[t]{\relwidth\linewidth}{\centering \scalebox{\fitfontscale}{##1}}%
+      }%
     }%
     \docsvlist{#2}%
   \end{adjustbox}%
