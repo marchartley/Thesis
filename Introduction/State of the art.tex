@@ -290,40 +290,29 @@ Storing a real-valued scalar per voxel enables implicit isosurfaces inside the g
 
 
 \section{User interaction for procedural terrain generation}
-% \subsection{Realism-speed-control balance}
-Procedural algorithms are designed to find a balance between three main objectives: controllability, realism, and computation speed. In our work, we positioned our focus on the inclusion of the user in the generation process, resulting in a need to focus our attention on controllability for authoring landscapes, and computation speed in order to visualise results quickly, allowing to interactively interact with the system to obtain the best possible outputs. In this section we will briefly present the tools available for interacting with a procedural system.
+Procedural algorithms are designed to find a balance between three main objectives: controllability, realism, and computation speed \cite{Ebert2003,Smelik2014,Galin2019}. In our work, we positioned our focus on the inclusion of the user in the generation process, resulting in a need to focus our attention on controllability for authoring landscapes, and computation speed in order to visualise results quickly, allowing to interactively interact with the system to obtain the best possible outputs. In this section we will briefly present the tools available for interacting with a procedural system.
 
-Procedural terrain generation algorithms typically rely on user-defined parameters to produce results that meet specific needs. To effectively involve users in the creation process, it is essential to provide tools that allow intuitive interaction with these parameters. These parameters vary widely in nature, and each type benefits from different kinds of interaction tools. They can be broadly categorized from global to local, as follows:
+Procedural terrain generation algorithms typically rely on user-defined parameters to produce results that meet specific needs. To effectively involve users in the creation process, it is essential to provide tools that allow intuitive interaction with these parameters. These parameters vary widely in nature, and each type benefits from different kinds of interaction tools. While prior surveys have discussed categories of procedural methods \cite{Smelik2009,Smelik2014,Galin2019}, we propose to broadly classify interactive tools for procedural terrain generation along a global-to-local spectrum: 
 \begin{Itemize}
     \Item{Global procedural parameters:} Values that reshape the whole terrain field at once. \\
     This category groups together:
         \begin{Itemize}
-            \Item{Noise parameters} (e.g., frequency, amplitude, octaves) that drive the terrain base-shape variation.
-            \Item{Physical constants} (e.g., erosion sediment capacity, wind strength) used by simulation passes.
+            \Item{Noise parameters} (e.g., frequency, amplitude, octaves) that drive the terrain base-shape variation \cite{Perlin1985,Fournier1982}.
+            \Item{Physical constants} (e.g., erosion sediment capacity, wind strength) used by simulation passes \cite{Benes2001a}.
         \end{Itemize}
         These numbers are usually exposed through spinboxes, sliders, or configuration files.
 
-    \Item{Regional controls (masks and density maps):} Greyscale or weighted maps that localise subsequent generators, telling them where to act and with what intensity. \\
+    \Item{Regional controls (masks and density maps):} Greyscale or weighted maps that localise subsequent generators, telling them where to act and with what intensity \cite{DeCarpentier2009,Stachniak2005}. \\
     Users paint or import these masks with brush tools, which are often using weighted values to avoid the hard edges of binary masks.
 
-    \Item{Assets and features placement:} Interactive positioning (or scattering) of discrete assets such as rock arches, buildings, or river splines. \\  
+    \Item{Assets and features placement:} Interactive positioning (or scattering) of discrete assets such as rock arches, buildings, or river splines \cite{Becher2017,Grosbellet2016}. \\  
     Users click to set an initial $xyz$ location, then translate, rotate, or duplicate as needed.
 
-    \Item{Surface sculpting (manual and procedural brushes):} Point-level edits that raise, lower, smooth, or terrace the height field. \\
+    \Item{Surface sculpting (manual and procedural brushes):} Point-level edits that raise, lower, smooth, or terrace the height field \cite{Galyean1991,Gain2005,Chen2021}. \\
     Users control the brush effect through parameters like radius, intensity, and falloff shape.
 \end{Itemize}
-% \begin{Itemize}
-%     \Item{Noise parameters:} Abstract values used in the equation ruling the noise functions.
-%     \Item{Physical constants:} Constants that are used in physics simulations. They are often adjusted by the user to exaggerate certain features, force some phenomena, etc... As they are constants, the parametrisation of these values is often done inside the source code, as spinboxes, or inside a configuration file.
-%     \Item{Masks and density maps:} Marking areas that are affected by a process, or where a seed can be used is useful to control a procedural algorithm. This is referred to as "masking", but due to its binary nature, we can find sharp and unnatural transitions from the use of binary masks. We often use weighted masks to provide more control over probabilities that a seed appears at one point. The control of the masks is usually done through greyscale images or by a "brush tool" that can modify the value directly on the surface of a 2D or 3D object. As virtual terrains are generally represented by a regular 2D grid, the use of brushes is a façade to the manipulation of a greyscale image.
-%     \Item{Assets and features placement:} Placing a specific terrain feature inside a terrain may be useful to finalise the generation of a landscape, or to add obstacles that will affect a physics simulation. This is usually implemented by clicking on the surface of the terrain, to provide the initial $xyz$ position, and then using translation and rotation tools to adjust the placement. If many elements are added, we usually use the previous strategy, involving masking, to add all the structures.
-%     \Item{Manual manipulation of the terrain:} In order to customise at a lower level the surface of the terrain, the user may be able to alter the surface of the terrain by using brushes. Clicking or dragging a brush on the surface usually results in the rise or lowering of the surface level around the brush. This process modifies the field representing the terrain. Procedural brushes can imply more complex behaviours, and may use the velocity of the brush stroke in its input.
-% \end{Itemize}
 
-
-Each developer uses different strategies for each type of parameters as the needs or objectives of each application are different. Providing the user with too many parameters can be overwhelming, while too few can limit the output possibilities. In the meantime, providing unintuitive parameters such as dimensionless values often results in a trial-and-error strategy, requiring the generation algorithm to be run many times before finding the appropriate values. This implies that the algorithms must be able to be executed fast. On the opposite side, removing some user controls to use hard-coded constants instead can greatly increase the speed. Finally, an algorithm that aims to be fast or let the user control many parameters may reduce the realism of the output. Most algorithms try to strike a balance between realism, speed, and control.
-
-% User interaction affects how users balance realism, speed, and control over generated content.
+Each developer uses different strategies for each type of parameters as the needs or objectives of each application are different. Providing the user with too many parameters can be overwhelming, while too few can limit the output possibilities \cite{Togelius2013}. In the meantime, providing unintuitive parameters such as dimensionless values often results in a trial-and-error strategy, requiring the generation algorithm to be run many times before finding the appropriate values. This implies that the algorithms must be able to be executed fast. On the opposite side, removing some user controls to use hard-coded constants instead can greatly increase the speed. Finally, an algorithm that aims to be fast or let the user control many parameters may reduce the realism of the output. Most algorithms try to strike a balance between realism, speed, and control.
 
 Realism refers to the extent to which generated content accurately represents real-world characteristics, such as visual details, physical processes, and natural patterns. This is especially important in simulations, visualisations, and training environments where physical accuracy is critical. Techniques to enhance realism include physical simulations, which model erosion processes and the integration of expert knowledge from geological and ecological fields. However, achieving realism can be challenging due to the complexity of detailed simulations and the need for specialised expertise, which can demand substantial computational resources and inputs. Usually, a realistic algorithm tends to have low user control and speed.
 
@@ -335,8 +324,8 @@ On the other hand, speed is about the efficiency of content generation within ac
     \Item{Offline:} generation that takes longer, often used for precomputed content or offline rendering.
 \end{Itemize}
 
-The execution speed of a procedural algorithm is crucial as the user will fine-tune the parameters before being satisfied.
-Optimising speed involves using efficient algorithms and parallel processing. Almost all recent works achieve fast execution times thanks to high parallelisation on GPU. Other types of algorithm may rely on a refinement paradigm, generating a coarse result at first and then iteratively adding finer details, such that the global output shape is available long before the real final result.
+The execution speed of a procedural algorithm is crucial as the user will fine-tune the parameters before being satisfied \cite{Smelik2014}.
+Optimising speed involves using efficient algorithms and parallel processing. Almost all recent works achieve fast execution times thanks to high parallelisation on GPU \cite{Olsen2004}. Other types of algorithm may rely on a refinement paradigm, generating a coarse result at first and then iteratively adding finer details, such that the global output shape is available long before the real final result.
 
 % Control refers to how much users can influence or direct the procedural generation process to meet their specific needs or preferences. This includes parameters fine-tuning, allowing users to modify parameters such as the noise function parameters or the simulation parameters, and artistic control tools, made for artists and designers, to guide the generation process with the use of masks and brushes, allowing for combination and mixing of different algorithms.
 
@@ -446,15 +435,15 @@ Overall, from these behaviours, we consider that corals act as important dynamic
 
 
 \subsection{Coral reef formations shape}
-In \cite{Darwin1842}, Darwin outlined his atoll reef formation theory, inspired by his Beagle voyage. He proposed that Earth's crust movements under the oceans created atolls. Darwin described a three-stage process in atoll formation: a fringing reef forms around a sinking volcanic island, evolving into a barrier reef, and finally an atoll reef as subsidence continues.
+In \cite{Darwin1842}, Darwin outlined his atoll reef formation theory, inspired by his Beagle voyage. He proposed that Earth's crust movements under the oceans created atolls. Darwin described a three-stage process in atoll formation: a fringing reef forms around a sinking volcanic island, evolving into a barrier reef, and finally an atoll reef as subsidence continues \cite{Hopley2014}. In this thesis, the term "coral reef island" refers to an island of volcanic or continental origin that is surrounded by coral reefs, rather than a low island formed from reef-derived sediments (as used by \cite{Masselink2020})
 
 \subsubsection{Fringing reefs}
-Fringing reefs are the most common and widespread coral reefs. They form narrow bands near the shore and are usually attached directly to land. Sometimes, they are separated by a shallow, narrow lagoon. Their coastal location makes them accessible but also exposes them to land- and sea-based stressors.
+Fringing reefs are the most common and widespread coral reefs. They form narrow bands near the shore and are usually attached directly to land. Sometimes, they are separated by a shallow, narrow lagoon \cite{Kovacs2020}. Their coastal location makes them accessible but also exposes them to land- and sea-based stressors.
 
 \AltTextImage{
     Their structure includes the reef flat, reef crest, and reef slope. The reef flat is shallow, calm, and closest to shore, as seen by the clear blue region in \cref{fig:intro-fringing-reef-Moorea}. The reef crest is higher, exposed at low tide, and faces strong wave action. Only hardy corals survive there. The reef slope descends into deeper water where coral diversity and density increase. It offers habitat for many marine organisms due to more light and water movement.
 
-    Fringing reefs grow in clear, shallow waters with high light, warmth, and moderate waves. Coastal currents bring nutrients, helping coral growth. Yet, their location makes them prone to sedimentation, runoff, and pollution. Sediment can smother corals and block sunlight. Runoff adds nutrients, causing algal blooms that compete with corals.
+    Fringing reefs grow in clear, shallow waters with high light, warmth, and moderate waves. Coastal currents bring nutrients, helping coral growth. Yet, their location makes them prone to sedimentation, runoff, and pollution \cite{Nicholls2008}. Sediment can smother corals and block sunlight. Runoff adds nutrients, causing algal blooms that compete with corals (possibly causing some of the "holes" in the reef in \cref{fig:intro-fringing-reef-Moorea}).
 
 }{Moorea_fringing.jpg}{Fringing reef around Mo'orea island.}{fig:intro-fringing-reef-Moorea}
 
@@ -462,17 +451,18 @@ Zonation defines coral distribution across the reef. On the flat, corals handle 
 
 \AltTextImage{
     \subsubsection{Barrier reefs}
-    These reefs typically develop from fringing reefs that have grown over long periods, during which the coastline has either subsided or sea levels have risen. As the land subsides or the sea level rises, the original fringing reef is gradually separated from the shore, forming a lagoon between the reef and the coastline (\cref{fig:intro-barrier-reef-Providencia}).
-    The depth and size of the lagoon, as well as the height of the reef crest, are influenced by factors such as wave action, currents, and the rate of coral growth. The lagoon often contains patch reefs, seagrass beds, and sandy areas. The zonation within barrier reefs creates distinct ecological niches, with different species of corals, fish, and invertebrates adapted to the specific conditions found in each zone. The fore reef slope, with its high-energy environment, supports species that are resilient to strong waves and currents. In contrast, the more sheltered back reef and lagoon provide habitats for species that prefer calmer waters and stable conditions.
+    These reefs typically develop from fringing reefs that have grown over long periods, during which the coastline has either subsided or sea levels have risen. As the land subsides or the sea level rises, the original fringing reef is gradually separated from the shore, forming a lagoon between the reef and the coastline (the lagoon in \cref{fig:intro-barrier-reef-Providencia} is visible as a deep blue band between the clear blue back reef and the abovewater island).
+    
+    The depth and size of the lagoon, as well as the height of the reef crest, are influenced by multiple factors such as wave action, currents, and the rate of coral growth. The lagoon often contains patch reefs (clear blue spots in the lagoon of \cref{fig:intro-barrier-reef-Providencia}), seagrass beds, and sandy areas. The zonation within barrier reefs creates distinct ecological niches, with different species of corals, fish, and invertebrates adapted to the specific conditions found in each zone. The fore reef slope, with its high-energy environment, supports species that are resilient to strong waves and currents. In contrast, the more sheltered back reef and lagoon provide habitats for species that prefer calmer waters and stable conditions.
 }{Divine_Providencia_barrier_reef.jpg}{Aerial image of Providencia Island, surrounded by a large barrier reef}{fig:intro-barrier-reef-Providencia}
 
 Barrier reefs also play a role in the connectivity between marine ecosystems. They act as a bridge between the open ocean and the coastal environments, facilitating the movement of marine species across different habitats. Many species of fish and invertebrates migrate between the reef and the lagoon during different life stages, using the barrier reef as a nursery or feeding ground.
 
 \subsubsection{Atolls}
-The formation of atolls is a process that unfolds over millions of years. As the island gradually subsides, mainly due to tectonic activity, the coral continues to grow upward toward the sunlight. Eventually, the island disappears entirely beneath the ocean's surface, leaving behind a ring-shaped coral reef that encircles the central lagoon in a circular or almost circular shape (\cref{fig:intro-atoll-Tetiaroa}). This theory of atoll formation was first proposed by Charles Darwin and remains one of the most widely accepted explanations for the development of atolls.
+The formation of atolls is a process that unfolds over millions of years. As the island gradually subsides, mainly due to tectonic activity, the coral continues to grow upward toward the sunlight. Eventually, the island disappears entirely beneath the ocean's surface, leaving behind a ring-shaped coral reef that encircles the central lagoon in a circular or almost circular shape (\cref{fig:intro-atoll-Tetiaroa} displays a deformed atoll with the presence of cay islands on its rim). This theory of atoll formation was first proposed by Charles Darwin and remains one of the most widely accepted explanations for the development of atolls.
 
 \AltTextImage{
-    The lagoon varies greatly in depth, ranging from shallow areas with sandy bottoms to deeper sections where patch reefs and seagrass beds may develop. The sheltered waters of the lagoon provide a calmer environment compared to the outer reef slope, allowing a different community of marine species to develop. These species often include a mix of corals, fish, and invertebrates that are weakly tolerant of the high-energy conditions. The lagoon may also contain small coral reef islands, known as motus, which form from the accumulation of coral debris and sand.
+    The lagoon varies greatly in depth, ranging from shallow areas with sandy bottoms to deeper sections where patch reefs and seagrass beds may develop \cite{Goldberg2016}. The sheltered waters of the lagoon provide a calmer environment compared to the outer reef slope, allowing a different community of marine species to develop. These species often include a mix of corals, fish, and invertebrates that are weakly tolerant of the high-energy conditions. The lagoon may also contain small coral reef islands, known as motus, which form from the accumulation of coral debris and sand.
 }{Tetiaroa_from_sky.jpeg}{Aerial view of Tetiaroa Atoll, French Polynesia}{fig:intro-atoll-Tetiaroa}
 
 % The outer reef slope, with its exposure to the open ocean, is home to species that are adapted to strong currents and waves, including large predatory fish and robust coral species. In contrast, the sheltered lagoon provides a haven for more delicate species, such as seagrasses, small fish, and invertebrates, which rely on the calmer waters for feeding and reproduction. This diversity of habitats within a relatively small area makes atolls particularly important for marine biodiversity.
