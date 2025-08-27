@@ -716,7 +716,11 @@
         \parbox[t]{\relwidth\linewidth}{\centering \scalebox{\fitfontscale}{##1}}%
       }%
     }%
-    \docsvlist{#2}%
+    \ifblank{#2}{%
+      \docsvlist{~}%
+    }{%
+      \docsvlist{#2}%
+    }%
   \end{adjustbox}%
   \vspace{-\fitraiseamount}%
 }
@@ -790,3 +794,19 @@
 \zzcommand{\Delete}{\delete}
 \zzcommand{\revrepl}{\replace}
 \zzcommand{\revnote}{\comment}
+
+
+% \addFileAtTheEnd{tex_file}
+\zzcommand{\addFileAtTheEnd}[1]{
+  \clearpage
+  \thispagestyle{empty}  % désactive l'en-tête et pied
+  \newgeometry{top=1.8cm, bottom=1.8cm, left=2cm, right=2cm}
+
+  % Si on est sur une page impaire, on force une page blanche pour aller à une page paire
+  \ifodd\value{page}
+  \null
+  \thispagestyle{empty}
+  \newpage
+  \fi
+  \input{#1}
+}

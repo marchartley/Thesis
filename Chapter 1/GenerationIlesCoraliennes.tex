@@ -202,7 +202,7 @@ In generating synthetic coral reef islands, we adopt a set of simplifying assump
     \AltTextImage{
         \Item{Subsidence and coral "keep up" growth:} Actual reefs respond to light, nutrients, and biology, but the dominant effect is that corals grow vertically to stay near the photic zone. We decouple coral growth from subsidence and simply keep reef heights in a fixed band beneath the surface, capturing Darwin's core insight using minimal parameters.
 
-        \Item{Wind and wave deformation:} In nature, coastal erosion results from sediment transport and complex hydrodynamics \cite{Terry2013}. We instead use a simple vector field painted by the user, which allows radial symmetry to be broken in a controllable way, without running a full erosion simulator.
+        \Item{Wind and wave deformation:} To represent coastal erosion resulting from sediment transport and complex hydrodynamics \cite{Terry2013}, we simplify the model by using a vector field painted by the user representing wind and wave directions. This vector field allows radial symmetry to be broken in a controllable way, without relying on a full erosion simulator.
 
         \Item{Independence of islands:} While archipelagos share currents, sediments, and flood each other's lagoons, simulating multi-island interactions is computationally expensive and hard to control. We treat each island as an isolated entity to generate multi-island scenes by using a simple blending of individual islands, keeping our method fast and predictable.
     }
@@ -221,7 +221,7 @@ These assumptions, grounded in theories of coral reef island formation, provide 
 
 Procedural generation of terrain has been a well-researched area in computer graphics and simulations, where the goal is to create large, realistic landscapes with minimal manual input. Various methods have been developed over the years to generate terrains automatically, from noise-based approaches to physically based erosion simulations, sketch-driven methods, and more recently, deep learning techniques.
 
-However, each of these techniques has its strengths and limitations, particularly when it comes to modelling coral reef islands. Coral reef islands present unique challenges due to the combination of long-term geological processes (mainly subsidence and coral reef growth) and environmental interactions (i.e. erosion caused by wind and waves). In this section, we review the key techniques that have been applied to terrain generation, highlight their limitations for coral reef island formation, and position our work as an approach that addresses these challenges.
+However, coral reef islands present unique challenges due to the combination of long-term geological processes (mainly subsidence and coral reef growth) and environmental interactions (i.e. erosion caused by wind and waves). In this section, we review the key techniques proposed for terrain generation, highlighting their limitations for coral reef island formation, and positioning our work as an approach that addresses these challenges.
 
 \subsubsection{Noise-based terrain generation}
 
@@ -233,7 +233,7 @@ However, each of these techniques has its strengths and limitations, particularl
 
 Noise-based procedural generation remains one of the most widely used techniques for creating natural-looking terrains. Perlin noise \cite{Perlin1985}, Simplex noise \cite{Perlin2001}, and the Diamond-square algorithm \cite{Fournier1982} are foundational algorithms that generate pseudo-random yet continuous variations across a grid, producing terrain features that resemble organic landscapes. These techniques have been widely adopted in computer graphics and game development due to their efficiency and visual appeal.
 
-Beyond basic noise functions, more advanced techniques such as fractal Brownian motion (fBm) and multifractal noise have been introduced to add finer-scale variation and detail \cite{Musgrave1989,Ebert2003}. fBm combines multiple layers, or "octaves," of noise at different frequencies and amplitudes, producing terrains that exhibit more realistic and varied features. The combination of noise with domain warping and signal processing techniques has been explored in depth in procedural modelling literature \cite{Reinhard2010}, enabling further control over visual complexity and terrain realism.
+Beyond basic noise functions, advanced techniques such as fractal Brownian motion (fBm) and multifractal noise have been introduced to add finer-scale variation and detail \cite{Musgrave1989,Ebert2003}. fBm combines multiple layers, or "octaves," of noise at different frequencies and amplitudes, producing terrains that exhibit realistic and varied features. The combination of noise with domain warping and signal processing techniques has been explored in depth in procedural modelling literature \cite{Reinhard2010}, enabling further control over visual complexity and terrain realism.
 
 Noise functions are often paired with falloff maps to produce island-like terrains, where elevation gradually decreases towards the edges of the domain, mimicking coastlines and basic island shapes (see \cref{fig:coral-island-noise-example}). Various methods for enhancing island generation using noise and falloff blending have been proposed for applications in games and virtual worlds \cite{Olsen2004}. While these techniques excel at producing large, visually diverse landscapes quickly, they suffer from several key limitations when applied to the modelling of coral reef islands.
 
@@ -249,13 +249,13 @@ Simulation-based terrain modelling methods aim to increase realism by replicatin
 
 \subsubsubsection{Hydraulic and thermal erosion}
 
-Hydraulic erosion models simulate the impact of flowing water on the landscape by modelling erosion, sediment pickup, transport, and deposition. Early implementations by \cite{Musgrave1989} laid the groundwork for erosion in procedural generation, while more recent works have accelerated these simulations using GPU architectures \cite{Mei2007} and particle-based methods \cite{Neidhold2005}. These simulations often follow Eulerian fluid models or Lagrangian particle systems to capture terrain displacement.
+Hydraulic erosion models simulate the impact of flowing water on the landscape by modelling erosion, sediment pickup, transport, and deposition. Early implementations by \cite{Musgrave1989} laid the groundwork for erosion in procedural generation, while more recent works have accelerated these simulations using GPU architectures \cite{Mei2007} and particle-based methods \cite{Neidhold2005}. These simulations either follow Eulerian fluid models or Lagrangian particle systems to capture terrain displacement.
 
 Thermal erosion, by contrast, simulates mass movement due to gravity, redistributing material from steeper slopes to gentler gradients, akin to landslides or soil creep \cite{Benes2006}. These erosion models generate realistic fluvial networks and landforms, but they are parameter-sensitive and computationally expensive.
 
 Moreover, such models are generally designed for terrestrial landscapes and lack mechanisms for simulating underwater sedimentation, reef growth, or biogenic processes crucial to coral island formation. These models typically simulate time scales relevant to geomorphological processes (hundreds to thousands of years), which are mismatched with both the faster dynamics of biological processes (e.g., coral growth) and the slower geological evolution of reef islands.
 
-We will propose our new particle-based erosion simulation method, adapted for underwater and terrestrial landscapes, in \cref{chap:erosion}.
+We propose our new particle-based erosion simulation method, adapted for underwater and terrestrial landscapes, in \cref{chap:erosion}.
 
 \subsubsubsection{Tectonic uplift and geologic simulation}
 
@@ -287,17 +287,17 @@ While simulation-based models represent a significant advancement over purely pr
 
 The term "sketching" encompasses several definitions: either refering to performing hand or body gestures, creating a rough drawing, or outlining an idea in a simplified form. Accordingly, sketch-based modelling in 3D computer graphics can be understood through three complementary perspectives, each centred around a distinct core concept: interaction, construction and interpretation.
 
-First, "sketching" may focus on interaction, where gestures captured through hand or body motion are used to manipulate virtual objects, often in immersive environments (virtual or augmented reality), drawing on established techniques such as sculpting and distortion \cite{Olsen2009, Cook2009}. Second, "sketching" may involve construction, where simple geometric primitives (curves, parametric shapes, implicit surfaces, ...) are combined under constraints to build more complex models. Finally, "sketching" may centre on interpretation, where the user draws strokes on a 2D canvas and the system analyses their meaning to generate a plausible 3D model.
+First, "sketching" may focus on interaction, where gestures captured through hand or body motion are used to manipulate virtual objects, often in immersive environments (virtual or augmented reality), using established techniques such as sculpting and distortion \cite{Olsen2009, Cook2009}. Second, "sketching" may involve construction, where simple geometric primitives (curves, parametric shapes, implicit surfaces, ...) are combined under constraints to build a more complex model. Finally, "sketching" may centre on interpretation, where the user draws strokes on a 2D canvas and the system analyses their meaning to generate a plausible 3D model.
 
-While sketch-based modelling encompasses a wide range of techniques, including gesture-driven interaction in immersive environments, this work focuses primarily on construction and interpretation aspects. In particular, construction serves as the foundation for procedural generation techniques using geometric primitives and constraints (addressed in this section), while interpretation becomes relevant when exploring data-driven approaches using deep learning to infer terrain structure from sketches (discussed in the following section). Interaction-based techniques, though significant in other contexts, fall outside the scope of this work.
+While sketch-based modelling encompasses a wide range of techniques, including gesture-driven interaction in immersive environments, this work focuses primarily on construction and interpretation aspects. In particular, construction serves as the foundation for procedural generation techniques using geometric primitives and constraints, while interpretation becomes relevant when exploring data-driven approaches using deep learning to infer terrain structure from sketches. Interaction-based techniques, though significant in other contexts, fall outside the scope of this work.
 
-To clarify terminology in this chapter, we will refer to the constructive approach as sketch-based, and to the interpretive, learning-driven approach as learning-based. It is important to note, however, that the boundaries between these categories are inherently blurry and often overlap in practice.
+To clarify terminology in this chapter, we refer to the constructive approach as sketch-based, and to the interpretive, learning-driven approach as learning-based. It is important to note, however, that the boundaries between these categories are inherently blurry and often overlap in practice.
 
-In procedural terrain generation, sketch-based construction approaches enable users to shape landscapes by manipulating high-level geometric primitives through intuitive sketching interfaces. These methods allow the definition of key terrain features (mountains, valleys, coastlines, ...) by drawing their outlines on a two-dimensional canvas, which are then procedurally transformed into 2.5D or 3D terrain representations. This approach offers a high degree of control, making it particularly effective for creative applications such as video games and simulations, where modelling is primarily user-driven.
+In procedural terrain generation, sketch-based construction approaches enable users to shape landscapes by manipulating high-level geometric primitives through intuitive sketching interfaces. These methods allow the definition of key terrain features (mountains, valleys, coastlines, ...) by drawing their outlines on a two-dimensional canvas, which are then procedurally transformed into 2.5D or 3D terrain representations. This approach offers a high degree of control, making it particularly effective for creative applications such as video games and robotics simulations, where modelling is primarily user-driven.
 
 \subsubsection{Curve-based modelling}
 
-Sketch-based terrain generation often begins with user-defined curves which act as high-level constraints to guide the shape of the terrain. These curves may represent silhouettes, ridgelines, valleys, or feature outlines. Once defined, they are interpreted by the system and translated into elevation changes through various computational techniques. This approach allows for intuitive control over large-scale landforms while maintaining a procedural foundation for terrain synthesis.
+Sketch-based terrain generation often begins with user-defined curves which act as high-level constraints to guide the shape of the terrain. These curves represent silhouettes, ridgelines, valleys, or feature outlines. Once defined, they are interpreted by the system and translated into elevation changes through various computational techniques. This approach type of approach allows for intuitive control over large-scale landforms while maintaining a procedural foundation for terrain synthesis.
 
 \AltTextImage{
     One of the earliest and most influential works in this domain was introduced by \cite{Gain2009} (\cref{fig:coral-island-Gain2009}), enabling users to sketch silhouettes, ridges, and spine curves to define complex terrain structures. The method employs multiresolution surface deformation and propagates wavelet-based noise from the sketched features to their surroundings, allowing users to generate detailed, natural-looking terrains from minimal input. This approach demonstrated the effectiveness of combining intuitive sketch input with procedural detail synthesis.
@@ -310,21 +310,22 @@ Sketch-based terrain generation often begins with user-defined curves which act 
 }{sketching-Hnaidi2010.png}{\cite{Hnaidi2010} defines the surface by elevation curves with constrained slopes, forming with ease river beds and cliffs.}{fig:coral-island-Hnaidi2010}
 
 \AltTextImage{
-    In a different interaction paradigm, \cite{Tasse2014} introduced a first-person sketching interface, where users draw terrain silhouettes from a particular camera viewpoint (\cref{fig:coral-island-Tasse2014}). These silhouettes are then projected into 3D, and a deformation algorithm adjusts the terrain so that the drawn features are visible exactly as intended from the user's perspective. This method supports complex silhouettes with occlusions, T-junctions, and cusps, and represents a more immersive and perceptually grounded approach to sketch-based terrain editing.
+    In a different interaction paradigm, \cite{Tasse2014} introduced a first-person sketching interface, where users draw terrain silhouettes from a particular camera viewpoint (\cref{fig:coral-island-Tasse2014}). These silhouettes are then projected into 3D, and a deformation algorithm adjusts the terrain so that the drawn features are visible exactly as intended from the user's perspective. This method supports complex silhouettes with occlusions, T-junctions, and cusps, and represents an immersive and perceptually grounded approach to sketch-based terrain editing.
 }{sketchingTasse2014-s.png}{\cite{Tasse2014} use sketching in association with camera position and direction to constrain the edition of height fields.}{fig:coral-island-Tasse2014}
 
 These methods demonstrate the expressive power of curves as terrain-defining elements. By enabling users to sketch intuitive shapes and constraints, they bridge the gap between artistic intent and procedural complexity. Curve-driven approaches remain foundational in terrain modelling, particularly when user control over large-scale structure is essential. While we do not use the diffusion model, the idea of sketch-defined elevation constraints along curves informs our use of user-defined shape boundaries.
 
 \subsubsection{Constraint-based modelling}
 
-While curve-driven techniques provide intuitive shape design, constraint-based and gradient-based approaches focus on exerting precise control over terrain features via formal specifications such as elevation values, slopes, or gradient fields. These methods prioritise structural accuracy and procedural consistency, making them particularly suited to applications that demand terrain realism, integration with geographic data, or fine-grained editing capabilities.
+% While curve-driven techniques provide intuitive shape design, c
+Constraint-based and gradient-based approaches focus on exerting precise control over terrain features via formal specifications such as elevation values, slopes, or gradient fields. These methods prioritise structural accuracy and procedural consistency, making them particularly suited to applications that demand terrain realism, integration with geographic data, or fine-grained editing capabilities.
 
 \AltTextImage{
     A representative example of constraint-based modelling is presented by \cite{Gasch2020}, proposing a method for procedural terrain generation that respects user-defined elevation constraints (\cref{fig:coral-island-Gasch2020}). Their system allows users to fix values at specific control points (e.g., paths, landmarks) and then solve a system of equations to propagate these constraints throughout the terrain. The method integrates these constraints with a noise-based procedural function to preserve natural randomness while conforming to user intent. This approach is especially valuable when generating terrains that must align with real-world data or gameplay constraints.
 
     We do not adopt their constraint-solving mechanism, but conceptually relate our profile sketch input to a localised height constraint.
 
-}{sketching-Gasch2020.png}{\cite{Gasch2020} use a top-view sketch to apply constraints (a) on the noise function modelling a terrain, creating an intuitive means to create paths and roads in the resulting terrain (b and c).}{fig:coral-island-Gasch2020}
+}{sketching-Gasch2020-s.png}{\cite{Gasch2020} use a top-view sketch to apply constraints (a) on the noise function modelling a terrain, creating an intuitive means to create paths and roads in the resulting terrain (b and c).}{fig:coral-island-Gasch2020}
 
 \AltTextImage{
     Extending this idea, \cite{Talgorn2018} introduce a real-time sketch-based terrain generation system based on a GPU-accelerated implementation of midpoint displacement. Users sketch curves with explicit elevation values, which act as absolute constraints, and the system extrapolates and interpolates terrain surfaces in real-time. Moreover, the user input influences the elevation constraint and interpolation method properties of the midpoint displacement algorithm using the Red, Green and Blue channels (\cref{fig:coral-island-Talgorn2018}). Their model supports both global and local control over interpolation curvature and roughness, and introduces semantic labelling of sketched features (e.g., ridges vs. rivers) to influence how terrain propagates around constraints. This combination of sketch-based input, constraint propagation, and semantic control enables expressive, large-scale terrain modelling at interactive speeds. We do not reuse their fractal interpolation model, but adopt their notion of semantic labels and hierarchical constraint propagation to support real-time terrain shaping with sketch-defined features.
@@ -369,7 +370,7 @@ The works presented in this section illustrate the diversity of sketch-based app
 \label{fig:coral-island-GAN-scheme}
 \end{figure}
 
-Over the past decade, deep learning has revolutionised many areas of computer graphics and procedural content creation by learning complex, data-driven priors directly from examples. Unlike purely procedural or sketch-based methods, which rely on hand-tuned noise functions or geometric constraints, neural networks are trained to capture subtle patterns and high-frequency details without explicit programming of each effect. In terrain synthesis, this enables models to infer realistic elevation structures, textures, and region transitions from training data, even when that data is sparse or synthetic. In the context of coral reef islands, where high-resolution digital elevation models are rare, deep learning offers a way to abstract away low-level procedural rules and directly learn the mapping from semantic layouts (label maps) to plausible height fields. In the following sections, we first review general Generative Adversarial Networks (GANs) and then focus on their conditional variant (cGAN), which forms the backbone of our sketch-to-terrain translation pipeline.
+Over the past decade, deep learning has revolutionised almost all areas of computer graphics and procedural content creation by learning complex, data-driven priors directly from examples. Unlike purely procedural or sketch-based methods, which rely on hand-tuned noise functions or geometric constraints, neural networks are trained to capture subtle patterns and high-frequency details without explicit programming of each effect. In terrain synthesis, this enables models to infer realistic elevation structures, textures, and region transitions from training data, even when that data is sparse or synthetic. In the context of coral reef islands, where high-resolution digital elevation models are rare, deep learning offers a way to abstract away low-level procedural rules and directly learn the mapping from semantic layouts (label maps) to plausible height fields. In the following sections, we first review general Generative Adversarial Networks (GANs) and then focus on their conditional variant (cGAN), which forms the backbone of our sketch-to-terrain translation pipeline.
 
 \subsubsection{Generative Adversarial Networks}
 \label{sec:coral-island-sota-GAN}
@@ -382,16 +383,16 @@ Generative Adversarial Networks (GANs), introduced by \cite{Goodfellow2014}, are
 
 Through this adversarial process, the generator gradually improves its ability to mimic the underlying data distribution, enabling the creation of realistic outputs from random input.
 
-GANs have been widely adopted for image synthesis, texture generation, and data augmentation, among other tasks. In terrain modelling, they offer the potential to generate plausible landforms by learning directly from real-world data, without requiring hand-crafted procedural rules. The following works demonstrate how different GAN variants have been applied to terrain synthesis, each with its own assumptions, design trade-offs, and limitations.
+GANs have been widely adopted for image synthesis, texture generation, and data augmentation, among other tasks. In terrain modelling, they offer the potential to generate realistic landforms by learning directly from real-world data, without requiring hand-crafted procedural rules. The following works demonstrate how different GAN variants have been applied to terrain synthesis, each with its own assumptions, design trade-offs, and limitations.
 
-Early terrain GANs used unconditional generation, synthetising elevation maps from pure latent noise, without any spatial or semantic guidance. \cite{WulffJensen2018} trained a Deep Convolutional GAN (DCGAN) to generate realistic digital elevation models of mountainous landscapes, showing that terrain-like structures could emerge from purely data-driven learning. The model captured local elevation statistics and allowed for latent space interpolation, enabling smooth variations across generated terrains. However, the lack of spatial conditioning made it difficult to control or constrain features such as ridges, valleys, and coastlines, resulting in landscapes that reflected training set distributions but offered no means for intentional design.
+Early terrain GANs used unconditional generation, synthetising elevation maps from pure latent noise, without any spatial or semantic guidance. \cite{WulffJensen2018} trained a Deep Convolutional GAN (DCGAN) to generate realistic digital elevation models of mountainous landscapes, showing that terrain-like structures could emerge from purely data-driven learning. The model captures local elevation statistics and allowed for latent space interpolation, enabling smooth variations across generated terrains. However, the lack of spatial conditioning make it difficult to control or constrain features such as ridges, valleys, and coastlines, resulting in landscapes that reflected training set distributions but offered no means for intentional design.
 
 \cite{Spick2019} extended this approach with a Spatial GAN that generates height and texture maps jointly. By conditioning the generation process on spatial coordinates, their model enforced local consistency and reduced structural artefacts. This integration simplified the content pipeline by fusing geometry and appearance into a single pass. 
 
 Yet despite improved quality, the generation process remained fundamentally uncontrolled: there was no way for users to specify terrain layout, features, or semantics. As with earlier GANs, the model learned to mimic terrain distributions but could not support authoring or guided synthesis.
 
 %To address the lack of control inherent in purely noise-driven GANs, 
-Later works introduced multi-stage architectures in which a second conditional GAN refines or interprets the output of a first-stage generator. \cite{Beckham2017} proposed a two-step pipeline where a DCGAN generates bare terrain heightmaps from noise, and a conditional pix2pix network adds texture based on semantic cues. This separation of geometry and appearance allows for basic stylisation and terrain remixing, but control in the initial terrain remains limited due to purely noise-driven GAN. In a conceptually similar structure, \cite{Panagiotou2020} reversed the mapping: an unconditional GAN first synthesises aerial RGB imagery from noise, which is then passed to a cGAN trained to predict plausible DEMs. While this image-to-DEM translation enables realistic terrain reconstruction, it relies on large paired datasets and lacks any semantic or structural user control. In both cases, despite the introduction of a conditional refinement stage, the generation process remains fundamentally anchored in an unconstrained latent input, offering limited authoring capability and no principled way to shape landform structures.
+Later works introduced multi-stage architectures in which a second conditional GAN (cGAN) refines or interprets the output of a first-stage generator. \cite{Beckham2017} proposed a two-step pipeline where a DCGAN generates bare terrain heightmaps from noise, and a conditional pix2pix network adds texture based on semantic cues. This separation of geometry and appearance allows for basic stylisation and terrain remixing, but control in the initial terrain remains limited due to purely noise-driven GAN. Using a conceptually similar structure, \cite{Panagiotou2020} reversed the mapping: an unconditional GAN first synthesises aerial RGB imagery from noise, which is then passed to a cGAN trained to predict plausible DEMs. While this image-to-DEM translation enables realistic terrain reconstruction, it relies on large paired datasets and lacks any semantic or structural user control. In both cases, despite the introduction of a conditional refinement stage, the generation process remains fundamentally anchored in an unconstrained latent input, offering limited authoring capability and no intuitive tool to shape landform structures.
 
 These works show a shift towards using conditional models to guide terrain generation with more structure. But because they still start from random noise, they offer little real control over the layout or meaning of the terrain. A natural next step is to guide the generation process directly from user-defined semantic inputs, such as sketches or label maps, to produce terrain that reflects both the training data and the user's intent.
 
@@ -410,15 +411,21 @@ While traditional GANs generate data from noise, conditional GANs (cGANs) extend
 
 In terrain generation, the use of cGANs remains surprisingly rare. The most directly relevant precedent is the work of \cite{Guerin2017}, who train a pix2pix-style cGAN to map sketched terrain features such as valleys, ridgelines, or peaks into full-resolution digital elevation models (DEMs). Their results demonstrate that cGANs can plausibly reconstruct complex topographic forms from sparse semantic cues, offering a promising balance between user control and learned realism. Similarly, \cite{Sisodia2022} apply a cGAN to generate stylised terrain heightmaps from 2D game sketch maps, validating the sketch-to-terrain pipeline.
 
-Another approach from \cite{Voulgaris2021} uses a GAN-based system that maps sparse "altitude dot" maps to plausible terrain imagery, acting as a minimal-interaction generative authoring tool. While not strictly a cGAN, their system reflects a similar spirit: conditioning generation on lightweight user constraints. Likewise, \cite{Panagiotou2020} and \cite{Beckham2017} train a cGAN to invert RGB satellite imagery into elevation data, framing terrain modelling as an appearance-to-geometry and geometry-to-appearance translation task. However, such image-to-DEM (and DEM-to-image) systems are heavily dependent on large paired datasets, which limits their applicability in settings such as coral reef islands, where training data are scarce.
+Another approach from \cite{Voulgaris2021} uses a GAN-based system that maps sparse "altitude dot" maps to plausible terrain imagery, acting as a minimal-interaction generative authoring tool. While not strictly a cGAN, their system reflects a similar spirit: conditioning generation on lightweight user constraints. Likewise, \cite{Panagiotou2020} and \cite{Beckham2017} train a cGAN to invert RGB satellite imagery into elevation data, framing terrain modelling as an appearance-to-geometry and geometry-to-appearance translation task. However, such image-to-DEM (and DEM-to-image) systems are heavily dependent on large paired datasets, limiting their applicability in settings such as coral reef islands, where training data are scarce.
 
-Despite these advances, no standard pipeline exists for generating detailed terrains from semantic layout maps using cGANs, particularly in biologically driven environments. This gap is surprising given the success of cGANs in analogous image synthesis domains, and the explosive progress in the field of deep generative models. The potential of this approach remains underexploited, especially when it comes to coupling user control with long-term geological plausibility.
+Despite these advances, no standard pipeline exists for generating detailed terrains from semantic layout maps using cGANs, particularly in biologically driven environments. %This gap is surprising given the success of cGANs in analogous image synthesis domains, and the explosive progress in the field of deep generative models. 
+The potential of this approach remains underexploited, especially when it comes to coupling user control with long-term geological plausibility.
 
 \midConclusion
 
 In our method, we address this gap by training a pix2pix cGAN to transform label maps (semantic region maps produced by procedural sketch-based modelling) into plausible coral reef island height fields. Each input map encodes key zones of an island (e.g., lagoon, reef crest, beach, island core) using categorical labels, serving as semantic constraints for terrain synthesis. The cGAN generator learns to condition elevation details on both the global layout and the implicit patterns encoded in the training data. By generating our own synthetic dataset with procedurally modelled coral islands (see \cref{fig:coral-island-difficulties-dataset}), we overcome the shortage of labelled elevation data and enforce geological coherence via data generation design.
 
-This setup offers several key advantages: it respects user-defined structure while allowing the generator to introduce realistic variation; it removes procedural biases (radial symmetry and fixed island typologies) and enables the generation of irregular, non-circular landforms while implicitly modelling geological processes such as subsidence and coral accretion through training-time priors.
+This setup offers several key advantages: 
+\begin{Itemize}
+    \Item{} respecting user-defined structure while allowing the generator to introduce realistic variation,
+    \Item{} removing procedural biases (radial symmetry and fixed island typologies),
+    \Item{} enabling the generation of irregular, non-circular landforms while implicitly modelling geological processes such as subsidence and coral accretion through training-time priors.
+\end{Itemize}
 
 In this context, conditional GANs emerge as a powerful yet underutilised tool for terrain modelling. By training on procedurally generated coral island data, we show that sketch-conditioned learning can effectively bridge the gap between high-level user intent and geologically plausible terrain synthesis.
 
@@ -550,7 +557,7 @@ The top-view sketch defines the island's outline as seen from above. Using a sim
 
 Each region's boundary is represented in polar coordinates $\left(\radius_\p, \angl_\p\right)$, with $\radius_\p$ indicating the radial distance from the island's centre and $\angl_\p$ representing the angular position. This polar representation allows us to map the user's sketch onto a circular framework, ensuring smooth transitions between regions and maintaining a coherent island layout.
 
-In this sketch, the user defines the overall horizontal layout of the island, including the size and shape of each feature. Variations in the outline are introduced by allowing the radial distances to vary with angle, ensuring that the island is not strictly symmetrical and introducing more natural, irregular shapes.
+In this sketch, the user defines the overall horizontal layout of the island, including the size and shape of each feature (\cref{fig:coral-island-procedural-height-only}). Variations in the outline are introduced by allowing the radial distances to vary with angle, ensuring that the island is not strictly symmetrical and introducing more natural, irregular shapes.
 
 \begin{figure}[H]
     \autofitgraphics[]{binary-heights-input-only-outlines-2.png, binary-heights-output-only-heightmap-2.png, binary-heights-render-2.png}
@@ -568,9 +575,9 @@ In this sketch, the user defines the overall horizontal layout of the island, in
     \label{fig:coral-island-profile-function}
 \end{figure}
 
-The profile-view sketch defines the vertical elevation profile of the island along any radial direction, offering control over the island's height. In this view, the user specifies the elevation of different regions of the island, such as the island peak, beach, lagoon, abyss, and everything in between, by drawing the corresponding profile curve.
+The profile-view sketch defines the vertical elevation profile of the island along any radial direction, offering control over the island's height. In this view, the user specifies the elevation of different regions of the island, such as the island peak, beach, lagoon, abyss, and everything in between, by drawing the corresponding profile curve (\cref{fig:coral-island-profile-function}).
 
-These regions correspond to key terrain transitions: the highest point of the island (centre), the island border, the beach, the lagoon, and the deep-sea abyss. We interpolate these milestones into a continuous 1D height function $\heightProfile(\distRegions_\p)$, where $\distRegions_\p$ represents a non-uniform region distance from the island's centre, and $h = \heightProfile(\distRegions_\p)$ gives the height at each point. This continuous profile ensures smooth elevation transitions across the island.
+These regions correspond to key terrain transitions: the highest point of the island (centre), the island border, the beach, the lagoon, and the deep-sea abyss. We interpolate these milestones into a continuous 1D height function $\heightProfile(\distRegions_\p)$, where $\distRegions_\p$ represents a non-uniform region distance from the island's centre, and $h(\p) = \heightProfile(\distRegions_\p)$ gives the height at each point. This continuous profile ensures smooth elevation transitions across the island.
 
 By combining the top-view and profile-view sketches, our method generates a coherent 3D terrain model that accurately reflects the user's design by revolution modelling.
 
@@ -593,7 +600,7 @@ Each point's height is computed using the profile function $\heightProfile(\dist
     \begin{align}
         h(\p) = \heightProfile(\distRegions_\p)
     \end{align}
-}{outlines-top-view-x-bar.pdf, outlines-result-x-bar.pdf}{The $\tilde{x}_\p$ parameter is used to stretch the 1D height function $\heightProfile(x)$ to fit the distances from the centre to the outlines of each region defined in the top-view sketch.}{fig:coral-island-parametric-distance}
+}{outlines-top-view-x-bar.pdf, outlines-x-bar.pdf}{The $\tilde{x}_\p$ parameter is used to stretch the 1D height function $\heightProfile(x)$ to fit the distances from the centre to the outlines of each region defined in the top-view sketch.}{fig:coral-island-parametric-distance}
 
 
 
@@ -607,7 +614,7 @@ This approach ensures that the height field accurately follows the elevation pro
 
 The result is a height field that captures both the radial structure of the island (from the top-view sketch) and the vertical elevation profile (from the profile-view sketch), producing an organic representation of islands with smooth transitions between the key terrain features. Three slightly edited height functions on an identical island layout and their associated outputs are presented in \cref{fig:coral-island-procedural-smooth-heights}.
 
-\begin{figure}[H]
+\begin{figure}
     \autofitgraphics[]{smooth-input-outline-heights-1.png, smooth-output-heights-1.png, smooth-render-1.png}
     \autofitgraphics[]{smooth-input-outline-heights-2.png, smooth-output-heights-2.png, smooth-render-2.png}
     \autofitgraphics[]{smooth-input-outline-heights-3.png, smooth-output-heights-3.png, smooth-render-3.png}
@@ -733,7 +740,7 @@ Once the strokes are applied to the velocity field, we displace each points of t
 The deformation is controlled via a user-defined vector field representing the direction and strength of wind flows across the terrain. Users interact with our system by drawing strokes on a 2D canvas using Catmull-Rom splines $\curve$ \cite{Catmull1974}, a type of parametric curve that allows for smooth, continuous paths representing wind patterns. Each stroke defines a wind flow in the curve's direction $\curve'$, a strength $S_\curve$, and an effect width $\std$ (\cref{fig:coral-island-wind-from-strokes}); these wind flows are used to displace the terrain, simulating the gradual reshaping of the island due to wind and wave erosion. The strength of the displacement is controlled by a Gaussian scaling function $G_\std(x)$ that smoothly decreases with the distance from $\closestCp$, the closest point on the parametric curve $\curve$, as follows:
 
 \begin{align}
-    \warp_\curve(\p) = S_\curve \frac{\curve'(\q)}{| \curve'(\q) | } \cdot G_\std\left(| \p - \closestCp | \right) \\
+    \warp_\curve(\p) = S_\curve \cdot \frac{\curve'(\closestCp)}{\norm{\curve'(\closestCp)} } \cdot G_\std\left(\norm{\p - \closestCp} \right) \\
     G_\std(x) = \frac{1}{\std \sqrt{2\pi}} e^{-\frac{x^2}{2 \std^2}}
 \end{align}
 
@@ -747,7 +754,7 @@ The deformation is controlled via a user-defined vector field representing the d
 
 \begin{figure}
     \includegraphics[width = 0.8 \linewidth]{windByStrokes.pdf}
-    \caption{From the parametric curve defined by a user (red), we define the velocity field by considering the velocity (first derivative) of the curve at the closest point $\closestCp$, modulated by a Gaussian distance function $G_{\std}(x)$.}
+    \caption{From the parametric curve defined by a user (red), we define the velocity field by considering the directional derivative $\curve'$ of the curve $\curve$ at the closest point $\closestCp$, modulated by a Gaussian distance function $G_{\std}(x)$ and scaled by the user-defined strength $S_\curve$.}
     \label{fig:coral-island-wind-from-strokes}
 \end{figure}
 
@@ -786,9 +793,10 @@ The deformation vector previously described is then scaled by the resistance fun
 
 % This ensures that the deformation has the greatest impact on areas such as the coastline and beach, where erosion naturally plays a larger role, while deeper regions (abysses) or stronger regions (mountains) remain stable and relatively unchanged.
 
-\begin{figure}[H]
-\autofitgraphics[]{result_low_resistance.png, result_high_resistance.png}
-\caption{(Left) Given a uniform velocity field and a resistance function similar to \cref{fig:coral-island-resistance-function}, the coasts are smoothly eroded while the interior of the island is almost unaffected. (Right) Modifying the resistance function to affect a strong resistance to borders simulates the effect of coast reinforcements.}
+\begin{figure}
+    \autofitgraphics[]{result_low_resistance.png, result_high_resistance.png}
+    \caption{(Left) Given a uniform velocity field and a resistance function similar to \cref{fig:coral-island-resistance-function}, the coasts are smoothly eroded while the interior of the island is almost unaffected. (Right) Modifying the resistance function to affect a strong resistance to borders simulates the effect of coast reinforcements.}
+    \label{fig:coral-island-strong-low-resistance}
 \end{figure}
 
 % \subsubsection{Deformation and height field update}
@@ -796,14 +804,24 @@ The deformation vector previously described is then scaled by the resistance fun
 
 The deformation process results in a modified height field where the terrain has been warped according to user-defined strokes. This deformation introduces non-radial features, such as concave coastlines or irregularities along the beach and lagoon, making the island appear more natural and varied.
 
-Both the height field and the label map (which tracks the terrain regions) are updated to reflect the deformation. This ensures that the semantic information of the terrain remains consistent even after the terrain has been warped. The label map is deformed in the same way as the height field, preserving the logical structure of the island for further post-processing, such as texturing or mesh instancing.
+Both the height field and the label map (which tracks the terrain regions) are updated to reflect the deformation (\cref{fig:coral-island-wind-effect-result}). This ensures that the semantic information of the terrain remains consistent even after the terrain has been warped. The label map is deformed in the same way as the height field, preserving the logical structure of the island for further post-processing, such as texturing or mesh instancing.
 
-For instance, consider a simple circular island generated from the initial height field. By applying strokes along one side of the island, the deformation process can create concave regions along the coastline, making the shape more irregular and mimicking the effects of real-world wind and wave erosion. The resistance function ensures that while the beach and lagoon areas are deformed, the abyss remains largely unaffected as they are far from the wind and wave effective areas, preserving the island's overall structure.
+In \cref{fig:coral-island-wind-stroke-edition}, a simple circular island is generated from the initial height field. By applying strokes along one side of the island, the deformation process can create concave regions along the coastline, making the shape more irregular and mimicking the effects of real-world wind and wave erosion. The resistance function ensures that while the beach and lagoon areas are deformed, the abyss remains largely unaffected as they are far from the wind and wave effective areas, preserving the island's overall structure.
 
 \begin{figure}
-    \autofitgraphics[]{wind-deform-input.png}
-    \autofitgraphics[]{wind-deform-output-original.png, wind-deform-render-original.png, wind-deform-output.png, wind-deform-render.png}
-    \caption{A top-view wind velocity field is defined from user-provided strokes (top, blue), in association with a resistance function (top, red); a height field is deformed accordingly. Left: original height field and render; right: altered results. The beach and lagoon regions are defined with low resistance, which is visible by having only these regions deformed in bottom results.}
+    \setfitratios{1,1,1,1}
+    \autofitcaptions[]{Top-view, Side-view, Deformation field, Resistance}
+    \autofitgraphics[]{wind-deform-input-crop.png}
+    % \autofitcaptions[]{}
+    \setfitratios{1, 1}
+    \autofitcaptions[]{Before deformation, After deformation}
+    \autofitgraphics[]{wind-deform-output-original.png, wind-deform-labels-original.png, small-white.png, wind-deform-output.png, wind-deform-labels.png}
+    \setfitratios{1, 1, 1, 1, 1}
+    \autofitcaptions[]{Height field, Label map, ~, Height field, Label map}
+    \autofitgraphics[]{wind-deform-render-original.png, small-white.png,  wind-deform-render.png}
+    \setfitratios{1, 1}
+    \autofitcaptions[]{Result, Result}
+    \caption{A top-view velocity field is defined from user-provided strokes (top, blue), in association with a resistance function (top, red); a height field is deformed accordingly. Left: original height field and render; right: altered results. The beach and lagoon regions are defined with low resistance, which is visible by having only these regions deformed in bottom results.}
     \label{fig:coral-island-wind-effect-result}
 \end{figure}
 
@@ -895,7 +913,7 @@ The complete coral height field, as displayed in \cref{fig:coral-island-reef-fun
     \autofitgraphics[]{smoothmax_all-k_large.png, smoothmax_all-k_short.png}
     % \autofitgraphics[]{blend_function_low_approx.png, blend_function_high_approx.png}
     % \autofitgraphics[]{blend_compare_closeup_low.png, blend_compare_closeup_high.png}
-    \caption{Blending two functions $f: \R \to \R$ (black, dotted) and $g: \R \to \R$ (blue, dotted) with the $\max$ operator (red), causing discontinuities when $f(x)=g(x)$, and with the $\smoothmax$ operator (green) with various sharpness values $k$, resolving the issue at the cost of slight overestimations with low values of $k$. Right presents a zoom on the domain $x \in [0.5, 1.3]$. }
+    \caption{Blending two functions $f: \R \to \R$ (black, dotted) and $g: \R \to \R$ (blue, dotted) with the $\max$ operator (red curve), causing discontinuities when $f(x)=g(x)$, and with the $\smoothmax$ operator (green curves) with various sharpness values $k$, resolving the issue at the cost of slight overestimations with low values of $k$. Right presents a zoom on the domain $x \in [0.5, 1.3]$. }
     \label{fig:coral-island-blend-function-island}
 \end{figure}
 
@@ -911,7 +929,7 @@ The complete coral height field, as displayed in \cref{fig:coral-island-reef-fun
     % \autofitgraphics[]{blend_function_with_upper_low.png, blend_function_with_upper_high.png}
     % \autofitgraphics[]{blend_closeup_k_5.png, blend_closeup_k_10.png}
     % \autofitgraphics[]{blend_closeup_k_5.png, blend_closeup_k_10.png, blend_closeup_k_50.png}
-    \caption{The $\smoothmax^+$ operator (orange) is a function that is used to overestimate the maximum value of two input functions (dotted lines), especially when the difference between the two functions is small, while the $\smoothmax^-$ function (green) tends to underestimate the $\max$ operator. Taking $\smoothmax$ (red) as the average of $\smoothmax^-$ and $\smoothmax^+$ creates a smooth function closely approximating the $\max$ operator, even with low values of sharpness $k$ (Left: $k=5$, right: $k=50$). Bottom graphs show a zoom on the domain $x \in [0.5, 1.3]$.}
+    \caption{The $\smoothmax^+$ operator (orange curve) is a function that is used to overestimate the maximum value of two input functions (dotted curves), especially when the difference between the two functions is small, while the $\smoothmax^-$ function (blue curve) tends to underestimate the $\max$ operator. Taking $\smoothmax$ (green curve) as the average of $\smoothmax^-$ and $\smoothmax^+$ creates a smooth function closely approximating the $\max$ operator, even with low values of sharpness $k$ (Left: $k=5$, right: $k=50$). Bottom graphs show a zoom on the domain $x \in [0.5, 1.3]$.}
     \label{fig:coral-island-blend-function-island-with-upper}
 \end{figure}
 
@@ -929,7 +947,7 @@ We define our smooth maximum function $\smoothmax(a, b) \in \R$ for $(a, b) \in 
 
 Here, $a = \heightSubsid(\p)$ is the height from the subsided island, $b = \heightCoral(\p)$ is the height from the coral reef feature, and $k$ controls the smoothness of the transition (fixed arbitrarly here at $k=5$ for heights ranging between 0 and 1). Higher values of $k$ bring the $\smoothmax$ function closer to the $\max$ function (\cref{fig:coral-island-blend-function-island}).
 
-This smooth max function guarantees continuity by preventing abrupt height and slope differences between coral regions and the subsided terrain, creating a smooth, gradual transition that mimics the natural blending of coral reefs with deeper areas. The coral feature height field takes precedence where coral can grow, typically in shallow regions. In deeper regions, such as the abyss, the subsided height field naturally dominates, ensuring that the final terrain accurately reflects both subsidence and coral growth processes.
+This smooth max function guarantees continuity by preventing abrupt height and slope differences between coral regions and the subsided terrain, creating a smooth, gradual transition that mimics the natural blending of coral reefs with deeper areas. The coral feature height field takes precedence where coral can grow, typically in shallow regions. In deeper regions, such as the abyss, the subsided height field naturally dominates, ensuring that the final terrain accurately reflects both subsidence and coral growth processes (\cref{fig:coral-island-volcano-example}).
 
 Note that the $\smoothmax$ function is undefined for $a = b$, however, a proof of continuity for $\smoothmax \in C^\infty$ is provided in \crefAnnex{chap:smoothmax-proof} (along with a deeper analysis of the function), resulting in:
 \begin{align}

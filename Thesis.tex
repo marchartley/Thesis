@@ -3,12 +3,11 @@
 %%%% Modèle proposé par colin.avogadri@umontpellier.fr %%%%
 %%%% 3 Février 2022 %%%%
 
-% \documentclass[english,12pt,a4paper,openany,twoside]{book}
+% \documentclass[english,12pt,a4paper,twoside]{book}
 \documentclass[english,12pt,a4paper]{book}
 \let\cleardoublepage\clearpage
 
 \input{packages}
-
 % \usepackage[Sonny]{fncychap} %% Pour changer le style de chapitre
 \usepackage[Lenny]{fncychap}
 
@@ -25,6 +24,7 @@
 % No idea about this line... It removes some warnings
 \setlength{\headheight}{30.0pt}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \input{title style}
 
 \input{customizedCommands}
 \input{glossary}
@@ -59,8 +59,10 @@
 \addcontentsline{toc}{chapter}{Table of Contents}
 \addtocontents{toc}{\protect\hypertarget{tocpage}{}}
 
+% \input{Introduction/Acknowledgements}
 
-%\listoffigures \addcontentsline{toc}{chapter}{List of Figures} \mtcaddchapter
+
+% \listoffigures \addcontentsline{toc}{chapter}{List of Figures} \mtcaddchapter
 %\listoftables \addcontentsline{toc}{chapter}{List of Tables}   \mtcaddchapter
 
 \include{Introduction/Forewords}
@@ -81,14 +83,11 @@
 \addcontentsline{toc}{chapter}{References}
 \printbibliography[title=References]
 
-% \glsaddallunused
-% \printglossary
-% \printglossary[type=\acronymtype]
-%\bibliography{../references_terrain}
-
 \include{Appendix/Appendix}
 
 % \backmatter
+
+% \addFileAtTheEnd{Introduction/Forewords}
 
 \textcolor{white}{\total{citenum}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
