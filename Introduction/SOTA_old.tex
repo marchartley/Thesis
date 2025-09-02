@@ -1,3 +1,6 @@
+% \chapter{State of the art}
+% \label{chap:state-of-the-art}
+% \minitoc
 \resetgraphicspath
 \appendtographicspath{{./Introduction/figures}}
 \appendtographicspath{{./Chapter 1/figures/} }
@@ -8,34 +11,16 @@
 \label{chap:background}
 \minitoc
 
-The purpose of this chapter is to establish the common ground required for understanding the remainder of this thesis. Because the three contributions presented in Chapters X–Y each come with their own specialised state of the art, the role of this Background chapter is not to provide an exhaustive survey of algorithms, but rather to:
+This thesis dives in the domain of procedural underwater environment generation, falling at the intersection of procedural generation, terrain representation, terrain authoring and interactions, and underwater biology. In this chapter we introduce the basis for understanding the different notions used in the rest of the document. We first present the notion of procedural terrain generation which creates virtual landscapes to be used in the entertainment applications and scientific simulations with as few as possible user efforts, which will be the basis of our work all along. As the terrain data structure, or "terrain representation", has a critical importance over the algorithms of generation, interaction and simulation, we will overview the available representations used in the different chapters of this work, presenting the advantages and inconvenients of each structure. 
 
-introduce the key concepts and terminology shared across all contributions;
+User interactions means on generation spans from manually manipulating each triangle of a 3D model (giving too much work to the user) to fully automatic generation of the model (giving too few control on the result). A compromise must be found to strike a balance between realism and control. We propose an overview of the speed-realism-controllability challenge.
 
-clarify the main terrain representations and interaction paradigms relevant to procedural modelling;
-
-highlight the biological and ecological principles of coral reefs that directly constrain modelling choices;
-
-outline the challenges specific to underwater landscape synthesis that motivate the research directions pursued in this work.
-
-Procedural generation of environments sits at the intersection of realism, speed, and user control. Achieving all three simultaneously remains an open challenge, particularly in the context of coral reef islands where terrain is co-constructed by geological processes, hydrodynamics, and living organisms. Understanding how existing approaches position themselves along this speed–realism–control triangle will provide a framework for situating our own contributions.
-
-A second cross-cutting issue is the choice of representation. From heightmaps to voxels and layered models, each structure affords specific strengths (efficiency, volumetric detail, analytic flexibility) but also imposes limitations (no overhangs, high memory cost, restricted editing). Because each contribution in this thesis relies on a different representation, a concise overview is needed upfront to avoid duplication later.
-
-Finally, modelling coral reef seascapes demands knowledge beyond computer graphics. The morphology and ecology of corals impose environmental constraints (light dependence, depth ranges, growth morphologies, competition with algae) that must be abstracted into procedural rules. In turn, the underwater setting introduces observational and modelling challenges—ranging from scarce volumetric data to fluid–biology feedbacks—that explain why existing terrestrial terrain methods cannot be directly transplanted.
-
-Together, these elements form the conceptual scaffolding for the rest of the document. The chapter first reviews the foundations of procedural terrain generation, then examines terrain representations and interaction paradigms, before introducing coral biology and the distinctive challenges of underwater landscape modelling.
-
-% This thesis dives in the domain of procedural underwater environment generation, falling at the intersection of procedural generation, terrain representation, terrain authoring and interactions, and underwater biology. In this chapter we introduce the basis for understanding the different notions used in the rest of the document. We first present the notion of procedural terrain generation which creates virtual landscapes to be used in the entertainment applications and scientific simulations with as few as possible user efforts, which will be the basis of our work all along. As the terrain data structure, or "terrain representation", has a critical importance over the algorithms of generation, interaction and simulation, we will overview the available representations used in the different chapters of this work, presenting the advantages and inconvenients of each structure. 
-
-% User interactions means on generation spans from manually manipulating each triangle of a 3D model (giving too much work to the user) to fully automatic generation of the model (giving too few control on the result). A compromise must be found to strike a balance between realism and control. We propose an overview of the speed-realism-controllability challenge.
-
-% Finally, this work being tailored for underwater environments surrounding coral reef islands, we provide an overview of coral biology and coral reef definitions.
+Finally, this work being tailored for underwater environments surrounding coral reef islands, we provide an overview of coral biology and coral reef definitions.
 
 \section{Procedural terrain generation}
 \label{sec:state-of-the-art_procedural-generation}
 
-Procedural generation consist of algorithmically creating content based on predefined rules, mathematical models, or data-driven methods, rather than authoring it manually. The key advantage include reducing storage needs (since content is generated on-the-fly), enabling rapid creation of large or varied content, and supporting both reproducibility and controlled variability. These benefits are especially valuable in terrain generation where large landscapes or seascape can be created from compact parameters sets where artists or researchers can iterate quickly towards a desired output through as few trials and errors as possible.
+Procedural generation consist of algorithmically creating content based on predefined rules, mathematical models, or data-driven methods, rather than authoring it manually. The key advantage include reducing storage needs (since content is generated on-the-fly), enabling rapid creation of large or varied content, and supporting both reproducibility and controlled variability. These benefits are especially valuable in terrain generation where large landscapes or seascape can be created from compact parameters sets where artists or researchers can iterate quickly towards a desired output through as few trials and errors as possible. %  In the context of terrain generation, these advantages allow for the creation of vast landscapes or seascapes with a relatively small parameter set and facilitate interactive pipelines where artists or researchers can iterate quickly without storing every variant.
 
 \AltTextImage{
 The conceptual roots of procedural techniques in graphics trace back to fractal geometry (see \cref{fig:intro-fractal}) and noise functions (see \cref{fig:intro-noises}). Mandelbrot's work on fractals demonstrated how complex, self-similar structures can arise from simple rules and randomness, influencing landscape modelling approaches that mimic natural roughness and multi-scale detail \cite{Mandelbrot1983}. Perlin's introduction of gradient noise provided a practical mechanism to generate coherent pseudo-random patterns for textures and terrain features \cite{Perlin1985}. These foundational ideas underpin many terrain algorithms, where noise at multiple scales produces hills, valleys, and finer details.
@@ -45,11 +30,17 @@ The conceptual roots of procedural techniques in graphics trace back to fractal 
     Procedural paradigms are often categorised as deterministic (repeatable given fixed inputs), stochastic (introducing randomness for variation), or hybrid (structure defined by deterministic rules, with randomness filling details). Rule-based systems, where content emerges via iterative application of predefined rules or grammars, play a central role in procedural generation, particularly in generating structured features (e.g., river networks, vegetation patterns). In terrain generation, deterministic components ensure global coherence (e.g., major landmass shapes), while stochastic elements add natural variability (e.g., subtle elevation perturbations). Methods proposed in later chapters leverage these paradigms: for instance, the sketch-based island method, combined with noise and data-driven augmentation from \cref{chap:coral-island} yields varied yet controlled outputs, and our ecosystem generator presented \cref{chap:semantic-representation} is governed by rule-based systems with stochastic sampling.
 }{noises.pdf}{Example of procedural noises}{fig:intro-noises}
     
+% \AltTextImage{
 Recent advances have started integrating machine learning to learn distributions of terrain patches or entire landscapes from data, enabling synthesis of realistic terrain patterns beyond hand-tuned noise parameters, using especially generative models such as GANs or autoencoders. In \cref{chap:coral-island} we use a conditional GAN to diversify coral island heightmaps. However, a detailed description of learning-based terrain methods appears in that chapter's State-of-the-Art.
+% }{Graph-coloring-Kim2020.png}{Rule-based graph colouring from \cite{Kim2020}}{fig:intro-rule-based-Kim2020}
 
 In interactive and production pipelines, procedural systems must balance realism, speed, and user control. Fast evaluation (often parallelised and/or using GPU) supports real-time or near-interactive feedback for artist-driven editing. Parameter design and UI tools (e.g., sketching, semantic objects, masking) are critical to let users influence generation intuitively. The semantic \glosses{EnvObj} framework proposed in \cref{chap:semantic-representation} exemplifies user-centric design, enabling multi-scale editing and expert knowledge integration.
 
+% \AltTextImage{
 Procedural terrain generation also encompasses physical simulation techniques such as erosion and sediment transport models, that refine initial shapes to enhance plausibility. These simulations are typically more expensive but can run offline or via parallel algorithms. \cref{chap:erosion} presents a particle-based erosion method applicable across representations (height fields, voxels, etc.), reflecting this integration of procedural and physical approaches.
+% }{CFD-Sphynx.png}{Fluid simulation over the Great Sphinx}{fig:intro-cfd}
+
+
 
 
 Terrain refers to the physical features and configuration of a specific area of land. It includes the elevation, slope, and the overall topography (e.g., mountains, valleys, plains, ...). Terrain is often used to describe the surface characteristics of the land, focusing on the natural contours and the geographical aspects that define a region's physical form.
@@ -95,7 +86,7 @@ Elevation models describe the terrain by a height field $h : \R^{2}  \to  \R$, a
 %.....................................................................
 \subsubsection{Discrete height fields}
 %.....................................................................
-Discrete height fields, often called "heightmaps", store sampled elevations on a regular grid (\cref{fig:intro-multiple-representations}, top). Formally, they are a function $h_{ \text{d}} : \mathbb{Z}^{2} \to \R$ defined only on integer lattice points. To render or analyse the terrain at arbitrary positions we reconstruct a continuous surface $ \tilde{h}_{ \text{d}} : \R^{2} \to \R$ using interpolation (linear, bilinear, bicubic, ...) (\cref{fig:erosion-elevation-representation}, right). Their raster nature aligns with GPUs and with convolutional neural architectures; our first contribution (\cref{chap:coral-island}) relies on this representation to fit the greyscale image format. Discrete grids scale to large terrains with modest memory footprint, but fixes the dimensions and resolution of the domain.
+Discrete height fields, often called "heightmaps", store sampled elevations on a regular grid (\cref{fig:intro-multiple-representations}, top). Formally, they are a function $h_{ \text{d}} : \mathbb{Z}^{2} \to \R$ defined only on integer lattice points. To render or analyse the terrain at arbitrary positions we reconstruct a continuous surface $ \tilde{h}_{ \text{d}} : \R^{2} \to \R$ using interpolation (linear, bilinear, bicubic, ...) (\cref{fig:erosion-elevation-representation}, right). Their raster nature aligns with GPUs and with convolutional neural architectures; our first contribution (\cref{chap:coral-island}) relies on this representation to fit the greyscale image format. Discrete grids scale to large terrains with modest memory footprint, but fixes the dimensions and resolution of the domain. %, but they cannot represent multi-valued geometry (overhangs, caves) and the choice of interpolation affects smoothness and aliasing.
 
 %.....................................................................
 \subsubsection{Implicit height fields}
@@ -106,6 +97,15 @@ Discrete height fields, often called "heightmaps", store sampled elevations on a
 }{primitives_representation.png}{Primitives composition}{fig:erosion-primitives-representation}
 
 Beyond the construction-tree model of \cite{Genevaux2015} (\cref{fig:erosion-primitives-representation}), several other implicit 2.5D terrain representations are commonly employed: gradient-noise fractals (e.g., Perlin, Simplex or FBM) provide fast, tileable, and stochastic detail; spectral or analytic formulas (e.g., ridge-noise, domain warps or erosion kernels) enable semantically tuned landforms ; feature-curve diffusion techniques allow users to define ridges and rivers via polylines which are then diffused into the height field ; vector-primitive models blend geometric shapes like ellipsoids or plates directly into the terrain surface ; and radial-basis-function (RBF) implicits fit a sparse set of control points with smooth Hermite interpolants for interactive editing .
+
+% Beyond the construction-tree model of \cite{Genevaux2015} (\cref{fig:erosion-primitives-representation}), five families are common:
+% \begin{Itemize}
+%     \Item{Gradient-noise fractals (Perlin, Simplex, FBM)}: fast, tile-able, stochastic detail.
+%     \Item{Spectral or analytic formulas:} (ridge noise, warps, erosion kernels) for hand-tuned landforms.
+%     \Item{Feature-curve diffusion:} ridges/rivers defined as polylines then diffused to a height field.
+%     \Item{Vector-based / primitive sets:} ellipsoids or plates blended into a surface.
+%     \Item{RBF implicits:} sparse control points fitted with Hermite radial basis functions for interactive editing.
+% \end{Itemize}
 
 These alternatives are surveyed in depth in \cref{chap:coral-island}' State-of-the-Art.
 
@@ -131,6 +131,13 @@ A voxel grid partitions space into a regular lattice $\Z^{3}$; each lattice poin
 \cite{Laine2010,Villanueva2017,Museth2013}.
 
 Voxel grids support boolean set operations, distance transforms, morphological filters, and mesh extraction (Marching Cubes, Dual Contouring) in a very similar fashion as the their 2D conterparts in image processing (binary images, indexed images, and greyscale images).
+
+% \begin{figure}
+%     \autofitgraphics{voxels-binary-density.png}
+%     \caption{Binary surface (left) vs.\ density-grid isosurface (right). Density grids preserve curved boundaries without refining the lattice.}
+%     \label{fig:intro-voxels-binary-density}
+% \end{figure}
+
 
 \AltTextImage{
     %=====================================================================
@@ -162,7 +169,122 @@ Storing a real-valued scalar per voxel enables implicit isosurfaces inside the g
 }{Layer-representation.png}{Layer representation as described in \cite{Benes2001}. \cite{Peytavie2009b} allows air and water strata to be inserted between solid material strata. }{fig:intro-layers}
 \AltTextImage{
     \cite{Peytavie2009b} improved the structure in two critical ways. First, they introduce an explicit air layer that may be inserted between solid strata to allow true 3D features such as caves, overhangs, and arches. Second, they couple this discrete stack data with a convolution-based implicit surface field $f(\p)$, defined as the normalized local volume fraction of solid material $\mathcal{V}_\mathcal{M}$ within a cubic kernel $\mathcal{V}_\Omega$. The zero-level set $\mathcal{V}_\mathcal{M} = \frac{1}{2} \mathcal{V}_\Omega$ is polygonized to form a smooth, editable surface mesh (see \cref{fig:intro-layers-hybrid}, using the empty volume $\mathcal{V}_\emptyset = \mathcal{V}_\Omega - \mathcal{V}_\mathcal{M}$). 
+    %Terrain edits or erosion operations are applied to this implicit field, which in turn updates the underlying material stacks, followed by a stabilization step (e.g.\ enforcing repose-angle constraints among sand and rock layers). The result is a hybrid volumetric/implicit terrain model that supports interactive editing, multiple materials, and true 3D geological structures.
+    % Layered terrain stores a per-column stack $\mu_{ \text{layer}} : \mathbb Z^{2} \to [(\mathcal M,h)]_{n}$, originally proposed by \cite{Peytavie2009b} for simulating sediment layers. Each layer has a material, thickness and optional porosity, letting erosion algorithms remove or deposit entire strata efficiently.
 }{Terrain_representations/Layer-representation-implicit.png}{The implicit volume (right, red) computed from layers-based terrain (left) is obtain by computing all points $\p$ for which a cubic kernel support (middle) contains more solid material $\mathcal{V}_\mathcal{M}$ than fluid material $\mathcal{V}_\emptyset$ in \cite{Peytavie2009b}}{fig:intro-layers-hybrid}
+
+
+
+
+
+
+
+
+
+% % Terrain refers to the physical features and configuration of a specific area of land. It includes the elevation, slope, and the overall topography, such as mountains, valleys, and plains. Terrain is often used to describe the surface characteristics of the land, focusing on the natural contours and the geographical aspects that define a region's physical form.
+
+% % \AltTextImage{
+% % While the term "terrain" describes the physical characteristics of land, it does not include the natural elements that shape an area's identity. Elements such as vegetation, water bodies, and climatic conditions, such as snow cover, are essential to how we perceive and understand a landscape. Therefore, when discussing procedural generation in virtual environments, "landscape generation" is a more fitting term, as it integrates these natural elements along with the topographical features.
+
+% % In addition to "terrain generation", other terms such as "landscape generation", "world generation", and "environment generation" can be used to describe the creation of virtual landscapes. These terms are interchangeable and can all refer to the process of generating physical terrain along with natural and artificial elements. However, by convention and for simplicity, the term "terrain generation" is most commonly used in the field. Despite its original focus on the physical features of the land, "terrain generation" has evolved to encompass a broader range of environmental elements, making it a convenient and widely accepted term for describing the comprehensive process of creating virtual environments.
+
+% % }{Multi-representations-at-once-heightmap.png, Multi-representations-at-once.png}{An initial height map (top) can be converted into multiple terrain representations (bottom, from left to right): height field, layered model, density-voxel model (rendered with Marching Cubes), binary-voxel model}{fig:intro-multiple-representations}
+
+% A terrain can be represented in various ways (see \cref{fig:intro-multiple-representations}, which presents a terrain in four different representations), each of them suited to a given application. Procedural algorithms and interaction means are most often restricted to a single representation, and converting a representation to another introduce data loss, making the choice of the underlying representation crucial for desired outputs. In the different chapters of this thesis, we will move from one representation to another depending on the scope of the work, so we will only provide here a short description of the representations used in this work, however, more details can be found in \cite{Galin2019}.
+
+% \subsection{2.5D representations (Elevation models)}
+
+% \begin{figure}
+%     \includegraphics[width = 0.8 \linewidth]{elevation_representation.png}
+%     \caption{Elevation models are either (left) composed of functions that can be evaluated at any point or (right) constructed by discrete samples, with the introduction of interpolation to obtain a continuous surface. }
+%     \label{fig:erosion-elevation-representation}
+% \end{figure}
+
+% Elevation models are a fundamental approach in terrain representation, widely used in procedural generation due to their simplicity and efficiency. These models define the terrain as a height field function $h : \R^2 \to \R$, where each point in a 2D plane is mapped to an elevation value. These models assume that each point on the terrain can be described by a single height value, hence making them suitable for landscapes without complex 3D features like overhangs or caves. While we visualise elevation models in three dimensions, they are mathematically considered two-dimensional functions, refered then as "2.5D models". These models are closely related to image processing due to the analogical mathematical definition between height fields and image fields.
+
+% Elevation models are widely used in industries where large-scale terrain representation is crucial. In video games, they provide the foundation for creating vast open-world environments. In Geographic Information Systems (GIS) and remote sensing, height fields are used to represent real-world terrain data, offering a practical means of visualising and analysing geographical features. The ability to manipulate and control terrain features procedurally makes elevation models a common choice for applications that require efficient terrain generation and rendering.
+
+% Elevation models offer a powerful method for representing terrains in procedural generation, combining simplicity with flexibility. While they have limitations in representing complex 3D structures, their efficiency and compatibility with existing algorithms make them indispensable in a variety of applications.
+
+% \begin{figure}
+%     \autofitgraphics[width=.5 \linewidth]{Terrain_representations/heightmap_high-res_628x628.png}
+%     % \autofitgraphics[]{Terrain_representations/heightmap_all-at-once-vertical.png}
+%     \autofitgraphics[]{Terrain_representations/heightmap_all-at-once.png}
+%     \caption{Top: an implicit height field does not require triangles and can be rendered at any resolution using raytracing. Bottom: discrete height fields (sampled from top) have a fixed resolution, with the larger the number of triangles the closer to the implicit version. Downsampling will inveitably lose information. }
+%     \label{fig:sota-representations-heights-resolutions}
+% \end{figure}
+
+% \subsubsection{Implicit height fields}
+
+% % \begin{wrapfigure}{L}{0.4\textwidth}
+% % \includegraphics[width=\linewidth]{primitives_representation.png}
+% % \caption{Primitives composition}
+% % \label{fig:erosion-primitives-representation}
+% % \end{wrapfigure}
+
+% \AltTextImage{
+%     Implicit height fields represent the terrain as a mathematical function that provides a height value at any given point in the domain. These functions can be procedural or closed-form expressions, allowing for compact storage and infinite precision in theory. The elevation function allows for easy manipulation of terrain features, making it ideal for generating terrains that require smooth, continuous surfaces. However, the primary disadvantage is the computational complexity involved in evaluating the function, especially for large or highly detailed terrains. The challenge lies in constructing functions that can realistically represent large-scale terrains with complex landforms.
+% }{primitives_representation.png}{Primitives composition}{fig:erosion-primitives-representation}
+
+% This representation, inherently multi-scale by its mathematical nature, will be the main support for our \cref{chap:semantic-representation}'s environment generations.
+
+% \subsubsection{Discrete height fields}
+
+% Discrete height fields, or explicit height fields or "height map", are one of the most prevalent methods for terrain representation. These models consist of a 2D grid where each cell contains a height value, representing the elevation at that point. Height fields are particularly advantageous because they are simple to implement and are directly compatible with many rendering techniques and hardware, but also due to their closeness to image processing, a domain studied for many decades now. As the deep learning architectures used in \cref{chap:coral-island} are designed for image generation, the first contribution of this manuscript exclusively uses this representation.
+
+% The main advantage of height fields is their ability to handle large datasets efficiently, providing a balance between memory usage and detail. However, they are limited by their inability to represent terrains with overhangs or caves, as each point on the grid can only hold a single elevation value. Additionally, height fields often require interpolation methods, commonly linear, bilinear, or bicubic interpolation, to reconstruct a continuous surface from the discrete grid points.
+
+% \subsection{Volumetric models}
+
+% % \begin{figure}
+% %     \includegraphics[width = 0.8 \linewidth]{volumetric_representation.png}
+% %     \caption{Volumetric functions}
+% %     \label{fig:erosion-volume-representation}
+% % \end{figure}
+
+% Volumetric models represent a more complex approach to terrain modelling, allowing for the depiction of 3D features that go beyond the simple surface-based representation provided by elevation models. These models capture not only the surface of the terrain but also its internal structure, making them ideal for representing terrains with overhangs, caves, and other subsurface features.
+
+% Volumetric models, including layered materials, voxel grids, and implicit models, are essential in applications where terrain complexity and detail are primordial. Typically, in geological simulations these models allow for accurate representation of subsurface structures and processes. Voxel models are widely used in games that require dynamic terrain deformation, providing a rich interactive environment for players. Implicit models are favoured in situations where smooth, continuous surfaces are needed, or require lightweight representation.
+
+% The erosion simulation presented in \cref{chap:erosion} evolves in the 3D space and will present applications for discrete and implicit volumetric representations.
+
+% \subsubsection{Implicit volumetric models}
+% \AltTextImageR{
+%     Implicit volumetric models describe the terrain's shape and features using an implicit function. The terrain is represented by a mathematical function $f: \R^3 \to \R$ that determines the terrain surface by evaluating to an isovalue, often zero. This function provides a continuous representation of the terrain, with points inside the terrain returning positive values and while points in the air evaluate to negative values. It allows for the seamless representation of complex terrain features and varying geological structures, which are impossible to represent with elevation models.
+% }{Csg_tree.png}{Constructive Solid Geometry (CSG) uses boolean operators (union, intersection, difference) to construct 3D models. }{fig:intro-CSG}
+
+% One of the key advantages of implicit models is their ability to produce smooth surfaces without the need for discrete polygonal meshes, which can result in realistic and natural-looking terrains. However, the computational complexity of evaluating the implicit function, especially for large terrains, can be a significant drawback. Additionally, converting an implicit surface into a mesh for rendering can be challenging and resource-intensive \cite{Araujo2015}.
+
+% \subsubsection{Layered models}
+% Layered models are a type of volumetric representation that encode different material layers within the terrain and are defined by a function $\mu : \R^3 \to \material$, where $\material$ denotes the material type at any given point in 3D space. This allows for a detailed representation of the terrain's internal composition, which can be crucial for applications requiring realistic geological simulations. Each layer is defined by its elevation, just like an elevation model, but multiple layers can be stacked to represent complex geological formations. These layers might include materials such as bedrock, sand, soil, or water, each contributing to the overall structure of the terrain. Layered models are particularly useful in simulations that involve processes such as erosion or sedimentation, where the interaction between different material layers affects the physical process.
+
+% \AltTextImage{
+%     The primary advantage of layered models is their ability to represent a stratified terrain with distinct material properties, which can be manipulated individually. The layered model proposed in \cite{Peytavie2009b} uses discrete height fields with each column defined by a stack of pairs of material type and height $(\material, h)$. Terrain surface is found at the interaction between any material and the "air" or "water" material.
+% }{Layer-representation.png}{Layer representation as described in \cite{Peytavie2009b}}{fig:intro-layers}
+
+
+
+% \subsubsection{Voxel grid models}
+% Voxel grids are a common method for representing 3D terrains in procedural generation, offering the ability to capture complex internal structures and features that are difficult or impossible to represent with surface-based models. In a voxel grid, the 3D space is divided into a regular grid of small, cube-shaped elements called voxels (volumetric pixels). Each voxel holds information about the material or properties of the terrain at that specific point in space. This approach allows for detailed modelling of volumetric features and intricate underground networks. The regular grid structure allows for the use of image processing-oriented algorithms.
+
+% There are three primary types of voxel grids used in terrain representation: binary voxel grids, material voxel grids, and density voxel grids. Each has distinct characteristics, advantages, and limitations, making them suitable for different applications.
+
+% \subsubsubsection{Binary voxel grids}
+% Binary voxel grids are the simplest form of voxel representation. In these grids, defined $f: \R^3 \to {0, 1}$, each voxel is either "filled" or "empty," representing the presence or absence of material. Binary voxel grids are straightforward to implement and require much less memory compared to more complex voxel representations, making them ideal for applications where the primary concern is whether a space is occupied or not.
+
+% \AltTextImage{
+%     The simplicity of binary voxel grids is one of their main advantages. They are easy to understand and visualise, with each voxel requiring only a single bit of information to represent its state. Additionally, because only a binary state is stored, these grids can be memory-efficient when combined with compression techniques such as Sparse Voxel Octrees (SVOs) \cite{Laine2010} or voxel Directed Acyclic Graphs (DAG) \cite{Villanueva2017,Careil2020}. The simplicity of the data structure also allows for quick processing, making binary voxel grids suitable for real-time applications where performance is required. However, the binary nature of these grids limits their ability to represent variations in material density or properties, or even smoothness, resulting in less detailed terrain models. This can lead to hard, blocky edges in the terrain, which may appear unnatural without additional smoothing or processing, as we can see in \cref{fig:intro-voxels-binary-density}.
+% }{voxels-binary-density.png}{(Left) Binary voxel and (right) density voxel grids are encoded identically in a regular 3D lattice. The surface of binary voxel grid is most often presented as the faces of the filled cells in contact with empty cells, resulting in much more sharp edges compared to the isosurface of density voxels grids resulting from the Marching Cubes or Dual-Contouring algorithms. }{fig:intro-voxels-binary-density}
+
+% \AltTextImage{
+%     \subsubsubsection{Material voxel grids}
+%     Material voxel grids, defined as $\mu: \R^3 \to \material$, can be used in applications where simple occupancy information is not sufficient, but also require internal properties for each voxel from a finite set of possible voxel types such as geological texture or behaviour in a cellular automata point of view. For example, voxel-based game \citeProgram{Minecraft2011} uses material grids to create terrains composed of solid blocks the user can identify easily from their texture (\cref{fig:intro-material-voxels-minecraft}). These voxel grids are a specialisation of layer-based representation whose column height of each material layer is fixed to 1.
+% }{material-voxels-minecraft.png}{Each cell of the voxel grid is encoded with a material, visible by different textures. }{fig:intro-material-voxels-minecraft}
+
+% \subsubsubsection{Density voxel grids}
+% Finally, density voxel grids allow each voxel to store a range of values, representing varying degrees of material presence with $f: \R^3 \to \R$. Instead of a simple discrete state, a density voxel grid assigns a continuous value to each voxel, which can represent material density, opacity, or other properties. This added complexity enables density voxel grids to represent subtle variations in terrain, such as gradual changes in material density or smooth transitions between solid and empty spaces, allowing for more realistic and natural-looking terrain models.
+
+% Density voxel grids are often used in high-fidelity simulations where the precision of the isosurface is essential (see \cref{fig:intro-voxels-binary-density}). They are found in applications such as medical imaging, scientific visualisations, and advanced terrain modelling for films and visual effects. These grids are also employed in procedural terrain generation systems that require smooth and natural transitions between different terrain features.
 
 
 
@@ -205,6 +327,10 @@ On the other hand, speed is about the efficiency of content generation within ac
 The execution speed of a procedural algorithm is crucial as the user will fine-tune the parameters before being satisfied \cite{Smelik2014}.
 Optimising speed involves using efficient algorithms and parallel processing. Almost all recent works achieve fast execution times thanks to high parallelisation on GPU \cite{Olsen2004}. Other types of algorithm may rely on a refinement paradigm, generating a coarse result at first and then iteratively adding finer details, such that the global output shape is available long before the real final result.
 
+% Control refers to how much users can influence or direct the procedural generation process to meet their specific needs or preferences. This includes parameters fine-tuning, allowing users to modify parameters such as the noise function parameters or the simulation parameters, and artistic control tools, made for artists and designers, to guide the generation process with the use of masks and brushes, allowing for combination and mixing of different algorithms.
+
+% Managing diverse and sometimes conflicting user expectations, such as balancing creative freedom with the demand for realistic outcomes, requires careful consideration. Additionally, it is essential to balance the complexity of procedural systems to ensure they remain user-friendly, avoiding overwhelming users or producing results that feel artificial or inconsistent.
+
 
 \section{Coral biology}
 \label{sec:state-of-the-art_biology}
@@ -244,10 +370,39 @@ Coral colonies adopt varied growth forms adapted to local conditions (light, wat
 
 \end{Itemize}
 
+% Although coral morphology is diverse, ecological surveys and modelling studies often organize corals into a small number of dominant growth-form categories—typically massive, encrusting, branching, plate (laminar/tabular), and foliose. These forms capture the structurally and functionally significant variation in reef assemblages (e.g. Swierts & Vermeij 2016; Kramer et al. 2020; Oh et al. 2025).
+
+% Zonation: each form appears in depth- and energy-specific bands (massive on slopes; branching on crest/fore-reef; foliose on flats/back-reef; table in shallow flats; encrusting in deeper/stable). This results in a necessity of depth/light/slope masks to assign morphology types; this yields realistic spatial patterns in generated reefs. Moreover, different morphologies define habitat templates and resistance fields; in EFT, they become entity types with distinct parameter sets.
+
 \subsection{Ecological interactions}
 
+% Corals act as dynamic ecological agents, engaging in feedback loops with their environment. Modelling them requires accounting for spatial diffusion via diverse reproductive modes, competition for resources, and bidirectional environmental influences. We will describe ecological agent modelling in \cref{chap:semantic-representation}'s state of the art section.
+
+% Dispersal occurs at multiple scales through budding (local polyp duplication), brooding (larvae settle near parent), polyp bail-out (stress-induced short-range resettlement), fragmentation (medium-range reattachment after disturbance), and broadcast spawning (long-range larval drift). In simulation, these map to multi-scale seeding rules or probabilistic dispersal kernels triggered by environmental and stochastic parameters.
+
+% Environmental stressors (such as elevated temperature, increased \ch{CO_2}, excess nutrients from runoff) heighten bleaching, reduce resilience, and favour algal proliferation. Sea-level rise imposes vertical growth constraints: reefs may keep pace, lag then match, or fail to keep up. These factors translate into dynamic parameters affecting coral health or mortality state transitions (e.g., healthy - stressed - dead) and limiting maximum reef elevation relative to sea-level scenarios, enabling exploration of degradation or recovery trajectories.
+
+% Competition for light, substrate, and nutrients allows faster-growing algae (especially under high nutrients or low herbivory) to overtake corals, flattening topography and lowering complexity. Simulation can use local competition rules or cellular-automata-style state transitions driven by fields (nutrient, light, herbivory), representing algal zones as lower-relief substrate. Bioerosion by fish and invertebrates produces sediment that fills gaps, suggesting episodic sediment-deposition events balancing accretion and breakdown to shape net reef morphology.
+
+% Coral structural complexity feeds back via functional proxies (e.g., habitat-suitability fields, flow-resistance modifiers) instead of full geometry. These guide hydrodynamic or movement simulations (modulating flow routing and energy dissipation) and inform reef-dependent agent distributions. Reef morphology (crest, slopes, flats) attenuates waves, stabilises sediments, and buffers adjacent habitats (e.g., seagrass, mangroves). In procedural terrain generation, integrate reef features at appropriate elevations with roughness parameters feeding erosion or hydrodynamic modules without resolving every crevice.
+
+% Corals are seen as a whole dynamic ecological component inside their ecosystem as they behave in response to their environment and affect it in a feedback loop. In order to model their behaviour, we need to consider their ability to diffuse themselves through reproduction, compete for resources with other agents, and affect and be affected by their environment in a feedback loop.
+
 % % [CORAL DIFFUSE IN THE ENVIRONMENT]
+
 Coral dispersal and colonisation occurs at multiple scales through budding (local polyp duplication), brooding (larvae settle near parent), polyp bail-out (stress-induced short-range resettlement), fragmentation (medium-range reattachment after disturbance), and broadcast spawning (long-range larval drift).
+% Coral dispersal and colonisation combine sexual and asexual modes, spreading their offspring very locally or extremely far depending on the process. From the closest to the farthest, we can note:
+
+% \begin{Itemize}
+%     \Item{Budding:} produces local expansion on the existing colony (fine-scale growth rule).
+%     \Item{Brooding:} internal fertilisation, larvae released when more developed, settling close to parent, promoting clustered growth.
+%     \Item{Polyp bail-out:} happens occasionally when individual polyps detach under stress and resettle; short-range dispersal under adverse conditions.
+%     \Item{Fragmentation:} occurs when broken fragments reattach elsewhere, enabling medium-range spread and recovery after disturbance.
+%     \Item{Broadcast spawning:} mass synchronous release of eggs and sperm; external fertilisation yields larvae (planulae) that drift with currents, allowing long-range dispersal of a few kilometres.
+% \end{Itemize}
+
+% These modes show a clear capacity of corals to diffuse in their environment by emitting sexual and asexual parts locally that drift with the water currents.
+
 
 \AltTextImage{
     % [CORAL IS INFLUENCED BY THE ENVIRONMENT]
@@ -274,7 +429,9 @@ For the same reasons, reef crests break incoming waves; morphological complexity
 
 The erosion process is directly impacted by the small scale. Reef structures trap or stabilise sediments, protecting mangroves and seagrass beds. Simulation of the evolution of the landscape and fluid dynamics would require taking into account, almost as importantly, the large-scale and small-scale bathymetry, as well as the geological and biological aspects of the ecosystem, to reach accuracy \cite{Chevalier2017,Chevalier2015a}.
 
-Overall, from these behaviours, we consider that corals act as important dynamic ecological agents, engaging in feedback loops with their environment. Modelling them requires accounting for spatial diffusion via diverse reproductive modes, competition for resources, and bidirectional environmental influences. We will describe ecological agent simulation in \cref{chap:semantic-representation}'s state of the art section.
+% Procedural terrain should include reef features (crest, slopes, flats) at appropriate elevations and roughness to inform hydrodynamic or erosion simulations. Abstract resistance fields derived from morphology guide flow routing and energy dissipation in particle-based erosion models. Adjacent zones (seagrass/mangrove) can be placed based on reef buffering.
+
+Overall, from these behaviours, we consider that corals act as important dynamic ecological agents, engaging in feedback loops with their environment. Modelling them requires accounting for spatial diffusion via diverse reproductive modes, competition for resources, and bidirectional environmental influences. We will describe ecological agent simulation in \cref{chap:semantic-representation}'s state of the art section. %Note that in this work, coral representations will be greatly upscaled for visual reasons.
 
 
 \subsection{Coral reef formations shape}
@@ -308,26 +465,45 @@ The formation of atolls is a process that unfolds over millions of years. As the
     The lagoon varies greatly in depth, ranging from shallow areas with sandy bottoms to deeper sections where patch reefs and seagrass beds may develop \cite{Goldberg2016}. The sheltered waters of the lagoon provide a calmer environment compared to the outer reef slope, allowing a different community of marine species to develop. These species often include a mix of corals, fish, and invertebrates that are weakly tolerant of the high-energy conditions. The lagoon may also contain small coral reef islands, known as motus, which form from the accumulation of coral debris and sand.
 }{Tetiaroa_from_sky.jpeg}{Aerial view of Tetiaroa Atoll, French Polynesia}{fig:intro-atoll-Tetiaroa}
 
+% The outer reef slope, with its exposure to the open ocean, is home to species that are adapted to strong currents and waves, including large predatory fish and robust coral species. In contrast, the sheltered lagoon provides a haven for more delicate species, such as seagrasses, small fish, and invertebrates, which rely on the calmer waters for feeding and reproduction. This diversity of habitats within a relatively small area makes atolls particularly important for marine biodiversity.
+
+% \subsubsection{Other types of coral reefs and structures}
+% \AltTextImage{
+% Patch reefs are small, isolated coral formations found in lagoons, between larger reefs, or in shallow coastal waters. They grow in sheltered areas that support coral but not larger reef structures. Simpler and more isolated than larger reefs, they are often circular or irregular. They form where water depth, light, and wave action favour coral growth. The formation of patch reefs is influenced by a combination of biological and physical factors. Coral larvae settle in suitable areas where they can establish colonies and grow over time. They often develop in locations where the water is clear, and the substrate is stable, such as rocky outcrops or fossil coral ridges.
+% }{coral-patch-belize.png}{Patch reefs behind the barrier reef of Belize}{fig:intro-patch-reef-Belize}
+
+% \AltTextImage{
+% Spurs and grooves are alternating ridges (spurs) and channels (grooves) found on the fore reef slope, which is the part of the reef that faces the open ocean. This distinctive pattern is formed primarily by the action of waves and currents, which erode and shape the coral over time. Spurs, the ridges of coral that extend seaward, help to break up and dissipate the energy of incoming waves. The grooves, or channels between these ridges, serve as pathways for water and sediment to flow back into the ocean after waves break on the reef. This spurred and grooved topography is crucial for the reef's ability to protect the coastline, as it reduces the energy of waves before they reach the more fragile parts of the reef and the shore.
+% }{Spurs-and-groove-Broomfield-Reef.jpg}{Spurs-and-grooves patterns in Broomfield Reef, Australia - Photo credit: AIMS}{fig:intro-spurs-and-grooves-Broomfield}
+
+% \AltTextImage{
+% Pinnacles are vertical, column-like coral structures rising from the seafloor, found on fore reef slopes or in lagoons. They add three-dimensional complexity to reefs and vary from small outcrops to tall columns near the surface. Their formation depends on local conditions such as strong currents and hard substrate for coral larvae.
+% }{Pinnacle-Chumphon.jpg}{Chumphon Pinnacle, Koh Tao, Thailand - Photo credit: Allie Vautin}{fig:intro-pinnacle-Chumphon}
+
+% In this document, more specifically in \cref{chap:semantic-representation}, coral representations will be greatly upscaled for visual reasons.
+
+
 
 
 
 \section{Underwater landscape modelling challenges}
-Underwater landscapes, or "seascapes", encompass the complex and dynamic terrains found beneath the ocean surface. Unlike landscapes above water level, which we will call "aerial landscapes", these environments are shaped not only by geological forces but also by biological activity, hydrodynamic processes, and chemical interactions. Coral reef islands represent a particularly intricate subset of these environments, where the terrain is actively constructed and modified by living organisms, primarily reef-building corals. The spatial and structural complexity of such systems, which span multiple scales from individual coral polyps to entire reef platforms, poses unique challenges for their representation and simulation.
+Underwater landscapes, or "seascapes", encompass the complex and dynamic terrains found beneath the ocean surface. 
+%Unlike landscapes above water level, which we will call "aerial landscapes", these environments are shaped not only by geological forces but also by biological activity, hydrodynamic processes, and chemical interactions. 
+Both "aerial" (above water level) and underwater landscapes result from interactions among geological, biological, hydrodynamic, and chemical processes. However, in underwater settings, especially coral reef systems, biological construction and fluid dynamics play a far more direct role in shaping the terrain.
+Coral reef islands represent a particularly intricate subset of these environments, where the terrain is actively constructed and modified by living organisms, primarily reef-building corals. The spatial and structural complexity of such systems, which span multiple scales from individual coral polyps to entire reef platforms, poses unique challenges for their representation and simulation.
 
-In the context of procedural terrain generation, the modelling of underwater landscapes demands fundamentally different assumptions and techniques from those used for land-based terrains. The submerged setting alters the influence of gravity, light, and fluid dynamics, while also introducing significant observational constraints. Furthermore, the scarcity of high-resolution and volumetric data capturing the structural complexity and biological processes of coral reef systems poses a major challenge for data-driven or example-based modelling approaches. In this context, procedural generation offers an alternative by synthesising underwater landscapes from first principles, guided by interdisciplinary understanding of geological, biological, and hydrodynamic processes. This section reviews the key environmental, observational, and modelling challenges associated with seascapes, with a focus on those that motivate and constrain procedural terrain generation for coral reef island systems.
-
+In the context of procedural terrain generation, the modelling of underwater landscapes demands fundamentally different assumptions and techniques from those used for land-based terrains. The submerged setting alters the influence of percieved gravity, light, and fluid dynamics, while also introducing significant observational constraints. Furthermore, the scarcity of high-resolution and volumetric data capturing the structural complexity and biological processes of coral reef systems poses a major challenge for data-driven or example-based modelling approaches. In this context, procedural generation offers an alternative by synthesising underwater landscapes through rule-based or process-inspired approaches, guided by interdisciplinary understanding of geological, biological, and hydrodynamic processes. This section reviews the key environmental, observational, and modelling challenges associated with seascapes, with a focus on those that motivate and constrain procedural terrain generation for coral reef island systems.
 
 \subsection{Physical environment differences}
 The underwater environment differs fundamentally from terrestrial settings in the physical forces that shape landscape formation, the conditions for biological growth, and the constraints imposed on sensing and modelling. These differences directly impact the assumptions underlying terrain generation and limit the applicability of methods developed for aerial landscapes.
 
 First, while gravity remains a dominant force in geomorphological evolution, provoking sediment transport and slope stability, buoyancy significantly alters the behaviour of materials and organisms underwater. The net effect is a reduction in apparent weight and in gravity-driven surface processes, particularly at smaller scales, where water movement becomes a more dominant shaping force. Hydrodynamics plays a central role in shaping the morphology of coral reef systems by redistributing sediments, constraining reef growth zones, and sculpting reef edges and channels \cite{Lowe2015}.
 
-Second, the optical properties of seawater introduce strict environmental constraints.
-Light attenuation limits the available area for photosynthesis, which in turn defines vertical growth boundaries for reef-building corals \cite{Huston1985}. It also constrains the applicability of remote sensing and optical measurement techniques, limiting their effectiveness to shallow, clear-water environments.
+Second, the optical properties of seawater introduce strict environmental constraints. Light attenuation limits the available area for photosynthesis, which in turn defines vertical growth boundaries for reef-building corals \cite{Huston1985}. It also constrains the applicability of remote sensing and optical measurement techniques, limiting their effectiveness to shallow, clear-water environments.
 
-Third, underwater terrains are shaped not only by physical processes but also by active biological construction and destruction. Reef-building organisms contribute directly to topographic complexity through accretion, while bioeroder species like parrotfish, sponges, and urchins actively degrade and remodel the substrate \cite{Perry2013}.
+Third, underwater terrains are shaped not only by physical processes but also by active biological construction and destruction. Reef-building organisms contribute directly to topographic complexity through accretion, while bioeroder species such as parrotfish, sponges, and urchins actively degrade and remodel the substrate \cite{Perry2013}. % These biological processes introduce temporally variable and spatially heterogeneous modifications to the seascape that are difficult to capture with conventional terrain modelling frameworks.
 
-Finally, these coupled physical-biological interactions result in terrain features that are not only highly complex, but also scale-dependent and dynamic. Overhangs, cavities, and porous structures restrict standard heightmap-based representations. Moreover, many features emerge from feedback loops between hydrodynamics, sedimentation, and biological growth, further complicating attempts to generalise aerial terrain modelling techniques to underwater environments.
+Finally, these coupled physical-biological interactions result in terrain features that are not only highly complex, but also scale-dependent and dynamic. Overhangs, cavities, and porous structures restrict standard heightmap-based representations. Moreover, many features emerge from feedback loops between hydrodynamics, sedimentation, and biological growth, further complicating attempts to generalise aerial terrain modelling techniques to underwater environments. % For these reasons, the procedural generation of coral reef landscapes must be grounded in an understanding of the unique environmental dynamics that govern their formation.
 
 
 \subsection{Observation and 3D data acquisition challenges}
@@ -337,109 +513,26 @@ Furthermore, the availability of optical or active remote sensing techniques, su
 
 In situ surveys are often constrained by logistical, financial, and environmental factors. Diver-based surveys, while effective at fine scales, are labour-intensive, spatially limited, and can disturb local fauna, thereby introducing bias in biological assessments. Remotely operated vehicles (ROVs) offer greater depth access but require tethering and constant supervision. Autonomous underwater vehicles (AUVs), by contrast, have shown promise in collecting low-disturbance imagery and acoustic data in a more scalable manner \cite{GonzalezRivero2016,Modasshir2018}, and represent a potential pathway for systematic 3D surveying in the future.
 
-
 \subsection{Environmental dynamics and interdisciplinary integration}
-Coral reef terrains develop in relation with underlying geological structures and sedimentary processes. Substrate stability and morphology are governed by sediment supply which controls the distribution of fine sediments in lagoons versus coarser rubble zones on reef fronts \cite{Montaggioni2005}. Tectonic uplift or subsidence modulates relative sea level, determining exposure intervals that drive the formation of reef terraces and platform architecture \cite{Hopley2014}. Geomorphologic events, such as submarine landslides or turbidity currents on reef slopes, and wave-driven abrasion, further reshape bathymetry at meso- to macroscale.
+% Geological and sedimentary frameworks Coral reef terrains develop in relation with underlying geological structures and sedimentary processes. Substrate stability and morphology are governed by sediment supply which controls the distribution of fine sediments in lagoons versus coarser rubble zones on reef fronts \cite{Montaggioni2005}. Tectonic uplift or subsidence modulates relative sea level, determining exposure intervals that drive the formation of reef terraces and platform architecture \cite{Hopley2014}. Geomorphologic events, such as submarine landslides or turbidity currents on reef slopes, and wave-driven abrasion, further reshape bathymetry at meso- to macroscale.
 
-Hydrodynamic regimes highly influence sediment transport, mechanical stress, and ecological viability in reef environments. Persistent currents and wave action determine patterns of erosion and deposition on slopes and flats, shape reef crests, and drive overtopping and flushing in lagoonal areas \cite{Lowe2009}. Episodic storms or large swell events can produce rapid morphological change via scour, sediment redistribution, and coral breakage, punctuating longer-term growth trajectories. Crucially, the evolving reef morphology modifies local flow fields which in turn influence subsequent sediment dynamics and biological processes.
+% 4.3 Hydrodynamic controls and feedbacks Hydrodynamic regimes highly influence sediment transport, mechanical stress, and ecological viability in reef environments. Persistent currents and wave action determine patterns of erosion and deposition on slopes and flats, shape reef crests, and drive overtopping and flushing in lagoonal areas \cite{Lowe2009}. Episodic storms or large swell events can produce rapid morphological change via scour, sediment redistribution, and coral breakage, punctuating longer-term growth trajectories. The evolving reef morphology modifies local flow fields which in turn influence subsequent sediment dynamics and biological processes. %For procedural modelling, simplified representations of these feedback loops (for example, depth- and form-dependent growth constraints) are necessary to generate plausible reef shapes without resorting to full CFD coupling.
 
-Parallely to erosion processes generated through geological, climatic and hydrological events, the organic nature of coral reef continuously remodel and regenerate the substrate. However, abiotic factors such as light attenuation, temperature regimes, and water chemistry constrain both biological growth and sedimentary behaviour. Attenuation by turbidity and depth limits photosynthesis, setting depth boundaries for coral accretion \cite{Kirk1994}. Nutrient concentrations from terrestrial runoff can shift community composition towards macroalgae or favour coral health, while turbidity governs sediment deposition on reef surfaces.
+% Reef-building organisms actively generate topographic complexity through species-specific growth forms and rates, while other biota erode and remodel the substrate. Scleractinian corals display branching, massive, or encrusting morphologies, each with distinct accretion dynamics influenced by light availability, water clarity, and nutrient fluxes that establish vertical zonation [Huston, 1985; Anthony & Fabricius, 2000]. Concurrently, bioeroders-like parrotfish, boring sponges, and sea urchins-and mechanical disturbances from storms produce cavities, rubble, and heterogeneous surface textures [Perry et al., 2012]. Successional trajectories after disturbance further affect spatial patterns over years to decades, as pioneer species give way to longer-lived taxa, and physical structure influences recruitment. The emergent reef architecture, in turn, alters local hydrodynamics, attenuating flow or generating eddies, which feeds back into larval settlement and nutrient exchange [Falter et al., 2004]. These intertwined accretion-erosion dynamics complicate the assumption of static terrain templates and must inform any procedural synthesis.
 
-Integrating geological, ecological, hydrodynamic, and chemical knowledge effectively implies the reconciling of diverse data types and spatiotemporal resolutions. Geological information often spans over millennial time scales and kilometre space scale, whereas ecological observations like colony growth rates are studied in years and counted in metres; hydrodynamic models and sensor time series each have their own spatiotemporal resolutions.
+% Biological construction and degradation Parallely to erosion processes generated through geological, climatic and hydrological events, the organic nature of coral reef continuously remodel and regenerate the substrate.
+% 4.4 Chemical and physical environmental drivers However, abiotic factors such as light attenuation, temperature regimes, and water chemistry constrain both biological growth and sedimentary behaviour. Attenuation by turbidity and depth limits photosynthesis, setting depth boundaries for coral accretion \cite{Kirk1994}.
+% Temperature and pH affect calcification rates and bleaching susceptibility, influencing long-term growth patterns and resilience under climate change.
+Nutrient concentrations from terrestrial runoff can shift community composition towards macroalgae or favour coral health, while turbidity governs sediment deposition on reef surfaces. % Procedural frameworks built from first principles must encode these environmental limits (e.g., depth-dependent growth probability, maximum accretion rates under given temperature regimes) even when direct observational data are unavailable.
 
-The complex, dynamic nature of reef environments motivates process-informed procedural generation rather than example-based interpolation. Algorithms should embody process-based constraints such as depth-dependent accretion limits, susceptibility to storm-induced degradation, and form-flow feedbacks while allowing staged synthesis to yield realistic structural patterns. Simplified feedback loops, such as adjusting local growth likelihood based on simulated flow attenuation, can capture essential interactions without full physical simulation. Given data scarcity, procedural outputs should support exploration across parameter spaces or alternative scenarios, making assumptions transparent.
+% 4.5 Data heterogeneity, uncertainty, and integration Integrating geological, ecological, hydrodynamic, and chemical knowledge effectively implies the reconciling of diverse data types and spatiotemporal resolutions. Geological information often spans over millennial time scales and kilometre space scale, whereas ecological observations such as colony growth rates are studied in years and counted in metres; hydrodynamic models and sensor time series each have their own spatiotemporal resolutions. % Data formats vary from bathymetric DEMs and point clouds to ecological transect datasets and model outputs, requiring consistent georeferencing (horizontal and vertical datums) and adherence to metadata standards. Many reef areas lack comprehensive surveys, so proxy parameters or analog-derived values (for accretion rates, sedimentation) must be adopted with explicit uncertainty bounds. Effective integration thus relies on interdisciplinary collaboration to translate domain knowledge into generative constraints and to select simplified parameterisations that remain computationally tractable. Explicit representation of uncertainty-via parameter ranges or scenario ensembles-helps ensure that procedural outputs acknowledge their assumptions.
+
+% 4.6 Procedural relevance and synthesis The complex, dynamic nature of reef environments motivates process-informed procedural generation rather than example-based interpolation. Algorithms should embody process-based constraints such as depth-dependent accretion limits, susceptibility to storm-induced degradation, and form-flow feedbacks while allowing staged synthesis to yield realistic structural patterns. Simplified feedback loops, such as adjusting local growth likelihood based on simulated flow attenuation, can capture essential interactions without full physical simulation. Given data scarcity, procedural outputs should support exploration across parameter spaces or alternative scenarios, making assumptions transparent. % Validation can rely on general empirical observations (e.g., known zonation profiles, typical reef cross sections) and expert judgement to assess plausibility in the absence of dense ground-truth data.
+
+
 
 \subsection{Procedural modelling challenges}
-\cite{ParisThesis} classified the different geological structures in four different spatial scales: the megascale describes landforms spread over more than 100km such as continents or mountain ranges, the macroscale between 1km and 100km like islands, rivers or cave networks, the mesoscale ranging from 10m to 1km contains most complex structures (arches, ravines, cliffs, ...) and finally the microscale for features between 10cm and 10m, like sand ripples, ventifacts, rocks, etc. Generally, we consider as large-scale features that can be seen from far away and small-scale elements for which somebody has to be too close to observe it.
-
-Coral reef island landscapes exhibit structural complexity across scales ranging from millimetre- to kilometre-scale features, and procedural generation must accommodate seamless transitions among these scales. At the microscale, individual coral morphologies, crevice networks, and sediment textures determine fine habitat details, whereas at the mesoscale, colony aggregations, reef crests, and lagoon basins define intermediate morphology. Macroscale features include the overall platform shape, island emergence, and large geomorphic structures such as reef rims or terrace outlines.
-
-Unlike aerial landscapes’ height fields, reef environments contain overhangs, cavities, and porous frameworks created by biological accretion and bioerosion. Procedural methods must therefore synthesise plausible volumetric geometry rather than relying solely on 2.5D surfaces. This could be achieved through combinations of multiple surface and volume representations, the introduction of rule-based solid modelling such as the use of L-systems for branching coral forms \cite{Prusinkiewicz1992, Abela2015}, and the stochastic placement of "voids" to mimic bioerosion. A procedural pipeline may first establish a coarse reef framework from depth-dependent envelope shapes and then instantiate volumetric modules representing coral colonies and cavities according to ecological rules or bioerosion simulations. The main challenge for such method is to integrate ecological rules and maintain computational tractability.
-
-Physical processes of hydrodynamic forces and sediment transport impose constraints on feasible reef morphologies. While full computational fluid dynamics (CFD) coupling for procedural generation is typically impractical at large scales, hybrid approaches could incorporate simplified physics-based rules. For instance, a priori knowledge of relationships between reef shape and prevailing wave energy informs the geometry of grooves-and-spurs. Sediment deposition rules from in situ observation can guide the formation of lagoon floors or backreef accumulations. Such hybrid modelling ensures that generated forms remain within plausible physical bounds.
-
-Process-informed generation relies on encoding ecological constraints and interactions.
-Coral growth algorithms may simulate accretion under light-dependent rules according to environmental parameters. Agent-based models can represent competition for space, where faster-growing but fragile forms may dominate in sheltered zones, whereas robust morphologies persist in high-energy areas \cite{Anthony2000}. Simulated bioerosion events introduce heterogeneity and temporal variability. Although full temporal simulation may be computationally expensive, stochastic modelling or staged synthesis (e.g., iterative growth phases punctuated by disturbance routines) may yield realistic geometry.
-
-An effective procedural modelling framework for coral reef islands begins with defining a macroscopic envelope (reef and island outline) based on generic geomorphic templates and parameters such as island size and shape, sea level, or tectonic parameters. Subsequent stages instantiate mesoscale reef structures by populating the base environment with ecologically informed semantic entities. Microscale details are then added by applying procedural textures or controlled erosion simulations.
-
-
-
-
-
-
-% \section{Underwater landscape modelling challenges}
-% Underwater landscapes, or "seascapes", encompass the complex terrains found beneath the ocean surface. Like aerial landscapes, they emerge from the interplay of geological, biological, hydrodynamic, and chemical processes. However, in seascapes and particularly in coral reef systems biological construction and fluid dynamics play a much more direct role in shaping terrain. Coral reef islands are a particularly intricate case: their morphology is continuously co-constructed by reef-building organisms and oceanic forces, across scales from individual coral colonies to entire reef platforms.
-
-% From the perspective of procedural terrain generation, this environment demands fundamentally different assumptions than those used for terrestrial settings. Submersion alters the role of gravity, light, and erosion, while also introducing observational constraints that limit the availability of reference data. Furthermore, high-resolution volumetric descriptions of reef structures remain rare, making purely data-driven modelling approaches impractical. Procedural techniques therefore offer a compelling alternative: by encoding rules and processes inspired by biology, geology, and hydrodynamics, they can synthesise plausible seascapes while remaining lightweight and controllable. This section summarises the main challenges that motivate and constrain such approaches.
-
-% \subsection{Physical environment differences}
-
-% Several physical and ecological factors distinguish underwater terrains from terrestrial ones:
-% \begin{Itemize}
-%     \Item{Hydrodynamics instead of gravity as dominant force} While gravity drives sediment transport and slope stability, buoyancy reduces its apparent strength. At small and intermediate scales, currents and waves dominate the redistribution of sediments, carving reef edges, channels, and lagoons.
-
-%     \Item{Light attenuation and growth constraints} Photosynthetic symbionts make corals highly dependent on light, restricting reef-building to shallow and clear waters. Depth and turbidity directly bound vertical growth and define ecological zonation.
-
-%     \Item{Biological construction and destruction} Reef-building corals continuously accrete calcium carbonate, while other organisms (e.g. parrotfish, sponges, urchins) erode and remodel the substrate. This dual process produces porous, heterogeneous, and dynamic terrain.
-% \end{Itemize}
-
-% Underwater terrains require representations that capture volumetric features beyond heightmaps, growth rules conditioned on depth and light, and hybrid processes where biological accretion and erosion interact with hydrodynamics.
-
-% \subsection{Observation and 3D data acquisition challenges}
-
-% Despite advances in seafloor mapping, the availability of detailed volumetric data for reef environments is limited. Most surveys provide only 2.5D bathymetric surfaces, acquired through sonar or satellite techniques, which cannot capture overhangs, cavities, or internal structures. High-resolution methods such as photogrammetry or bathymetric LIDAR are effective only in shallow, clear waters, while deeper or turbid zones remain largely undocumented.
-
-% In situ surveys offer finer detail but face logistical constraints: diver-based methods are spatially limited and disruptive to fauna, while ROVs and AUVs remain costly and operationally complex. As a result, consistent 3D datasets across reef systems and depth gradients are still rare.
-
-% Given the scarcity of ground-truth volumetric data, procedural generation must rely on process-inspired rules rather than dense example-based learning. Where data exist, they can serve as partial constraints or validation anchors rather than complete templates.
-
-% \subsection{Environmental dynamics and interdisciplinary integration}
-
-% Reef landscapes evolve under the coupled influence of geology, hydrodynamics, and biology:
-
-% \begin{Itemize}
-%     \Item{Geological context} (tectonic uplift, subsidence, sediment supply) defines the long-term framework in which reefs develop.
-
-%     \Item{Hydrodynamic regimes} (currents, waves, storm events) redistribute sediments, apply mechanical stress, and periodically reshape reef morphology.
-
-%     \Item{Ecological processes} (species-specific growth, competition with algae, bioerosion) continuously remodel terrain over years to centuries.
-% \end{Itemize}
-
-% These processes interact in feedback loops: reef morphology modifies flow, which alters sedimentation patterns, which in turn affect coral colonisation and survival. Such couplings make seascapes dynamic and scale-dependent, and cannot be adequately captured by static terrain templates.
-
-% Procedural approaches must integrate simplified ecological and hydrodynamic rules, rather than relying solely on geometric templates or noise functions. Interdisciplinary knowledge becomes a key ingredient in designing plausible generative constraints.
-
-% \subsection{Procedural modelling challenges}
-
-% From a graphics perspective, seascapes also raise challenges that are directly procedural in nature:
-% \begin{Itemize}
-%     \Item{Multi-scale structure} Reef systems exhibit features across orders of magnitude: from millimetre-scale coral branches to kilometre-scale reef rims. Procedural frameworks must therefore handle hierarchical detail and level-of-detail transitions.
-
-%     \Item{Volumetric complexity} Overhangs, porous frameworks, and internal cavities exceed the capabilities of 2.5D height fields, motivating the use of voxel, layered, or implicit volumetric models.
-
-%     \Item{Hybrid physics and ecology} Full physical simulation is computationally prohibitive, yet omitting environmental constraints leads to implausible outputs. Hybrid strategies (simplified hydrodynamic rules, stochastic ecological agents, or erosion-inspired operators) are needed to balance realism, speed, and controllability.
-% \end{Itemize}
-
-% Achieving plausible seascapes requires combining multiple representations and levels of abstraction, while ensuring computational tractability.
-
-% \midConclusion
-
-% In summary, modelling underwater landscapes requires:
-% \begin{Itemize}
-%     \Item{} representing volumetric, porous, and multi-scale structures;
-%     \Item{} incorporating depth- and environment-dependent growth rules;
-%     \Item{} coping with scarce reference data by relying on process-based synthesis;
-%     \Item{} integrating simplified ecological and hydrodynamic constraints.
-% \end{Itemize}
-
-% These challenges motivate the three contributions of this thesis. First, a sketch-based island generator (\cref{chap:coral-island}) provides user control at the macroscale, producing plausible coral island morphologies from minimal input. Second, a semantic procedural framework (\cref{chap:semantic-representation}) captures ecological interactions and enables multi-scale, rule-based editing. Finally, a particle-based erosion model (\cref{chap:erosion}) extends physical plausibility to underwater contexts, supporting volumetric representations beyond simple heightmaps.
-
-% Together, these works explore how procedural generation can address the unique demands of underwater seascapes while balancing realism, speed, and user control.
-
-
-% \subsection{Procedural modelling challenges}
-% \cite{ParisThesis} classified the different geological structures in four different spatial scales: the \textit{megascale} describes landforms spread over more than \si{100}{km} (continents or mountain ranges), the \textit{macroscale} between \si{1}{km} and \si{100}{km}(islands, rivers or cave networks), the \textit{mesoscale} ranging from \si{10}{m} to \si{1}{km} contains most complex structures (arches, ravines, cliffs, ...) and finally the \textit{microscale} for features between \si{10}{cm} and \si{10}{m}, (sand ripples, ventifacts, rocks). Generally, we consider as \textit{large-scale} features that can be seen from far away and \textit{small-scale} elements for which somebody has to be too close to observe it.
+\cite{ParisThesis} classified the different geological structures in four different spatial scales: the \textit{megascale} describes landforms spread over more than \si{100}{km} (continents or mountain ranges), the \textit{macroscale} between \si{1}{km} and \si{100}{km}(islands, rivers or cave networks), the \textit{mesoscale} ranging from \si{10}{m} to \si{1}{km} contains most complex structures (arches, ravines, cliffs, ...) and finally the \textit{microscale} for features between \si{10}{cm} and \si{10}{m}, (sand ripples, ventifacts, rocks). Generally, we consider as \textit{large-scale} features that can be seen from far away and \textit{small-scale} elements for which somebody has to be too close to observe it.
 
 % 5.1 Multi-scale structure and level-of-detail Coral reef island landscapes exhibit structural complexity across scales ranging from millimetre- to kilometre-scale features, and procedural generation must accommodate seamless transitions among these scales. At the microscale, individual coral morphologies, crevice networks, and sediment textures determine fine habitat details, whereas at the mesoscale, colony aggregations, reef crests, and lagoon basins define intermediate morphology. Macroscale features include the overall platform shape, island emergence, and large geomorphic structures such as reef rims or terrace outlines.
 
