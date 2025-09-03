@@ -40,12 +40,18 @@ By applying data augmentation, the cGAN enhances the variety in the generated is
 \label{fig:coral-island-island-examples}
 \end{figure}
 
-Charles Darwin's subsidence theory, developed from his observations in \citep{Darwin1842}, remains one of the most widely accepted explanations for the formation of coral reef islands such as those presented in \cref{fig:coral-island-island-examples}. 
-% His theory states that they are formed through a dynamic interplay of volcanic activity, coral growth, and long-term geological processes. 
-According to this theory, coral reef islands form through a dynamic interplay between volcanic activity, coral growth, and gradual geological subsidence.
-These islands begin as volcanic landmasses, created when magma from the Earth's mantle erupts through the ocean floor and builds up layers of volcanic rock, eventually rising above sea level (\cref{fig:coral-island-island-growth}). In tropical waters, these volcanic islands create ideal conditions for coral reefs to develop. Corals, thriving in the shallow, sunlit waters around the island, initially form fringing reefs attached to the island's coastline.
+In the previous chapter we outlined the unique challenges of underwater landscape modelling: the scarcity of high-resolution data, the need for volumetric and multi-scale representations, and the strong influence of biological and hydrodynamic processes. Among these environments, coral reef islands are of particular interest and complexity. They result from a long-term interplay of volcanic activity, coral growth, erosion, and subsidence, producing highly distinctive morphologies that procedural techniques must capture if they are to generate convincing seascapes.
 
-\begin{figure}
+To better understand these morphologies, we begin by recalling the classical geological explanation of their formation, as proposed by Charles Darwin in the 19th century \cite{Darwin1842}. His subsidence theory remains a foundational description of how volcanic islands gradually transform into barrier reefs and atolls (such as the islands presented in \cref{fig:coral-island-island-examples}), and it provides the conceptual backdrop for our generative model.
+
+According to this theory, these islands begin as volcanic landmasses, created when magma from the Earth's mantle erupts through the ocean floor and builds up layers of volcanic rock, eventually rising above sea level (\cref{fig:coral-island-island-growth}). In tropical waters, these volcanic islands create ideal conditions for coral reefs to develop. Corals, thriving in the shallow, sunlit waters around the island, initially form fringing reefs attached to the island's coastline.
+
+% Charles Darwin's subsidence theory, developed from his observations in \citep{Darwin1842}, remains one of the most widely accepted explanations for the formation of coral reef islands such as those presented in \cref{fig:coral-island-island-examples}. 
+% % His theory states that they are formed through a dynamic interplay of volcanic activity, coral growth, and long-term geological processes. 
+% According to this theory, coral reef islands form through a dynamic interplay between volcanic activity, coral growth, and gradual geological subsidence.
+% These islands begin as volcanic landmasses, created when magma from the Earth's mantle erupts through the ocean floor and builds up layers of volcanic rock, eventually rising above sea level (\cref{fig:coral-island-island-growth}). In tropical waters, these volcanic islands create ideal conditions for coral reefs to develop. Corals, thriving in the shallow, sunlit waters around the island, initially form fringing reefs attached to the island's coastline.
+
+\begin{figure}[H]
     \autofitgraphics{other_images/Drawings/Volcano-color.jpg}
     \caption{Volcanic islands rise above hotspots. The rise of magma from the hotspot forms a seamount. Consecutive eruptions from the volcano grow the seamount until the peak emerges above sea level. The ground above and close to sea level is affected by hydraulic, aeolian, and coastal erosion.}
     \label{fig:coral-island-island-growth}
@@ -170,7 +176,7 @@ Since Darwin first proposed his subsidence theory, presented in \cref{sec:coral-
         \Item{Droxler's karstification theory \cite{Droxler2021}:}  
         In contrast to models based on volcanic subsidence, Droxler et Jorry attribute atoll formation to repeated karst dissolution of a broad carbonate platform during low-sea-level glacials, followed by renewed coral accretion in interglacials (\cref{fig:coral-island-droxler-theory}). High-resolution bathymetry and drill cores reveal karst-etched depressions beneath certain atoll crests, supporting this cyclic exposure-dissolution mechanism. While compelling for extensive carbonate shelves, this theory hinges on pre-existing flat platforms and meteoric water circulation (water originating from precipitation), which are conditions uncommon on volcanic seamounts. As a result, Droxler's model explains atoll rings on continental carbonate foundations but does not readily apply to volcanic island reef systems.
     }{Droxler.pdf} % }{Droxler_placeholder.png}
-    {A broad carbonate platform is exposed and karstified during low-sea-level glacials, then drowns and is rimmed by reef growth at its outer edge during high stands, yielding one or more atoll-style rings.}{fig:coral-island-droxler-theory}
+    {A broad carbonate platform (grey) is exposed and karstified during low-sea-level glacials, then drowns and is rimmed by reef growth at its outer edge during high stands, yielding an atoll-style rings.}{fig:coral-island-droxler-theory}
 
 \end{Itemize}
 
@@ -207,7 +213,7 @@ In generating synthetic coral reef islands, we adopt a set of simplifying assump
     \AltTextImage{
         \Item{Subsidence and coral "keep up" growth:} Actual reefs respond to light, nutrients, and biology, but the dominant effect is that corals grow vertically to stay near the photic zone. We decouple coral growth from subsidence and simply keep reef heights in a fixed band beneath the surface, capturing Darwin's core insight using minimal parameters.
 
-        \Item{Wind and wave deformation:} To represent coastal erosion resulting from sediment transport and complex hydrodynamics \cite{Terry2013}, we simplify the model by using a vector field painted by the user representing wind and wave directions. This vector field allows radial symmetry to be broken in a controllable way, without relying on a full erosion simulator.
+        \Item{Wind and wave deformation:} To represent coastal erosion resulting from sediment transport and complex hydrodynamics \cite{Terry2013}, we simplify the model by using a vector field painted by the user representing wind and wave directions, deforming the global island (\cref{fig:coral-island-wind-deformation-assumption} suggest that island outlines are influenced by the average wind direction). This vector field allows radial symmetry to be broken in a controllable way, without relying on a full erosion simulator.
 
         \Item{Independence of islands:} While archipelagos share currents, sediments, and flood each other's lagoons, simulating multi-island interactions is computationally expensive and hard to control. We treat each island as an isolated entity to generate multi-island scenes by using a simple blending of individual islands, keeping our method fast and predictable.
     }
@@ -1203,3 +1209,5 @@ Finally, further improvements could be made to the synthetic dataset. Incorporat
 % Additionally, further development could explore improving how multiple islands are combined in a single sample. For example, using blending techniques to handle overlapping regions could allow islands to be positioned closer together, enabling the generation of more complex archipelagos without sacrificing the integrity of the height field.
 
 Many other neural network models could be exploited to increase the possibilities, with newer variants of cGANs \cite{Park2019}, or models with style transfer functionalities \cite{Gatys2015,Zhu2020} in order to change the overall aspect of a terrain \cite{Perche2023a,Perche2023b}, use text-to-image models \cite{Rombach2021,Radford2021} to generate height fields from a verbal prompt, or super-resolution models \cite{Dong2014} to increase the definition of details in the final output \cite{Guerin2016a}.
+
+In summary, this chapter has demonstrated how procedural rules and deep learning can produce convincing island terrains. Yet, terrains alone are not enough: seascapes also depend on the biotic and abiotic features that inhabit them. The following chapter therefore moves beyond geometry to explore ecosystem generation.

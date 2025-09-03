@@ -3,11 +3,11 @@
 \chapter{Semantic terrain representation}
 \label{chap:semantic-representation}
 \teaser{
-\includegraphics[width=0.9\linewidth]{figureTeaser.png}
-% % \centering
-% \caption{Our method can produce different scenes including coral reef islands and canyons at multiple scales using \glosses{EnvObj} to represent terrain features.}
-\label{fig:env-obj-teaser}
-\caption{Three underwater scenes using our \glosses{EnvObj} representation. From left to right: an island cut in half by a canyon, the inside of a canyon with rocks and corals, an island with corals, algae and a trench.}
+    \includegraphics[width=0.9\linewidth]{figureTeaser.png}
+    % % \centering
+    % \caption{Our method can produce different scenes including coral reef islands and canyons at multiple scales using \glosses{EnvObj} to represent terrain features.}
+    \label{fig:env-obj-teaser}
+    \caption{Three underwater scenes using our \glosses{EnvObj} representation. From left to right: an island cut in half by a canyon, the inside of a canyon with rocks and corals, an island with corals, algae and a trench.}
 }
 
 \abstract
@@ -23,6 +23,7 @@ This chapter introduces a novel method for procedural terrain generation, which 
 % Our method represents the different landmarks of a terrain using a geometric (as "without 3D repr") representation. To avoid cycles in the interactions between objects, we use the environment as a proxy. EnvObjs are independant, like cellular automata. Each object affects locally the environment by modifying EnvVals. This modifications are applied by the EnvObjs spreading EnvMat around them. They also absorb EnvMat from the other EnvObjs. We can consider that the diffusion is bounded thanks to a decay rate, meaning the system becomes stable after some time. Because it is stable, it is plausible. We break the stability by adding new EnvObjs following \glosses{GenRule}. New EnvObjs are placed in the environment where they may be the most probable, following a fitness function using the EnvVals. Then the shape of the skeleton is defined following a skeleton \gloss{FitnessFunc}. We wait for the environment to stabilise. It can take some time, and some EnvObjs might die (if fitness function falls below 0), but it will converge. The user can guide this process by defining EnvObjs that can spawn. Also, because it is a simple skeleton, he can modify shapes. The diffusion process is deterministic so no abrupt changes in the landscape. Also, the stability of the system can be broken by influencing EnvVals. So the user can affect them through \Glosses{GeoEvent}. \Glosses{GeoEvent} affect one or more EnvVal over time, but we reduce the number of evaluations to the beginning and end of the \glosses{GeoEvent}. Each EnvObj has a probability of chance to spawn each day, which can be computed as an amount per month, year, etc. (Probability Distribution Function of $p(X) = p^t$).
 
 \section{Introduction}
+While the previous chapter focused on generating the macroscale geomorphology of coral reef islands through sketch-based procedural rules and learning-based refinement, these terrains remain purely geometric. In practice, convincing seascapes require not only landforms but also the biotic and abiotic elements that populate them (coral colonies, algae, sediments, rivers, and other ecological features that interact across scales). Addressing this broader challenge calls for a representation that integrates semantic structure, ecological constraints, and user control. To address this broader challenge, this chapter turns to ecosystem generation, introducing a semantic framework that unifies terrain and ecology through symbolic primitives and steady-state environmental fields.
 
 Procedural ecosystem generation in computer graphics remains largely bifurcated: classical terrain algorithms produce heightfields or meshes without semantic structure, and plant-placement systems adopt fixed-radius or zone-of-influence rules for foliage alone. Meanwhile, full ecosystem simulators, though rich in biotic and abiotic processes, are too costly for real-time or interactive content creation. Consequently, no prior work combines sparse, semantic primitives for both living and non-living features, multi-material field coupling driven to steady state, and multi-scale, user-interactive authoring into a single, lightweight ecosystem generator.
 
@@ -95,7 +96,7 @@ Building on these observations, this chapter contributes:
 % \AltTextImageR{%
 % A combination of multiple disciplines can be represented in a single topographic map to provide context about an area. We can find examples of representations with urbanism, geology, hydrology, and topography mixed together. Every discipline is linked with all others with relative strength. Urban regions are strongly affected by geology and topography, while hydrology is directly impacted by topography. In this example, the karst geology is influenced by hydrology and geology, because karst features develop where limestone and underground drainage coincide. This also means that the presence of karst features can imply the presence (or a high probability of presence) of limestone and underground water flows, without the need to display them on a map.
 
-% Without its 3D representation, a karst expert may be able to visualise in 3D from \cref{fig:env-obj-topo-karst} a possible ground surface around dolines and lapies without additional information.
+% Without its 3D representation, a karst expert may be able to deduce a possible 3D structure around dolines and lapies from \cref{fig:env-obj-topo-karst} without additional information.
 % }{./QasrLibya.jpg}{Geological features distribution of karstic landscape at Qasr Libya, Libya \cite{ElAmawy2009}}{fig:env-obj-topo-karst}
 
 % %--- AltTextImage L (canyon) ------------------------------------------
@@ -103,21 +104,17 @@ Building on these observations, this chapter contributes:
 % The presence of symbols in a topographic map does not imply the presence of an element in the real world. We often encounter indicative symbols such as the head and foot of a canyon, or the area affected by an element, which have no real geometry. However, the presence of these symbols brings useful information. The head buffer displayed in \cref{fig:env-obj-topo-canyon} helps explain the deformation of the shelf break line. Looking from the other side, the deformation on the shelf break implies the presence of a canyon head.
 % }{./PerthCanyon.jpg}{Localisation of key parameters of Perth Submarine Canyon, Australia \cite{Huang2014}}{fig:env-obj-topo-canyon}
 
-% Parallelly, terrain artists typically sketch the global shape of the terrain they will model beforehand, such that they can check, before the modelling stage, that the consistency and plausibility of the terrain will hold. Looking at a simplified map before starting the modelling step allows the designer to modify the overall shape of the terrain at a large scale, before the 3D geometry comes into play, generating too many control points or vertices to deal with. Our goal is to offer that same "sketch-first, refine-later" experience in a procedural setting: users should be able to draft a coarse landscape, evaluate its plausibility, then zoom in and iteratively refine features, from a mountain ridge down to an individual boulder, without ever losing global coherence.
+% In the artistic or entertainment domain, terrain designers typically sketch the global shape of the terrain they will model beforehand, such that they can check the consistency and plausibility of the terrain before the modelling stage. Looking at a simplified map before starting the modelling step allows the designer to modify the overall shape of the terrain at a large scale, before the 3D geometry comes into play, generating too many control points or vertices to deal with. Our goal is to offer that same "sketch-first, refine-later" experience in a procedural setting: users should be able to draft a coarse landscape, evaluate its plausibility, then zoom in and iteratively refine features, from a mountain ridge down to an individual boulder, without ever losing global coherence.
 
 % As seen in the previous examples, by simplifying surface details we can concentrate more effectively on gaining a deep understanding of the underlying processes that shape the terrain. This deeper understanding allows us to apply the insights to a wide variety of terrain types, facilitating broader and more versatile applications of our knowledge.
 
-% In the context of generation of underwater environments, the elements to consider span several orders of magnitude in size. From a single coral colony to a volcanic island, the use of topographic maps lets biologists, geomorphologists, and hydrologists study the evolution of an area. The procedural construction of such landscapes should match the tools that experts use already to stay intuitive.
+% In the context of generation of underwater environments, the elements to consider span several orders of magnitude in size. From a single coral colony to a volcanic island, the use of topographic maps lets biologists, geomorphologists, and hydrologists study the evolution of an area. The procedural construction of such landscapes should match the tools that experts already use to stay intuitive.
 
 % The question which leads to our solution is one of multi-scale user interaction: Is it possible to provide an interaction means for terrain generation allowing the user to interact with a small structure like a rock in the same manner as with a large structure like a mountain?
 
-% In this work, we seek a large-scale representation of the terrain to generate a landscape that satisfies their needs while keeping the possibility to apply large modifications. Robotician users need first to create a large landscape that can contain interesting configurations, select a smaller region that has features in a disposition that fits their requirements, and then refine it again. In the optic of generating a large-scale terrain in which we could focus the generation effort in a certain region, we wished to be able to see a coarse representation that can be computed quickly.
+% In this work, we seek a multi-scale representation of the terrain to generate a landscape that satisfies their needs while keeping the possibility to apply modifications at any level of detail. Robotician users need first to create a large landscape that can contain interesting configurations, select a smaller region that has features in a disposition that fits their requirements, and then refine it again. In the optic of generating a large-scale terrain in which we could focus the generation effort in a certain region, we wished to be able to see a coarse representation that can be computed quickly.
 
 % Starting from an initial configuration or imposing conditions on the desired output terrain, the algorithm we propose lets the different terrain features evolve as a multi-agent system in which the user can apply modifications or new constraints on the state of the environment. The resulting configuration is an environment conforming to the constraints given by the user over the distribution of features present in the scene.
-
-% We design our terrain generation method so that it is versatile enough to handle both terrestrial and aquatic environments. This dual capability will allow the method to apply to landscapes above the water level, such as mountains and valleys, as well as to submerged terrains, such as oceanic canyons and coral landscapes.
-
-% Because many geographical terms and computer science terms are deceptive cognates, we therefore try to find middle ground in the naming of our introduced structures to avoid, as much as possible, any ambiguity between the research fields.
 
 % Building on these observations, this chapter contributes:
 % \begin{Itemize}
@@ -143,18 +140,18 @@ Building on these observations, this chapter contributes:
 \section{State of the art}
 \label{sec:env-obj-related-works}
 
-Simulating ecosystems involves a range of modelling approaches, each balancing biological realism and computational efficiency. Broadly, models can treat populations as continuous fields using reaction-diffusion equations, or model each organism individually through agent-based methods. For clarity, we discuss existing work in three conceptual families: site-based (grid or tessellation) models, individual-based models, and continuous field models, each emphasising a different balance between local detail and scalability. Site-based models discretise space to model local interactions efficiently. In contrast, individual-based models (IBMs) capture fine-scale behaviours and heterogeneity, often using spatial interaction rules (fixed-radius, zone-of-influence, or field of neighborhood methods). Ecological Field Models (EFMs) bridge these approaches by representing environmental properties as continuous fields influenced by organisms, enabling dynamic feedback between species and their surroundings. These diverse frameworks provide flexible tools for capturing complex ecological processes at varying scales and resolutions.
+Simulating ecosystems involves a range of modelling approaches, each balancing biological realism and computational efficiency. Broadly, biological models can treat populations as continuous fields using reaction-diffusion equations, or model each organism individually through agent-based methods. For clarity, we classify existing work in three categories: site-based (grid or tessellation) models, individual-based models, and continuous field models, each emphasising a different balance between local details and scalability. Site-based models discretise space to model local interactions efficiently. In contrast, individual-based models (IBMs) capture fine-scale behaviours and heterogeneity, often using spatial interaction rules (fixed-radius, zone-of-influence, or field of neighborhood methods). Ecological Field Models (EFMs) bridge these approaches by representing environmental properties as continuous fields influenced by organisms, enabling dynamic feedback between species and their surroundings. These diverse frameworks provide flexible tools for capturing complex ecological processes at varying scales and resolutions.
 
-Our method extends the Environmental Objects framework of \citep{Grosbellet2016} by including diffusion in their effect scalar fields and Ecological Field Theory (EFT) to instantiate objects at fitting positions in the scene. We lift it from an urban-scene dressing tool to a scale-agnostic ecosystem engine that treats abiotic and biotic entities uniformly and supports user-guided "zoom-and-refine" workflows.
+% Our method extends the Environmental Objects framework of \cite{Grosbellet2016} by including diffusion in their effect scalar fields and Ecological Field Theory (EFT) to instantiate objects at fitting positions in the scene. We lift it from an urban-scene dressing tool to a scale-agnostic ecosystem engine that treats abiotic and biotic entities uniformly and supports user-guided "zoom-and-refine" workflows.
 
 % --------------------------------------------------------------------
 \subsection{Ecosystem simulation}
 
-Two main philosophies emerge in the literature: modelling dense populations as continuous media \cite{Turing1952}, or representing each individual explicitly \cite{Czaran1998}. The former excels in broad predictions; the latter in local realism.
+Two main modelling paradigms emerge in the literature: modelling dense populations as continuous media \cite{Turing1952}, or representing each individual explicitly \cite{Czaran1998}. The former excels in broad predictions; the latter in local realism.
 
 From a large-scale perspective, where billions of individuals are indistinguishable (e.g., grass shoots, bacteria, whole populations), we treat species as continua and borrow reaction-diffusion models from physics and chemistry.
 
-Conversely, when the number of individuals is smaller or the density is low enough, Individual-Based Models become appropriate. These methods treat organisms as agents that sense and interact with neighbours, making decisions (spawning, growing, and dying for vegetation).
+Conversely, when the number of individuals is smaller or when populations are sparse enough that individuals and their interactions must be tracked explicitly, Individual-Based Models become appropriate. These methods treat organisms as agents that sense and interact with neighbours, making decisions (spawning, growing, and dying for vegetation).
 
 A hybrid family, the Ecological Field Models \cite{Wu1985}, describes how each individual modifies the state of its surrounding environment. Borrowing field theory from physics, they let organisms deposit or absorb continuous "influence fields", creating explicit feedback loops with the environment.
 
@@ -173,27 +170,27 @@ Site-based models represent the environment as discrete regions with uniform pro
 
 \subsubsubsection{Grid-based models}
 
-Grid-based models represent ecosystems by discretising continuous space into a regular arrangement of cells, typically squares or rectangles, each containing uniform environmental properties and ecological conditions (\cref{fig:env-obj-grid-based-models}, left). In this approach, each cell represents a spatially explicit patch hosting one or multiple populations, with interactions primarily occurring between neighbouring cells. The central ecological rationale for employing grid-based models is their conceptual simplicity, computational efficiency, and ease of representing spatial processes such as diffusion, dispersal, competition, or predation.
+Grid-based models represent ecosystems by discretising continuous space into a regular arrangement of cells, typically squares or rectangles, each containing uniform environmental properties and ecological conditions (\cref{fig:env-obj-grid-based-models}, left). In this approach, each cell represents a spatially explicit patch hosting one or multiple populations, with interactions primarily occurring between neighbouring cells. The central ecological rationale for employing grid-based models is their conceptual simplicity, computational efficiency, and ease of representing spatial processes such as diffusion, dispersal, competition, or predation \cite{Grimm2005,Cantrell2010,Nelson2012}.
 
 Mathematically, grid-based ecological dynamics are commonly described using discrete-time state equations that represent how the state of a cell (e.g., population density, biomass, or nutrient availability) changes according to its local interactions. A general formulation of these dynamics can be expressed as:
 \begin{align}
-N_{t+1}(x,y) = f(N_t(x,y), \Bar{N}(x, y), E_t(x, y))
+    N_{t+1}(x,y) = f(N_t(x,y), \Bar{N_t}(x, y), E_t(x, y))
 \end{align}
-where $N_t(x, y)$ is the state variable at cell coordinates $(x, y)$ at time $t$, $\Bar{N}(x, y)$ is the neighbourhood of the cell at coordinates $(x, y)$, $E_t(x, y)$ is the explicit environmental factors (e.g., precipitation and soil nutrients), and $f$ is the update function that describes the biological changes given the current state, the neighbourhood and the environmental factors around a cell.
+where $N_t(x, y)$ is the state variable at cell coordinates $(x, y)$ at time $t$, $\Bar{N_t}(x, y)$ is the neighbourhood of the cell at coordinates $(x, y)$, $E_t(x, y)$ is the explicit environmental factors (e.g., precipitation and soil nutrients), and $f$ is the update function that describes the biological changes given the current state, the neighbourhood and the environmental factors around a cell.
 
 Grid-based models are particularly suited for simulations involving diffusion-like processes or phenomena with clear spatial boundaries. Classic examples in ecology include modelling vegetation dynamics in arid ecosystems, spatially explicit predator-prey interactions, forest-fire spread, and habitat fragmentation effects. Additionally, grid-based representations form the basis for Cellular Automata models, where cells exhibit discrete states (e.g., occupied, empty, burning), updated synchronously according to predefined state-transition rules.
 
-Grid-based models are commonly used due to computational simplicity, easy integration with geographic information systems (GIS), and suitability for parallel computing. They facilitate large-scale ecological modelling by clearly defining spatial relationships and boundary conditions, thus making them practical for exploring broad-scale ecological hypotheses or management scenarios.
+Grid-based models are commonly used due to computational simplicity, easy integration with geographic information systems (GIS), and suitability for parallel computing \cite{Czaran1998,Nelson2012}. They facilitate large-scale ecological modelling by clearly defining spatial relationships and boundary conditions, thus making them practical for exploring broad-scale ecological hypotheses or management scenarios.
 
-However, significant limitations exist, as ecological processes may differ drastically at varying scales (e.g., local vs. landscape-level processes). Incorrect spatial resolution of the grid cells can lead to ecological inaccuracies or oversimplifications. Moreover, grid cells assume ecological homogeneity within each cell, which may poorly reflect natural ecological heterogeneity, especially in large cells. Complex ecological interactions, such as asymmetric competition or directional effects, are typically simplified or lost in grid-based discretisation. Finally, regular grids impose artificial directional biases (e.g., horizontal/vertical) that can impact ecological interpretations, especially for processes that depend on continuous spatial gradients or isotropy.
+However, significant limitations exist, as ecological processes may differ drastically at varying scales (e.g., local vs. landscape-level processes). Incorrect spatial resolution of the grid cells can lead to ecological inaccuracies or oversimplifications \cite{Wiens1989}. Moreover, grid cells assume ecological homogeneity within each cell, which may poorly reflect natural ecological heterogeneity, especially in large cells \cite{Levin1992}. Complex ecological interactions, such as asymmetric competition or directional effects, are typically simplified or lost in grid-based discretisation \cite{Durrett1994}. Finally, regular grids impose artificial directional biases (e.g., horizontal/vertical) that can impact ecological interpretations, especially for processes that depend on continuous spatial gradients or isotropy.
 
 \subsubsubsection{Tessellation models}
 
-Tessellation models generalise the idea of grid-based approaches by partitioning continuous ecological space into discrete regions based on proximity rather than regular shapes (\cref{fig:env-obj-grid-based-models}, centre). Among these methods, Voronoi diagrams (also known as Thiessen polygons in ecological studies) and their dual, Delaunay triangulations, are particularly relevant and widely applied.
+Tessellation models generalise the idea of grid-based approaches by partitioning continuous ecological space into discrete regions based on proximity rather than regular shapes (\cref{fig:env-obj-grid-based-models}, centre). Among these methods, Voronoi diagrams (also known as Thiessen polygons in ecological studies) and their dual, Delaunay triangulations, are particularly relevant and widely applied \cite{Lemiere2023,Foltete2019,Minor2008}.
 
 Voronoi diagrams partition a plane based on a set of points (e.g., tree positions, animal territories, or resource centres). Each region in a Voronoi diagram is defined as the set of all points closer to a specific focal point (seed) than to any other point. Formally, given a set of points ${p_1, p_2, ..., p_n}$, the Voronoi region $V_i$ associated with the point $p_i$ is defined as:
 \begin{align}
-V_i = { x \in \R^2 : d(x, p_i) \leq d(x, p_j), \forall j \neq i }
+    V_i = { x \in \R^2 : d(x, p_i) \leq d(x, p_j), \forall j \neq i }
 \end{align}
 with $d(x, p_i)$ the distance between the point $x$ and the seed $p_i$.
 
@@ -201,47 +198,55 @@ Conversely, the Delaunay triangulation is the dual graph structure of a Voronoi 
 
 In ecological modelling, these tessellation methods have significant implications and applications. Voronoi diagrams naturally represent resource partitioning among individuals or populations, capturing territorial or competitive interactions without the artificial constraints imposed by fixed grids \cite{Castle2006}. For instance, they have been effectively employed in forest ecology to model individual-tree resource competition, where the area of a tree's Voronoi cell directly correlates to available resources and competitive interactions.
 
-The use of tessellated models may become very useful as they adapt to irregular spatial distributions, accurately modelling ecological territories and resource accessibility based on actual entity locations.
-
-They inherently define spatial neighbourhoods without arbitrary distances or predefined shapes, enabling more precise representation of interactions among entities.
+The use of tessellated models may become very useful as they adapt to irregular spatial distributions, accurately modelling ecological territories and resource accessibility based on actual entity locations. These models inherently define spatial neighbourhoods without arbitrary distances or predefined shapes, enabling more precise representation of interactions among entities.
 
 Unlike grids, Voronoi cells automatically adjust spatial resolution according to entity density, allowing finer resolution in densely populated areas and coarser resolution in sparse ones.
 
 However, Voronoi-Delaunay models also present several limitations and challenges:
 \begin{Itemize}
-\Item{} Dynamic updating of Voronoi diagrams and Delaunay triangulations is computationally more intensive than fixed-grid models, especially in large-scale or highly dynamic ecosystems where individuals frequently appear, disappear, or move.
-\Item{} Voronoi models implicitly assume isotropic interactions (competition or resource usage is equal in all directions) and strictly distance-based territories, neglecting directional biases such as prevailing winds, slopes, or anisotropic resource gradients.
+    \Item{} Dynamic updating of Voronoi diagrams and Delaunay triangulations is computationally more intensive than fixed-grid models, especially in large-scale or highly dynamic ecosystems where individuals frequently appear, disappear, or move.
+    \Item{} Voronoi models implicitly assume isotropic interactions (competition or resource usage is equal in all directions) and strictly distance-based territories, neglecting directional biases such as prevailing winds, slopes, or anisotropic resource gradients.
 \end{Itemize}
 
 
-Generalised topological maps represent ecosystems using abstract spatial relationships and connectivity structures, emphasising the importance of spatial relationships or interactions rather than explicit geometric positions or shapes \cite{Urban2009}. Unlike grid-based or Voronoi-Delaunay tessellation models, generalised topological maps prioritise topological relationships over exact geometric distances or spatial coordinates (\cref{fig:env-obj-grid-based-models}, right). Formally, these maps can be defined as graphs or networks $G = (V, E)$, where vertices $V$ represent spatial entities (e.g., habitat patches, resources, individuals, or territories), and edges $E$ define ecological interactions, such as connectivity, dispersal pathways, competitive influence, or predator-prey relations \cite{Hamonic2021,Minor2008,Peterson2024}.
+Generalised topological maps represent ecosystems using abstract spatial relationships and connectivity structures, emphasising the importance of topological adjacency or interactions rather than explicit geometric positions or shapes \cite{Urban2009}. Unlike grid-based or Voronoi-Delaunay tessellation models, generalised topological maps prioritise topological relationships over exact geometric distances or spatial coordinates (\cref{fig:env-obj-grid-based-models}, right). Formally, these maps can be defined as graphs $G = (V, E)$, where vertices $V$ represent spatial entities (e.g., habitat patches, resources, individuals, or territories), and edges $E$ define ecological interactions, such as connectivity, dispersal pathways, competitive influence, or predator-prey relations \cite{Hamonic2021,Minor2008,Peterson2024}.
 
 By abstracting space into relational networks, these maps enable efficient representation and analysis of ecological processes in scenarios where exact geometry may be unknown, less relevant, or overly complex. They are particularly valuable in modelling metapopulation dynamics, habitat connectivity, or animal movement patterns, where the critical ecological factor is the presence or absence of connectivity rather than explicit spatial positions. Furthermore, generalised topological approaches facilitate integration with network theory, providing tools to analyse ecological resilience, robustness, fragmentation, and connectivity dynamics directly through graph-based metrics (e.g., connectivity indices, centrality measures, or modularity analyses) \cite{Lemiere2023,Gaucherel2012}.
 
 However, the use of generalised topological maps also presents several limitations and ecological assumptions:
 \begin{Itemize}
-\Item{} Removing explicit geometry sacrifices detailed spatial realism, potentially limiting the ability to accurately model distance-dependent ecological processes such as diffusion or continuous dispersal.
-\Item{} Ecological outcomes can be highly sensitive to how vertices and edges are defined, necessitating careful selection or validation of the underlying graph structure to avoid artificial ecological patterns or biased results.
-\Item{} Empirical calibration or validation may be difficult, as topological maps represent abstract ecological relationships rather than measurable spatial distances or tangible boundaries.
+    \Item{} Removing explicit geometry sacrifices detailed spatial realism, potentially limiting the ability to accurately model distance-dependent ecological processes such as diffusion or continuous dispersal.
+    \Item{} Ecological outcomes can be highly sensitive to how vertices and edges are defined, necessitating careful selection or validation of the underlying graph structure to avoid artificial ecological patterns or biased results.
+    \Item{} Empirical calibration or validation may be difficult, as topological maps represent abstract ecological relationships rather than measurable spatial distances or tangible boundaries.
 \end{Itemize}
 
-Despite these limitations, generalised topological maps remain valuable tools, especially when combined with explicit spatial approaches \cite{Ecormier-Nocca2021} or when explicit geometry is unavailable or unneeded \cite{Duflot2018,Boussange2022}.
+Despite these limitations, generalised topological maps remain valuable tools, especially when combined with explicit spatial approaches \cite{Ecormier-Nocca2021} or when explicit geometry is unavailable or unneeded such as in metapopulation studies where only patch connectivity is known \cite{Duflot2018} or where movement follows network-like pathways shaped by the environment rather than simple Euclidean distance \cite{Boussange2022,Mari2014,Carrara2012}.
+
+\midConclusion
+
+Whereas site-based models abstract ecosystems into patches or networks, they cannot capture the variability among individual organisms. Individual-Based Models (IBMs) address this by explicitly representing each organism and its interactions.
 
 \subsubsection{Individual-based models}
 
 \begin{figure}
-\includegraphics[]{individual-based-modeling-teaser.png}
-\caption{Individual-based models focus attention on each element of the scene, with interaction between neighbouring entities. This perspective allows for more precision on (left) the positioning of each tree \cite{Alsweis2006}, but also on (right) the life cycle and geometry of the individuals \cite{Peytavie2024a}.}
-\label{fig:env-obj-individual-based-models}
+    \includegraphics[]{individual-based-modeling-teaser.png}
+    \caption{Individual-based models focus attention on each element of the scene, with interaction between neighbouring entities. This perspective allows for more precision on (left) the positioning of each tree \cite{Alsweis2006}, but also on (right) the life cycle and geometry of the individuals \cite{Peytavie2024a}.}
+    \label{fig:env-obj-individual-based-models}
 \end{figure}
 
-In contrast to aggregated or spatially discrete models, Individual-Based Models (IBMs) explicitly represent each organism or ecological entity as a distinct unit \cite{Crooks2017}. Thanks to increased computational power, IBMs have gained popularity due to their ability to capture individual variability, spatial heterogeneity, and detailed ecological dynamics. In IBMs, each organism is modelled independently, enabling fine-grained representation of processes such as birth, growth, reproduction, mortality, dispersal, and competition, each potentially influenced by local environmental conditions or interactions with neighbouring individuals \cite{Chng2013,Peytavie2024a}.
+In contrast to aggregated or spatially discrete models, Individual-Based Models (IBMs) explicitly represent each organism as a distinct unit \cite{Crooks2017}. IBMs have gained popularity in vegetation modelling because they capture variability in size, spatial positioning, and competitive interactions among individuals. Each tree or plant can be modelled independently, with processes such as growth, mortality, and reproduction shaped by local environmental conditions and the presence of neighbours \cite{Chng2013,Peytavie2024a}.
 
-IBMs inherently capture the variability and heterogeneity of natural ecosystems, thus providing ecological realism by explicitly modelling individual variability in life histories, behaviour, and spatial positioning \cite{McLane2011,Zhang2020}. As such, IBMs are particularly effective for simulating complex ecological processes, including species interactions, competition, predation, dispersal, and responses to spatially heterogeneous environments (\cref{fig:env-obj-individual-based-models}, right).
+This fine-grained representation enables IBMs to reproduce emergent stand-level dynamics from simple local rules. They are particularly effective for modelling competition for light, nutrients, and space, where outcomes depend on relative size or distance among neighbours \cite{McLane2011,Zhang2020}. To reduce computational costs while maintaining ecological realism, vegetation IBMs often employ distance-based competition methods (e.g., FRN, ZOI, FON) or stochastic simplifications. Recent advances in parallel computing and GPU simulation have further extended the applicability of IBMs to large-scale virtual ecosystems.
 
-To reduce computational costs while maintaining ecological realism, IBMs frequently employ approximations distance-based competition methods (e.g., FRN, ZOI, FON) or stochastic processes capturing probabilistic interactions among individuals. Moreover, recent advances have improved the scalability and realism of IBMs by leveraging parallel computing and GPU-based simulations, facilitating large-scale applications.
+Although our discussion is focused on vegetation, IBMs are a general ecological framework. They are applied to animal movement and foraging, predator-prey dynamics, and even disease spread in heterogeneous populations \cite{Grimm2005,Chng2013,Perez2009}. These examples underline the versatility of IBMs, but here we emphasise their role in vegetation modelling and spatial competition, which is most relevant for our purposes.
 
-Hybrid approaches are also common, combining IBMs with grid-based or tessellation models to balance computational efficiency and ecological detail. Such hybrids may represent environmental conditions through spatial grids or tessellations (Voronoi diagrams), while explicitly modelling organism-level behaviours and interactions individually \cite{Chng2011a}.
+% In contrast to aggregated or spatially discrete models, Individual-Based Models (IBMs) explicitly represent each organism or ecological entity as a distinct unit \cite{Crooks2017}. Thanks to increased computational power, IBMs have gained popularity due to their ability to capture individual variability, spatial heterogeneity, and detailed ecological dynamics. In IBMs, each organism is modelled independently, enabling fine-grained representation of processes such as birth, growth, reproduction, mortality, dispersal, and competition, each potentially influenced by local environmental conditions or interactions with neighbouring individuals \cite{Chng2013,Peytavie2024a}.
+
+% IBMs inherently capture the variability and heterogeneity of natural ecosystems, thus providing ecological realism by explicitly modelling individual variability in life histories, behaviour, and spatial positioning \cite{McLane2011,Zhang2020}. As such, IBMs are particularly effective for simulating complex ecological processes, including species interactions, competition, predation, dispersal, and responses to spatially heterogeneous environments (\cref{fig:env-obj-individual-based-models}, right).
+
+% To reduce computational costs while maintaining ecological realism, IBMs frequently employ approximations distance-based competition methods (e.g., FRN, ZOI, FON) [references?] or stochastic processes capturing probabilistic interactions among individuals. Moreover, recent advances have improved the scalability and realism of IBMs by leveraging parallel computing and GPU-based simulations, facilitating large-scale applications.
+
+% [Hybrid approaches are also common, combining IBMs with grid-based or tessellation models to balance computational efficiency and ecological detail. Such hybrids may represent environmental conditions through spatial grids or tessellations (Voronoi diagrams), while explicitly modelling organism-level behaviours and interactions individually \cite{Chng2011a}. ][ Transition? Where do you present hybrid methods? ]
 
 \subsubsubsection{Fixed-Radius Neighbourhood}
 
@@ -249,168 +254,177 @@ In the Fixed-Radius Neighbourhood (FRN) method, the first appearance of a distan
 
 \AltTextImage{
 
-The computer graphics community represents the FRN constraint using Poisson Disk Sampling (\cref{fig:env-obj-poisson-example}) or blue noise approximations \cite{Deussen2000} to generate entities as points that do not fall within another entity's radius. The algorithm can be accelerated using a regular grid structure as proposed by \citep{Bridson2007b}: each cell of the grid has a width of $\frac{\radius}{\sqrt{n}}$ with $n$ the number of dimensions (usually $n = 2$). Each point sampled is encoded by the grid cell in which it resides. A cell can only contain a unique point, making it a fast spatial structure for distance computation with other points. Each point added to the grid recursively instantiates new random samples in a spherical annulus between radius $\radius$ and $2\radius$. While this method is fast and simple, other methods propose variations to guarantee maximal coverage \cite{Ebeida2011} or GPU parallelisation \cite{Wei2008}. However, in the presence of at least two species with different radii, the circle packing problem becomes more complicated and requires a larger number of collision checks, while still relying on the spatial indexing method from Bridson's algorithm.
+    In graphics, FRN-like exclusion is realised by Poisson-disk sampling (\cref{fig:env-obj-poisson-example}) or blue noise approximations \cite{Deussen2000} to generate entities as points that do not fall within another entity's radius. The algorithm can be accelerated using a regular grid structure as proposed by \cite{Bridson2007b}: each cell of the grid has a width of $\frac{\radius}{\sqrt{n}}$ with $n$ the number of dimensions (usually $n = 2$). Each cell stores at most one sample, limiting neighbour checks to adjacent cells. Each point added to the grid recursively instantiates new random samples in a spherical annulus between radius $\radius$ and $2\radius$. Variants of this method guarantee maximal coverage \cite{Ebeida2011} or GPU parallelisation \cite{Wei2008}. However, in the presence of at least two species with different radii, the circle packing problem becomes more complicated and requires a larger number of collision checks, while still relying on the spatial indexing method from Bridson's algorithm.
 
-}{Poisson_disk_sampling.png}{Poisson Disk Sampling iteratively adds points in space and checks whether new points fall inside the radius of previously instantiated ones.}{fig:env-obj-poisson-example}
+}{Poisson_disk_sampling.png}{Poisson Disk Sampling iteratively adds points in space and rejects a candidate if it is within radius $\radius$ of any existing point. }{fig:env-obj-poisson-example}
 
 \AltTextImage{
-\subsubsubsection{Zone of Influence}
-The Zone of Influence (ZOI) model is an ecological method designed to quantify competition among trees by modelling their interactions as gradual rather than binary processes \cite{Czaran1998}. In contrast to a simple binary approache proposed with Fixed-Radius Neighbourhood, the ZOI model assigns each tree a circular influence zone, typically defined based on measurable attributes such as diameter at breast height (DBH), crown dimensions, or species-specific ecological characteristics.
+    \subsubsubsection{Zone of Influence}
+    The Zone of Influence (ZOI) model is an ecological method designed to quantify competition among trees by modelling their interactions as gradual rather than binary processes \cite{Czaran1998}. In contrast to a simple binary approache proposed with Fixed-Radius Neighbourhood, the ZOI model assigns each tree a circular influence zone, typically defined based on measurable attributes such as diameter at breast height (DBH), crown dimensions, or species-specific ecological characteristics.
 
-In this framework, competition between adjacent trees is quantified by calculating the fractional overlap between their influence zones (visible in \cref{fig:env-obj-zoi-scheme}). 
+    In this framework, competition between adjacent trees is quantified by calculating the fractional overlap between their influence zones (visible in \cref{fig:env-obj-zoi-scheme}). 
 
-}{ZOI-Peters2020.png}{ZOI is represented by regions around entities. The intersection between two circular regions (radii) defines the competition between the two entities. Top: Symmetric competition (equal resource sharing, with the competition at the intersection divided equally); bottom: Asymmetric competition (larger entity captures more resources, such as light).}{fig:env-obj-zoi-scheme}
+}{ZOI-Peters2020.png}{ZOI is represented by regions around entities. The intersection area between two discs defines the competition between the two entities. Top: Symmetric competition (equal resource sharing, with the competition at the intersection divided equally); bottom: Asymmetric competition (larger entity captures more resources, such as light).}{fig:env-obj-zoi-scheme}
 
 Mathematically, the intensity of competition $C_{ij}$ exerted by a neighbouring tree $j$ on a focal tree $i$ is expressed as:
 \begin{align}
-C_{ij} = \frac{ \Area_{\text{overlap}, ij} }{ \Area_{\text{ZOI}, i} }
+    C_{ij} = \frac{ \Area_{\text{overlap}, ij} }{ \Area_{\text{ZOI}, i} }
 \end{align}
 where $\Area_{\text{overlap}, ij}$ is the area of overlap between the radii of trees $i$ and $j$, and $\Area_{\text{ZOI}, i}$ is the total area of the influence zone of tree $i$. This intersection area can be computed directly with:
 \begin{align}
-\Area_{\text{overlap}, ij} = &r_i^2 \cos^{-1}\left( \frac{d^2 + r_i^2 - r_j^2}{2 d r_i} \right) + r_j^2 \cos^{-1} \left(\frac{d^2 + r_j^2 - r_i^2}{2 d r_j} \right) \nonumber \\
-& - \frac{1}{2} \sqrt{(-d + r_i + r_j)(d + r_i - r_j)(d - r_i + r_j)(d + r_i + r_j)}
+    \Area_{\text{overlap}, ij} = &r_i^2 \cos^{-1}\left( \frac{d^2 + r_i^2 - r_j^2}{2 d r_i} \right) + r_j^2 \cos^{-1} \left(\frac{d^2 + r_j^2 - r_i^2}{2 d r_j} \right) \nonumber \\
+    & - \frac{1}{2} \sqrt{(-d + r_i + r_j)(d + r_i - r_j)(d - r_i + r_j)(d + r_i + r_j)}
 \end{align}
 assuming $r_i$ and $r_j$ are the radii of trees $i$ and $j$ respectively, and $d$ the distance between the two centres.
 
 The biological consequences of competition quantified by ZOI, such as reduced growth or increased mortality risk, can be represented through growth-response equations. For instance, tree growth under competition might be modelled as \cite{Das2012,Uriarte2004}:
 \begin{align}
-G_i = G_{\text{max}, i} \left(1 - \alpha \sum_{j} {C_{ij}} \right)
+    G_i = G_{\text{max}, i} \left(1 - \alpha \sum_{j} {C_{ij}} \right)
 \end{align}
-with $G_i$ the growth of the tree, $G_{\text{max}, i}$ the maximal potential growth if no competition affects it, and $\alpha$ a sensitivity parameter determining how competition impacts growth.
+with $G_i \in [0, 1]$ the growth of the tree, $G_{\text{max}, i}$ the maximal potential growth if no competition affects it, and $\alpha$ a sensitivity parameter determining how competition impacts growth.
 
 \AltTextImage{
-The ZOI model typically assumes symmetric (isotropic) competition, meaning all trees compete equally in every direction, and the competition effect between two trees is reciprocal if their zones and dimensions are similar. However, ecological realism can be increased by adopting an asymmetric (anisotropic) version of the model, which acknowledges that competition is often directionally biased or size-dependent (\cref{fig:env-obj-zoi-scheme}). For asymmetric competition, the equation is modified by introducing weighting based on differences in tree size or dominance, for example:
-}{FON-asymmetric-field-Peters2020-s.png}{A limitation of individual-based models is that the influence of each entity is often assumed to be isotropic, ignoring environmental factors. Left: competition in ZOI models is identical for each entity; right: a flow direction (black arrows) induce a deformed competition for resources. Asymmetric interaction area is much more complex to compute. }{fig:env-obj-fon-asymmetric-scheme}
+    The ZOI model typically assumes symmetric (isotropic) competition, meaning all trees compete equally in every direction, and the competition effect between two trees is reciprocal if their zones and dimensions are similar. However, ecological realism can be increased by adopting an asymmetric (anisotropic) version of the model, which acknowledges that competition is often directionally biased or size-dependent (\cref{fig:env-obj-zoi-scheme}). For asymmetric competition, the equation is modified by introducing weighting based on differences in tree size or dominance, for example:
+    \begin{align}
+        C_{ij} = \frac{ \Area_{\text{overlap}, ij} }{ \Area_{\text{ZOI}, i} } f(DBH_i, DBH_j)
+    \end{align}
+    with $f: \R^2 \to [0, 1]$ weighting function that introduces asymmetry between individuals based on size or dominance traits. For example, $f(\text{DBH}_i, \text{DBH}_j)$ can bias competition towards larger trees by giving them a higher share of contested resources, while $f(h_i, h_j)$ with tree heights $h_i$ and $h_j$ can represent light competition by favouring taller individuals. The exact form of $f$ depends on the ecological process of interest (e.g., size dominance, shading, or nutrient uptake). %a function that introduces asymmetry due to differences in diameter at breast height (DBH), modelling stronger resource capture by larger trees, or using $f(h_i, h_j)$ to model light competition between trees of different heights $h_i$ and $h_j$.
+}{FON-asymmetric-field-Peters2020-s.png}{A common simplification is isotropy; real stands often show directional effects (slope, wind, light). Left: competition in classical FON models is identical for each entity; right: a flow direction (black arrows) induce a deformed competition for resources. Asymmetric interaction area is much more complex to compute \cite{Peters2020}. }{fig:env-obj-fon-asymmetric-scheme}
 
-\begin{align}
-C_{ij} = \frac{ \Area_{\text{overlap}, ij} }{ \Area_{\text{ZOI}, i} } f(DBH_i, DBH_j)
-\end{align}
-with $f(DBH_i, DBH_j)$ a function that introduces asymmetry due to differences in diameter at breast height (DBH), modelling stronger resource capture by larger trees, or using $f(h_i, h_j)$ to model light competition between trees of different heights.
 
 The ZOI model is theoretically rooted in the understanding that trees compete gradually and continuously, rather than abruptly. However, it does rely on simplifying assumptions (circular, isotropic zones, homogeneous environmental conditions, and static radii within measurement intervals) which can limit its applicability to ecological scenarios involving directional resource gradients or heterogeneous environments (\cref{fig:env-obj-fon-asymmetric-scheme}).
 
-Empirical studies across diverse forest ecosystems have demonstrated that the ZOI approach significantly improves predictions of tree growth, survival, and mortality compared to simpler binary models such as FRN. The nuanced representation of competition offered by ZOI models better captures complex ecological dynamics, particularly in mixed-species stands, uneven-aged forests, or structurally diverse ecosystems.
+Empirical studies across diverse forest ecosystems have demonstrated that the ZOI approach significantly improves predictions of tree growth, survival, and mortality compared to simpler binary models such as FRN. The nuanced representation of competition offered by ZOI models better captures complex ecological dynamics, particularly in mixed-species stands, uneven-aged forests, or structurally diverse ecosystems \cite{Bella1972,Biging1992}.
 
 \AltTextImage{
-\subsubsubsection{Field of Neighbourhood}
-The Field of Neighbourhood (FON) approach provides an alternative method to quantify tree competition by explicitly incorporating distance-dependent and size-dependent effects of neighbouring trees on a focal tree's growth or survival \cite{Berger2000}. Unlike the ZOI model, which uses circular zones and geometric overlaps, FON models typically rely on explicit indices that incorporate both the distance and the relative sizes of neighbouring trees, without necessarily defining explicit geometric overlap areas.
+    \subsubsubsection{Field of Neighbourhood}
+    The Field of Neighbourhood (FON) approach provides an alternative method to quantify tree competition by explicitly incorporating distance-dependent and size-dependent effects of neighbouring trees on a focal tree's growth or survival (the tree being evaluated) \cite{Berger2000}. Unlike the ZOI model, which uses circular zones and geometric overlaps, FON models typically rely on explicit indices that incorporate both the distance and the relative sizes of neighbouring trees, without necessarily defining explicit geometric overlap areas.
 
-In the FON approach, competition intensity affecting a given focal tree is calculated by summing the competitive effects of neighbouring trees, typically as a weighted function of their size and distance (\cref{fig:env-obj-fon-scheme}). 
+    In the FON approach, competition intensity affecting a given focal tree is calculated by summing the competitive effects of neighbouring trees, typically as a weighted function of their size and distance (\cref{fig:env-obj-fon-scheme}). 
 }{FON-Peters2020.png}{The FON model proposes a smoother version of the ZOI, where the intersection between two radii also accounts for the distance from the tree trunk.}{fig:env-obj-fon-scheme}
 
 \AltTextImage{
-A commonly used formulation of competition intensity $FON_i$ for a tree $i$ at distance $r$ from the trunk is expressed as
-\begin{align}
-FON_i(r) = \begin{dcases}
-1 & \text{for } 0 \leq r < \text{RBH}, \\
-e^{-\curve(r - \text{RBH})} & \text{for } \text{RBH} \leq r \leq R, \\
-0 & \text{otherwise}
-\end{dcases}
-\end{align}
-with RBH the radius at breast height (half of the DBH), $R$ the radius of influence of the tree (usually proposed as $R = a \sqrt{\text{RBH}}$ with a scaling parameter $a$), and $\curve$ an attenuation coefficient, defined for each species.
+    A commonly used formulation of competition intensity $FON_i$ for a tree $i$ at distance $\radius$ from the trunk is expressed as
+    \begin{align}
+        FON_i(\radius) = \begin{dcases}
+            1 & \text{for } 0 \leq \radius < \text{RBH}, \\
+            e^{-C(r - \text{RBH})} & \text{for } \text{RBH} \leq \radius \leq R, \\
+            0 & \text{otherwise}
+        \end{dcases}
+    \end{align}
+    with RBH the radius at breast height ($\text{RBH} = \frac{1}{2} \text{DBH}$), $\Radius$ the radius of influence of the tree (usually proposed as $\Radius = a \sqrt{\text{RBH}}$ with a scaling parameter $a$), and $C$ an attenuation coefficient, defined for each species.
 }{DBH-measure.png}{DBH (and RBH) is measured at 1.3 m above ground level.}{fig:env-obj-dbh}
 
 \AltTextImage{
-The overall competition at any point in space can now be described as:
-\begin{align}
-F(x, y) = \sum_{i} {FON_i(x, y)}
-\end{align}
-The competition perceived by a tree $i$ is the average of all $FON$ values around its area $A$ (denoting $A' = \Area_{\text{overlap}, ij}$):
-\begin{align}
-    F_A^i = \frac{1}{A} \sum_{j \neq i}{ \int_{A'}{FON_j(x, y) \, da'} }
-\end{align}
+    The overall competition at any point in space can now be described as:
+    \begin{align}
+        F(x, y) = \sum_{i} {FON_i(x, y)}
+    \end{align}
+    The competition perceived by a tree $i$ is the average of all $FON$ values intersecting its area $A$:
+    \begin{align}
+        F_A^i = \frac{1}{A} \sum_{j \neq i}{ \int_{\Area_{\text{overlap}, ij}}{FON_j(x, y) \, da} }
+    \end{align}
 }{FON-scheme-Berger2000.png}{The evaluation of the FON value at any point is done by accumulating all individual fields.}{fig:env-obj-fon-compute-scheme}
 
-Unlike the ZOI method, the FON model does not assume a hard boundary around each tree, instead explicitly capturing a smooth decline in competitive impact with increasing distance. It also inherently accommodates asymmetric competition, since larger and closer neighbours exert disproportionately stronger competitive influences than smaller or more distant trees (\cref{fig:env-obj-fon-compute-scheme}).
+Unlike the ZOI method, the FON model does not assume a hard boundary around each tree, instead explicitly capturing a smooth decline in competitive impact with increasing distance. It also inherently accommodates asymmetric competition, since larger and closer neighbours exert stronger competitive influences than smaller or more distant trees (\cref{fig:env-obj-fon-compute-scheme}).
 
-The FON method does not rely explicitly on geometric overlap and is thus flexible and particularly useful in heterogeneous forests. However, to capture the self-thinning property of silviculture \cite{Makowski2019}, satisfying $W = \curve N^{-\frac{3}{2}}$ (with $W$ the average biomass of an individual, $N$ the density, and $\curve$ a constant) \cite{Westoby1984}, the generation of the ecosystem should be iteratively simulated with small time steps \cite{Alsweis2005}, which is computationally expensive. Rather than simulating the full growth model of vegetation, most ecosystem generation algorithms focus on the distribution of the elements of the terrain, abstracting the competition into distance function deformations or statistical optimisation.
+The FON method does not rely explicitly on geometric overlap and is thus flexible and particularly useful in heterogeneous forests. However, to capture the self-thinning property of silviculture, an empirical law in forestry describing how tree density decreases as average tree biomass increases \cite{Makowski2019}, satisfying $W = C N^{-\frac{3}{2}}$ (with $W$ the average biomass of an individual, $N$ the density, and $C$ a constant) \cite{Westoby1984}, the generation of the ecosystem should be iteratively simulated with small time steps \cite{Alsweis2005}, which is computationally expensive. Rather than simulating the full growth model of vegetation, most ecosystem generation algorithms focus on the distribution of the elements of the terrain, abstracting the competition into distance function deformations or statistical optimisation.
 
 \AltTextImage{
-By designing non-monotonic field functions around trees, emergent behaviours can appear. \cite{Lane2002} proposed to apply a "deformation kernel" on the distance function, resulting in a larger variety of patterns, such as the clustering of bushes and the competition of larger trees (\cref{fig:env-obj-kernels-Lane2002}, top left). Building on this idea, defining deformation kernels for each pair of species (\cref{fig:env-obj-kernels-Lane2002}, top right, with kernels for two species) allows the system to include ecological interactions between different species in the terrain. As a result, the simulation can introduce intra-species clumping while maintaining inter-species segregation.
+    By designing non-monotonic field functions around trees, emergent behaviours can appear. \cite{Lane2002} proposed to apply what they call a deformation kernel on the distance function, resulting in a larger variety of patterns, such as the clustering of bushes and the competition of larger trees (\cref{fig:env-obj-kernels-Lane2002}, top left). Building on this idea, defining deformation kernels for each pair of species (\cref{fig:env-obj-kernels-Lane2002}, top right, presents a kernel matrix for two species) allows the system to include ecological interactions between different species in the terrain. As a result, the simulation can introduce intra-species clumping while maintaining inter-species segregation.
 }{kernel-matrices-Lane2002.png}{The deformation of neighbourhood kernels enables modelling of different behaviours for species and their interactions. Top-left: different kernels generate different layouts; Top-right: a matrix $M$ encodes a distance kernel for each pair of species; Bottom: using a single matrix provides a way to control the interaction of two species in a scene.}{fig:env-obj-kernels-Lane2002}
 
 \AltTextImage{
-    Alternatively, learning the spatial distribution of distances between individuals from examples can be used as a statistical metric to introduce interactive tools for ecosystem generation \citep{Emilien2015a} (\cref{fig:env-obj-worldbrush-Emilien2015}). In this work, given a user-provided example, the system learns parameters such as the histogram of inter- and intra-species distances from one region and reproduces these distributions in another region. This method is not limited to vegetation, but may include any scene elements (e.g., houses and roads), and can integrate other metrics such as terrain slope.
+    % Alternatively, learning the spatial distribution of distances between individuals from examples can be used as a statistical metric to introduce interactive tools for ecosystem generation \cite{Emilien2015a} (\cref{fig:env-obj-worldbrush-Emilien2015}). In this work, given a user-provided example, the system learns parameters such as the histogram of inter- and intra-species distances from one region and reproduces these distributions in another region. This method is not limited to vegetation, but may include any scene elements (e.g., houses and roads), and can integrate other metrics such as terrain slope.
+    Alternatively, learning the spatial distribution of distances between individuals from examples can be used as a statistical metric to introduce interactive tools for ecosystem generation \cite{Emilien2015a} (\cref{fig:env-obj-worldbrush-Emilien2015}). In this work, a user-provided patch serves as an example: the system extracts descriptors such as histograms of inter- and intra-species distances, or correlations with environmental variables like slope, and reproduces these distributions in other regions. Unlike kernel-based models, which require explicit design of influence functions, this approach learns statistical descriptors directly from data.
+
+    This method is not limited to vegetation but generalises to any scene elements (e.g., houses, rocks, roads), making it highly flexible for procedural content generation. From an ecological standpoint, it resonates with point-process modelling, where distributions of distances or clustering statistics are fitted to observed spatial patterns \cite{BenSaid2021,Baddeley2010}. For computer graphics, the strength of this approach is interactivity and scalability: complex, realistic layouts can be synthesised quickly without costly simulation, while retaining ecological plausibility through statistical consistency.
 }{worldbrush-Emilien2015.png}{Using statistical distribution from an input terrain, \cite{Emilien2015a} synthesise a different terrain with similar distributions. Two examples are given (delimited by blue rectangular boundaries): uniform distribution (top) and clustered distribution (bottom). Differences in distribution arise from the voids in the regions of interest.}{fig:env-obj-worldbrush-Emilien2015}
 
-While the FON model provides a biologically detailed representation of competition, its computational complexity makes it significantly more challenging to implement in large-scale simulations. Unlike the ZOI model, which relies on predefined geometric overlaps that can be calculated efficiently, the FON approach requires integrating a continuously decaying competition function over an arbitrary area of influence. This necessitates evaluating the function at multiple points across overlapping zones, increasing computational demand. Moreover, the additive nature of FON, where each tree contributes to the total competition field at every spatial point, further exacerbates the cost, scaling poorly in dense forest stands. The necessity of numerical integration or spatial discretisation makes FON computationally expensive compared to ZOI, which only requires simple geometric calculations. Consequently, while FON is useful for small-scale or highly detailed ecological studies, it is generally impractical for large-scale forest simulations.
+While the FON model provides a biologically detailed representation of competition, its computational complexity makes it significantly more challenging to implement in large-scale simulations. Unlike the ZOI model, which relies on predefined geometric overlaps that can be calculated efficiently, the FON approach requires integrating a continuously decaying competition function over an arbitrary area of influence. This necessitates evaluating the function at multiple points across overlapping zones, increasing computational demand. Moreover, the additive nature of FON, where each tree contributes to the total competition field at every spatial point, further exacerbates the computational cost, scaling poorly in dense forest stands. The need for numerical integration or spatial discretisation makes FON computationally expensive compared to ZOI, which only requires simple geometric calculations. Consequently, while FON is useful for small-scale or highly detailed ecological studies, it is generally impractical for large-scale forest simulations.
+
+While FRN/ZOI/FON quantify interaction around discrete individuals, Ecological Field Models (EFMs) shift perspective to continuous environmental fields that organisms both modify and sense.
 
 \subsubsection{Ecological Field Models}
 
 \begin{figure}
     \autofitgraphics[width = .8\linewidth]{ecological-fields-example-shade-Wu1985.png, ecological-fields-example-water-Wu1985.png, ecological-fields-example-nutrients-Wu1985.png}
-    \caption{Ecological Field Models represent the environment as a mathematical function where environmental properties such as humidity, shade, and nutrients are seen as distinct fields (in the figure, respectively from left to right) created by the presence of trees, bushes, and flowers.}
+    \caption{Ecological Field Models represent the environment as a mathematical function where environmental properties such as humidity, shade, and nutrients are seen as distinct fields (from left to right respectively) created by the presence of trees, bushes, and flowers.}
     \label{fig:env-obj-ecological-field-models}
 \end{figure}
 
-Modelling ecosystems requires a careful balance between biological realism and computational efficiency, especially when simulating large-scale environments. Traditional ecological models fall into two primary categories: Site-Based Models and Individual-Based Models, each with distinct advantages and limitations.
+% [ Modelling ecosystems requires a careful balance between biological realism and computational efficiency, especially when simulating large-scale environments. Traditional ecological models fall into two primary categories: Site-Based Models and Individual-Based Models, each with distinct advantages and limitations.
 
-Site-Based Models discretise the environment into discrete regions, making them efficient for large-scale simulations but limited in their ability to represent smooth, continuous interactions. On the other hand, Individual-Based Models explicitly simulate each organism as an independent entity, allowing for detailed biological behaviour and interactions, but quickly becoming computationally expensive when dealing with large populations.
+% Site-Based Models discretise the environment into discrete regions, making them efficient for large-scale simulations but limited in their ability to represent smooth, continuous interactions. On the other hand, Individual-Based Models explicitly simulate each organism as an independent entity, allowing for detailed biological behaviour and interactions, but quickly becoming computationally expensive when dealing with large populations. ] [ Repetitive ]
 
-While these approaches have been successfully used in various ecological studies, many real-world ecological processes do not fit neatly into a discrete grid or a set of independent agents. Instead, they operate in a continuous spatial domain, where organisms interact with smooth environmental gradients rather than discrete neighbours. For example, competition for light and nutrients is not limited to direct neighbours.
+While the site-based and individual-based approaches have been successfully used in various ecological studies, many real-world ecological processes do not fit neatly into a discrete grid or a set of independent agents. Instead, they operate in a continuous spatial domain, where organisms interact with smooth environmental gradients rather than discrete neighbours. For example, competition for light and nutrients is not limited to direct neighbours.
 
 To address these challenges, Ecological Field Models (EFMs) provide an alternative framework where environmental properties are represented as continuous, spatially explicit fields \cite{Wu1985}. Rather than defining interactions through direct contact (as in IBMs) or discrete adjacency (as in SBMs), EFMs describe how organisms modify and respond to smooth environmental gradients \cite{Chng2011b,Seidl2012}.
 
-From a computer graphics perspective, EFMs share similarities with techniques used in Signed Distance Fields (SDFs). Just as SDFs encode geometric influence in a continuous field, EFMs encode ecological influence, allowing for more realistic ecosystem simulations.
+From a computer graphics perspective, EFMs share similarities with Signed Distance Fields (SDFs). Just as SDFs represent geometry through continuous distance fields, EFMs represent organism-environment interactions through continuous ecological fields, allowing interactions to be modelled as smooth gradients rather than discrete neighbour effects.
 
 EFMs are based on the fundamental idea that organisms are not isolated agents but rather integral components of their environment, influencing and being influenced by it in a spatially explicit manner (\cref{fig:env-obj-ecological-field-models} shows the effect of multiple vegetation entities on the humidity, shade, and nutrient fields of the environment). The core ecological principles behind EFMs include two key points:
 \begin{Itemize}
-    \Item{Continuous organism-environment interactions:} Organisms modify their surroundings in ways that extend beyond their immediate location. Environmental factors such as soil nutrients, water availability, light exposure, and chemical signals influence other species gradually across space.
+    \Item{Continuous organism-environment interactions:} Organisms modify their surroundings beyond their immediate location. Environmental factors such as soil nutrients, water availability, light exposure, and chemical signals influence other species gradually across space.
     \Item{Environmental feedback:} Species respond to spatially varying gradients rather than direct neighbour-based interactions, as seen in phototropism (guiding growth toward light) \cite{Pirk2012} or root development towards nutrient-rich soils \cite{Li2023}.
 \end{Itemize}
 
 The combination of these two principles creates natural feedback loops that are explicitly modelled, allowing a more realistic representation of ecological interactions compared to static environmental assumptions in traditional models.
 
-EFMs provide a continuous representation of environmental factors, bridging the gap between grid-based and individual-based models by modelling smooth ecological gradients, instead of forcing interactions into discrete cells. This method allows organisms to influence and respond to fields dynamically, while providing a scalable framework that avoids the computational explosion of tracking every individual separately.
+EFMs provide a continuous representation of environmental factors, bridging the gap between grid-based and individual-based models by modelling smooth ecological gradients, instead of forcing interactions into discrete cells. This method allows organisms to influence and respond to fields dynamically, while providing a scalable framework that avoids the exponential computational cost of tracking every individual separately.
 
-While EFMs provide a biologically grounded approach to modelling spatial interactions, their implementation requires a robust mathematical framework to define how organisms modify and respond to environmental fields.
-
-
+While EFMs provide a biologically grounded approach to modelling spatial interactions, their implementation requires an analytical framework to define how organisms modify and respond to environmental fields.
 
 
 
-An ecological field represents a spatially varying environmental property across a landscape. Mathematically, we can define an $n$-dimensional ecological field as a scalar field:
+
+
+An ecological field represents a spatially varying environmental property across a landscape. Mathematically, we can define an $n$-dimensional ecological field as a scalar field $F$ for each point $\p \in \R^n$:
 \begin{align}
-F(\p) : \R^n \to \R
+    F(\p) : \R^n \to \R
 \end{align}
 
-Any organism in the scene has an influence on the ecological fields through "influence functions" $K$. These functions describe how an organism's presence affects its surroundings. We can then evaluate the ecological field with $N$ entities:
+Any organism $i$ in the scene has an influence on the ecological fields through an influence kernel $K_i$. These functions describe how an organism's presence affects its surroundings. We can then evaluate the ecological field with $N$ entities:
 \begin{align}
-\label{eq:env-obj-eco-field-computation}
-F(\p) = F_0(\p) + \sum_{i=0}^{N}{K_i(\p)}
+    \label{eq:env-obj-eco-field-computation}
+    F(\p) = F_0(\p) + \sum_{i=0}^{N}{K_i(\p)}
 \end{align}
 with $F_0(\p)$ the baseline environmental state.
 
+% Several methods exist for implementing spatially explicit fields in graphics:
+% \begin{Itemize}
+%     \Item{} A common approach is to discretise the environment into a regular 2D or 3D grid, where each cell stores a value corresponding to an ecological property (e.g., soil moisture, nutrient concentration, or shading intensity). This approach has the advantage of efficient lookup and updates, and GPU compatibility at the cost of memory usage and precision loss.
+
+%     \Item{} Rather than storing explicit values at discrete locations, ecological fields can be defined using procedural functions that are evaluated dynamically. This approach is particularly relevant in procedural terrain and vegetation generation, where continuous field functions determine environmental parameters. A Signed Distance Field (SDF), frequently used in raymarching and volumetric rendering, can be adapted for EFMs by encoding environmental influence functions. This approach enables a theoretically infinite precision for a compact memory footprint at the expense of high computational demand.
+% \end{Itemize}
+
 The primary challenge in computer graphics is how to efficiently store, sample, and modify continuous environmental fields. Since EFMs define spatially varying properties, they require a structured representation that balances accuracy, efficiency, and scalability.
 
-Several methods exist for implementing spatially explicit fields in graphics:
-\begin{Itemize}
-    \Item{} A common approach is to discretise the environment into a regular 2D or 3D grid, where each cell stores a value corresponding to an ecological property (e.g., soil moisture, nutrient concentration, or shading intensity). This approach has the advantage of efficient lookup and updates, and GPU compatibility at the cost of memory usage and precision loss.
+Several strategies have been proposed to implement ecological fields in practice, ranging from grid discretisations \cite{Wu1995,Seidl2012} to procedural functions inspired by noise and implicit surfaces \cite{Perlin1985,Lagae2010,Frisken2000}. In computer graphics, field-based representations are long established as a means to control geometry or appearance, for instance through implicit modelling, distance fields, or scalar textures. Building on these ideas, the Environmental Objects framework \cite{Grosbellet2016} can be seen as a concrete instantiation of EFM principles: fields are directly attached to objects, enabling them both to emit and sense spatial influences. Although originally designed for urban scenes, its conceptual alignment with EFMs illustrates how continuous organism–environment feedbacks can be embedded into procedural modelling systems.
 
-    \Item{} Rather than storing explicit values at discrete locations, ecological fields can be defined using procedural functions that are evaluated dynamically. This approach is particularly relevant in procedural terrain and vegetation generation, where continuous field functions determine environmental parameters. A Signed Distance Field (SDF), frequently used in raymarching and volumetric rendering, can be adapted for EFMs by encoding environmental influence functions. This approach enables a theoretically infinite precision for a compact memory footprint at the expense of high computational demand.
-\end{Itemize}
 
 \subsubsubsection{Environmental Objects}
 
 \begin{figure}
-\includegraphics[]{env-objs-Grosbellet2016.png}
-\caption{The Environmental Objects framework \cite{Grosbellet2016} presents a practical methodology for integrating spatially explicit environmental interactions into procedural modelling. The Environmental Objects concept aligns closely with EFMs, providing a computationally feasible way to embed field interactions into simulated ecosystems.}
-\label{fig:env-obj-teaser-grosbellet2016}
+    \includegraphics[]{env-objs-Grosbellet2016.png}
+    \caption{The Environmental Objects framework \cite{Grosbellet2016} presents a practical methodology for integrating spatially explicit environmental interactions into procedural modelling. The Environmental Objects concept aligns closely with EFMs, providing a computationally feasible way to embed field interactions into simulated ecosystems.}
+    \label{fig:env-obj-teaser-grosbellet2016}
 \end{figure}
 
-The Environmental Objects system of \citep{Grosbellet2016} attaches scalar fields (heat, humidity, occlusion, ...) to scene assets so that snow, leaves or soot accumulate plausibly. Although conceived for urban set dressing, the idea is strikingly similar to EFMs: objects emit and sense continuous fields and update geometry accordingly.
+The Environmental Objects system \cite{Grosbellet2016} implements this principle in practice by extending scene assets with scalar fields (e.g., heat, humidity, occlusion). These fields govern local interactions, such as snow, leaves, or soot accumulating on surfaces, and can in turn influence the appearance and behaviour of nearby objects. Originally developed for interactive urban set dressing, the method introduces a hierarchical framework for procedural scenes in which object-level fields control both visual detail and environmental coherence (\cref{fig:env-obj-teaser-grosbellet2016}).
 
-Our work adopts the same "fields-attached-to-objects" view but turns it into a bi-directional simulator: objects do not only read fields to change appearance, they also decide where and whether they should exist, creating an emergent distribution of terrain features.
+% The Environmental Objects system of \cite{Grosbellet2016} attaches scalar fields (heat, humidity, occlusion, ...) to scene assets so that snow, leaves or soot accumulate plausibly. Although conceived for urban set dressing, the idea is closely aligned with EFMs: objects emit and sense continuous fields and update geometry accordingly.
 
-The Environmental Objects' method presents a hierarchical framework for authoring procedural scenes by extending objects (assets) with environmental fields that control their appearance and interaction with the virtual environment (\cref{fig:env-obj-teaser-grosbellet2016}). This work tackles the main problem with modelling an urban scene, which is finding a balance between generating and editing a large scene in interactive time and the integration of small-scale details in coherence with the global environment:
+% The Environmental Objects method presents a hierarchical framework for authoring procedural scenes by extending objects (assets) with environmental fields that control their appearance and interaction with the virtual environment (\cref{fig:env-obj-teaser-grosbellet2016}). This work tackles a central challenge in large urban scenes: interactive authoring at city scale while preserving locally coherent detail.
+
 \begin{Itemize}
-    \Item{} Objects in a virtual scene dynamically adjust their appearance based on surrounding scalar fields, allowing for realistic procedural effects illustrated with snow deposition, leaf accumulation, and icicle formation. Unlike global simulations, which are computationally demanding, this model uses local environmental fields to procedurally generate details without requiring extensive physics-based calculations.
+    \Item{} Environmental Objects in a virtual scene dynamically adjust their appearance based on surrounding scalar fields, allowing for realistic procedural effects illustrated with snow deposition, leaf accumulation, and icicle formation. Unlike global simulations, which are computationally demanding, this model uses local environmental fields to procedurally generate details without requiring extensive physics-based calculations.
 
     \Item{} Users can modify environmental parameters, such as temperature fields, to influence scene aesthetics in an intuitive and predictable manner. The model enables scene composition through level of details using object groupings, optimising the computation of large-scale environments while maintaining local control over environmental interactions.
 \end{Itemize}
-By employing skeletal implicit primitives and procedural blending techniques, the framework enables the efficient simulation of environmental changes while allowing for real-time scene modifications.
+By employing implicit primitives (to define the environmental fields) and procedural blending techniques, the framework enables the efficient simulation of environmental changes while allowing for real-time scene modifications.
 
-In this method, each 3D model can be associated with "procedural effects", which regroup scalar fields representing changes in the environment. These fields are defined using skeleton-based implicit primitives, allowing the environment properties to be changed along a path instead of only using points as in the initial EFM. This enables the system to represent, for example, the diffusion of heat around a pipe, which is not possible with the latter. The computation of an environment property is then an agglomeration of all the scalar fields associated with the given property. The authors propose computing all scalar fields, such as the heat field $\theta$, at any position $\p$ by the accumulation of objects' fields, in a similar manner as \cref{eq:env-obj-eco-field-computation}:
+In this method, each 3D model can be associated with "procedural effects", which regroup scalar fields representing changes in the environment (\cref{fig:env-obj-teaser-grosbellet2016}, left). These fields are defined using implicit primitives (point-, spline-, surface- or volume-based) allowing the environment properties to be changed along a path, a surface or a volume, instead of only using points as in the initial EFM. This enables the system to represent, for example, the diffusion of heat around a pipe, which is not possible with the latter. The computation of an environment property is then an agglomeration of all the scalar fields associated with the given property (\cref{fig:env-obj-teaser-grosbellet2016}, middle). The authors propose computing all scalar fields, such as the heat field $\theta$, at any position $\p$ by the accumulation of objects' fields, in a similar manner as \cref{eq:env-obj-eco-field-computation}:
 
 \begin{align}
     \theta(\p) = \theta_0(\p) + \sum_{i=1}^{n}{ \theta_i(\p)}
@@ -424,29 +438,26 @@ and the occlusion field $\alpha$ as the product of all objects' occlusion fields
 assuming $\theta_0$ and $\alpha_0$ to be global scalar fields for temperature and shade, symbolising the baseline environmental state in the ecological domain.
 
 \AltTextImage{
-    Using the field values, the system instantiates small details such as leaves by sampling the space with candidate "anchor positions". If the field values satisfy certain conditions at the anchor position $\p_i$, the small-scale objects can be instantiated at this position (for example, for leaves: $\alpha(\p_i) l(\p_i) < d_i$ using the occlusion field $\alpha$, the leaves deposition field $l$ and the distance of the anchor position to the depositing surface $d_i$ as shown in \cref{fig:env-obj-leaves-instances}). This method can then be easily extended to modify the geometry or texture of the object based on the field values (here, the heat field and the humidity field), to manually move or rotate each of the objects, or even integrate user-defined density fields to populate entangled details on the ground \cite{Guerin2016}.
+    Using the field values, the system instantiates small details such as leaves by sampling the space with candidate "anchor positions" (\cref{fig:env-obj-teaser-grosbellet2016}, right). If the field values satisfy certain conditions at the anchor position $\p_i$, the small-scale objects can be instantiated at this position (for example, for leaves: $\alpha(\p_i) l(\p_i) < d_i$ using the occlusion field $\alpha$, the leaves deposition field $l$ and the distance of the anchor position to the depositing surface $d_i$ as shown in \cref{fig:env-obj-leaves-instances}). This method was extended to modify the geometry or texture of the object based on the field values (in \cref{fig:env-obj-leaves-instances}, the heat field and the humidity field), to manually move or rotate each of the objects, or even integrate user-defined density fields to populate entangled details on the ground \cite{Guerin2016}.
 }{EnvObjs-leaves-instances-Grosbellet2016.png}{Leaves are instanced if the field values are fitted for leaves presence, and the geometry and texture are altered depending on the environment. }{fig:env-obj-leaves-instances}
 
 \AltTextImage{
-    On the other hand, the geometry of large objects can be altered using the scalar fields. The authors present a simulation of snow deposition on the objects by displacing the vertices $i$ in the direction of the normals $\vec n_i$ by an amount depending on the environment (\cref{fig:env-obj-snow-Grosbellet2016}):
+    On the other hand, the geometry of large objects can be altered using the scalar fields. The authors present a simulation of snow deposition on the objects by displacing the vertices $i$ in the direction of the original surface normals $\vec n_i$ by an amount depending on the environment (\cref{fig:env-obj-snow-Grosbellet2016}):
     \begin{align}
         \p_i' = \p_i + \left( \alpha(\p_i) s(\p_i) g(d(\p_i)) - \theta(\p_i) \right) \vec n_i
     \end{align}
-    with $s$ the "snow field", and $g$ a snow elevation function based on the distance between the original vertex and the border of the mesh.
-}{EnvObjs-snow-Grosbellet2016.png}{Snow deposition is a displacement of vertices along the normals of the mesh (left), modulated by the value of fields such as occlusion (middle) and heat (right). }{fig:env-obj-snow-Grosbellet2016}
+    with $s$ the snow field, and $g$ a snow elevation function based on the distance between the original vertex and the border of the mesh.
+}{EnvObjs-snow-Grosbellet2016.png}{Snow deposition is a displacement of vertices along the surface normals of the mesh (left), modulated by the value of fields such as occlusion (middle) and heat (right). }{fig:env-obj-snow-Grosbellet2016}
 
 \AltTextImage{
-    In addition to the EFM framework, the environmental effects from environmental objects are not limited by points geometry as the scalar functions may use a spline primitive or be extended to volume primitives (\cref{fig:env-obj-heat-field-effect}). Translated to the ecological domain, this methodology extends the EFM as the inclusion of water bodies, essential for realistic vegetation simulation, can be taken into account by considering environmental effects from rivers and lakes which are often modelled as splines and regions in 3D modelling \cite{Emilien2015,Genevaux2013,Genevaux2015}.
+    In addition to the EFM framework, environmental effects from environmental objects are not limited to point sources (fields can be emitted by splines and volumes) as the scalar functions may use a spline primitive or be extended to volume primitives (\cref{fig:env-obj-heat-field-effect}). Translated to the ecological domain, this methodology extends the EFM as the inclusion of water bodies, essential for realistic vegetation simulation, can be taken into account by considering environmental effects from rivers and lakes which are often modelled as splines and regions in 3D modelling \cite{Emilien2015,Genevaux2013,Genevaux2015}.
 }{env-obj-fields-heat-Grosbellet2016.png}{The heat field produced by a pipe uses a distance function from a line instead of a single point in space.}{fig:env-obj-heat-field-effect}
 
-The Environmental Objects method can be seen as a variant of the EFM due to their high reliance on the idea of fields and environmental effects of each element on the environment, even if the purposes of each method are opposed: one tends to model the environment properties given the elements present while the other aims at altering the geometry of a scene given the elements in the scene, regardless of their biological nature. However, the convergence of these approaches suggests possibilities for cross-disciplinary innovation. The integration of ecological dynamics into procedural modelling could lead to more adaptive virtual environments that respond realistically to environmental changes, while procedural techniques could enhance ecological simulations by improving scalability and visualisation.
+The Environmental Objects method can be regarded as a variant of EFMs, since both rely on scalar fields that objects emit and sense. They share a common substrate of composable fields, but their purposes differ: Environmental Objects mainly enrich visual appearance, while EFMs model ecological dynamics. This overlap suggests cross-overs: Environmental Objects techniques can improve the scalability and visualisation of EFMs, while EFMs can provide Environmental Objects biologically grounded feedback loops.
 
-The conceptual parallels between these models suggest potential areas for cross-disciplinary application. Insights from EFM could inform procedural content generation, enabling more realistic and adaptive virtual ecosystems by incorporating agent-based dynamics, ecosystem succession models, and time-dependent environmental changes. Conversely, procedural modelling techniques from computer graphics could enhance ecological simulations, improving visualisation, scalability, and user interactivity in landscape ecology and biodiversity modelling.
+Our approach adopts this fields-attached-to-objects view, but upgrades it to a bi-directional simulator: objects both read fields to adapt and write fields to decide where/whether they should exist, yielding emergent spatial distributions.
 
-The original EFMs work effectively for static environmental conditions, but many real-world ecological processes involve dynamic, time-dependent changes. For instance, soil moisture depletes over time, plant growth alters shading conditions, and chemical scent trails decay. By integrating biologically inspired feedback loops, procedural generation could extend beyond static environmental effects, enabling simulations of growth, decay, and species interactions \cite{Okubo2001,Wojtek2022}. To extend Environmental Objects beyond static environmental representations, we turn to reaction-diffusion models, which provide a mathematical foundation for modelling time-dependent field interactions used in ecological simulations.
-
-
-
+However, classical EFMs assume static fields, whereas many ecological processes evolve dynamically (e.g., soil moisture depletion, growth-induced shading, or decaying scent trails). By integrating biologically inspired feedback loops, procedural generation could extend beyond static environmental effects, enabling simulations of growth, decay, and species interactions \cite{Okubo2001,Wojtek2022}. Capturing such time-dependent feedbacks requires a mathematical framework for field dynamics. The next section therefore turns to reaction-diffusion equations, which provide the computational backbone for modelling growth, depletion, and decay in ecological fields.
 
 
 \subsection{Diffusion models}
@@ -655,7 +666,7 @@ When a \gloss{EnvObj} is placed, its surrounding \glosses{EnvVal} can be affecte
 However, to maintain a clear distinction between semantic modelling and 3D modelling, we do not compute the exact physical shape or detailed height field of each \gloss{EnvObj}.
 Instead, we define a \gloss{CoarseHeight}~$\heightModif$, a parametric surface derived from the \gloss{Skeleton}, that provides a coarse estimate of local elevation changes. This coarse proxy lets us evaluate altitude-dependent rules without the cost of globally computing the height field.
 
-Altering the vector field~$\Water$ is performed by composing the individual contributions $\waterModif$ of each object at position~$\p$, following \citep{Wejchert1991}. For efficiency we adopt an analytical deformation kernel inspired by Kelvinlet solutions \cite{DeGoes2017} to aggregate these local disturbances.
+Altering the vector field~$\Water$ is performed by composing the individual contributions $\waterModif$ of each object at position~$\p$, following \cite{Wejchert1991}. For efficiency we adopt an analytical deformation kernel inspired by Kelvinlet solutions \cite{DeGoes2017} to aggregate these local disturbances.
 
 Each \gloss{EnvObj} possesses intrinsic \glosses{EnvMat} that both spread and are absorbed around its skeleton over time. For example, a coral colony deposits limestone while simultaneously slowing currents; the reef then uptakes that limestone for growth.
 In our model the colony contributes a deposition term $\materialModif_{\text{limestone}}$, and the reef absorbs it. No direct object-object message passing is required.
@@ -778,7 +789,7 @@ If a steep coast can be found where the terrain slope is significant near the wa
     \begin{align}
         \Einternal &= \Ainternal \left( \int_{\curve}{ \norm{\curve'(s)}^2 , ds} + \int_{\curve}{ \norm{\curve''(s)}^2 , ds} \right) \nonumber
     \end{align}
-    The internal energy, already introduced in \citep{Kass1988}, is composed of two components imposing penalties on the local properties of the points of the curve. The first derivative forces the points along the curve to be evenly spaced by minimising the curve tension, while the second derivative restricts it from forming sharp corners. As our aim is to represent natural elements, we rarely find sharp elements and thus keep the original definition from the Snake formulation.
+    The internal energy, already introduced in \cite{Kass1988}, is composed of two components imposing penalties on the local properties of the points of the curve. The first derivative forces the points along the curve to be evenly spaced by minimising the curve tension, while the second derivative restricts it from forming sharp corners. As our aim is to represent natural elements, we rarely find sharp elements and thus keep the original definition from the Snake formulation.
 }{snake_algorithm_internal.png}{Internal energy minimisation for one vertex is done by reducing the difference of length with the next and with the previous vertices, while reducing the curvature at this point.}{fig:env-obj-snake-internal}
 
 In \cref{fig:env-obj-snake-internal} we see the two different components of this energy minimisation: averaging the vector formed by the previous segment with the vector formed by the next segment, we can move the vertex to a position for which the two new segments are equal in length. On the other hand, translating the vertex towards its projection minimises the curvature at this vertex.
@@ -1042,7 +1053,7 @@ We define the global water current as a vector field composed of three component
     \Water(\p) = \Wuser(\p) + \Wsimu(\p) + \Wobj(\p)
 \end{align}
 
-Here, $\Wuser(\p)$ is a user-defined vector field that provides direct control over the flow direction and intensity using stroke paths, as presented in the previous chapter. The term $\Wsimu(\p)$ is an analytically defined component inspired by the terrain-aware wind simulation approach introduced in \citep{Paris2019b}, which we use for large water body fluid simulation. Finally, $\Wobj(\p)$ represents the deformation introduced by environment objects.
+Here, $\Wuser(\p)$ is a user-defined vector field that provides direct control over the flow direction and intensity using stroke paths, as presented in the previous chapter. The term $\Wsimu(\p)$ is an analytically defined component inspired by the terrain-aware wind simulation approach introduced in \cite{Paris2019b}, which we use for large water body fluid simulation. Finally, $\Wobj(\p)$ represents the deformation introduced by environment objects.
 
 The simulated component $\Wsimu$ captures how water flow is diverted and shaped by the underlying terrain. It starts from a uniform flow direction $a$ and introduces warping based on the terrain gradient evaluated at multiple spatial scales. The resulting vector field is expressed as:
 \begin{align}
@@ -1351,6 +1362,10 @@ We have proposed a method to generate terrains procedurally using sparse represe
 Integrating environmental properties in the \gloss{FitnessFunc} of \glosses{EnvObj} allows the user to guide the generation through \glosses{GeoEvent}. Our method enables each \gloss{EnvObj} of the scene to influence the environment locally, reducing the need for computations while also retrieving \glosses{EnvVal} locally, which results in a parallelisable life-like simulation process. The genericity of the environment properties definitions should be sufficient for plausible generation of other landscape types as long as expert knowledge can be translated to \gloss{EnvObj}'s formalism.
 
 We limited our work to the use of 2D scalar fields as they are more easily differentiable, interpretable and lighter than volumetric representations. However, future works include using 3D representations of the terrain and the environment to generate 3D terrains, including cavities, sub-terrestrial areas and the interior of coral structures.
+
+While our semantic \gloss{EnvObj} framework introduced sparse, interactive primitives for ecosystem generation, it remained constrained to 2D scalar fields. This simplification ensured efficiency and interpretability, but it prevented the representation of intrinsically three-dimensional features such as overhangs, caves, and porous reef structures. Moreover, terrains in the real world are rarely static: they evolve continuously under the action of water, wind, and other erosive agents. Extending procedural methods toward volumetric models and terrain-altering processes is therefore essential to reach higher realism, especially in underwater environments where bioerosion and hydrodynamics shape the seascape.
+
+The following chapter tackles this challenge by focusing on erosion simulation. We present a particle-based method that generalises detachment, transport, and deposition processes across both surface and volumetric representations, offering a flexible and efficient framework for integrating erosion into procedural terrain generation.
 
 \begin{figure}[H]
     \includegraphics{multiScene1 v2 final 1.png}

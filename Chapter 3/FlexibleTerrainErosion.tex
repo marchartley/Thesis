@@ -99,7 +99,9 @@ In this chapter, we present a novel particle-based method for simulating erosion
 \minitoc
 
 \section{Introduction}
-Automated terrain generation is a key component of natural scene digital modelling for animated movies and video games. A standard approach is to first generate a base terrain geometry using noise to define the height on the input domain \cite{Musgrave1989, Olsen2004, Roudier1993}, the result will most likely lack realism and feel synthetic. Erosion simulation algorithms are applied, to simulate thousands of years of ageing by reproducing physical phenomena (i.e. effects of the rain, wind, and running water erosion agents) affecting the terrain making it more believable \cite{Stachniak2005, Smelik2009, Galin2019}.
+Building on the sparse semantic framework of the previous chapter, we now turn to the problem of terrain evolution, focusing on erosion as a key process shaping both aerial and underwater landscapes. 
+
+A standard approach for realistic terrain modelling is to first generate a base terrain geometry using noise to define the height on the input domain \cite{Musgrave1989, Olsen2004, Roudier1993} or to use the methods proposed in our previous chapters (\cref{chap:coral-island} and \cref{chap:semantic-representation}), the result will most likely lack realism and feel synthetic. Erosion simulation algorithms are applied to simulate thousands of years of ageing by reproducing physical phenomena (i.e. effects of the rain, wind, and running water erosion agents) affecting the terrain making it more believable \cite{Stachniak2005, Smelik2009, Galin2019}.
 
 The process of terrain alteration caused by the effect of water, air, or any other element, natural or not, over time is usually performed in three steps \cite{Neidhold2005}: \textbf{detachment} (pieces of the ground of variable dimensions, ranging from complete ledges to grains of sand, are removed from the terrain depending on the simulated meteorological phenomenon), \textbf{transport} (pieces of ground fallen from their initial position are moved to a different one such as a cornice falling down a slope or a grain of sand thrown into the air), and \textbf{deposition} (transported pieces of land are accumulated at a new part of the landscape). Various phenomena can cause these alterations: \textbf{thermal erosion} (bursting of rocks caused by expansion of water under frost, then falling of debris to the bottom of a slope), \textbf{hydraulic erosion} (detachment caused by the impact of water particles on surfaces and the transport of sediments by the flow of runoff), \textbf{wind erosion} (fine particles carried away in the wind and hit surfaces on their way, creating new fine particles which then also fly away), \textbf{chemical erosion} (chemical decomposition of rocks caused by rainwater or other fluids), other exceptional phenomena such as avalanches, animals, lightning, etc... modify the terrain \cite{Cordonnier2017a, Argudo2020, Cordonnier2018, Cordonnier2017b,Cordonnier2023}.
 
@@ -122,9 +124,9 @@ When more accuracy or control is needed, we propose to provide a vector field us
 
 The main contributions of this chapter are:
 \begin{Itemize}
-\Item{} a generalised particle-based algorithm performing the three
-stages of erosion on surface and volume representations,
-\Item{} decoupling the erosion system from the fluid simulation, making the process more flexible in its usage and implementation and opening the door for richer effects that can easily be produced.
+    \Item{} a generalised particle-based algorithm performing the three
+    stages of erosion on surface and volume representations,
+    \Item{} decoupling the erosion system from the fluid simulation, making the process more flexible in its usage and implementation and opening the door for richer effects that can easily be produced.
 \end{Itemize}
 % -----------------------------------------------------------------
 
