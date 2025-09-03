@@ -145,7 +145,7 @@ Simulating ecosystems involves a range of modelling approaches, each balancing b
 % Our method extends the Environmental Objects framework of \cite{Grosbellet2016} by including diffusion in their effect scalar fields and Ecological Field Theory (EFT) to instantiate objects at fitting positions in the scene. We lift it from an urban-scene dressing tool to a scale-agnostic ecosystem engine that treats abiotic and biotic entities uniformly and supports user-guided "zoom-and-refine" workflows.
 
 % --------------------------------------------------------------------
-\subsection{Ecosystem simulation}
+% \subsection{Ecosystem simulation}
 
 Two main modelling paradigms emerge in the literature: modelling dense populations as continuous media \cite{Turing1952}, or representing each individual explicitly \cite{Czaran1998}. The former excels in broad predictions; the latter in local realism.
 
@@ -158,7 +158,7 @@ A hybrid family, the Ecological Field Models \cite{Wu1985}, describes how each i
 Below, we review the three modelling families (site-based, individual-based, field-based) because our method borrows the sparse symbolic control of IBMs yet retains the continuous feedback of EFMs. We then discuss diffusion models, the mathematical backbone for our environmental fields.
 
 % --------------------------------------------------------------------
-\subsubsection{Site-based models}
+\subsection{Site-based models}
 
 \begin{figure}
     \includegraphics[width=.8\linewidth]{grid-based-modeling-teaser.png}
@@ -168,7 +168,7 @@ Below, we review the three modelling families (site-based, individual-based, fie
 
 Site-based models represent the environment as discrete regions with uniform properties, interacting primarily with their immediate neighbours (\cref{fig:env-obj-grid-based-models}). The concept generalises to other tessellations such as Voronoi diagrams or arbitrary graphs.
 
-\subsubsubsection{Grid-based models}
+\subsubsection{Grid-based models}
 
 Grid-based models represent ecosystems by discretising continuous space into a regular arrangement of cells, typically squares or rectangles, each containing uniform environmental properties and ecological conditions (\cref{fig:env-obj-grid-based-models}, left). In this approach, each cell represents a spatially explicit patch hosting one or multiple populations, with interactions primarily occurring between neighbouring cells. The central ecological rationale for employing grid-based models is their conceptual simplicity, computational efficiency, and ease of representing spatial processes such as diffusion, dispersal, competition, or predation \cite{Grimm2005,Cantrell2010,Nelson2012}.
 
@@ -184,7 +184,7 @@ Grid-based models are commonly used due to computational simplicity, easy integr
 
 However, significant limitations exist, as ecological processes may differ drastically at varying scales (e.g., local vs. landscape-level processes). Incorrect spatial resolution of the grid cells can lead to ecological inaccuracies or oversimplifications \cite{Wiens1989}. Moreover, grid cells assume ecological homogeneity within each cell, which may poorly reflect natural ecological heterogeneity, especially in large cells \cite{Levin1992}. Complex ecological interactions, such as asymmetric competition or directional effects, are typically simplified or lost in grid-based discretisation \cite{Durrett1994}. Finally, regular grids impose artificial directional biases (e.g., horizontal/vertical) that can impact ecological interpretations, especially for processes that depend on continuous spatial gradients or isotropy.
 
-\subsubsubsection{Tessellation models}
+\subsubsection{Tessellation models}
 
 Tessellation models generalise the idea of grid-based approaches by partitioning continuous ecological space into discrete regions based on proximity rather than regular shapes (\cref{fig:env-obj-grid-based-models}, centre). Among these methods, Voronoi diagrams (also known as Thiessen polygons in ecological studies) and their dual, Delaunay triangulations, are particularly relevant and widely applied \cite{Lemiere2023,Foltete2019,Minor2008}.
 
@@ -224,9 +224,11 @@ Despite these limitations, generalised topological maps remain valuable tools, e
 
 \midConclusion
 
-Whereas site-based models abstract ecosystems into patches or networks, they cannot capture the variability among individual organisms. Individual-Based Models (IBMs) address this by explicitly representing each organism and its interactions.
+% Whereas site-based models abstract ecosystems into patches or networks, they cannot capture the variability among individual organisms. Individual-Based Models (IBMs) address this by explicitly representing each organism and its interactions.
 
-\subsubsection{Individual-based models}
+While site-based models (grids, tessellations, topological maps) provide an efficient and conceptually simple way to represent ecosystems, they impose discretisations that may introduce artificial scales, isotropy assumptions, or directional biases. Our approach differs in that it does not partition space into fixed cells. Instead, we represent the environment as continuous fields updated by sparse environmental objects (EnvObj) anchored on points, curves, or regions. This hybrid representation avoids the rigidity of predefined spatial partitions: continuous fields capture diffusion- and transport-like processes at any resolution, while objects encode semantic features (rivers, reefs, sand patches) that interact with those fields. Conceptually, this places our method between grid-based and individual-based models: like site-based approaches, it supports efficient simulation of field processes, but like IBMs it maintains the individuality and heterogeneity of discrete entities.
+
+\subsection{Individual-based models}
 
 \begin{figure}
     \includegraphics[]{individual-based-modeling-teaser.png}
@@ -248,7 +250,7 @@ Although our discussion is focused on vegetation, IBMs are a general ecological 
 
 % [Hybrid approaches are also common, combining IBMs with grid-based or tessellation models to balance computational efficiency and ecological detail. Such hybrids may represent environmental conditions through spatial grids or tessellations (Voronoi diagrams), while explicitly modelling organism-level behaviours and interactions individually \cite{Chng2011a}. ][ Transition? Where do you present hybrid methods? ]
 
-\subsubsubsection{Fixed-Radius Neighbourhood}
+\subsubsection{Fixed-Radius Neighbourhood}
 
 In the Fixed-Radius Neighbourhood (FRN) method, the first appearance of a distance-based method, each tree has a radius inside which we consider that there is shade and competition for nutrients. If two trees' radii intersect, a competition allows the stronger tree to survive while the weaker one dies (\cref{fig:env-obj-individual-based-models}, left).
 
@@ -259,7 +261,7 @@ In the Fixed-Radius Neighbourhood (FRN) method, the first appearance of a distan
 }{Poisson_disk_sampling.png}{Poisson Disk Sampling iteratively adds points in space and rejects a candidate if it is within radius $\radius$ of any existing point. }{fig:env-obj-poisson-example}
 
 \AltTextImage{
-    \subsubsubsection{Zone of Influence}
+    \subsubsection{Zone of Influence}
     The Zone of Influence (ZOI) model is an ecological method designed to quantify competition among trees by modelling their interactions as gradual rather than binary processes \cite{Czaran1998}. In contrast to a simple binary approache proposed with Fixed-Radius Neighbourhood, the ZOI model assigns each tree a circular influence zone, typically defined based on measurable attributes such as diameter at breast height (DBH), crown dimensions, or species-specific ecological characteristics.
 
     In this framework, competition between adjacent trees is quantified by calculating the fractional overlap between their influence zones (visible in \cref{fig:env-obj-zoi-scheme}). 
@@ -297,7 +299,7 @@ The ZOI model is theoretically rooted in the understanding that trees compete gr
 Empirical studies across diverse forest ecosystems have demonstrated that the ZOI approach significantly improves predictions of tree growth, survival, and mortality compared to simpler binary models such as FRN. The nuanced representation of competition offered by ZOI models better captures complex ecological dynamics, particularly in mixed-species stands, uneven-aged forests, or structurally diverse ecosystems \cite{Bella1972,Biging1992}.
 
 \AltTextImage{
-    \subsubsubsection{Field of Neighbourhood}
+    \subsubsection{Field of Neighbourhood}
     The Field of Neighbourhood (FON) approach provides an alternative method to quantify tree competition by explicitly incorporating distance-dependent and size-dependent effects of neighbouring trees on a focal tree's growth or survival (the tree being evaluated) \cite{Berger2000}. Unlike the ZOI model, which uses circular zones and geometric overlaps, FON models typically rely on explicit indices that incorporate both the distance and the relative sizes of neighbouring trees, without necessarily defining explicit geometric overlap areas.
 
     In the FON approach, competition intensity affecting a given focal tree is calculated by summing the competitive effects of neighbouring trees, typically as a weighted function of their size and distance (\cref{fig:env-obj-fon-scheme}). 
@@ -343,9 +345,13 @@ The FON method does not rely explicitly on geometric overlap and is thus flexibl
 
 While the FON model provides a biologically detailed representation of competition, its computational complexity makes it significantly more challenging to implement in large-scale simulations. Unlike the ZOI model, which relies on predefined geometric overlaps that can be calculated efficiently, the FON approach requires integrating a continuously decaying competition function over an arbitrary area of influence. This necessitates evaluating the function at multiple points across overlapping zones, increasing computational demand. Moreover, the additive nature of FON, where each tree contributes to the total competition field at every spatial point, further exacerbates the computational cost, scaling poorly in dense forest stands. The need for numerical integration or spatial discretisation makes FON computationally expensive compared to ZOI, which only requires simple geometric calculations. Consequently, while FON is useful for small-scale or highly detailed ecological studies, it is generally impractical for large-scale forest simulations.
 
-While FRN/ZOI/FON quantify interaction around discrete individuals, Ecological Field Models (EFMs) shift perspective to continuous environmental fields that organisms both modify and sense.
+\midConclusion 
 
-\subsubsection{Ecological Field Models}
+% While FRN/ZOI/FON quantify interaction around discrete individuals, Ecological Field Models (EFMs) shift perspective to continuous environmental fields that organisms both modify and sense.
+% While classical IBMs such as FRN, ZOI, or FON capture interactions through explicit neighbourhoods between discrete individuals, our approach generalises this principle by shifting the interaction medium from direct neighbour lists to continuous environmental fields. Each entity (\gloss{EnvObj}) still acts as a discrete unit with its own rules, in the spirit of IBMs, but competition and facilitation are no longer evaluated pairwise. Instead, individuals contribute to shared fields (\glosses{EnvVal}) such as elevation, currents, or material concentrations—that diffuse, decay, and accumulate over time. Other entities then sample these fields through their fitness functions, effectively perceiving the cumulative influence of the environment rather than the identity of specific neighbours. This perspective naturally connects IBMs to Ecological Field Models (EFMs), where organisms are embedded in and continuously coupled with scalar or vector fields that they both modify and sense.
+Whereas FRN, ZOI, and FON define interactions through explicit neighbour relations, our approach shifts this logic into continuous environmental fields. Individuals still act as discrete units, but they interact indirectly by modifying and sensing shared fields, aligning IBMs with the Ecological Field Model (EFM) perspective.
+
+\subsection{Ecological Field Models}
 
 \begin{figure}
     \autofitgraphics[width = .8\linewidth]{ecological-fields-example-shade-Wu1985.png, ecological-fields-example-water-Wu1985.png, ecological-fields-example-nutrients-Wu1985.png}
@@ -400,10 +406,10 @@ with $F_0(\p)$ the baseline environmental state.
 
 The primary challenge in computer graphics is how to efficiently store, sample, and modify continuous environmental fields. Since EFMs define spatially varying properties, they require a structured representation that balances accuracy, efficiency, and scalability.
 
-Several strategies have been proposed to implement ecological fields in practice, ranging from grid discretisations \cite{Wu1995,Seidl2012} to procedural functions inspired by noise and implicit surfaces \cite{Perlin1985,Lagae2010,Frisken2000}. In computer graphics, field-based representations are long established as a means to control geometry or appearance, for instance through implicit modelling, distance fields, or scalar textures. Building on these ideas, the Environmental Objects framework \cite{Grosbellet2016} can be seen as a concrete instantiation of EFM principles: fields are directly attached to objects, enabling them both to emit and sense spatial influences. Although originally designed for urban scenes, its conceptual alignment with EFMs illustrates how continuous organism–environment feedbacks can be embedded into procedural modelling systems.
+Several strategies have been proposed to implement ecological fields in practice, ranging from grid discretisations \cite{Wu1985,Seidl2012} to procedural functions inspired by noise and implicit surfaces \cite{Perlin1985,Frisken2000}. In computer graphics, field-based representations are long established as a means to control geometry or appearance, for instance through implicit modelling, distance fields, or scalar textures. Building on these ideas, the Environmental Objects framework \cite{Grosbellet2016} can be seen as a concrete instantiation of EFM principles: fields are directly attached to objects, enabling them both to emit and sense spatial influences. Although originally designed for urban scenes, its conceptual alignment with EFMs illustrates how continuous organism-environment feedbacks can be embedded into procedural modelling systems.
 
 
-\subsubsubsection{Environmental Objects}
+\subsubsection{Environmental Objects}
 
 \begin{figure}
     \includegraphics[]{env-objs-Grosbellet2016.png}
@@ -460,149 +466,226 @@ Our approach adopts this fields-attached-to-objects view, but upgrades it to a b
 However, classical EFMs assume static fields, whereas many ecological processes evolve dynamically (e.g., soil moisture depletion, growth-induced shading, or decaying scent trails). By integrating biologically inspired feedback loops, procedural generation could extend beyond static environmental effects, enabling simulations of growth, decay, and species interactions \cite{Okubo2001,Wojtek2022}. Capturing such time-dependent feedbacks requires a mathematical framework for field dynamics. The next section therefore turns to reaction-diffusion equations, which provide the computational backbone for modelling growth, depletion, and decay in ecological fields.
 
 
-\subsection{Diffusion models}
 
-\begin{figure}
-    \includegraphics[]{diffusion-example-Okubo2001.png}
-    \caption{The diffusion model describes the spread, motion, and evolution of a chemical, population or physical property over time. \cite{Okubo2001}.}
-    \label{fig:diffusion-model-teaser}
-\end{figure}
 
-Reaction-diffusion equations, popularised by Turing \cite{Turing1952}, combine local growth/decay with spatial spread. They underpin models of vegetation patterns, invasive species fronts, or nutrient flows \cite{Cosner2008}. For our purpose they serve as analytic update rules whose steady state can be reached without time-marching every intermediate step.
 
-Reaction-diffusion models describe the spatial and temporal evolution of populations, chemicals, or other ecological entities that interact (reaction) and spread (diffusion) through a medium (\cref{fig:diffusion-model-teaser}). These models are widely used in ecosystem simulations to understand population dynamics, species dispersal, disease spread, and spatial pattern formation in ecological systems.
 
-In the context of ecology, a reaction-diffusion model typically represents:
-\begin{Itemize}
-    \Item{} Reaction: Local changes in population density due to birth, death, predation, or competition.
-    \Item{} Diffusion: Movement of individuals or species across space due to random dispersal or environmental factors.
-\end{Itemize}
-These models help ecologists predict how populations evolve over time and across space, providing insights into species survival, biodiversity, and ecosystem stability.
 
-The classical reaction-diffusion equation is expressed as:
 
+
+\subsubsection{Advection-Reaction-Diffusion}
+
+Reaction-diffusion models describe how a quantity $u(x,t)$ (e.g., population density, nutrient concentration, sediment stock) evolves under two coupled processes: local reactions and spatial diffusion. In its classical isotropic form \cite{Turing1952,Okubo2001}:
 \begin{align}
-    \label{eq:env-obj-classic-reaction-diffusion}
-    \frac{\partial u (x, t)}{\partial t} = D \nabla^2 u(x, t) + R(u)
+    \label{eq:reaction-diffusion-classic}
+    \frac{\partial u}{\partial t} = D \nabla^2 u + R(u),
 \end{align}
+where $D$ is the diffusion coefficient and $R(u)$ encodes local growth, decay, or interactions. Adding transport by external flows yields the full advection-reaction-diffusion formulation.
 
-where $u(x,t)$ represents the population density (or concentration of a substance) at position $x$ and at time $t$, $D$ is the diffusion coefficient, determining the rate of spatial spread. $\nabla^2 u$ is the Laplacian operator, representing diffusion across space and $R(u)$ is the reaction term, which models growth, decay, or interactions between species.
-
-\subsubsection{Diffusion term}
-Diffusion is a fundamental process in ecological modelling that describes how individuals or substances spread across space due to random movement or environmental influences. In ecosystems, diffusion can model species dispersal, nutrient transport, disease spread, and invasive species expansion.
-
-In mathematical models, diffusion is typically represented as a term in partial differential equations that governs how population densities change over time and space. While many ecological models assume isotropic diffusion (movement occurs equally in all directions), anisotropic diffusion provides a more realistic representation of species movement in structured or heterogeneous landscapes.
-
-However, when diffusion is anisotropic, the diffusion coefficient varies depending on direction, and we must generalise the equation (\cref{eq:env-obj-classic-reaction-diffusion}) by introducing a diffusion tensor $\tensor{D}$ \cite{Ramos2024}:
-
+\subsubsubsection{Diffusion}
+Diffusion models the random spread of material, following Fick's law:
 \begin{align}
-    \label{eq:env-obj-reaction-diffusion}
-    \frac{\partial u (x, t)}{\partial t} = \nabla \cdot (\tensor{D} \nabla u(x, t)) + R(u)
+    \text{Flux} = -D \nabla u.
 \end{align}
+This produces isotropic spreading, equivalent to convolving point inputs with a Gaussian kernel. In heterogeneous environments, anisotropic diffusion generalises $D$ to a tensor $\tensor{D}$ \cite{Ramos2024}, introducing directional bias (e.g., slope-driven seepage, anisotropic dispersal in currents).  
+In graphics, diffusion has long been exploited for mesh smoothing and fairing \cite{Taubin1995}, anisotropic image filtering \cite{Perona1990}, and texture synthesis based on reaction-diffusion patterns \cite{Turk1991}. GPU acceleration allows large grids to be updated interactively, which directly informs our use of diffusion for transporting \glosses{EnvMat}.
 
-The tensor $\tensor{D}$ can now encompass the effect of relief and environmental factors such as wind and currents in the spread of a species. When diffusion is isotropic, $\tensor{D} = D\tensor{I}$, reducing the equation to the classic isotropic form.
+\subsubsubsection{Reaction}
+The reaction term governs local dynamics:
+\begin{Itemize}
+    \Item{Linear reaction:} $R(u) = \lambda u$, describing exponential growth ($\lambda > 0$) or decay ($\lambda < 0$).
+    \Item{Nonlinear reaction:} logistic growth, predator-prey interactions, or Lotka-Volterra competition terms capture resource limitation or trophic interactions \cite{Brauer2012,Verhulst1844}.
+\end{Itemize}
+In our framework, the reaction term corresponds directly to the production or consumption of \glosses{EnvMat} by \glosses{EnvObj}. For example, a coral colony deposits calcium carbonate ($\lambda > 0$), while erosion removes sediment ($\lambda < 0$).  
+In graphics, reaction-diffusion systems have been widely used for texture and pattern synthesis, where extending $u(x,t)$ to multiple interacting fields enables the emergence of Turing-like patterns such as stripes or spots \cite{Turk1991, Witkin1991,Sanderson2006}.
 
-Anisotropic diffusion is particularly useful in ecological modelling where movement rates are not uniform due to environmental structures or organism behaviour. For example, wind influences the spread of pollen, seeds, and insect populations, leading to anisotropic diffusion. Similarly, marine organisms or pollutants diffuse anisotropically in ocean currents.
-Invasive species may spread preferentially along corridors such as rivers or roads, causing asymmetric diffusion. In ecosystems where microorganisms move in response to chemical gradients (chemotaxis), anisotropic diffusion better models movement patterns.
-
-We may generalise the reaction-diffusion equation to account for both internal (density, species interaction, ...) and external (environmental factor, relief, seasonality, ...) influences on diffusion by slightly rewriting \cref{eq:env-obj-reaction-diffusion}:
+\subsubsubsection{Advection}
+Advection introduces directed transport under an external velocity field $\field{v}(x)$ (e.g., currents, wind, gravity-driven runoff):
 \begin{align}
-    \frac{\partial u}{\partial t} = \nabla \cdot (\tensor{D(*)} \nabla u) + R(u)
+    \label{eq:reaction-diffusion-advection}
+    \frac{\partial u}{\partial t} + \field{v}\cdot \nabla u = D \nabla^2 u + R(u).
 \end{align}
-where $\tensor{D(*)}$  is a diffusion tensor dynamically defined by any relevant internal or external property of the system. For example:
-\begin{Itemize}
-    \Item{} A density-dependent diffusion can be expressed as $\tensor{D(*)} = \tensor{D} u^m$, allowing for crowding or dispersal-limited movement \cite{Zhu2023}.
-    \Item{} A seasonal dispersal effect can be incorporated as $\tensor{D(*)} = \tensor{D} (1 + A cos(\omega t) )$, where dispersal varies cyclically over time \cite{Katriel2021}.
-    \Item{} A spatially varying diffusion may be defined as $\tensor{D(*)} = \tensor{D} f(x)$, such as the patchy diffusion formulation used in metapopulation models \cite{Czaran1998}:
-    \begin{align}
-        \tensor{D(*)} = \tensor{D} \begin{dcases}
-            D_1&, x \in \text{habitable patch} \\
-            D_2&, x \in \text{hostile patch}
-        \end{dcases}
-    \end{align}
-    \Item{} An anomalous diffusion such as the inclusion of Lévy flight term, incorporating random long distance jumps can be expressed as $\tensor{D(*)} = \tensor{D} u^m + \noise L(t)$ \cite{Humphries2014,Chechkin2008}.
-\end{Itemize}
+Unlike diffusion's random spread, advection shifts material coherently along streamlines, aligning with our treatment of water currents as vector fields \cite{Burger2020,Ogden2017}.  
+In graphics, this formulation underpins fluid solvers such as Stam's "stable fluids" \cite{Stam1999}, where advection steps move smoke, fire, or water density across a grid. GPU-accelerated advection is also widely used in real-time effects such as smoke trails or rivers, making it a natural tool to simulate ecological transport processes, which will be presented in depth in \cref{chap:erosion}'s state of the art.
 
-This generalized form enables the integration of anisotropic effects, landscape heterogeneity, and adaptive movement behaviors within reaction-diffusion models, making it highly applicable to ecological and biological systems.
+\subsubsubsection{Decay and steady state}
+To avoid indefinite accumulation, a decay term $-\mu u$ is added:
+\begin{align}
+    \label{eq:reaction-diffusion-advection-decay}
+    \frac{\partial u}{\partial t} + \field{v}\cdot \nabla u = D \nabla^2 u + R(u) - \mu u.
+\end{align}
+The decay term $\mu > 0$ guarantees that even with continuous deposition, the system relaxes toward a steady state where inputs balance dispersal and losses. This makes advection-reaction-diffusion models particularly suitable for efficient simulations of \glosses{EnvMat}, where explicit time-stepping can be replaced by directly solving for equilibrium.  
+In graphics, decay is often added for numerical stability and realism: without it, transported quantities such as heat, smoke, or density fields accumulate without bound. In our case, decay serves the same dual purpose: guaranteeing stability and providing interpretable equilibrium states.
 
-\subsubsection{Reaction term}
-In physics and chemistry, the reaction $R(u)$ term describes how substances are produced or consumed in a system. Some common reaction formulations include:
+\subsubsubsection{Green's function solutions}
+For point sources, the advection-reaction-diffusion equation admits analytic solutions via Green's functions. For example, in 2D with isotropic diffusion, constant advection $\field{v}$, and decay $\mu$, the fundamental solution is a shifted, damped Gaussian:
+\begin{align}
+    G(x,t) = \frac{1}{4\pi D t} \exp \left( -\frac{\|x - \field{v}t\|^2}{4Dt} - \mu t \right).
+\end{align}
+This solution represents a spreading plume: diffused by $D$, advected along $\field{v}$, and exponentially damped by $\mu$.  
 
-\begin{Itemize}
-    \Item{} Linear reaction terms (exponential growth with $\lambda > 0$ or decay $\lambda < 0$) as in the radioactive decay formulation:
-    $$ R(u) = \lambda u $$
-    \Item{} Second-order reactions, usually found in chemical reactions between two molecules:
-    $$ R(u, v) = \alpha u v$$
-    \AltTextImage{
-        \Item{} Turing pattern-forming systems proposed by Alan Turing to explain stripe and spot formations in animal coat patterns and chemical reactions \cite{Turing1952,Shoji2002}
-        $$ R(u, v) = \begin{dcases}
-            f(u, v) & \text{(Activator)} \\
-            g(u, v) & \text{(Inhibitor)}
-        \end{dcases}$$
-    }{turing_patterns.png}{Turing patterns on animals}{fig:env-obj-turing-pattern}
-\end{Itemize}
+For extended sources such as curves ($\Gamma$) or regions ($\Omega$), the solution is the convolution of the point-source Green's function with the source geometry:
+\begin{align}
+    u(x,t) &= \int_\Gamma G(x-y,t)\,dy, \\
+    u(x,t) &= \int_\Omega G(x-y,t)\,dy.
+\end{align}
+Closed-form solutions exist only for simple shapes such as infinite lines and disks. For arbitrary geometries, these integrals must be evaluated numerically.  
+This distinction is essential in our framework: point-like \glosses{EnvObj} can exploit analytic kernels, but curve- and region-based \glosses{EnvObj} require numerical integration.
 
-On the other hand, in ecology, the reaction term models population growth, competition, predation, and ecosystem interactions \cite{Brauer2012}. Some of the most important ecological reaction terms are:
-\begin{Itemize}
-    \Item{} The logistic growth, that describes a single species population growth in a limited-resource environment, is defined with a growth rate $r$ and a carrying capacity $K$ \cite{Verhulst1844}:
-    $$ R(u) = r u \left( 1 - \frac{u}{K} \right)$$
-    \Item{} The Lotka-Volterra competition model, that describe the trophic interactions between two or more species, for which the reaction-diffusion equations take into account each other species:
-    \begin{align}
-        \frac{\partial u_i}{\partial t} = r_i u_i \left( 1 - \frac{\sum_{j=1}^N a_{ij} u_j}{K_i} \right)
-    \end{align}
-    with $N$ representing the number of species and $a_{ij}$ the interaction coefficient (how strongly the species $u_j$ inhibit the species $u_i$). \\
-    This formulation can also be rewritten in a vectorized form as the generalized Lotka-Volterra equation:
-    \begin{align}
-        \tensor{f} = \tensor{r} - \tensor{A} \tensor{u}
-    \end{align}
-    where $\tensor{f} = (f_1, f_2, ..., f_N)^\intercal$ represents the per capita growth rates of all species, $\tensor{r} = (r_1, r_2, ..., r_N)^\intercal$ is the intrinsic growth rate vector, $\tensor{u} = (u_1, u_2, ..., u_N)^\intercal$ is the species population vector and $\tensor{A}$ is the interaction matrix, with elements $a_{ij}$ describing the effect of species $j$ on species $i$.
+\midConclusion 
+The advection-reaction-diffusion formalism provides a compact vocabulary to describe four fundamental mechanisms of ecosystem dynamics: diffusion (random spread), reaction (local production or consumption of resources as \glosses{EnvMat} deposition and uptake), advection (directional transport by flows) and decay (loss mechanisms ensuring stability).
+
+These mechanisms are the backbone of how we model the interaction between discrete \glosses{EnvObj} and continuous ecological fields, combining analytic tractability for simple cases with numerical flexibility for complex geometries.
+
+
+
+
+
+
+
+% \subsection{Diffusion models}
+
+% \begin{figure}
+%     \includegraphics[]{diffusion-example-Okubo2001.png}
+%     \caption{The diffusion model describes the spread, motion, and evolution of a chemical, population or physical property over time. \cite{Okubo2001}.}
+%     \label{fig:diffusion-model-teaser}
+% \end{figure}
+
+% Reaction-diffusion equations, popularised by Turing \cite{Turing1952}, combine local growth/decay with spatial spread. They underpin models of vegetation patterns, invasive species fronts, or nutrient flows \cite{Cosner2008}. For our purpose they serve as analytic update rules whose steady state can be reached without time-marching every intermediate step.
+
+% Reaction-diffusion models describe the spatial and temporal evolution of populations, chemicals, or other ecological entities that interact (reaction) and spread (diffusion) through a medium (\cref{fig:diffusion-model-teaser}). These models are widely used in ecosystem simulations to understand population dynamics, species dispersal, disease spread, and spatial pattern formation in ecological systems.
+
+% In the context of ecology, a reaction-diffusion model typically represents:
+% \begin{Itemize}
+%     \Item{} Reaction: Local changes in population density due to birth, death, predation, or competition.
+%     \Item{} Diffusion: Movement of individuals or species across space due to random dispersal or environmental factors.
+% \end{Itemize}
+% These models help ecologists predict how populations evolve over time and across space, providing insights into species survival, biodiversity, and ecosystem stability.
+
+% The classical reaction-diffusion equation is expressed as:
+
+% \begin{align}
+%     \label{eq:env-obj-classic-reaction-diffusion}
+%     \frac{\partial u (x, t)}{\partial t} = D \nabla^2 u(x, t) + R(u)
+% \end{align}
+
+% where $u(x,t)$ represents the population density (or concentration of a substance) at position $x$ and at time $t$, $D$ is the diffusion coefficient, determining the rate of spatial spread. $\nabla^2 u$ is the Laplacian operator, representing diffusion across space and $R(u)$ is the reaction term, which models growth, decay, or interactions between species.
+
+% \subsubsection{Diffusion term}
+% Diffusion is a fundamental process in ecological modelling that describes how individuals or substances spread across space due to random movement or environmental influences. In ecosystems, diffusion can model species dispersal, nutrient transport, disease spread, and invasive species expansion.
+
+% In mathematical models, diffusion is typically represented as a term in partial differential equations that governs how population densities change over time and space. While many ecological models assume isotropic diffusion (movement occurs equally in all directions), anisotropic diffusion provides a more realistic representation of species movement in structured or heterogeneous landscapes.
+
+% However, when diffusion is anisotropic, the diffusion coefficient varies depending on direction, and we must generalise the equation (\cref{eq:env-obj-classic-reaction-diffusion}) by introducing a diffusion tensor $\tensor{D}$ \cite{Ramos2024}:
+
+% \begin{align}
+%     \label{eq:env-obj-reaction-diffusion}
+%     \frac{\partial u (x, t)}{\partial t} = \nabla \cdot (\tensor{D} \nabla u(x, t)) + R(u)
+% \end{align}
+
+% The tensor $\tensor{D}$ can now encompass the effect of relief and environmental factors such as wind and currents in the spread of a species. When diffusion is isotropic, $\tensor{D} = D\tensor{I}$, reducing the equation to the classic isotropic form.
+
+% Anisotropic diffusion is particularly useful in ecological modelling where movement rates are not uniform due to environmental structures or organism behaviour. For example, wind influences the spread of pollen, seeds, and insect populations, leading to anisotropic diffusion. Similarly, marine organisms or pollutants diffuse anisotropically in ocean currents.
+% Invasive species may spread preferentially along corridors such as rivers or roads, causing asymmetric diffusion. In ecosystems where microorganisms move in response to chemical gradients (chemotaxis), anisotropic diffusion better models movement patterns.
+
+% We may generalise the reaction-diffusion equation to account for both internal (density, species interaction, ...) and external (environmental factor, relief, seasonality, ...) influences on diffusion by slightly rewriting \cref{eq:env-obj-reaction-diffusion}:
+% \begin{align}
+%     \frac{\partial u}{\partial t} = \nabla \cdot (\tensor{D(*)} \nabla u) + R(u)
+% \end{align}
+% where $\tensor{D(*)}$  is a diffusion tensor dynamically defined by any relevant internal or external property of the system. For example:
+% \begin{Itemize}
+%     \Item{} A density-dependent diffusion can be expressed as $\tensor{D(*)} = \tensor{D} u^m$, allowing for crowding or dispersal-limited movement \cite{Zhu2023}.
+%     \Item{} A seasonal dispersal effect can be incorporated as $\tensor{D(*)} = \tensor{D} (1 + A cos(\omega t) )$, where dispersal varies cyclically over time \cite{Katriel2021}.
+%     \Item{} A spatially varying diffusion may be defined as $\tensor{D(*)} = \tensor{D} f(x)$, such as the patchy diffusion formulation used in metapopulation models \cite{Czaran1998}:
+%     \begin{align}
+%         \tensor{D(*)} = \tensor{D} \begin{dcases}
+%             D_1&, x \in \text{habitable patch} \\
+%             D_2&, x \in \text{hostile patch}
+%         \end{dcases}
+%     \end{align}
+%     \Item{} An anomalous diffusion such as the inclusion of Lévy flight term, incorporating random long distance jumps can be expressed as $\tensor{D(*)} = \tensor{D} u^m + \noise L(t)$ \cite{Humphries2014,Chechkin2008}.
+% \end{Itemize}
+
+% This generalized form enables the integration of anisotropic effects, landscape heterogeneity, and adaptive movement behaviors within reaction-diffusion models, making it highly applicable to ecological and biological systems.
+
+% \subsubsection{Reaction term}
+% In physics and chemistry, the reaction $R(u)$ term describes how substances are produced or consumed in a system. Some common reaction formulations include:
+
+% \begin{Itemize}
+%     \Item{} Linear reaction terms (exponential growth with $\lambda > 0$ or decay $\lambda < 0$) as in the radioactive decay formulation:
+%     $$ R(u) = \lambda u $$
+%     \Item{} Second-order reactions, usually found in chemical reactions between two molecules:
+%     $$ R(u, v) = \alpha u v$$
+%     \AltTextImage{
+%         \Item{} Turing pattern-forming systems proposed by Alan Turing to explain stripe and spot formations in animal coat patterns and chemical reactions \cite{Turing1952,Shoji2002}
+%         $$ R(u, v) = \begin{dcases}
+%             f(u, v) & \text{(Activator)} \\
+%             g(u, v) & \text{(Inhibitor)}
+%         \end{dcases}$$
+%     }{turing_patterns.png}{Turing patterns on animals}{fig:env-obj-turing-pattern}
+% \end{Itemize}
+
+% On the other hand, in ecology, the reaction term models population growth, competition, predation, and ecosystem interactions \cite{Brauer2012}. Some of the most important ecological reaction terms are:
+% \begin{Itemize}
+%     \Item{} The logistic growth, that describes a single species population growth in a limited-resource environment, is defined with a growth rate $r$ and a carrying capacity $K$ \cite{Verhulst1844}:
+%     $$ R(u) = r u \left( 1 - \frac{u}{K} \right)$$
+%     \Item{} The Lotka-Volterra competition model, that describe the trophic interactions between two or more species, for which the reaction-diffusion equations take into account each other species:
+%     \begin{align}
+%         \frac{\partial u_i}{\partial t} = r_i u_i \left( 1 - \frac{\sum_{j=1}^N a_{ij} u_j}{K_i} \right)
+%     \end{align}
+%     with $N$ representing the number of species and $a_{ij}$ the interaction coefficient (how strongly the species $u_j$ inhibit the species $u_i$). \\
+%     This formulation can also be rewritten in a vectorized form as the generalized Lotka-Volterra equation:
+%     \begin{align}
+%         \tensor{f} = \tensor{r} - \tensor{A} \tensor{u}
+%     \end{align}
+%     where $\tensor{f} = (f_1, f_2, ..., f_N)^\intercal$ represents the per capita growth rates of all species, $\tensor{r} = (r_1, r_2, ..., r_N)^\intercal$ is the intrinsic growth rate vector, $\tensor{u} = (u_1, u_2, ..., u_N)^\intercal$ is the species population vector and $\tensor{A}$ is the interaction matrix, with elements $a_{ij}$ describing the effect of species $j$ on species $i$.
     
-    Since population growth depends on the per capita growth rate, the full population dynamics equation follows:
-    \begin{align}
-        \frac{\partial \tensor{u}}{\partial t} = \tensor{u} \circ \tensor{f}
-    \end{align}
-    where $\circ$ represents the element-wise product, ensuring that each species' growth depends on both its population size and its per capita growth rate.
-\end{Itemize}
+%     Since population growth depends on the per capita growth rate, the full population dynamics equation follows:
+%     \begin{align}
+%         \frac{\partial \tensor{u}}{\partial t} = \tensor{u} \circ \tensor{f}
+%     \end{align}
+%     where $\circ$ represents the element-wise product, ensuring that each species' growth depends on both its population size and its per capita growth rate.
+% \end{Itemize}
 
 
-\subsubsection{Advection}
-In vegetation ecosystem modelling, advection refers to the directed transport of biological or environmental variables under the influence of external forces (e.g., wind, water flow, or slope). Unlike diffusion, which describes random movement, advection introduces a preferred direction of transport, significantly influencing ecosystem dynamics \cite{Burger2020}.
+% \subsubsection{Advection}
+% In vegetation ecosystem modelling, advection refers to the directed transport of biological or environmental variables under the influence of external forces (e.g., wind, water flow, or slope). Unlike diffusion, which describes random movement, advection introduces a preferred direction of transport, significantly influencing ecosystem dynamics \cite{Burger2020}.
 
-Mathematically, the advection-diffusion-reaction equation (or "scalar transport equations" \cite{Baukal2000}) extends the classical reaction-diffusion model by adding a velocity field $\field{v}$ that governs directed movement:
-\begin{align}
-    \frac{\partial u}{\partial t} + \field{v} \cdot \nabla u = \nabla \cdot \left( \tensor{D} \nabla u \right) + R(u)
-\end{align}
+% Mathematically, the advection-diffusion-reaction equation (or "scalar transport equations" \cite{Baukal2000}) extends the classical reaction-diffusion model by adding a velocity field $\field{v}$ that governs directed movement:
+% \begin{align}
+%     \frac{\partial u}{\partial t} + \field{v} \cdot \nabla u = \nabla \cdot \left( \tensor{D} \nabla u \right) + R(u)
+% \end{align}
 
-In physics, the transport of a property such as heat is coupled by the diffusion process, and the advection term $\field{v} \cdot \nabla u$ may be incorporated in the diffusion coefficient $\tensor{D}$ to form the "convection term". In this work we will separate the advection term and the diffusion term for clarity.
+% In physics, the transport of a property such as heat is coupled by the diffusion process, and the advection term $\field{v} \cdot \nabla u$ may be incorporated in the diffusion coefficient $\tensor{D}$ to form the "convection term". In this work we will separate the advection term and the diffusion term for clarity.
 
-Wind is a major dispersal mechanism for many plant species, affecting seed distribution, plant competition, and biodiversity. The dispersal efficiency of seeds and pollen depends on wind velocity, turbulence, and interactions with terrain features. In flat landscapes, wind disperses seeds relatively uniformly; however, in complex terrains, wind speed and direction are influenced by topography, vegetation cover, and atmospheric conditions. Wind channelled through valleys may enhance seed deposition in lowland areas, while mountain ridges and abrupt elevation changes can create wind shadows, reducing dispersal effectiveness.
+% Wind is a major dispersal mechanism for many plant species, affecting seed distribution, plant competition, and biodiversity. The dispersal efficiency of seeds and pollen depends on wind velocity, turbulence, and interactions with terrain features. In flat landscapes, wind disperses seeds relatively uniformly; however, in complex terrains, wind speed and direction are influenced by topography, vegetation cover, and atmospheric conditions. Wind channelled through valleys may enhance seed deposition in lowland areas, while mountain ridges and abrupt elevation changes can create wind shadows, reducing dispersal effectiveness.
 
-The dispersal of seeds can be modelled using an advection-diffusion equation:
-\begin{align}
-    \frac{\partial S}{\partial t} + \field{v} \cdot \nabla S = \nabla \cdot (\tensor{D}_s \nabla S) - \lambda S
-\end{align}
-with $S(x, t)$ the seed density at position $x$ and time $t$ and $\lambda$ a mortality rate due to environmental constraints or predation.
+% The dispersal of seeds can be modelled using an advection-diffusion equation:
+% \begin{align}
+%     \frac{\partial S}{\partial t} + \field{v} \cdot \nabla S = \nabla \cdot (\tensor{D}_s \nabla S) - \lambda S
+% \end{align}
+% with $S(x, t)$ the seed density at position $x$ and time $t$ and $\lambda$ a mortality rate due to environmental constraints or predation.
 
-A stochastic modelling of turbulent regime could be added to the velocity field with a stochastic noise term:
-\begin{align}
-    \frac{\partial S}{\partial t} + (\field{v} + \sigma(x, t)) \cdot \nabla S = \nabla \cdot (\tensor{D}_s \nabla S) - \lambda S
-\end{align}
+% A stochastic modelling of turbulent regime could be added to the velocity field with a stochastic noise term:
+% \begin{align}
+%     \frac{\partial S}{\partial t} + (\field{v} + \sigma(x, t)) \cdot \nabla S = \nabla \cdot (\tensor{D}_s \nabla S) - \lambda S
+% \end{align}
 
-On another hand, soil moisture distribution is essential for vegetation survival and ecosystem stability. The movement of water through soil is governed by surface runoff, subsurface infiltration, and capillary action, which are affected by slope, soil texture, and plant uptake rates. In hilly or mountainous regions, gravity-driven water flow dominates soil moisture distribution, creating hydrological gradients that shape vegetation structure.
+% On another hand, soil moisture distribution is essential for vegetation survival and ecosystem stability. The movement of water through soil is governed by surface runoff, subsurface infiltration, and capillary action, which are affected by slope, soil texture, and plant uptake rates. In hilly or mountainous regions, gravity-driven water flow dominates soil moisture distribution, creating hydrological gradients that shape vegetation structure.
 
-The movement of soil moisture can be approximated by the Soil Moisture Velocity Equation \cite{Ogden2017}, a modified form of the Richards equation:
-\begin{align}
-    \frac{\partial W}{\partial t} + \field{v} \cdot \nabla W = \nabla \cdot (D_W \nabla W ) - S
-\end{align}
-with $W(x, t)$ the water concentration at position $x$ and time $t$, $D_W$ the water diffusion coefficient, $S$ the plant water uptake (the amount of water absorbed or transpired, mainly by the roots of vegetation \cite{Peters2020,Shanin2015}), and $\field{v} = - K g \hat z$ a simplified velocity field provided by the slope hindered by the hydraulic conductivity $K$.
+% The movement of soil moisture can be approximated by the Soil Moisture Velocity Equation \cite{Ogden2017}, a modified form of the Richards equation:
+% \begin{align}
+%     \frac{\partial W}{\partial t} + \field{v} \cdot \nabla W = \nabla \cdot (D_W \nabla W ) - S
+% \end{align}
+% with $W(x, t)$ the water concentration at position $x$ and time $t$, $D_W$ the water diffusion coefficient, $S$ the plant water uptake (the amount of water absorbed or transpired, mainly by the roots of vegetation \cite{Peters2020,Shanin2015}), and $\field{v} = - K g \hat z$ a simplified velocity field provided by the slope hindered by the hydraulic conductivity $K$.
 
-Steeper slopes enhance runoff, reducing soil water retention and increasing drought susceptibility in these regions. Conversely, water accumulates in lowland areas, promoting denser vegetation and the formation of wetlands or riparian ecosystems. As a result, topography directly influences plant distribution, with drought-resistant species dominating slopes and water-demanding species thriving in valleys.
+% Steeper slopes enhance runoff, reducing soil water retention and increasing drought susceptibility in these regions. Conversely, water accumulates in lowland areas, promoting denser vegetation and the formation of wetlands or riparian ecosystems. As a result, topography directly influences plant distribution, with drought-resistant species dominating slopes and water-demanding species thriving in valleys.
 
-We find in the advection-reaction-diffusion equation a general way to represent a multitude of natural phenomena: from the propagation of bacteria, prey and predators, to the spread of nutrients, of water, or even of fire \cite{Hadrich2021}.
+% We find in the advection-reaction-diffusion equation a general way to represent a multitude of natural phenomena: from the propagation of bacteria, prey and predators, to the spread of nutrients, of water, or even of fire \cite{Hadrich2021}.
 
-\midConclusion
+% \midConclusion
 
-In summary, the literature offers a spectrum of discrete and continuous approaches. Our method borrows the field coupling of EFMs, the sparse symbolic efficiency of Environmental Objects, and analytic steady-state solvers from reaction-diffusion theory, combining them into a multi-scale, interactive generator suited for both underwater and terrestrial scenes.
+% In summary, the literature offers a spectrum of discrete and continuous approaches. Our method borrows the field coupling of EFMs, the sparse symbolic efficiency of Environmental Objects, and analytic steady-state solvers from reaction-diffusion theory, combining them into a multi-scale, interactive generator suited for both underwater and terrestrial scenes.
 
 
 
