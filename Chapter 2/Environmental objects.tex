@@ -962,39 +962,48 @@ At every global iteration, each object re-evaluates $\fitnessFunc$. If $\fitness
 
 Every instantiated \gloss{EnvObj} contributes a local \gloss{EnvModif} tuple $\environmentModif_o=(\heightModif_o, \;\waterModif_o, \;\materialModif_o)$, affecting elevation, flow, and resource fields respectively. At the end of each iteration we assemble the provisional environment:
 \begin{align}
-    \environment^{\star} = \environment + {\sum_{o\in\objects}}\environmentModif_o,
+    \environment^{\star} = \environment + {\sum_{\oneObject\in\objects}}\environmentModif_o,
 \end{align}
 before advection-diffusion relaxation and viability tests.
 
 \subsection{\Gloss{EnvMat} modifiers}
+For every material layer $\oneMaterial \in \material$ (sand, limestone, nutrients, ...), we store a scalar availability field $\concentration_\oneMaterial(\p,t)$ defined on the plane. This is not a volumetric thickness, merely a stock or probability used by the placement rules (Sec.~\ref{sec:env-obj-communication}).
 
-For every material layer $m \in \material$ (sand, limestone, nutrients, ...), we store a scalar availability field $\material_m(\p,t)$ defined on the plane. This is not a volumetric thickness, merely a stock or probability used by the placement rules (Sec.~\ref{sec:env-obj-communication}).
+Each material has four transport parameters $(\mass_\oneMaterial, \velFactor_\oneMaterial, \diffusion_\oneMaterial, \decay_\oneMaterial)$: mass density $\mass_\oneMaterial$, flow-coupling factor $\velFactor_\oneMaterial$, molecular diffusivity $\diffusion_\oneMaterial$, and first-order decay rate $\decay_\oneMaterial$.
 
-Each material has four transport parameters $(\mass,,\velFactor,,\diffusion,,\decay)$: mass density $\mass$, flow-coupling factor $\velFactor$, molecular diffusivity $\diffusion$, and first-order decay rate $\decay$.
-
-A living or abiotic object can deposit (positive source) or absorb (negative source) material, thereby mediating indirect interaction with its neighbours. For object $o$ we denote the net source term $S_{m,o}(\p)$:
+A living or abiotic object can deposit (positive source) or absorb (negative source) material, thereby mediating indirect interaction with its neighbours. For object $\oneObject$ we denote the net source term $S_{\oneMaterial,\oneObject}(\p)$:
 \begin{align}
-    S_{m,o}(\p) = \left(\deposition_{m,o} - \absorption_{m,o}\right) G(d(\p,\curve_o)),
+    S_{\oneMaterial,\oneObject}(\p) = \left(\deposition_{\oneMaterial,\oneObject} - \absorption_{\oneMaterial,\oneObject}\right) G(d(\p)),
 \end{align}
-where $G$ is a Gaussian kernel centred on the skeleton and $d(\cdot)$ is the distance from the skeleton.
+where $G$ is a Gaussian kernel centred on the skeleton and $d(\p)$ is the shortest distance of $\p$ to the skeleton.
 
 Material advection combines gravity-driven downslope drift and water-borne transport. We approximate the velocity field:
 \begin{align}
-    \warp(\p, t) = \mass \nabla \height(\p, t) + \velFactor \Water(\p, t)
+    \warp(\p, t) = \mass_\oneMaterial \nabla \height(\p, t) + \velFactor_\oneMaterial \Water(\p, t)
 \end{align}
 
-The \glosses{EnvMat} are also dispersed at a diffusion rate $\diffusion$, for which we can use the advection-diffusion-reaction equation to evaluate the distribution over time $t$:
+The \glosses{EnvMat} are also dispersed at a diffusion rate $\diffusion_\oneMaterial$, for which we can use the advection-diffusion-reaction equation to evaluate the distribution over time $t$:
 \begin{align}
     \label{eq:material-displacement-equation}
-    \frac{\partial \material}{\partial t} \warp \nabla \material = \diffusion \nabla^2 \material - \decay \material
+    \frac{\partial \concentration_\oneMaterial}{\partial t}
+    + \warp \cdot \nabla \concentration_\oneMaterial
+    = \diffusion_\oneMaterial \nabla^2 \concentration_\oneMaterial
+    - \decay_\oneMaterial \concentration_\oneMaterial
+    + \sum_{\oneObject \in \objects}{S_{\oneMaterial, \oneObject}}
 \end{align}
 
 We solve \eqref{eq:material-displacement-equation} numerically using Euler integration:
 \begin{align}
-    \material(\p, t + dt) &= \material(\p, t) + dt ( \diffusion \nabla^2 \material(\p, t) - \decay \material(\p, t) \ & - \warp(\p, t) \nabla \material(\p, t) ) \nonumber
+    \concentration_\oneMaterial(\p, t + dt) &= \max \big(0, \concentration_\oneMaterial(\p, t) \\
+    &\quad + dt \big( \diffusion_\oneMaterial \nabla^2 \concentration_\oneMaterial(\p, t)
+    - \decay_\oneMaterial \concentration_\oneMaterial(\p, t)
+    - \warp(\p, t) \cdot \nabla \concentration_\oneMaterial(\p, t)
+    + \sum_{\oneObject \in \objects}{ S_{\oneMaterial, \oneObject}(\p) } \big) \big) \nonumber
 \end{align}
 
-The linear decay $\decay$ avoids indefinite mass build-up and ensures a steady state when sources balance sinks (\cref{fig:env-obj-stability-examples}), following the practice of ecological field models \cite{Seidl2012}.
+The linear decay $\decay_\oneMaterial$ prevents indefinite mass build-up and drives the system toward a bounded equilibrium (\cref{fig:env-obj-stability-examples}), following the practice of ecological field models \cite{Seidl2012}.
+% The linear decay $\decay_\oneMaterial$ avoids indefinite mass build-up and ensures a steady state when sources balance sinks (\cref{fig:env-obj-stability-examples}), following the practice of ecological field models \cite{Seidl2012}.
+
 
 An example of deposition of sand from an \gloss{EnvObj} is provided in \cref{fig:env-obj-double-island-sand-deposition}, which is mainly affected by the water flow generated by the islands.
 
@@ -1034,11 +1043,11 @@ To preserve ordering constraints, we partition objects into three mutually exclu
     Groups $\groundedHeight$ and $\altitudeHeight$ are combined with our smooth maximum/minimum operators as presented in the previous chapter to avoid $\curve^{0}$ discontinuities, while surface details in $\surfaceHeight$ are simply summed:
     \begin{align}
         \heightModif_{\groundedHeight}(\p) &=
-        \smoothmax_{o\in\groundedHeight}\heightModif_o(\p),\\
+        \smoothmax_{\oneObject\in\groundedHeight}\heightModif_o(\p),\\
         \heightModif_{\altitudeHeight}(\p) &=
-        \smoothmin_{o\in\altitudeHeight}\heightModif_o(\p),\\
+        \smoothmin_{\oneObject\in\altitudeHeight}\heightModif_o(\p),\\
         \heightModif_{\surfaceHeight}(\p) &=
-        \sum_{o\in\surfaceHeight}\heightModif_o(\p).
+        \sum_{\oneObject\in\surfaceHeight}\heightModif_o(\p).
     \end{align}
 
     The final coarse elevation and its analytic gradient (for slope queries) are then
@@ -1063,7 +1072,7 @@ To preserve ordering constraints, we partition objects into three mutually exclu
 % \label{sec:env-obj-materials}
 % Each \gloss{EnvObj} once present in the scene has an impact on the environment $\environment$ through their modifiers $\environmentModif$. We list three types of influence, which are the \gloss{EnvMat} modifiers $\materialModif$, the height modifiers $\heightModif$ and the water modifiers $\waterModif$. These modifiers are direct impact and can be computed as 
 % \begin{align*}
-%     \environment^* = \environment + \sum_{o \in \objects}{ \environmentModif_o }
+%     \environment^* = \environment + \sum_{\oneObject \in \objects}{ \environmentModif_\oneObject }
 % \end{align*}
 
 % \subsection{\Gloss{EnvMat} modifiers}
@@ -1118,9 +1127,9 @@ To preserve ordering constraints, we partition objects into three mutually exclu
 
 % We compute the depth change given for each category:
 % \begin{align*}
-%     \heightModif_{\mathcal{G}} (\p) = \smoothmax_{o \in \mathcal{G}}{ \heightModif_o(\p) } \\
-%     \heightModif_{\mathcal{A}} (\p) = \smoothmin_{o \in \mathcal{A}}{ \heightModif_o(\p) } \\
-%     \heightModif_{\mathcal{F}} (\p) = \sum_{o \in \mathcal{F}}{ \heightModif_o(\p) }
+%     \heightModif_{\mathcal{G}} (\p) = \smoothmax_{\oneObject \in \mathcal{G}}{ \heightModif_o(\p) } \\
+%     \heightModif_{\mathcal{A}} (\p) = \smoothmin_{\oneObject \in \mathcal{A}}{ \heightModif_o(\p) } \\
+%     \heightModif_{\mathcal{F}} (\p) = \sum_{\oneObject \in \mathcal{F}}{ \heightModif_o(\p) }
 % \end{align*}
 
 % The final altitude is computed as
@@ -1229,11 +1238,11 @@ where $\lambda$ and $\mu$ are the Lamé parameters, with $\mu$ also known as the
     with $a = \frac{1}{4 \pi \mu}$ and $b = \frac{a}{4 (1 - \upsilon)}$, provided $\mu$ is a shear modulus and $\upsilon$ a Poisson ratio specified for each Kelvinlet, $s$ a scaling factor, and $\force$ the force vector of the grab operation. These values are tunable per object to simulate different material or flow resistance behaviours.
 }{kelvinlets-grab-demo-DeGoes2017.png, kelvinlets-demo-DeGoes2017.png}{\cite{DeGoes2017} presents four types of deformations using Kelvinlets, resulting in organic pinch-like interaction with the original field. Top: a grab on a \textcopyright Disney/Pixar character. Bottom, from left to right: a twist, a scale, and a pinch operation.}{fig:env-obj-kelvinlets-demo}
 
-Deformations defined on curves use $\q = \closestCp$ with $\closestCp$ the closest point on the curve from the point $\p$ and $\force = \curve'(\p)$. We can then define $\tensor{u}o(\p) = s\eps(\q - \p) + g_\eps(\p - \q)$.
+Deformations defined on curves use $\q = \closestCp$ with $\closestCp$ the closest point on the curve from the point $\p$ and $\force = \curve'(\p)$. We can then define $\tensor{u}_\oneObject(\p) = s_\eps(\q - \p) + g_\eps(\p - \q)$.
 
 Finally, we retrieve the velocity field from the objects, with a per-object coefficient $\lambda_o$ for the strength of its flow effects (due to its size, porosity, surface roughness, etc.):
 \begin{align}
-    \Wobj(\p) = \sum_{o \in \objects}^{}{\lambda_o \tensor{u}_o(\p)}
+    \Wobj(\p) = \sum_{\oneObject \in \objects}^{}{\lambda_\oneObject \tensor{u}_\oneObject(\p)}
 \end{align}
 
 The use of regularised Kelvinlets is well-suited to our model. They offer a compact representation thanks to their closed-form definition, which allows each deformation to be described analytically without the need for precomputed data or large simulation grids. They maintain continuity, ensuring that the resulting vector field is smooth and free of visual or numerical artefacts, which is crucial when blending influences from multiple environment objects. Their behaviour is physically plausible, as they are derived from fundamental solutions to elasticity equations, and can convincingly simulate natural flow behaviours such as deflection around obstacles or local flow obstruction. They are also computationally efficient, since their evaluation is lightweight and independent of the size or complexity of the terrain, making them particularly suitable for integration into large-scale procedural generation pipelines and real-time interactive applications.
@@ -1435,7 +1444,7 @@ In this example we defined three different types of corals, coralA, coralB and c
 
 The proposed method aims to generate plausible landscapes using simplified versions of the evolution of an ecosystem and of the 3D representation. The biological realism of the result is highly correlated to the amount of simplification and assumptions, while the visual realism is completely dependent on the geometric functions used for the 3D modelling of the \glosses{EnvObj}. While proposing a flexible method that proposes a generic approach for terrain generation, a close collaboration with field experts and with graphists is needed to achieve optimal results. Adding notions of slope and sensibility to water currents in \cref{fig:env-obj-coral-layout} for different coral morphologies (massive, branching, foliose and table corals), each coral entity finds a place that fits the distribution of species presented in \cref{sec:state-of-the-art_biology}. 
 
-Most simulation algorithm's quality depends on the size of the time step used, but with the introduction of a decay rate in the \glosses{EnvMat} properties, we limit the influence of time steps by considering that steady states are reachable. The material deposition and absorption on punctual \glosses{EnvObj} can be seen as a Dirac function $\dirac$ centred at their position, resulting in the advantage that material displacement function can use the definition of the diffusion equation instead of the advection-diffusion-reaction equation. This equation allows us to evaluate the state of the material $\material$ without intermediate steps, but this is not applicable with curve- and region-based \glosses{EnvObj}.
+Most simulation algorithm's quality depends on the size of the time step used, but with the introduction of a decay rate in the \glosses{EnvMat} properties, we limit the influence of time steps by considering that steady states are reachable. The material deposition and absorption on point-based \glosses{EnvObj} can be seen as a Dirac function $\dirac$ centred at their position, resulting in the advantage that material displacement function can use the definition of the diffusion equation instead of the advection-diffusion-reaction equation. This equation allows us to evaluate the state of the material $\material$ without intermediate steps, but this is not applicable with curve- and region-based \glosses{EnvObj}.
 
 
 \section{Conclusion}
