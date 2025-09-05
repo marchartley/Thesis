@@ -785,8 +785,8 @@ The generation phase starts from this environment plus an optional seed set of \
 
 After initialization, the system enters an incremental loop with two stages:
 \begin{Itemize}
-    \Item{-} instantiate candidate \glosses{EnvObj}, then
-    \Item{-} update the environment.
+    \Item{} instantiate candidate \glosses{EnvObj}, then
+    \Item{} update the environment.
 \end{Itemize}
 The loop terminates when user-defined criteria are met (e.g.\ an iteration count threshold, the target set of \glosses{EnvObj} $\targetObjects$, or manual approval).
 
@@ -1024,7 +1024,8 @@ The effects of varying the different material properties of sand spread from roc
 \begin{figure}[H]
     \autofitgraphics[]{diffusion_no_decay_no_wind.pdf, diffusion_decay_0-05_no_wind.pdf}
     \autofitgraphics[]{diffusion_no_decay_circular_wind.pdf, diffusion_decay_0-05_circular_wind.pdf}
-    \caption{With the addition of a decay term in the advection-diffusion-reaction equation, the spread of the \glosses{EnvMat} tends towards stability after a few iterations (right), while the total mass would constantly increase without decay (left) (concentration value is clamped to 1 for visual purposes). This is also true when a flow field is present (bottom). Moreover, thanks to the decay, we see fewer instabilities regarding the boundary conditions (bottom left uses a zero-gradient boundary condition, resulting in a simulation explosion from the borders).}
+    \autofitcaptions[]{No decay, With decay $\decay=0.05$}
+    \caption{With the addition of a decay term in the advection-diffusion-reaction equation, the spread of the \glosses{EnvMat} tends towards stability after a few iterations (right), whereas the total mass would otherwise increase indefinitely (left). Concentration values are clamped to 1 for visualization. This behavior also holds in the presence of a flow field (bottom), here with bounded diagonal vector field oriented along $x=y$. Moreover, decay reduces boundary-related instabilities (bottom left uses a zero-gradient boundary condition, which leads to a blow-up from the borders).}
     \label{fig:env-obj-stability-examples}
 \end{figure}
 

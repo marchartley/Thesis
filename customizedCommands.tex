@@ -731,7 +731,10 @@
       \stepcounter{fitCapIndex}%
       \pgfmathsetmacro{\relwidth}{\csname fitRatio\thefitCapIndex\endcsname / \fitTotalRatio}%
       \raisebox{\fitraiseamount}{%
-        \parbox[t]{\relwidth\linewidth}{\centering \scalebox{\fitfontscale}{##1}}%
+        % \parbox[t]{\relwidth\linewidth}{\centering \scalebox{\fitfontscale}{##1}}%
+        \scalebox{\fitfontscale}{%
+          \parbox[t]{\relwidth\linewidth}{\centering ##1}%
+        }
       }%
     }%
     \ifblank{#2}{%
