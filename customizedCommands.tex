@@ -689,7 +689,120 @@
   }%
   \edef\fitimageoptions{\cleanopts}%
   \fitNimages{#2}%
+  \addVerticalLabel{}
 }
+
+
+\NewDocumentCommand{\labelledautofitgraphics}{O{} m m}{%
+  \renewcommand{\fitrowwidth}{\linewidth}%
+  \def\fitimageoptions{}%
+  \def\cleanopts{}%
+
+  \def\tempa{#1}%
+  \@for\opt:=\tempa\do{%
+    \IfBeginWith{\opt}{width=}%
+      {\StrBehind{\opt}{=}[{\tempwidth}]\renewcommand{\fitrowwidth}{\tempwidth}}%
+      {\ifx\cleanopts\@empty
+         \edef\cleanopts{\opt}%
+       \else
+         \edef\cleanopts{\cleanopts,\opt}%
+       \fi
+      }%
+  }%
+  \edef\fitimageoptions{\cleanopts}%
+  \fitNimages{#3}%
+  \addVerticalLabel{#2}
+}
+
+\newcounter{fitImgCount}%
+\newcounter{fitImgIndex}%
+% --- new: storage for the most-recent row ---
+\newsavebox{\fitRowBox}
+
+% --- new: label sizing / styling knobs (tweak as you like) ---
+\newlength{\fitLabelWidth}   \setlength{\fitLabelWidth}{1.2em} % column reserved for vertical label
+\newlength{\fitLabelPad}     \setlength{\fitLabelPad}{0mm}     % gap between label and images
+\newcommand{\fitLabelfont}{\footnotesize}    % label font
+
+% --- modified: \fitNimages now caches the row in \fitRowBox instead of printing it ---
+\zzcommand{\fitNimages}[1]{%
+  \setcounter{fitImgCount}{0}%
+  \setcounter{fitImgIndex}{0}%
+  \begingroup
+  \def\fitTotalRatio{0}%
+  \global\let\fitWidths\empty
+  \def\fitImgList{}%
+
+  % Copy input to a clean list for repeated processing
+  \renewcommand{\do}[1]{%
+    \edef\fitImgList{\fitImgList,##1}%
+  }%
+  \docsvlist{#1}%
+
+  % First pass: measure ratios
+  \renewcommand{\do}[1]{%
+    \stepcounter{fitImgCount}%
+    \sbox0{\includegraphics{##1}}%
+    \edef\imgWidth{\the\wd0}%
+    \edef\imgHeight{\the\ht0}%
+    \pgfmathsetmacro{\imgRatio}{\imgWidth/\imgHeight}%
+    \pgfmathparse{\fitTotalRatio + \imgRatio}%
+    \xdef\fitTotalRatio{\pgfmathresult}%
+    \expandafter\xdef\csname fitRatio\thefitImgCount\endcsname{\imgRatio}%
+  }%
+  \docsvlist{#1}%
+
+  % Second pass: build the row box (width = \fitrowwidth)
+  \setcounter{fitImgIndex}{0}%
+  \global\setbox\fitRowBox=\hbox{%
+    \begin{adjustbox}{width=\fitrowwidth}%
+      \renewcommand{\do}[1]{%
+        \stepcounter{fitImgIndex}%
+        \pgfmathsetmacro{\relwidth}{\csname fitRatio\thefitImgIndex\endcsname / \fitTotalRatio}%
+        \expandafter\includegraphics\expandafter[\fitimageoptions, width=\relwidth\linewidth]{##1}%
+      }%
+      \docsvlist{#1}%
+    \end{adjustbox}%
+  }%
+  \endgroup
+}
+
+% --- new: output the cached row with a vertical label on the left ---
+\NewDocumentCommand{\addVerticalLabel}{m}{%
+  % If someone calls this before \autofitgraphics, we’ll just make an empty box.
+  \ifvoid\fitRowBox\relax \global\setbox\fitRowBox=\hbox{} \fi
+  \par\noindent
+  % Scale the combined (label + row) to \linewidth so it never overflows.
+  \begin{adjustbox}{width=\linewidth}%
+    \hbox{%
+      % Left label column
+      \hbox to \fitLabelWidth{%
+        \hfil
+        \rotatebox{90}{\centering \fitLabelfont #1}%
+        \hfil
+      }%
+      \hspace{\fitLabelPad}%
+      % Right: the previously cached row
+      \usebox{\fitRowBox}%
+    }%
+  \end{adjustbox}%
+  \par\smallskip
+  % Clear the box so the next call starts fresh
+  \global\setbox\fitRowBox=\hbox{}%
+}
+
+\newcommand{\setfitratios}[1]{%
+  \setcounter{fitImgCount}{0}%
+  \def\fitTotalRatio{0}%
+  \renewcommand{\do}[1]{%
+    \stepcounter{fitImgCount}%
+    \expandafter\xdef\csname fitRatio\thefitImgCount\endcsname{##1}%
+    \pgfmathparse{\fitTotalRatio + ##1}%
+    \xdef\fitTotalRatio{\pgfmathresult}%
+  }%
+  \docsvlist{#1}%
+}
+
 \newcounter{fitCapIndex}
 % \NewDocumentCommand{\autofitcaptions}{O{} m}{%
 %   \ifblank{#1}
@@ -746,60 +859,6 @@
   \vspace{-\fitraiseamount}%
 }
 \makeatother
-
-\newcounter{fitImgCount}%
-\newcounter{fitImgIndex}%
-\newcommand{\fitNimages}[1]{%
-  \setcounter{fitImgCount}{0}
-  \setcounter{fitImgIndex}{0}
-  \begingroup
-  
-  \def\fitTotalRatio{0}%
-  \global\let\fitWidths\empty
-  \def\fitImgList{}%
-
-  % Copy input to a clean list for repeated processing
-  \renewcommand{\do}[1]{%
-    \edef\fitImgList{\fitImgList,##1}%
-  }%
-  \docsvlist{#1}%
-
-  % First pass: calculate total aspect ratio and store individual ratios
-  \renewcommand{\do}[1]{%
-    \stepcounter{fitImgCount}%
-    \sbox0{\includegraphics{##1}}%
-    \edef\imgWidth{\the\wd0}%
-    \edef\imgHeight{\the\ht0}%
-    \pgfmathsetmacro{\imgRatio}{\imgWidth/\imgHeight}%
-    \pgfmathparse{\fitTotalRatio + \imgRatio}%
-    \xdef\fitTotalRatio{\pgfmathresult}%
-    \expandafter\xdef\csname fitRatio\thefitImgCount\endcsname{\imgRatio}%
-  }%
-  \docsvlist{#1}%
-
-  % Second pass: output images with proportional widths
-  \setcounter{fitImgIndex}{0}%
-  \begin{adjustbox}{width=\fitrowwidth}%
-  \renewcommand{\do}[1]{%
-    \stepcounter{fitImgIndex}%
-    \pgfmathsetmacro{\relwidth}{\csname fitRatio\thefitImgIndex\endcsname / \fitTotalRatio}%
-    \expandafter\includegraphics\expandafter[\fitimageoptions, width=\relwidth\linewidth]{##1}%
-  }%
-  \docsvlist{#1}%
-  \end{adjustbox}%
-  \endgroup
-}
-\newcommand{\setfitratios}[1]{%
-  \setcounter{fitImgCount}{0}%
-  \def\fitTotalRatio{0}%
-  \renewcommand{\do}[1]{%
-    \stepcounter{fitImgCount}%
-    \expandafter\xdef\csname fitRatio\thefitImgCount\endcsname{##1}%
-    \pgfmathparse{\fitTotalRatio + ##1}%
-    \xdef\fitTotalRatio{\pgfmathresult}%
-  }%
-  \docsvlist{#1}%
-}
 
 % \citet{ref}
 \zzcommand{\citet}[1]{\citep{#1}}

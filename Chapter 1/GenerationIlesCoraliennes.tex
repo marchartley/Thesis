@@ -120,7 +120,7 @@ Since Darwin first proposed his subsidence theory, presented in \cref{sec:coral-
 
 Of all the competing hypotheses, Charles Darwin's subsidence model offers several compelling advantages for our procedural island generation due to its simplicity, historical significance, and effectiveness \cite{Tomascik1997}. This theory provides a straightforward framework outlining a clear progression from fringing reefs to barrier reefs to atolls as a volcanic island subsides, which can be easily modelled, making it practical for generating plausible island landscapes. This simplicity not only ensures predictability in simulation outcomes but also reduces computational demands, which is particularly beneficial for interactive edition applications. Additionally, Darwin's model provides a foundational basis upon which more complex phenomena (sea-level changes and climatic effects), considered as secondary factors in the geological formation of islands, could be layered. This allows us to start with a basic model and, in the future, add complexity as needed, offering flexibility in simulation design.
 
-In our approach, we translate the core principles of Darwin's theory into a procedural generation model, simulating the gradual sinking of volcanic islands while coral reefs grow to keep pace with changing sea levels. This allows us to realistically model the progressive transformation of islands from volcanic landmasses to coral-dominated atolls. By capturing this interplay, we procedurally generate a wide variety of island structures that reflect real-world geological processes.
+In our approach, we translate the core principles of Darwin's theory into a procedural generation model, emulating the gradual sinking of volcanic islands while coral reefs grow to keep pace with changing sea levels. This allows us to realistically model the progressive transformation of islands from volcanic landmasses to coral-dominated atolls. By capturing this interplay, we procedurally generate a wide variety of island structures that reflect real-world geological processes.
 
 In generating synthetic coral reef islands, we adopt a set of simplifying assumptions that are interpreted by the formation process from Darwin's theory and field observations:
 \begin{Itemize}
@@ -434,36 +434,12 @@ We connect these two algorithms through a process of dataset generation (central
 \end{figure}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 \section{Procedural island generation}
 \label{sec:coral-island-example-generation}
 
 We propose a structured process for generating coral reef island terrains that takes the user's sketches and produces a complete 3D terrain model. This process begins with the creation of an initial height field based on user inputs, and applies wind deformation to introduce natural variations, and finally integrate coral reef features via subsidence and coral growth modelling.
 
-The generation of coral reef islands in our system begins with two intuitive sketch-based inputs from the user: a top-view sketch and a profile-view sketch, which define the island's horizontal layout and vertical elevation profile. Users further refine the terrain by applying wind deformation strokes, simulating wind and waves effects on the island's shape. This combination of sketches and wind inputs gives users precise control over both the island's structure and its natural variations, such as irregular coastlines or concave features. In this section we demonstrate the usefulness of these sketches, and describe the technical details in the next section.
+The generation of coral reef islands in our system begins with two intuitive sketch-based inputs from the user: a top-view sketch and a profile-view sketch, which define the island's horizontal layout and vertical elevation profile. Users further refine the terrain by applying wind deformation strokes, approximating wind and waves effects on the island's shape. This combination of sketches and wind inputs gives users precise control over both the island's structure and its natural variations, such as irregular coastlines or concave features. In this section we demonstrate the usefulness of these sketches, and describe the technical details in the next section.
 
 \subsection{Initial height field generation}
 \label{sec:coral-island-generation-initial}
@@ -612,7 +588,7 @@ Once the strokes are applied to the velocity field, we displace each points of t
     \label{fig:coral-island-wind-stroke-edition}
 \end{figure}
 
-The deformation is controlled via a user-defined vector field representing the direction and strength of wind flows across the terrain. Users interact with our system by drawing strokes on a 2D canvas using Catmull-Rom splines $\curve$ \cite{Catmull1974}, a type of parametric curve that allows for smooth, continuous paths representing wind patterns. Each stroke defines a wind flow in the curve's direction $\curve'$, a strength $S_\curve$, and an effect width $\std$ (\cref{fig:coral-island-wind-from-strokes}); these wind flows are used to displace the terrain, simulating the gradual reshaping of the island due to wind and wave erosion. The strength of the displacement is controlled by a Gaussian scaling function $G_\std(x)$ that smoothly decreases with the distance from $\closestCp$, the closest point on the parametric curve $\curve$, as follows:
+The deformation is controlled via a user-defined vector field representing the direction and strength of wind flows across the terrain. Users interact with our system by drawing strokes on a 2D canvas using Catmull-Rom splines $\curve$ \cite{Catmull1974}, a type of parametric curve that allows for smooth, continuous paths representing wind patterns. Each stroke defines a wind flow in the curve's direction $\curve'$, a strength $S_\curve$, and an effect width $\std$ (\cref{fig:coral-island-wind-from-strokes}); these wind flows are used to displace the terrain, approximating the gradual reshaping of the island due to wind and wave erosion. The strength of the displacement is controlled by a Gaussian scaling function $G_\std(x)$ that smoothly decreases with the distance from $\closestCp$, the closest point on the parametric curve $\curve$, as follows:
 
 \begin{align}
     \warp_\curve(\p) = S_\curve \cdot \frac{\curve'(\closestCp)}{\norm{\curve'(\closestCp)} } \cdot G_\std\left(\norm{\p - \closestCp} \right) \\
@@ -646,7 +622,7 @@ This process introduces variations in the terrain, distorting the coastline, cre
 
 To ensure that certain regions of the terrain such as deep-water areas remain relatively unaffected by the wind, a resistance function $\resistance(\distRegions_\p)$ is applied. The resistance function modulates the effect of the deformation based on the previously computed piecewise parametric distance $\distRegions_\p$, with the same interaction means as the $\heightProfile$ function.
 
-We define the resistance function $\resistance(\distRegions_\p)$ similarly to the profile function, and use it to modulate the magnitude of the displacement at each point. For example, regions near the coastline (such as the beach and lagoon) have lower resistance, allowing for significant deformation (simulating coastal erosion from wave energy), while regions farther away (such as the abyss) have higher resistance, limiting the wind and coastal erosion impact.
+We define the resistance function $\resistance(\distRegions_\p)$ similarly to the profile function, and use it to modulate the magnitude of the displacement at each point. For example, regions near the coastline (such as the beach and lagoon) have lower resistance, allowing for significant deformation (emulating coastal erosion from wave energy), while regions farther away (such as the abyss) have higher resistance, limiting the wind and coastal erosion impact.
 
 The deformation vector previously described is then scaled by the resistance function at each point $\p$, such that the final deformation vector becomes:
 
@@ -656,7 +632,7 @@ The deformation vector previously described is then scaled by the resistance fun
 
 \begin{figure}
     \autofitgraphics[]{result_low_resistance.png, result_high_resistance.png}
-    \caption{(Left) Given a uniform velocity field and a resistance function similar to \cref{fig:coral-island-resistance-function}, the coasts are smoothly eroded while the interior of the island is almost unaffected. (Right) Modifying the resistance function to affect a strong resistance to borders simulates the effect of coast reinforcements.}
+    \caption{(Left) Given a uniform velocity field and a resistance function similar to \cref{fig:coral-island-resistance-function}, the coasts are smoothly eroded while the interior of the island is almost unaffected. (Right) Modifying the resistance function to affect a strong resistance to borders emulates the effect of coast reinforcements.}
     \label{fig:coral-island-strong-low-resistance}
 \end{figure}
 
@@ -686,12 +662,12 @@ In \cref{fig:coral-island-wind-stroke-edition}, a simple circular island is gene
 \subsection{Coral reef modelling}
 \label{sec:coral-island-coral-reef}
 
-Once the terrain has been generated and deformed by the wind, we simulate the subsidence of the volcanic island and, in parallel, the growth of coral reefs. These processes reflect the long-term geological evolution of coral reef islands, where the volcanic island gradually sinks (subsides) while coral reefs grow upward to "keep up" with the sinking landmass.
+Once the terrain has been generated and deformed by the wind, we emulate the subsidence of the volcanic island and, in parallel, the growth of coral reefs. These processes reflect the long-term geological evolution of coral reef islands, where the volcanic island gradually sinks (subsides) while coral reefs grow upward to "keep up" with the sinking landmass.
 
 \subsubsection{Subsidence}
 \label{sec:coral-island-subsidence}
 
-The subsidence of the island is modelled by scaling the initial height field downward, simulating the effect of the volcanic island slowly sinking into the ocean. The user provides a subsidence rate $\subsidRate \in [0, 1]$, which represents the proportion by which the island has sunk over time. The subsidence is applied uniformly, meaning all terrain points on the island sink by the same factor.
+The subsidence of the island is modelled by scaling the initial height field downward, modelling procedurally the effect of the volcanic island slowly sinking into the ocean. The user provides a subsidence rate $\subsidRate \in [0, 1]$, which represents the proportion by which the island has sunk over time. The subsidence is applied uniformly, meaning all terrain points on the island sink by the same factor.
 
 The subsided height field $\heightSubsid(\p)$ is computed by scaling the original height field $h_0(\p)$ with the subsidence factor:
 
@@ -699,7 +675,7 @@ The subsided height field $\heightSubsid(\p)$ is computed by scaling the origina
 \heightSubsid(\p) = (1 - \subsidRate) \cdot h_0(\p)
 \end{align}
 
-This scaling reduces the overall height of the island, simulating how volcanic islands sink over time due to tectonic activity and erosion. The subsidence factor $\subsidRate$ is applied uniformly across the terrain, meaning that all points on the island experience the same degree of subsidence, regardless of their original height or location.
+This scaling reduces the overall height of the island, approximating how volcanic islands sink over time due to tectonic activity and erosion. The subsidence factor $\subsidRate$ is applied uniformly across the terrain, meaning that all points on the island experience the same degree of subsidence, regardless of their original height or location.
 
 \subsubsection{Coral reef growth}
 \label{sec:coral-island-reef-growth}
@@ -816,7 +792,7 @@ Note that the $\smoothmax$ function is undefined for $a = b$, however, a proof o
 
 The resulting terrain represents a plausible coral reef island, where the volcanic island has subsided, and coral reefs have grown upward to keep pace with the water level. The smooth blending between the subsided terrain and the coral features ensures a natural transition between regions (island, lagoon, coral reefs, and abysses).
 
-One of the key strengths of this method is its flexibility, as the subsidence and coral reef growth processes are modelled independently, allowing for a wide range of configurations. Users can generate plausible island terrains with or without coral features, or apply the coral reef growth simulation to existing height fields from other sources.
+One of the key strengths of this method is its flexibility, as the subsidence and coral reef growth processes are modelled independently, allowing for a wide range of configurations. Users can generate plausible island terrains with or without coral features, or apply the coral reef growth modelling to existing height fields from other sources.
 
 \section{Data generation}
 \label{sec:coral-island-dataset-generation}
@@ -999,7 +975,7 @@ While the cGAN model provides increased flexibility and variety in island genera
 \section{Conclusion and future works}
 \label{sec:coral-island-conclusion}
 
-This work has presented a novel approach to generating coral reef island terrains by combining traditional procedural methods with deep learning techniques. We first developed a procedural generation algorithm capable of creating a wide variety of island terrains through a combination of top-view and profile-view sketches, wind deformation, and subsidence and coral reef growth simulation. By applying these methods, we produced plausible terrains based on geological processes, capturing key features of coral reef islands: island, beaches, lagoons, and coral reefs.
+This work has presented a novel approach to generating coral reef island terrains by combining traditional procedural methods with deep learning techniques. We first developed a procedural generation algorithm capable of creating a wide variety of island terrains through a combination of top-view and profile-view sketches, wind deformation, and subsidence and coral reef growth modelling. By applying these methods, we produced plausible terrains based on geological processes, capturing key features of coral reef islands: island, beaches, lagoons, and coral reefs.
 
 To further enhance flexibility and realism in the generation process, we incorporated a Conditional Generative Adversarial Network (cGAN), using the pix2pix model to generate height maps from label maps of island features. The cGAN model allowed us to overcome some of the constraints inherent in the procedural algorithm, such as radial symmetry and fixed island positioning. Through data augmentation, we trained the cGAN on a synthetic dataset, enabling the generation of varied and plausible island terrains.
 
