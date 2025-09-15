@@ -79,7 +79,7 @@ For completeness, we note that several families do not appear in our later chapt
 
 \begin{figure}
   \includegraphics[width=.8\linewidth]{elevation_representation.png}
-  \caption{Elevation models can be (left) implicit functions evaluated at any point, or (right) discrete samples augmented with interpolation to recover a continuous surface.}
+  \caption{Elevation models can be (left) implicit functions evaluated at any point, or (right) discrete samples augmented with interpolation to recover a continuous surface \cite{Galin2019}}
   \label{fig:erosion-elevation-representation}
 \end{figure}
 
@@ -105,7 +105,7 @@ Discrete height fields, often called "heightmaps", store sampled elevations on a
 \AltTextImage{
     An implicit height field represents the terrain by a closed-form or procedural function $h_{ \text{i}} : \R^{2} \to \R$ that can be evaluated at any $(x,y)$ (\cref{fig:erosion-elevation-representation}, left). Because no samples are stored, the representation is compact and inherently multi-scale (in opposition of discrete height fields, as visible in \cref{fig:sota-representations-heights-resolutions}), and it supports analytic operations. % (derivatives, spectral synthesis, Booleans). 
     These properties make it the backbone of the semantic terrain synthesis developed in \cref{chap:semantic-representation}. The drawback is runtime cost: densely evaluating a complex function over a large domain is computationally expensive, but allow "on-demand" evaluation.
-}{primitives_representation.png}{Primitives composition}{fig:erosion-primitives-representation}
+}{primitives_representation.png}{Primitives composition \cite{Genevaux2015}}{fig:erosion-primitives-representation}
 
 Beyond the construction-tree model of \cite{Genevaux2015} (\cref{fig:erosion-primitives-representation}), several other implicit 2.5D terrain representations are commonly employed: gradient-noise fractals (e.g., Perlin, Simplex or FBM) provide fast, tileable, and stochastic detail; spectral or analytic formulas (e.g., ridge-noise, domain warps or erosion kernels) enable semantically tuned landforms ; feature-curve diffusion techniques allow users to define ridges and rivers via polylines which are then diffused into the height field ; vector-primitive models blend geometric shapes like ellipsoids or plates directly into the terrain surface ; and radial-basis-function (RBF) implicits fit a sparse set of control points with smooth Hermite interpolants for interactive editing .
 

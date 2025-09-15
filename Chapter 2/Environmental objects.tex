@@ -4,8 +4,8 @@
 \label{chap:semantic-representation}
 \teaser{
     \autofitgraphics[width=0.9\linewidth]{figureTeaser.png}
-    \label{fig:env-obj-teaser}
     \caption{Three underwater scenes using our \glosses{EnvObj} representation. From left to right: an island cut in half by a canyon, the inside of a canyon with rocks and corals, an island with corals, algae and a trench.}
+    \label{fig:env-obj-teaser}
 }
 
 \abstract
@@ -168,7 +168,7 @@ In the Fixed-Radius Neighbourhood (FRN) method, the first appearance of a distan
 
     In this framework, competition between adjacent trees is quantified by calculating the fractional overlap between their influence zones (visible in \cref{fig:env-obj-zoi-scheme}). 
 
-}{ZOI-Peters2020.png}{ZOI is represented by regions around entities. The intersection area between two discs defines the competition between the two entities. Top: Symmetric competition (equal resource sharing, with the competition at the intersection divided equally); bottom: Asymmetric competition (larger entity captures more resources, such as light).}{fig:env-obj-zoi-scheme}
+}{ZOI-Peters2020.png}{ZOI is represented by regions around entities. The intersection area between two discs defines the competition between the two entities. Top: Symmetric competition (equal resource sharing, with the competition at the intersection divided equally); bottom: Asymmetric competition (larger entity captures more resources, such as light) \cite{Peters2020}}{fig:env-obj-zoi-scheme}
 
 Mathematically, the intensity of competition $C_{ij}$ exerted by a neighbouring tree $j$ on a focal tree $i$ is expressed as:
 \begin{align}
@@ -205,7 +205,7 @@ Empirical studies across diverse forest ecosystems have demonstrated that the ZO
     The Field of Neighbourhood (FON) approach provides an alternative method to quantify tree competition by explicitly incorporating distance-dependent and size-dependent effects of neighbouring trees on a focal tree's growth or survival (the tree being evaluated) \cite{Berger2000}. Unlike the ZOI model, which uses circular zones and geometric overlaps, FON models typically rely on explicit indices that incorporate both the distance and the relative sizes of neighbouring trees, without necessarily defining explicit geometric overlap areas.
 
     In the FON approach, competition intensity affecting a given focal tree is calculated by summing the competitive effects of neighbouring trees, typically as a weighted function of their size and distance (\cref{fig:env-obj-fon-scheme}). 
-}{FON-Peters2020.png}{The FON model proposes a smoother version of the ZOI, where the intersection between two radii also accounts for the distance from the tree trunk.}{fig:env-obj-fon-scheme}
+}{FON-Peters2020.png}{The FON model proposes a smoother version of the ZOI, where the intersection between two radii also accounts for the distance from the tree trunk \cite{Peters2020}}{fig:env-obj-fon-scheme}
 
 \AltTextImage{
     A commonly used formulation of competition intensity $FON_i$ for a tree $i$ at distance $\radius$ from the trunk is expressed as
@@ -228,7 +228,7 @@ Empirical studies across diverse forest ecosystems have demonstrated that the ZO
     \begin{align}
         F_A^i = \frac{1}{A} \sum_{j \neq i}{ \int_{\Area_{\text{overlap}, ij}}{FON_j(x, y) \, da} }
     \end{align}
-}{FON-scheme-Berger2000.png}{The evaluation of the FON value at any point is done by accumulating all individual fields.}{fig:env-obj-fon-compute-scheme}
+}{FON-scheme-Berger2000.png}{The evaluation of the FON value at any point is done by accumulating all individual fields \cite{Berger2000}}{fig:env-obj-fon-compute-scheme}
 
 Unlike the ZOI method, the FON model does not assume a hard boundary around each tree, instead explicitly capturing a smooth decline in competitive impact with increasing distance. It also inherently accommodates asymmetric competition, since larger and closer neighbours exert stronger competitive influences than smaller or more distant trees (\cref{fig:env-obj-fon-compute-scheme}).
 
@@ -236,7 +236,7 @@ The FON method does not rely explicitly on geometric overlap and is thus flexibl
 
 \AltTextImage{
     By designing non-monotonic field functions around trees, emergent behaviours can appear. \cite{Lane2002} proposed to apply what they call a deformation kernel on the distance function, resulting in a larger variety of patterns, such as the clustering of bushes and the competition of larger trees (\cref{fig:env-obj-kernels-Lane2002}, top left). Building on this idea, defining deformation kernels for each pair of species (\cref{fig:env-obj-kernels-Lane2002}, top right, presents a kernel matrix for two species) allows the system to include ecological interactions between different species in the terrain. As a result, the simulation can introduce intra-species clumping while maintaining inter-species segregation.
-}{kernel-matrices-Lane2002.png}{The deformation of neighbourhood kernels enables modelling of different behaviours for species and their interactions. Top-left: different kernels generate different layouts; Top-right: a matrix $M$ encodes a distance kernel for each pair of species; Bottom: using a single matrix provides a way to control the interaction of two species in a scene.}{fig:env-obj-kernels-Lane2002}
+}{kernel-matrices-Lane2002.png}{The deformation of neighbourhood kernels enables modelling of different behaviours for species and their interactions. Top-left: different kernels generate different layouts; Top-right: a matrix $M$ encodes a distance kernel for each pair of species; Bottom: using a single matrix provides a way to control the interaction of two species in a scene \cite{Lane2002}}{fig:env-obj-kernels-Lane2002}
 
 \AltTextImage{
     Alternatively, learning the spatial distribution of distances between individuals from examples can be used as a statistical metric to introduce interactive tools for ecosystem generation \cite{Emilien2015a} (\cref{fig:env-obj-worldbrush-Emilien2015}). In this work, a user-provided patch serves as an example: the system extracts descriptors such as histograms of inter- and intra-species distances, or correlations with environmental variables like slope, and reproduces these distributions in other regions. Unlike kernel-based models, which require explicit design of influence functions, this approach learns statistical descriptors directly from data.
@@ -254,7 +254,7 @@ Whereas FRN, ZOI, and FON define interactions through explicit neighbour relatio
 
 \begin{figure}
     \autofitgraphics[width = .8\linewidth]{ecological-fields-example-shade-Wu1985.png, ecological-fields-example-water-Wu1985.png, ecological-fields-example-nutrients-Wu1985.png}
-    \caption{Ecological Field Models represent the environment as a mathematical function where environmental properties such as humidity, shade, and nutrients are seen as distinct fields (from left to right respectively) created by the presence of trees, bushes, and flowers.}
+    \caption{Ecological Field Models represent the environment as a mathematical function where environmental properties such as humidity, shade, and nutrients are seen as distinct fields (from left to right respectively) created by the presence of trees, bushes, and flowers \cite{Wu1985}}
     \label{fig:env-obj-ecological-field-models}
 \end{figure}
 
@@ -336,7 +336,7 @@ assuming $\theta_0$ and $\alpha_0$ to be global scalar fields for temperature an
 
 \AltTextImage{
     Using the field values, the system instantiates small details such as leaves by sampling the space with candidate "anchor positions" (\cref{fig:env-obj-teaser-grosbellet2016}, right). If the field values satisfy certain conditions at the anchor position $\p_i$, the small-scale objects can be instantiated at this position (for example, for leaves: $\alpha(\p_i) l(\p_i) < d_i$ using the occlusion field $\alpha$, the leaves deposition field $l$ and the distance of the anchor position to the depositing surface $d_i$ as shown in \cref{fig:env-obj-leaves-instances}). This method was extended to modify the geometry or texture of the object based on the field values (in \cref{fig:env-obj-leaves-instances}, the heat field and the humidity field), to manually move or rotate each of the objects, or even integrate user-defined density fields to populate entangled details on the ground \cite{Guerin2016}.
-}{EnvObjs-leaves-instances-Grosbellet2016.png}{Leaves are instanced if the field values are fitted for leaves presence, and the geometry and texture are altered depending on the environment. }{fig:env-obj-leaves-instances}
+}{EnvObjs-leaves-instances-Grosbellet2016.png}{Leaves are instanced if the field values are fitted for leaves presence, and the geometry and texture are altered depending on the environment \cite{Grosbellet2016}. }{fig:env-obj-leaves-instances}
 
 \AltTextImage{
     On the other hand, the geometry of large objects can be altered using the scalar fields. The authors present a simulation of snow deposition on the objects by displacing the vertices $i$ in the direction of the original surface normals $\vec n_i$ by an amount depending on the environment (\cref{fig:env-obj-snow-Grosbellet2016}):
@@ -344,11 +344,11 @@ assuming $\theta_0$ and $\alpha_0$ to be global scalar fields for temperature an
         \p_i' = \p_i + \left( \alpha(\p_i) s(\p_i) g(d(\p_i)) - \theta(\p_i) \right) \vec n_i
     \end{align}
     with $s$ the snow field, and $g$ a snow elevation function based on the distance between the original vertex and the border of the mesh.
-}{EnvObjs-snow-Grosbellet2016.png}{Snow deposition is a displacement of vertices along the surface normals of the mesh (left), modulated by the value of fields such as occlusion (middle) and heat (right). }{fig:env-obj-snow-Grosbellet2016}
+}{EnvObjs-snow-Grosbellet2016.png}{Snow deposition is a displacement of vertices along the surface normals of the mesh (left), modulated by the value of fields such as occlusion (middle) and heat (right) \cite{Grosbellet2016}. }{fig:env-obj-snow-Grosbellet2016}
 
 \AltTextImage{
     In addition to the EFM framework, environmental effects from environmental objects are not limited to point sources (fields can be emitted by splines and volumes) as the scalar functions may use a spline primitive or be extended to volume primitives (\cref{fig:env-obj-heat-field-effect}). Translated to the ecological domain, this methodology extends the EFM as the inclusion of water bodies, essential for realistic vegetation simulation, can be taken into account by considering environmental effects from rivers and lakes which are often modelled as splines and regions in 3D modelling \cite{Emilien2015,Genevaux2013,Genevaux2015}.
-}{env-obj-fields-heat-Grosbellet2016.png}{The heat field produced by a pipe uses a distance function from a line instead of a single point in space.}{fig:env-obj-heat-field-effect}
+}{env-obj-fields-heat-Grosbellet2016.png}{The heat field produced by a pipe uses a distance function from a line instead of a single point in space \cite{Grosbellet2016}.}{fig:env-obj-heat-field-effect}
 
 The Environmental Objects method can be regarded as a variant of EFMs, since both rely on scalar fields that objects emit and sense. They share a common substrate of composable fields, but their purposes differ: Environmental Objects mainly enrich visual appearance, while EFMs model ecological dynamics. This overlap suggests cross-overs: Environmental Objects techniques can improve the scalability and visualisation of EFMs, while EFMs can provide Environmental Objects biologically grounded feedback loops.
 
@@ -758,7 +758,7 @@ To preserve ordering constraints, we partition objects into three mutually exclu
         \sum_{\oneObject\in\surfaceHeight}\heightModif_o(\p).
     \end{align}
 
-    The final coarse elevation and its analytic gradient (for slope queries) are then
+    The final coarse elevation and its analytic gradient (for slope queries) are then given by the smooth maximum between $\heightModif_{\groundedHeight}$ and $\heightModif_{\altitudeHeight}$, and the addition of $\heightModif_{\surfaceHeight}$ (\cref{fig:env-obj-height-modif}):
     \begin{align}
         \height^{\star}(\p)=
         \smoothmax \left(\heightModif_{\groundedHeight},\;\heightModif_{\altitudeHeight}\right) + \heightModif_{\surfaceHeight}.
@@ -845,7 +845,7 @@ Finally, we retrieve the velocity field from the objects, with a per-object coef
 
 The use of regularised Kelvinlets is well-suited to our model. They offer a compact representation thanks to their closed-form definition, which allows each deformation to be described analytically without the need for precomputed data or large simulation grids. They maintain continuity, ensuring that the resulting vector field is smooth and free of visual or numerical artefacts, which is crucial when blending influences from multiple environment objects. Their behaviour is physically plausible, as they are derived from fundamental solutions to elasticity equations, and can convincingly simulate natural flow behaviours such as deflection around obstacles or local flow obstruction. They are also computationally efficient, since their evaluation is lightweight and independent of the size or complexity of the terrain, making them particularly suitable for integration into large-scale procedural generation pipelines and real-time interactive applications.
 
-\cref{fig:env-obj-rock-with-kelvinlets} presents a rock acting as an obstacle to the incoming water flow, which guides the flow, and more importantly the \glosses{EnvMat}, in a plausible direction on the side of the obstacle, with the introduction of artificial vortices at its back. A curve-based water influence is presented in \cref{fig:env-obj-canyon-flow}, which is a unique "grab Kelvinlet" in the direction of the curve skeleton of the canyon.
+\cref{fig:env-obj-rock-with-kelvinlets} presents a rock acting as an obstacle to the incoming water flow, which guides the flow, and more importantly the \glosses{EnvMat}, in a plausible direction on the side of the obstacle, with the introduction of artificial vortices at its back. A curve-based water influence is presented in \cref{fig:env-obj-canyon-flow} and \cref{fig:env-obj-canyon-inside-with-arch}, which is a unique "grab Kelvinlet" in the direction of the curve skeleton of the canyon, and thus inserting new \glosses{EnvObj} downstream, where the \glosses{EnvMat} are transported.
 
 Unfortunately, the Kelvinlet paradigm is not applicable to region-based \glosses{EnvObj}. In this case, the water influence is given using the vector towards the closest point on the outline, scaled by the distance between the evaluation point and the curve, as presented in \cref{fig:env-obj-island-flowfield}. Note that the vector field produced by the islands is directly computed by the distance field of its region's boundaries and is independent of the generated geometry, explaining the discrepancy between the emerged surface and the resulting flow field in \cref{fig:env-obj-island-flowfield}.
 
@@ -959,7 +959,7 @@ The framework can easily be extended as the \gloss{GeoEvent} system remains simi
 
 \section{Results and discussion}
 \label{sec:env-obj-results}
-Our method provides a way to generate scenes at different scales. We demonstrate this capacity with the generation of a large scene of an island (\cref{fig:env-obj-teaser}), after which we focused the generation process in a canyon (\cref{fig:env-obj-canyon-scene}), then a small-scale visualisation of coral colonies (\cref{fig:env-obj-coral-colonization-scene}).
+Our method provides a way to generate scenes at different scales. We demonstrate this capacity with the generation of a large scene of an island (\cref{fig:env-obj-teaser} and \cref{fig:env-obj-coral-island-scene}), after which we focused the generation process in a canyon (\cref{fig:env-obj-canyon-scene}), then a small-scale visualisation of coral colonies (\cref{fig:env-obj-coral-colonization-scene}).
 In the examples, we rendered the \glosses{EnvObj} as an implicit tree or as individual meshes. The island, lagoons, reefs, canyons and sand ripples as implicit surfaces.
 
 \begin{figure}

@@ -85,7 +85,7 @@ The integral of $g$ over $B_{\Radius}(\center)$ becomes
     &= \frac{\pi}{3} \, \Radius^3.
 \end{align}
 
-Given $\int f = \totalErosion$ and $\int f = \lambda \int g$, we obtain
+Given $\int f = \totalErosion$ from \cref{eq:erosion-int_function_f_is_erosion} and $\int f = \lambda \int g$, we obtain
 \begin{equation}
     \lambda = \frac{\totalErosion}{\int g} = \frac{3}{\pi\,\Radius^3}\,\totalErosion.
 \end{equation}
@@ -146,7 +146,7 @@ By convention, we set $\nabla f(\center)=0$. The smoothness at $x=0$ and $x=1$ d
 \newcommand{\kernelcard}[8]{%
 \begin{minipage}[t]{0.45\linewidth}
     \vspace{0pt}
-    \textbf{#1}\\[0.25em]
+    \textbf{#1} (\cref{fig:metaball-alternatives-#2})\\[0.25em]
     \setlength{\abovedisplayskip}{4pt}\setlength{\belowdisplayskip}{4pt}
     \begin{align*}
         \phi(x)   &\,=\, #3\\
@@ -169,6 +169,7 @@ By convention, we set $\nabla f(\center)=0$. The smoothness at $x=0$ and $x=1$ d
       slope_#2.png%
     }
     \caption{Top left: #1 profile. Top right: deposition on a plane $f_\text{plane}(x, y)=-y$ with $\totalErosion=0.1$ and $\Radius=0.75$. Bottom left: erosion with $\totalErosion=-0.5$ and $\Radius=0.75$. Bottom right: multiple eroding metaballs on an inclined plane. }
+    \label{fig:metaball-alternatives-#2}
     % \caption{#1 profile. Visuals are 2D slices through $\center$; image parameters use $Q\equiv\totalErosion$ and $R\equiv\Radius$.}
   \end{figure}
   \end{minipage}
@@ -184,47 +185,47 @@ By convention, we set $\nabla f(\center)=0$. The smoothness at $x=0$ and $x=1$ d
 {Continuity: $C^0$; gradient discontinuous at $x=0$ and $x=1$. A standard piecewise-linear choice.}
 
 \kernelcard{Smoothstep}{smoothstep}
-{ \begin{cases} 1-3q^2+2q^3, & 0\le x\le 1\\ 0,& x>1\end{cases} }
-{ -6q+6q^2 }
-{ -6+12q }
+{ \max\left(1-3x^2+2x^3, 0\right) }
+{ -6x+6x^2 }
+{ -6+12x }
 { \tfrac{1}{15} }
 { \dfrac{15\,\totalErosion}{4\pi\,\Radius^3} }
 {Continuity: $C^1$ with $\phi'(0)=\phi'(1)=0$; widely used in graphics as the cubic smoothstep \cite{Perlin2002}.}
 
 \kernelcard{Smootherstep}{smootherstep}
-{ \begin{cases} 1-10q^3+15q^4-6q^5, & 0\le x\le 1\\ 0,& x>1\end{cases} }
-{ -30q^2+60q^3-30q^4 }
-{ -60q+180q^2-120q^3 }
+{ \max\left(1-10x^3+15x^4-6x^5, 0\right) }
+{ -30x^2+60x^3-30x^4 }
+{ -60x+180x^2-120x^3 }
 { \tfrac{5}{84} }
 { \dfrac{21\,\totalErosion}{5\pi\,\Radius^3} }
 {Continuity: $C^2$ with $\phi'(0)=\phi'(1)=0$; quintic smootherstep popularized by Perlin for higher-order smoothness \cite{Perlin2002}.}
 
 \kernelcard{Wendland}{wendland}
-{ \begin{cases} (1-x)^4(1+4q), & 0\le x\le 1\\ 0,& x>1\end{cases} }
-{ -20q(1-x)^3 }
-{ -20(1-x)^2(1-4q) }
+{ \max\left((1-x)^4(1+4x), 0\right) }
+{ -20x(1-x)^3 }
+{ -20(1-x)^2(1-4x) }
 { \tfrac{1}{42} }
 { \dfrac{21\,\totalErosion}{2\pi\,\Radius^3} }
 {Continuity: $C^2$ in 3D; a compactly supported, positive definite RBF of minimal degree \cite{Wendland1995}.}
 
 \kernelcard{Biweight kernel}{biweight}
-{ \begin{cases} (1-x^2)^2, & 0\le x\le 1\\ 0,& x>1\end{cases} }
-{ -4q(1-x^2) }
-{ -4+12q^2 }
+{ \max\left((1-x^2)^2, 0\right) }
+{ -4x(1-x^2) }
+{ -4+12x^2 }
 { \tfrac{8}{105} }
 { \dfrac{105\,\totalErosion}{32\pi\,\Radius^3} }
 {Continuity: $C^1$ at $x=1$ (and $\phi'(0)=0$). A quartic kernel from density estimation \cite{Silverman1998, Wand1993}).}
 
 \kernelcard{Triweight kernel}{triweight}
-{ \begin{cases} (1-x^2)^3, & 0\le x\le 1\\ 0,& x>1\end{cases} }
-{ -6q(1-x^2)^2 }
-{ -6(1-x^2)(1-5q^2) }
+{ \max\left((1-x^2)^3, 0\right) }
+{ -6x(1-x^2)^2 }
+{ -6(1-x^2)(1-5x^2) }
 { \tfrac{16}{315} }
 { \dfrac{315\,\totalErosion}{64\pi\,\Radius^3} }
 {Continuity: $C^2$ at $x=1$ (and $\phi'(0)=0$). A sextic kernel in the KDE literature \cite{Silverman1998,Wand1993}.}
 
 \kernelcard{Raised cosine}{cosine}
-{ \begin{cases} \tfrac{1+\cos(\pi x)}{2}, & 0\le x\le 1\\ 0,& x>1\end{cases} }
+{ \max\left(\tfrac{1+\cos(\pi x)}{2}, 0\right) }
 { -\tfrac{\pi}{2}\sin(\pi x) }
 { -\tfrac{\pi^2}{2}\cos(\pi x) }
 { \tfrac{1}{6}-\tfrac{1}{\pi^2} }

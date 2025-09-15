@@ -262,8 +262,8 @@ Using a pre-calculated flow field to guide particle movement simplifies the simu
 \subsection{Erosion process}
 
 \AltTextImageR{
-    Every time the particle hits the ground, a given amount $\erosionAmount$ of sediment is detached from the ground (red arrows) while another amount $\depositAmount$ of sediment is deposited at this location (green arrows). Our erosion model is based on the work of Wojtan et al. where regular 3D grids are used to estimate the fluid velocity and sediment transport \cite{Wojtan2007}. In the spirit of \cite{Kristof2009}, we transposed their method into a particle-based erosion simulation, but in our proposition, we decouple the particle system from the fluid simulation, making the process more flexible and opening the door for richer effects that can easily be produced. 
-}{erosion_deposition.pdf}{}{}
+    Every time the particle hits the ground, a given amount $\erosionAmount$ of sediment is detached from the ground while another amount $\depositAmount$ of sediment is deposited at this location (respectively red and green arrows in \cref{fig:erosion-qdetachment-qdeposit}). Our erosion model is based on the work of \cite{Wojtan2007} where regular 3D grids are used to estimate the fluid velocity and sediment transport. In the spirit of \cite{Kristof2009}, we transposed their method into a particle-based erosion simulation, but in our proposition, we decouple the particle system from the fluid simulation, making the process more flexible and opening the door for richer effects that can easily be produced. 
+}{erosion_deposition.pdf}{When a particle is in contact with the terrain surface, an amount $q_{\text{deposit}}$ of sediments contained in the particle is released in the ground, and $q_{\text{detachment}}$ is absorbed. }{fig:erosion-qdetachment-qdeposit}
 
 \subsubsection{Detachment}
 As a particle approaches the surface of the terrain, its motion applies friction at the interface between fluid and ground, causing bedrock to dislocate microscopic parts, which we call abrasion. We use pseudoplastic models to approximate the amount of matter removed due to the shear forces while considering the physical properties of the fluid and the ground \cite{Wojtan2007}. 
@@ -742,7 +742,7 @@ In the following section, we compare our method with existing ones to show that 
 
 \begin{figure}
     \autofitgraphics{Chapter 3/otherPapersRepro/hydro.pdf} 
-    \caption{While our resulting geometry for hydraulic erosion (bottom) is less smoothed than that proposed by \cite{Mei2007} (top), our method allows for application on more terrain representations than just height fields.}
+    \caption{While our resulting geometry for hydraulic erosion (bottom) is less smoothed than that proposed by \cite{Mei2007} (top), our method emulate the presence of rills at the ground surface, and allows its application on more terrain representations than just height fields.}
     \label{fig:erosion-screen-mei2007-1}
 \end{figure}
 
@@ -752,7 +752,7 @@ In the following section, we compare our method with existing ones to show that 
 
 \begin{figure}
     \autofitgraphics{desert.pdf}
-    \caption{The algorithm from Paris 2020 allows for the generation of desertscapes (top), which we can (at least partially) reproduce with our erosion simulation (bottom). The different effects are achieved by altering the wind direction and strength.}
+    \caption{The algorithm from \cite{Paris2019b} allows for the generation of desertscapes (top), which we can (at least partially) reproduce with our erosion simulation (bottom). The different effects are achieved by altering the wind direction and strength.}
     \label{fig:erosion-screen-paris2020}
 \end{figure}
 

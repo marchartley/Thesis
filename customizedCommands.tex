@@ -14,31 +14,31 @@
 \setcounter{bottomnumber}{5}
 
 
-% \IfPackageLoadedTF{refcheck}{
-  % \makeatletter
-  % \newcommand{\refcheckize}[1]{%
-  %   \expandafter\let\csname rc@orig@\string#1\endcsname#1%
-  %   \expandafter\DeclareRobustCommand\csname rc@wrap@\string#1\endcsname[1]{%
-  %     \csname rc@orig@\string#1\endcsname{##1}%
-  %     \@for\rc@tmp:=##1\do{\wrtusdrf{\rc@tmp}\wrtusdrf{{\rc@tmp}}}%
-  %   }%
-  %   \expandafter\let\expandafter#1\csname rc@wrap@\string#1\endcsname
-  % }
-  % \newcommand{\refcheckizetwo}[1]{%
-  %   \expandafter\let\csname rc@orig@\string#1\endcsname#1%
-  %   \expandafter\DeclareRobustCommand\csname rc@wrap@\string#1\endcsname[2]{%
-  %     \csname rc@orig@\string#1\endcsname{##1}{##2}%
-  %     \wrtusdrf{##1}\wrtusdrf{{##1}}\wrtusdrf{##2}\wrtusdrf{{##2}}%
-  %   }%
-  %   \expandafter\let\expandafter#1\csname rc@wrap@\string#1\endcsname
-  % }
-  % \makeatother
-  % \refcheckize{\cref}
-  % \refcheckize{\Cref}
-  % \refcheckizetwo{\crefrange}
-  % \refcheckizetwo{\Crefrange}
-  % % --------------------------------
-% }{}
+% % \IfPackageLoadedTF{refcheck}{
+%   \makeatletter
+%   \newcommand{\refcheckize}[1]{%
+%     \expandafter\let\csname rc@orig@\string#1\endcsname#1%
+%     \expandafter\DeclareRobustCommand\csname rc@wrap@\string#1\endcsname[1]{%
+%       \csname rc@orig@\string#1\endcsname{##1}%
+%       \@for\rc@tmp:=##1\do{\wrtusdrf{\rc@tmp}\wrtusdrf{{\rc@tmp}}}%
+%     }%
+%     \expandafter\let\expandafter#1\csname rc@wrap@\string#1\endcsname
+%   }
+%   \newcommand{\refcheckizetwo}[1]{%
+%     \expandafter\let\csname rc@orig@\string#1\endcsname#1%
+%     \expandafter\DeclareRobustCommand\csname rc@wrap@\string#1\endcsname[2]{%
+%       \csname rc@orig@\string#1\endcsname{##1}{##2}%
+%       \wrtusdrf{##1}\wrtusdrf{{##1}}\wrtusdrf{##2}\wrtusdrf{{##2}}%
+%     }%
+%     \expandafter\let\expandafter#1\csname rc@wrap@\string#1\endcsname
+%   }
+%   \makeatother
+%   \refcheckize{\cref}
+%   \refcheckize{\Cref}
+%   \refcheckizetwo{\crefrange}
+%   \refcheckizetwo{\Crefrange}
+%   % --------------------------------
+% % }{}
 
 
 
@@ -801,7 +801,7 @@
   \ifvoid\fitRowBox\relax \global\setbox\fitRowBox=\hbox{} \fi
   \par\noindent
   % Scale the combined (label + row) to \linewidth so it never overflows.
-  \begin{adjustbox}{width=\linewidth}%
+  \begin{adjustbox}{width=\fitrowwidth}%
     \hbox{%
       % Left label column
       \hbox to \fitLabelWidth{%
