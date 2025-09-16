@@ -1,5 +1,5 @@
 \resetgraphicspath
-\appendtographicspath{{./Introduction/figures}}
+\appendtographicspath{{./Introduction/figures}{./Introduction/figures/Robotics}{./Introduction/figures/Pipeline}}
 
 \chapter*{Résumé long}
 Au cours des 50 dernières années, la génération de terrains est devenue un domaine de plus en plus actif dans le champ de l'informatique graphique \cite{Fournier1982,Musgrave1989,Miller1986,Galin2019}. Avec la demande croissante de procédés réalistes et automatisés permettant de créer des paysages toujours plus vastes et détaillés sans effort humain, les techniques de génération de terrains ont évolué en conséquence. Alors que ces objectifs sont progressivement atteints, une nouvelle tendance déplace l'attention vers un meilleur contrôle utilisateur. Notre travail se concentre sur une branche spécifique de la génération de terrains~: la création et la modélisation interactive de paysages.
@@ -74,7 +74,7 @@ The planet is currently experiencing an ecological crisis marked by global warmi
 
 In this context, biodiversity monitoring has become a strategic priority. Tracking the dynamics of marine communities makes it possible to identify threats rapidly, assess the effectiveness of marine protected areas, and adapt conservation policies \cite{HoeghGuldberg2017,Yuan2024}. Yet underwater monitoring remains challenging: traditional methods based on divers or visual counts are costly, limited in time and space, and subject to observation bias \cite{Edgar2004}. In coral reefs, where conditions are complex (low light, irregular currents, fragile habitats), reliable and frequent data are indispensable for understanding and anticipating ecological change \cite{Maslin2021}.
 
-It is against this backdrop that BUBOT (Better Understanding Biodiversity changes thanks to new Observation Tools) was launched, an interdisciplinary project led by LIRMM (University of Montpellier, CNRS) in collaboration with MARBEC (marine ecology), Espace-Dev (geography and anthropology), CUFR Mayotte, Universidade Lúrio in Mozambique, and the University of California, Davis. BUBOT combines robotics, computer vision, ecology and the social sciences to improve the understanding of biodiversity change and to provide robust tools for the long-term monitoring of the reefs of Mayotte, the Îles Éparses, and the Mozambique Channel. Among its major achievements is the development of the REMI underwater robot, designed to automate ecological surveys.
+It is against this context that BUBOT (Better Understanding Biodiversity changes thanks to new Observation Tools) was launched, an interdisciplinary project led by LIRMM (University of Montpellier, CNRS) in collaboration with MARBEC (marine ecology), Espace-Dev (geography and anthropology), CUFR Mayotte, Universidade Lúrio in Mozambique, and the University of California, Davis. BUBOT combines robotics, computer vision, ecology and the social sciences to improve the understanding of biodiversity change and to provide robust tools for the long-term monitoring of the reefs of Mayotte, the Sparse Islands, and the Mozambique Channel. Among its major achievements is the development of the REMI underwater robot, designed to automate ecological surveys.
 
 Using a robot offers several decisive advantages. Unlike divers, REMI can explore great depths or hazardous areas, collect standardised data over long periods, and operate in conditions that would be impossible or risky for a human \cite{GonzalezGarcia2020}. Its stereo video sensors and artificial intelligence algorithms make it possible to identify species automatically and to analyse reef structure with increased precision and reproducibility \cite{Villon2020,Saleh2022}.
 
@@ -84,14 +84,20 @@ Testing in robotics generally follows a multi-stage process \cite{GonzalezGarcia
 
 REMI's navigation must also contend with specific obstacles. A canyon should be followed down to the bottom, but a perpendicular fault must be avoided to prevent collision with the opposite wall. Arches and overhangs require avoiding unwarranted ascents to the surface in the presence of a rock ceiling. Caves present an even more complex case: although the walls may appear distant, the robot must recognise that it is trapped and turn back. The presence of mobile animals further complicates decision-making: a school of fish can appear as a moving wall that the robot must interpret without endangering itself or the fauna. Coral reefs themselves pose problems: their porosity can mislead range sensors; algae such as \textit{Posidonia}, which are difficult to detect, can damage the propellers; and fine sand can be lifted into suspension by the thrusters, completely obscuring optical sensors.
 
-These challenges illustrate the difficulty of reproducing in real conditions all the situations that REMI may encounter. Hence the growing interest in realistic virtual environments. The procedural generation of underwater environments would make it possible to simulate canyons, arches, fauna, turbulence, or turbidity conditions that are almost impossible to bring together in a single mission. It reduces costs, avoids the risk of equipment loss, and accelerates the development of decision-making algorithms.
+\AltTextImage{
+    These challenges illustrate the difficulty of reproducing in real conditions all the situations that REMI may encounter. Hence the growing interest in realistic virtual environments instead of real environment in robot control loop (\cref{fig:intro-hil-Hereau2022}). The procedural generation of underwater environments would make it possible to simulate canyons, arches, fauna, turbulence, or turbidity conditions that are almost impossible to bring together in a single mission. It reduces costs, avoids the risk of equipment loss, and accelerates the development of decision-making algorithms.
+}{HIL_Hereau.pdf}{A generic control loop structure for a mobile robot \cite{HereauThesis}}{fig:intro-hil-Hereau2022}
+
+
+\begin{figure}
+    \autofitgraphics[]{user-to-simu-pipeline.pdf}
+    \caption{The global objective of this project is to bridge a pipeline from large-scale landscape generation to robot-scale environment generation. }
+    \label{fig:intro-user-to-simu-pipeline}
+\end{figure}
 
 
 
-
-
-
-These constraints directly motivate the need for controllable, realistic virtual testing environments, hence this work focuses on the modelling of virtual terrains which are used to incorporate a digital underwater observation robot, providing a playground to verify and validate its behaviour under controlled and controllable environment and obstacles.
+These constraints directly motivate the need for controllable, realistic virtual testing environments, hence this work focuses on the modelling of virtual terrains which are used to incorporate a digital underwater observation robot, providing a playground to verify and validate its behaviour under controlled and controllable environment and obstacles. The global pipeline of our work presented in \cref{fig:intro-user-to-simu-pipeline} keeps the user in the environment creation from start to end, allowing for refinement on the terrain generation outputs from the large-scale scope to smaller-scale scope, until details at robot-scale matches. [PHRASE A RETOURNER PLUSIEURS FOIS... ]
 
 Over the past 50 years, terrain generation has emerged as an increasingly active domain within the field of computer graphics \cite{Fournier1982,Musgrave1989,Miller1986,Galin2019}. As the demand for realistic and automated processes has grown to support the creation of ever-larger and more detailed landscapes effortlessly, terrain generation techniques have evolved accordingly. As these goals are progressively achieved, a new trend shifts the focus towards greater user control. This work is focused on a specific branch of terrain generation: interactive creation and modelling of landscapes.
 
