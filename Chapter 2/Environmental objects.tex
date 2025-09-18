@@ -714,6 +714,7 @@ The \glosses{EnvMat} are also dispersed at a diffusion rate $\diffusion_\oneMate
 
 We solve \eqref{eq:material-displacement-equation} numerically using an Euler integration:
 \begin{align}
+    \label{eq:material-displacement-Euler}
     \concentration_\oneMaterial(\p, t + dt) &= \max \big(0, \concentration_\oneMaterial(\p, t) \\
     &\quad + dt \big( \diffusion_\oneMaterial \nabla^2 \concentration_\oneMaterial(\p, t)
     - \decay_\oneMaterial \concentration_\oneMaterial(\p, t)
@@ -750,6 +751,33 @@ The effects of varying the different material properties of sand spread from roc
     \caption{With the addition of a decay term in the advection-diffusion-reaction equation, the spread of the \glosses{EnvMat} tends towards stability after a few iterations (right), whereas the total mass would otherwise increase indefinitely (left). Concentration values are clamped to 1 for visualization. This behavior also holds in the presence of a flow field (bottom), here with bounded diagonal vector field oriented along $x=y$. Moreover, decay reduces boundary-related instabilities; bottom left uses a zero-gradient boundary condition, which leads to a blow-up from the borders.}
     \label{fig:env-obj-stability-examples}
 \end{figure}
+
+\subsubsection{Approximation of distances from \glosses{EnvMat}}
+
+The use of \glosses{EnvMat} provides an efficient, on-demand approximation of the distance to the closest instance of an object type $\objects$, with computational complexity linear in the number of objects in the scene. For each object type (e.g., coral, rock, reef, island, ...), we maintain a separate \gloss{EnvMat} field $\material_\oneObject$ that evolves under diffusion-reaction only (advection disabled by setting $\velFactor = 0$ and $\mass = 0$). The object's skeleton acts as a Dirichlet boundary: for every skeleton point $\q$, the concentration is fixed to a constant value $\concentration_\oneObject(\q) = C_s$ with $C_s > 0$. 
+
+Let $\Gamma$ denote the \gloss{Skeleton} of all objects of a given type and $d = \|\p - \q\|$ with $\q \in \Gamma$ the closest skeleton point to $\p$. The diffusion-reaction field is updated using forward Euler steps of \eqref{eq:material-displacement-Euler}:
+\begin{align}
+    \concentration(\mathbf x,t+\Delta t)
+    &=\concentration(\mathbf x,t)
+      + \Delta t \left(\diffusion\nabla^2 \concentration(\mathbf x,t)
+      - \decay\,\concentration(\mathbf x,t)\right) \\
+      %\quad \mathbf x \notin \Gamma, \\
+    \concentration(\q,t) &= C_s, \quad \q \in \Gamma.
+\end{align}
+
+To approximate the distance from a query point $\p_0$ to the nearest object, we perform gradient ascent on the concentration field: starting at $\p_0$, we follow the discrete gradient $\nabla \concentration$ until reaching a location $\p$ where $\concentration(\p)=C_s$. The distance estimate is then
+\begin{align}
+    d \approx \|\p-\p_0\|.
+\end{align}
+% Because the diffusion-reaction field is harmonic (or screened harmonic) with no interior maxima, gradient ascent is guaranteed to terminate on some skeleton point. In regions where multiple skeleton components compete, the ascent path may occasionally terminate on a non-nearest component, but in practice this effect is rare and does not materially affect the general applicability of the method.
+
+This setup allows direct queries for the distance to any specific type without additional preprocessing on the complete terrain, while alternative strategies such as using Euclidean distance transforms could also be applied to avoid the gradient ascent with a single lookup at the cost of heavier computation.
+
+
+
+
+
 
 \subsection{Height modifiers}
 
