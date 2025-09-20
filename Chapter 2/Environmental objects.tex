@@ -84,7 +84,7 @@ Site-based models represent the environment as discrete regions with uniform pro
 
 Grid-based models represent ecosystems by discretising continuous space into a regular arrangement of cells, typically squares or rectangles, each containing uniform environmental properties and ecological conditions (\cref{fig:env-obj-grid-based-models}, left). In this approach, each cell represents a spatially explicit patch hosting one or multiple populations, with interactions primarily occurring between neighbouring cells. The central ecological rationale for employing grid-based models is their conceptual simplicity, computational efficiency, and ease of representing spatial processes such as diffusion, dispersal, competition, or predation \cite{Grimm2005,Cantrell2010,Nelson2012}.
 
-Mathematically, grid-based ecological dynamics are commonly described using discrete-time state equations that represent how the state of a cell (e.g., population density, biomass, or nutrient availability) changes according to its local interactions. A general formulation of these dynamics can be expressed as:
+Mathematically, grid-based ecological dynamics are commonly described using discrete-time state equations that represent how the state of a cell (e.g., population density, biomass, or nutrient availability) changes according to its local interactions. A general formulation of these dynamics can be expressed as
 \begin{align}
     N_{t+1}(x,y) = f(N_t(x,y), \Bar{N_t}(x, y), E_t(x, y))
 \end{align}
@@ -100,7 +100,7 @@ However, significant limitations exist, as ecological processes may differ drast
 
 Tessellation models generalise the idea of grid-based approaches by partitioning continuous ecological space into discrete regions based on proximity rather than regular shapes (\cref{fig:env-obj-grid-based-models}, centre). Among these methods, Voronoi diagrams (also known as Thiessen polygons in ecological studies) and their dual, Delaunay triangulations, are particularly relevant and widely applied \cite{Lemiere2023,Foltete2019,Minor2008}.
 
-Voronoi diagrams partition a plane based on a set of points (e.g., tree positions, animal territories, or resource centres). Each region in a Voronoi diagram is defined as the set of all points closer to a specific focal point (seed) than to any other point. Formally, given a set of points ${p_1, p_2, ..., p_n}$, the Voronoi region $V_i$ associated with the point $p_i$ is defined as:
+Voronoi diagrams partition a plane based on a set of points (e.g., tree positions, animal territories, or resource centres). Each region in a Voronoi diagram is defined as the set of all points closer to a specific focal point (seed) than to any other point. Formally, given a set of points ${p_1, p_2, ..., p_n}$, the Voronoi region $V_i$ associated with the point $p_i$ is defined as
 \begin{align}
     V_i = { x \in \R^2 : d(x, p_i) \leq d(x, p_j), \forall j \neq i }
 \end{align}
@@ -170,18 +170,18 @@ In the Fixed-Radius Neighbourhood (FRN) method, the first appearance of a distan
 
 }{ZOI-Peters2020.png}{ZOI is represented by regions around entities. The intersection area between two discs defines the competition between the two entities. Top: Symmetric competition (equal resource sharing, with the competition at the intersection divided equally); bottom: Asymmetric competition (larger entity captures more resources, such as light) \cite{Peters2020}}{fig:env-obj-zoi-scheme}
 
-Mathematically, the intensity of competition $C_{ij}$ exerted by a neighbouring tree $j$ on a focal tree $i$ is expressed as:
+Mathematically, the intensity of competition $C_{ij}$ exerted by a neighbouring tree $j$ on a focal tree $i$ is expressed as
 \begin{align}
     C_{ij} = \frac{ \Area_{\text{overlap}, ij} }{ \Area_{\text{ZOI}, i} }
 \end{align}
-where $\Area_{\text{overlap}, ij}$ is the area of overlap between the radii of trees $i$ and $j$, and $\Area_{\text{ZOI}, i}$ is the total area of the influence zone of tree $i$. This intersection area can be computed directly with:
+where $\Area_{\text{overlap}, ij}$ is the area of overlap between the radii of trees $i$ and $j$, and $\Area_{\text{ZOI}, i}$ is the total area of the influence zone of tree $i$. This intersection area can be computed directly with
 \begin{align}
     \Area_{\text{overlap}, ij} = &r_i^2 \cos^{-1}\left( \frac{d^2 + r_i^2 - r_j^2}{2 d r_i} \right) + r_j^2 \cos^{-1} \left(\frac{d^2 + r_j^2 - r_i^2}{2 d r_j} \right) \nonumber \\
     & - \frac{1}{2} \sqrt{(-d + r_i + r_j)(d + r_i - r_j)(d - r_i + r_j)(d + r_i + r_j)}
 \end{align}
 assuming $r_i$ and $r_j$ are the radii of trees $i$ and $j$ respectively, and $d$ the distance between the two centres.
 
-The biological consequences of competition quantified by ZOI, such as reduced growth or increased mortality risk, can be represented through growth-response equations. For instance, tree growth under competition might be modelled as \cite{Das2012,Uriarte2004}:
+The biological consequences of competition quantified by ZOI, such as reduced growth or increased mortality risk, can be represented through growth-response equations. For instance, tree growth under competition might be modelled as in \cite{Das2012,Uriarte2004}:
 \begin{align}
     G_i = G_{\text{max}, i} \left(1 - \alpha \sum_{j} {C_{ij}} \right)
 \end{align}
@@ -220,7 +220,7 @@ Empirical studies across diverse forest ecosystems have demonstrated that the ZO
 }{DBH-measure.png}{DBH (and RBH) is measured at 1.3 m above ground level.}{fig:env-obj-dbh}
 
 \AltTextImage{
-    The overall competition at any point in space can now be described as:
+    The overall competition at any point in space can now be described as
     \begin{align}
         F(x, y) = \sum_{i} {FON_i(x, y)}
     \end{align}
@@ -400,20 +400,20 @@ Unlike diffusion's random spread, advection shifts material coherently along str
 In graphics, this formulation underpins fluid solvers such as Stam's "stable fluids" \cite{Stam1999}, where advection steps move smoke, fire, or water density across a grid. GPU-accelerated advection is also widely used in real-time effects such as smoke trails or rivers, making it a natural tool to simulate ecological transport processes, which will be presented in depth in \cref{chap:erosion}'s state of the art.
 
 \subsubsubsection{Decay and steady state}
-To avoid indefinite accumulation, a decay term $-\mu u$ is added:
+To avoid indefinite accumulation, a decay term $-\decay u$ is added:
 \begin{align}
     \label{eq:reaction-diffusion-advection-decay}
-    \frac{\partial u}{\partial t} + \field{v}\cdot \nabla u = D \nabla^2 u + R(u) - \mu u.
+    \frac{\partial u}{\partial t} + \field{v}\cdot \nabla u = D \nabla^2 u + R(u) - \decay u.
 \end{align}
-The decay term $\mu > 0$ guarantees that even with continuous deposition, the system relaxes toward a steady state where inputs balance dispersal and losses. This makes advection-reaction-diffusion models particularly suitable for efficient simulations of \glosses{EnvMat}, where explicit time-stepping can be replaced by directly solving for equilibrium.  
+The decay term $\decay > 0$ guarantees that even with continuous deposition, the system relaxes toward a steady state where inputs balance dispersal and losses. This makes advection-reaction-diffusion models particularly suitable for efficient simulations of \glosses{EnvMat}, where explicit time-stepping can be replaced by directly solving for equilibrium.  
 In graphics, decay is often added for numerical stability and realism: without it, transported quantities such as heat, smoke, or density fields accumulate without bound. In our case, decay serves the same dual purpose: guaranteeing stability and providing interpretable equilibrium states.
 
 \subsubsubsection{Green's function solutions}
-For point sources, the advection-reaction-diffusion equation admits analytic solutions via Green's functions. For example, in 2D with isotropic diffusion, constant advection $\field{v}$, and decay $\mu$, the fundamental solution is a shifted, damped Gaussian:
+For point sources, the advection-reaction-diffusion equation admits analytic solutions via Green's functions. For example, in 2D with isotropic diffusion, constant advection $\field{v}$, and decay $\decay$, the fundamental solution is a shifted, damped Gaussian:
 \begin{align}
-    G(x,t) = \frac{1}{4\pi D t} \exp \left( -\frac{\|x - \field{v}t\|^2}{4Dt} - \mu t \right).
+    G(x,t) = \frac{1}{4\pi D t} \exp \left( -\frac{\|x - \field{v}t\|^2}{4Dt} - \decay t \right).
 \end{align}
-This solution represents a spreading plume: diffused by $D$, advected along $\field{v}$, and exponentially damped by $\mu$.  
+This solution represents a spreading plume: diffused by $D$, advected along $\field{v}$, and exponentially damped by $\decay$.  
 
 For extended sources such as curves ($\Gamma$) or regions ($\Omega$), the solution is the convolution of the point-source Green's function with the source geometry:
 \begin{align}
@@ -589,7 +589,7 @@ For objects whose skeleton reduces to a single point (boulders, solitary corals,
 \subsubsection{Curve-based \gloss{Skeleton}}
 
 The skeleton of a curve-based \gloss{EnvObj} is determined by the shape that fits best given the environment it is added to.
-Using an Active-Contour ("snake") formulation \cite{Kass1988}, we seek a parametric curve $\curve(s) : [0,1] \to \R^{2}$ that minimises the composite energy
+Using an Active-Contour ("snake") formulation \cite{Kass1988}, we seek a parametric curve $\curve(s) : [0,1] \to \R^{2}$ that minimises the composite energy:
 \begin{align}
     \energy(\curve) = \Einternal + \Eexternal + \Eshape + \Egradient
 \end{align}
@@ -660,7 +660,7 @@ When the skeleton is a closed boundary (island, forest patch, lagoon), we adapt 
 
 The resulting energy $\energy$ to minimise for a closed region whose borders are defined by the curve $\curve$ is then expressed as $\energy(\curve) = \Einternal + \Eexternal + \Eshape$.
 
-The internal energy is expressed identically as for curve-based \glosses{EnvObj}. The external energy, however, is modified to take into account the interior of the region instead of only the borders. We use the idea of the Chan-Vese algorithm, separating the energy value for the inside $\domain$ and the borders $\curve$ of the region \cite{Chan2001, Getreuer2012}.
+The internal energy is expressed identically as for curve-based \glosses{EnvObj}. The external energy, however, is modified to take into account the interior of the region instead of only the borders. We use the idea of the Chan-Vese algorithm, separating the energy value for the inside $\domain$ and the borders $\curve$ of the region \cite{Chan2001, Getreuer2012}:
 \begin{align}
     \Eexternal = \lambda_1 \int_{\domain}{ \fittingFunc(s) , ds } + \lambda_2 \int_{\curve}{ \fittingFunc(\curve(s)) , ds }
 \end{align}
@@ -754,19 +754,19 @@ The effects of varying the different material properties of sand spread from roc
 
 \subsubsection{Approximation of distances from \glosses{EnvMat}}
 
-The use of \glosses{EnvMat} provides an efficient, on-demand approximation of the distance to the closest instance of an object type $\objects$, with computational complexity linear in the number of objects in the scene. For each object type (e.g., coral, rock, reef, island, ...), we maintain a separate \gloss{EnvMat} field $\material_\oneObject$ that evolves under diffusion-reaction only (advection disabled by setting $\velFactor = 0$ and $\mass = 0$). The object's skeleton acts as a Dirichlet boundary: for every skeleton point $\q$, the concentration is fixed to a constant value $\concentration_\oneObject(\q) = C_s$ with $C_s > 0$. 
+The use of \glosses{EnvMat} provides an efficient, on-demand approximation of the distance to the closest instance of an object type $\objects$, with computational complexity linear in the number of objects in the scene. For each object type (e.g., coral, rock, reef, island, ...), we maintain a separate \gloss{EnvMat} field $\material_\text{object}$ that evolves under diffusion-reaction only (advection disabled by setting $\velFactor = 0$ and $\mass = 0$). The object's skeleton acts as a Dirichlet boundary: for every skeleton point $\q$, the concentration is fixed to a constant value $\concentration_\text{object}(\q) = C_s$ with $C_s > 0$. 
 
 Let $\Gamma$ denote the \gloss{Skeleton} of all objects of a given type and $d = \|\p - \q\|$ with $\q \in \Gamma$ the closest skeleton point to $\p$. The diffusion-reaction field is updated using forward Euler steps of \eqref{eq:material-displacement-Euler}:
 \begin{align}
-    \concentration(\mathbf x,t+\Delta t)
-    &=\concentration(\mathbf x,t)
-      + \Delta t \left(\diffusion\nabla^2 \concentration(\mathbf x,t)
-      - \decay\,\concentration(\mathbf x,t)\right) \\
+    \concentration_\text{object}(\mathbf x,t+\Delta t)
+    &=\concentration_\text{object}(\mathbf x,t)
+      + \Delta t \left(\diffusion\nabla^2 \concentration_\text{object}(\mathbf x,t)
+      - \decay\,\concentration_\text{object}(\mathbf x,t)\right) \\
       %\quad \mathbf x \notin \Gamma, \\
-    \concentration(\q,t) &= C_s, \quad \q \in \Gamma.
+    \concentration_\text{object}(\q,t) &= C_s, \quad \q \in \Gamma.
 \end{align}
 
-To approximate the distance from a query point $\p_0$ to the nearest object, we perform gradient ascent on the concentration field: starting at $\p_0$, we follow the discrete gradient $\nabla \concentration$ until reaching a location $\p$ where $\concentration(\p)=C_s$. The distance estimate is then
+To approximate the distance from a query point $\p_0$ to the nearest object, we perform gradient ascent on the concentration field: starting at $\p_0$, we follow the discrete gradient $\nabla \concentration_\text{object}$ until reaching a location $\p$ where $\concentration_\text{object}(\p)=C_s$. The distance estimate is then
 \begin{align}
     d \approx \|\p-\p_0\|.
 \end{align}
@@ -831,7 +831,7 @@ In this formulation, $v$ is a base velocity vector adjusted according to the ter
 \end{align}
 where $a$ is the global flow direction and velocity, $\abs{\height(\p)}$ is the vertical distance from the terrain to the water level at point $\p$, and $k_w$ is a scaling factor simulating the Venturi effect, which increases velocity in regions of compression.
 
-Each $\warp_i \cdot v$ term represents the warping of $v$ at scale $i$, defined as:
+Each $\warp_i \cdot v$ term represents the warping of $v$ at scale $i$, defined as
 \begin{align}
     \warp_i \cdot v = (1 - \alpha) v + \alpha k_i \nabla \Tilde{\height_i}^{\perp}(\p) \quad \text{with} \quad \alpha = \norm{ \nabla \Tilde{\height_i}(\p) }
 \end{align}
@@ -862,9 +862,9 @@ Kelvinlets were introduced to computer graphics as an efficient means of produci
 
 Kelvinlets are based on the Kelvin solution, which is the Green's function of the Navier-Cauchy equations of linear elasticity. It describes the displacement $\tensor{u}(\p)$ at a point $\p \in \R^3$ caused by a force applied at $\q$, in an isotropic, homogeneous elastic material:
 \begin{align}
-    \mu \nabla^2 \tensor{u} + (\lambda + \mu) \nabla(\nabla \cdot \tensor{u}) + \delta(\p - \q) \force = 0
+    \decay \nabla^2 \tensor{u} + (\lambda + \decay) \nabla(\nabla \cdot \tensor{u}) + \delta(\p - \q) \force = 0
 \end{align}
-where $\lambda$ and $\mu$ are the Lamé parameters, with $\mu$ also known as the shear modulus, and $\force$ is the force vector applied at a single point $\q$ via the Dirac delta function $\delta(\p - \q)$.
+where $\lambda$ and $\decay$ are the Lamé parameters, with $\decay$ also known as the shear modulus, and $\force$ is the force vector applied at a single point $\q$ via the Dirac delta function $\delta(\p - \q)$.
 
 \AltTextImage{
     To regularise the singularity at $\p = \q$, \cite{DeGoes2017} introduced a smoothed form known as the regularised Kelvinlets, which allow deformation effects to fall off smoothly with distance, and prevent numerical instabilities.
@@ -876,7 +876,7 @@ where $\lambda$ and $\mu$ are the Lamé parameters, with $\mu$ also known as the
         g_\eps(\tensor{r}) &= \left[ \frac{a - b}{r_\eps} \identity + \frac{b}{r_\eps^3} \tensor{r} \tensor{r}^t + 
     \frac{a \eps^2}{2 r_\eps^3} \identity \right] \force
     \end{align*}
-    with $a = \frac{1}{4 \pi \mu}$ and $b = \frac{a}{4 (1 - \upsilon)}$, provided $\mu$ is a shear modulus and $\upsilon$ a Poisson ratio specified for each Kelvinlet, $s$ a scaling factor, and $\force$ the force vector of the grab operation. These values are tunable per object to simulate different material or flow resistance behaviours.
+    with $a = \frac{1}{4 \pi \decay}$ and $b = \frac{a}{4 (1 - \upsilon)}$, provided $\decay$ is a shear modulus and $\upsilon$ a Poisson ratio specified for each Kelvinlet, $s$ a scaling factor, and $\force$ the force vector of the grab operation. These values are tunable per object to simulate different material or flow resistance behaviours.
 }{kelvinlets-grab-demo-DeGoes2017.png, kelvinlets-demo-DeGoes2017.png}{\cite{DeGoes2017} presents four types of deformations using Kelvinlets, resulting in organic pinch-like interaction with the original field. Top: a grab on a \textcopyright Disney/Pixar character. Bottom, from left to right: a twist, a scale, and a pinch operation.}{fig:env-obj-kelvinlets-demo}
 
 Deformations defined on curves use $\q = \closestCp$ with $\closestCp$ the closest point on the curve from the point $\p$ and $\force = \curve'(\p)$. We can then define $\tensor{u}_\oneObject(\p) = s_\eps(\q - \p) + g_\eps(\p - \q)$.
@@ -973,7 +973,7 @@ Subsidence and uplift are the main \glosses{GeoEvent} that create or destroy isl
 \begin{align*}
     \height(\p) = \height_0(\p) \cdot \sum_{e \in \events}{G(\norm{\p - \q})} \Delta \height_e \tEvent
 \end{align*}
-with $G_{\std}(x)$ the Gaussian function
+with $G_{\std}(x)$ the Gaussian function:
 \begin{align}
     G_{\std}(x) = \frac{1}{\std \sqrt{2\pi}} \exp \left(-\frac {x^{2}}{2 \std ^{2}}\right)
 \end{align}

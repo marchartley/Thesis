@@ -18,7 +18,7 @@
 
 \section{Definition of the \texttt{Smoothmax} function}
 
-In \cref{subsubsec:height-functions-blending}, we introduced the \texttt{Smoothmax} operator $\smoothmax: \R^2 \to \R$ as a smooth approximation of the $\max$ operator, defined with the sharpness parameter $k > 0$ as:
+In \cref{subsubsec:height-functions-blending}, we introduced the \texttt{Smoothmax} operator $\smoothmax: \R^2 \to \R$ as a smooth approximation of the $\max$ operator, defined with the sharpness parameter $k > 0$ as
 
 \begin{align}
     \smoothmax(a, b) = a + \frac{1}{2} \cdot \frac{b - a}{1 + e^{-k(b - a)}} + \frac{1}{2} \cdot \frac{b - a}{1 - e^{-k(b - a)}}
@@ -34,8 +34,7 @@ To simplify our analysis, define the auxiliary function:
     f(x) = \frac{x}{1 - e^{-kx}}
 \end{align}
 
-Then we may express:
-
+Then we express
 \begin{align}
     \smoothmax(a, b) = a + \frac{1}{2} \cdot \frac{b - a}{1 + e^{-k(b - a)}} + \frac{1}{2} f(b - a)
 \end{align}
@@ -66,20 +65,17 @@ Thus,
     \lim_{x \to 0} \frac{g'(x)}{h'(x)} = \lim_{x \to 0} \frac{1}{k e^{-kx}} = \frac{1}{k}
 \end{align}
 
-Since the limit exists and equals $\frac{1}{k}$, we define:
-
+Since the limit exists and equals $\frac{1}{k}$, we define
 \begin{align}
     f(0) := \frac{1}{k}
 \end{align}
 
-This definition removes the singularity and ensures that $f$ is continuous on $\R$. For the case $a = b$, we then have:
-
+This definition removes the singularity and ensures that $f$ is continuous on $\R$. For the case $a = b$, we then have
 \begin{align}
     \smoothmax(a, b) = a + \frac{1}{2k}
 \end{align}
 
-The complete definitions of the functions are:
-
+The complete definitions of the functions are
 \begin{align}
     f(x) &= \begin{dcases}
         \frac{x}{1 - e^{-kx}} &, x \neq 0 \\
@@ -112,7 +108,7 @@ We prove this by induction on the number of derivatives of $f$.
         \item The numerator $P_n$ is a recursively constructed smooth function resulting from differentiation of $P_{n-1}$ and the chain rule applied to $e^{-kx}$. Since $e^{-kx}$ is smooth and all operations preserve smoothness, $P_n(x, e^{-kx})$ remains smooth.
     \end{itemize}
     
-    Differentiating $f^{(n)}$ using the quotient rule $\left(\frac{u}{v}\right)' = \frac{u' v - u v'}{v^2}$, we get:
+    Differentiating $f^{(n)}$ using the quotient rule $\left(\frac{u}{v}\right)' = \frac{u' v - u v'}{v^2}$, we get
     \begin{align}
         f^{(n+1)}(x) = \frac{d}{dx} \left( \frac{P_n(x, e^{-kx})}{(1 - e^{-kx})^{n+1}} \right)
     \end{align}
@@ -122,7 +118,7 @@ We prove this by induction on the number of derivatives of $f$.
     \end{align}
     where $P_{n+1}$ is again a smooth function of $x$ and $e^{-kx}$, obtained via product, chain, and sum rules. Importantly, we do not need the explicit form of $P_{n+1}$, it suffices to know it is smooth.
 
-    At $x = 0$, both numerator and denominator vanish, but to the same order: the denominator vanishes to order $n+2$ due to the Taylor expansion
+    At $x = 0$, both numerator and denominator vanish, but to the same order. The denominator vanishes to order $n+2$ due to the Taylor expansion:
     \begin{align}
         1 - e^{-kx} = kx - \frac{k^2 x^2}{2} + \frac{k^3 x^3}{6} - \frac{k^4 x^4}{24} + \frac{k^5 x^5}{120} + O(x^6)
     \end{align}
@@ -154,12 +150,12 @@ By rearranging the function $g$, we obtain
 \end{align}
 
 
-Developing
+Developing:
 \begin{align}
     g(x) - g(-x) = \frac{x}{1 - e^{-2kx}} - \frac{-x}{1 - e^{2kx}}
 \end{align}
 
-Let $r = e^{2kx} > 0$ :
+Let $r = e^{2kx} > 0$:
 \begin{align}
     g(x) - g(-x) &= \frac{x}{(1 - e^{-2kx})} \cdot \frac{e^{2kx}}{e^{2kx}} + \frac{x}{1 - r} \\
     &= x \left( \frac{r}{r - 1} + \frac{1}{1 - r} \right) \\
@@ -201,7 +197,7 @@ with
     \frac{\partial^2}{\partial a \partial b} \smoothmax(a, b) = \frac{\partial^2}{\partial b \partial a} \smoothmax(a, b) = g_2(a, b)
 \end{align}
 
-where the second derivative of the core function is given by:
+where the second derivative of the core function is given by
 \begin{align}
     g_2(a, b) = \begin{cases}
         \frac{4ke^{2ka}e^{2kb} \left( e^{2ka} (ka-kb-1) + e^{2kb}(ka - kb + 1) \right)}{\left(e^{2kb}-e^{2ka} \right)^3} &\text{if } a \neq b \\

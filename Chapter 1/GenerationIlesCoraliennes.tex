@@ -498,7 +498,7 @@ Each point's height is computed using the profile function $\heightProfile(\dist
         \distRegions_\p = i + \frac{\radius_\p - \Radius_{i}}{\Radius_{i + 1} - \Radius_{i}}
     \end{align}
     where $i$ is the index of the region containing $\p$ (i.e., $\Radius_i \le \radius_\p < \Radius_{i+1}$). This linear mapping stretches each region's radial span to the interval $[i, i+1[$, ensuring smooth interpolation across region boundaries.
-    For any point $\p$, the height is finally computed as:
+    For any point $\p$, the height is finally computed as
     \begin{align}
         h(\p) = \heightProfile(\distRegions_\p)
     \end{align}
@@ -632,8 +632,7 @@ To ensure that certain regions of the terrain such as deep-water areas remain re
 
 We define the resistance function $\resistance(\distRegions_\p)$ similarly to the profile function, and use it to modulate the magnitude of the displacement at each point. For example, regions near the coastline (such as the beach and lagoon) have lower resistance, allowing for significant deformation (emulating coastal erosion from wave energy), while regions farther away (such as the abyss) have higher resistance, limiting the wind and coastal erosion impact.
 
-The deformation vector previously described is then scaled by the resistance function at each point $\p$, such that the final deformation vector becomes:
-
+The deformation vector previously described is then scaled by the resistance function at each point $\p$, such that the final deformation vector becomes
 \begin{align}
     \Tilde{\warp}(\p) = \left(1 - \resistance(\distRegions_\p) \right) \cdot \warp(\p)
 \end{align}
@@ -778,7 +777,7 @@ Here, $a = \heightSubsid(\p)$ is the height from the subsided island, $b = \heig
 
 This smooth max function guarantees continuity by preventing abrupt height and slope differences between coral regions and the subsided terrain, creating a smooth, gradual transition that mimics the natural blending of coral reefs with deeper areas. The coral feature height field takes precedence where coral can grow, typically in shallow regions. In deeper regions, such as the abyss, the subsided height field naturally dominates, ensuring that the final terrain accurately reflects both subsidence and coral growth processes (\cref{fig:coral-island-volcano-example}).
 
-Note that the $\smoothmax$ function is undefined for $a = b$, however, a proof of continuity for $\smoothmax \in C^\infty$ is provided in \crefAnnex{chap:smoothmax-proof} (along with a deeper analysis of the function), resulting in:
+Note that the $\smoothmax$ function is undefined for $a = b$, however, a proof of continuity for $\smoothmax \in C^\infty$ is provided in \crefAnnex{chap:smoothmax-proof} (along with a deeper analysis of the function), resulting in
 \begin{align}
     \label{eq:coral-island-smoothmax-function}
     \smoothmax(a, b) = \begin{dcases}

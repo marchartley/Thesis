@@ -1,47 +1,35 @@
 
 \subsection{Fluid simulations}
 
-Fluid simulation constitutes an important aspect in Computer Graphics and in terrain generation, providing a physical basis for modelling water behaviour and dynamics for real-time applications and offline rendering \cite{Wang2024}. The mathematical foundations of fluid simulations lie in the Navier-Stokes equations, or in the case of hydrodynamics, the incompressible Navier-Stokes equations. An accurate computation of these dynamics implies an expensive computational cost; thus, multiple solver variants have been proposed, relying on grid-based, particle, or hybrid frameworks, each balancing trade-offs between simulation stability, dissipation control, computational scalability, and user control. In this section we will overview the different solvers and their characteristics.
-
-
-% Fluid simulation constitutes a foundational component in computer graphics and interactive terrain-related applications, providing a physically grounded basis for modeling water behavior, free-surface dynamics, and flow-driven visual effects in both offline rendering and real-time systems ([link.springer.com][1], [today.ucsd.edu][2]). The underlying mathematical framework derives from the incompressible Navier-Stokes equations, often supplemented by depth-averaged approximations such as the shallow water equations when vertical variations are negligible, and various interface-tracking or interface-capturing techniques are employed to represent free surfaces accurately ([link.springer.com][1], [research.rug.nl][3]). This section examines numerical solver categories-including Eulerian grid-based methods, Lagrangian particle-based schemes, and hybrid approaches-alongside considerations of stability, dissipation control, boundary handling, and computational scalability, as well as emerging machine learning-assisted and differentiable frameworks for fluid simulation ([link.springer.com][1], [arxiv.org][4]). By focusing exclusively on fluid dynamics methods and omitting erosion coupling, the discussion clarifies modeling assumptions, highlights trade-offs among solver designs, and establishes a structured foundation for selecting or extending fluid simulation techniques suited to the specific requirements of terrain-related or visual-effect applications.
-
-% [1]: https://link.springer.com/article/10.1007/s41095-023-0368-y "Physics-based fluid simulation in computer graphics"
-% [2]: https://today.ucsd.edu/story/this-new-advanced-method-produces-highly-realistic-simulations-of-fluid-dynamics "This New Advanced Method Produces Highly Realistic Simulations ..."
-% [3]: https://research.rug.nl/en/publications/physics-based-fluid-simulation-in-computer-graphics-survey-resear "Physics-based fluid simulation in computer graphics"
-% [4]: https://arxiv.org/abs/2408.12171 "Recent Advances on Machine Learning for Computational Fluid ..."
-
+Fluid simulation constitutes an important aspect in Computer Graphics and in terrain generation, providing a physical basis for modelling water behaviour and dynamics for real-time applications and offline rendering \cite{Wang2024}. The mathematical foundations of fluid simulations lie in the Navier-Stokes equations, or in the case of hydrodynamics, the incompressible Navier-Stokes equations. An accurate computation of these dynamics implies an expensive computational cost; thus, various solver variants have been proposed, relying on grids, particles, or hybrid frameworks, each balancing trade-offs between simulation stability, dissipation control, computational scalability, and user control. In this section we propose an overview of different solvers and their characteristics.
 
 \subsubsection{Governing equations}
-The governing equations for fluid simulation are rooted in the conservation laws of mass and momentum for an incompressible Newtonian fluid. In three dimensions, these are expressed by the incompressible Navier-Stokes equations, which consist of the momentum equation
+The governing equations for fluid simulation are rooted in the conservation laws of mass and momentum for an incompressible Newtonian fluid. In three dimensions, these are expressed by the incompressible Navier-Stokes equations, which consist of the momentum equation:
 
-$$
-\rho \left(\frac{\partial \mathbf{u}}{\partial t} + \mathbf{u}\cdot\nabla\mathbf{u}\right) = -\nabla p + \mu \nabla^2 \mathbf{u} + \rho \mathbf{g},
-$$
+\begin{align}
+    \rho \left(\frac{\partial \mathbf{u}}{\partial t} + \mathbf{u}\cdot\nabla\mathbf{u}\right) = -\nabla p + \mu \nabla^2 \mathbf{u} + \rho \mathbf{g}
+\end{align}
 
-and the incompressibility constraint
+and the incompressibility constraint:
 
-$$
-\nabla\cdot\mathbf{u} = 0.
-$$
+\begin{align}
+    \nabla\cdot\mathbf{u} = 0
+\end{align}
 
 Here $\mathbf{u}(\mathbf{x},t)$ denotes the velocity field, $p(\mathbf{x},t)$ the pressure field, $\rho$ the fluid density, $\mu$ the dynamic viscosity, and $\mathbf{g}$ the gravitational acceleration vector. The momentum equation enforces conservation of momentum under advective transport, pressure gradient forces, viscous diffusion, and body forces; the divergence-free condition enforces mass conservation by ensuring volume preservation of fluid elements. In computer graphics contexts, these equations form the basis for physically grounded fluid behaviour, although various approximations or discretisation strategies are typically applied to achieve stability, efficiency, or control in practice.
 
-When altitude variations are negligible compared to horizontal scales, a depth-averaged approximation known as the shallow water equations (SWE) is often employed \cite{Parna2019}. Under the assumption that the fluid column height $\eta(x,y,t)$ varies slowly in the vertical direction, the (non-conservative) SWE take the form
+When altitude variations are negligible compared to horizontal scales, a depth-averaged approximation known as the Shallow Water Equations (SWE) is often employed \cite{Parna2019}. Under the assumption that the fluid column height $\eta(x,y,t)$ varies slowly in the vertical direction, the (non-conservative) SWE are expressed as
+\begin{align}
+    \frac{\partial \mathbf{u}}{\partial t} + \mathbf{u} \cdot \nabla \mathbf{u} = - \tensor{g} \nabla \eta \\
+    \frac{\partial \eta}{\partial t} + \nabla\cdot(\eta \mathbf{u}) = 0
+\end{align}
 
-$$
-\frac{\partial \eta}{\partial t} + \nabla\cdot(\eta \mathbf{u}) = 0, 
-\quad
-\frac{\partial \mathbf{u}}{\partial t} + \mathbf{u} \cdot \nabla \mathbf{u} = - g \nabla \eta
-% \frac{\partial (\eta \mathbf{u})}{\partial t} + \nabla\cdot\Bigl(\eta\,\mathbf{u}\otimes\mathbf{u} + \tfrac12 g\,\eta^2 I\Bigr) = \mathbf{S},
-$$
+where $\mathbf{u}(x,y,t)$ is the horizontal velocity at the surface, and $\tensor{g}$ denotes gravitational acceleration.
+The first equation enforces conservation of mass in the depth-integrated sense, and the momentum equation balances advective transport and pressure forces arising from fluid depth.
+This model offers substantial computational savings and is widely used for real-time or large-domain simulations when three-dimensional effects such as vertical vortices and breaking waves are not critical \cite{Parna2019}.
 
-where $\mathbf{u}(x,y,t)$ is the horizontal velocity at the surface, and $g$ denotes gravitational acceleration. %, and $\mathbf{S}$ represents source or sink terms such as bottom friction or external inflows. 
-The first equation enforces conservation of mass in the depth-integrated sense, and the momentum equation balances advective transport and pressure forces arising from fluid depth. %, and any additional forcing. 
-This model offers substantial computational savings and is widely used for real-time or large-domain simulations when three-dimensional effects such as vertical vortices and breaking waves are not critical \cite{Parna2019}. % ([rke.abertay.ac.uk][3], [en.wikipedia.org][4]).
-
-Modelling assumptions are made explicit in selecting the governing equations. The fluid is typically assumed to be Newtonian and incompressible, with constant density and viscosity. Body forces are often limited to gravity, and surface tension is neglected. % Commonly, the fluid domain is bounded by solid geometry (terrain or obstacles) and a free surface whose motion must be tracked or captured. 
-The incompressibility assumption simplifies the mathematical treatment and enhances numerical stability; its enforcement commonly involves a pressure projection step that ensures the velocity field remains divergence-free. Viscosity may be incorporated implicitly or explicitly depending on stability requirements, and external forces or boundary conditions are specified to match the intended scenario. %These assumptions underpin both full three-dimensional solvers and reduced models, providing a clear framework for subsequent discretisation and algorithmic design ([cs.ubc.ca][5], [digipen.edu][1]).
+Modelling assumptions are made explicit in selecting the governing equations. The fluid is typically assumed to be Newtonian and incompressible, with constant density and viscosity. Body forces are often limited to gravity, and surface tension is neglected.
+The incompressibility assumption simplifies the mathematical treatment and enhances numerical stability; its enforcement commonly involves a pressure projection step that ensures the velocity field remains divergence-free. Viscosity may be incorporated implicitly or explicitly depending on stability requirements, and external forces or boundary conditions are specified to match the intended scenario.
 
 
 % Accurate representation of the free surface (interface between two fluids) is crucial for visually plausible fluid behaviour. In Eulerian approaches, interface-capturing methods such as the volume-of-fluid technique track a scalar field representing fluid fraction in each cell, whereas level-set methods represent the surface implicitly as the zero contour of a signed-distance function and evolve it via advection and reinitialization procedures. Level-set approaches can yield smooth surfaces but may suffer volume loss without corrective measures. Particle-based surface tracking augments Eulerian fields by introducing Lagrangian markers near the interface to preserve detail. In purely Lagrangian schemes, such as Smoothed Particle Hydrodynamics (SPH), the fluid is represented entirely by particles, and the free surface emerges naturally from the particle distribution, though additional reconstruction is needed for rendering. Hybrid methods combine grid-based pressure solves with particle advection to enforce incompressibility while retaining interface fidelity. The choice among interface tracking or capturing strategies influences numerical stability, computational cost, and ease of coupling with boundary conditions and velocity solvers ([arxiv.org][6], [en.wikipedia.org][7]).
@@ -58,7 +46,7 @@ The incompressibility assumption simplifies the mathematical treatment and enhan
 
 \subsubsection{Numerical solvers}
 
-Hydrodynamics are continuous but numerical solvers are commonly organised according to their discretisation paradigm, with each category offering different trade-offs in stability, adaptivity, and computational cost. The principal families comprise grid-based Eulerian methods, particle-based Lagrangian techniques, hybrid schemes that combine grid and particle representations, and reduced models tailored for simplified scenarios or interactive control.
+Hydrodynamics are continuous but numerical solvers are commonly organised according to their discretisation paradigm, with each category offering different trade-offs in stability, adaptivity, and computational cost. The principal categories comprise grid-based Eulerian methods, particle-based Lagrangian techniques, hybrid schemes that combine grid and particle representations, and reduced models tailored for simplified scenarios or interactive control.
 
 On one hand, grid-based Eulerian methods discretise the fluid domain on a fixed grid and approximate the incompressible Navier-Stokes equations via operator splitting or projection schemes. Historically, the Marker-and-Cell (MAC) approach established the staggered-grid representation \cite{Harlow1965}, storing velocities on cell faces and pressure at cell centres to enforce divergence-free constraints accurately in free-surface flows. Subsequent developments in graphics introduced semi-Lagrangian advection with implicit viscosity integration \cite{Stam1999}, which achieves unconditional stability permitting large time steps at the expense of increased numerical dissipation. Lattice Boltzmann methods (LBM) offer a mesoscopic viewpoint on fluid dynamics, leveraging local collision and streaming operations on a lattice to recover macroscopic behaviour \cite{Chen1998}; they are notable for parallel efficiency and natural handling of moderate boundary complexity, though three-dimensional or highly irregular domains carry significant computational overhead. Finite-volume or finite-element variants appear in engineering CFD frameworks such as OpenFOAM and can be adapted for graphics applications, but typically require careful optimisation to remain feasible for large-domain or interactive contexts. % Free-surface representation in Eulerian solvers often relies on level-set or volume-of-fluid techniques, with volume loss and interface sharpness requiring corrective measures or hybrid augmentation.
 
@@ -70,20 +58,21 @@ Reduced fluid models are employed when full three-dimensional simulation is unne
 
 \subsubsection{Solver characteristics}
 
-Across all solver categories, certain numerical characteristics critically influence the realism, stability, and performance of fluid simulation. These include time integration and stability properties, treatment of free surfaces and boundary conditions, control of numerical dissipation to preserve detail, and computational efficiency and scalability strategies.
+Numerical characteristics of solvers critically influence the realism, stability, and performance of fluid simulation. These include time integration and stability properties, processing of free surfaces and boundary conditions, control of numerical dissipation to preserve detail, and computational efficiency and scalability strategies.
 
 Time integration schemes must balance stability and accuracy. Explicit methods compute updates directly from known states but impose restrictive time-step limits proportional to grid spacing ($\Delta x, \Delta y, \Delta z$) or particle spacing in relation with the computed velocity, rendering fine resolutions costly. The CFL condition states that the dimensionless Courant number $C$ should not exceed a maximal value $C_{max}$ given depending on the PDE to solve (typically $C_{max} = 1$ for explicit integrations):
 \begin{align}
     C = \Delta t \left( \sum_{i=1}^{n}{\frac{u_i}{\Delta x_i}} \right) \leq C_{max} \nonumber
 \end{align}
-Thus, we have for 2D and 3D explicit methods, greatly restricting the valid time-step $\Delta t$:
+
+Thus, when looking at 2D and 3D explicit methods, the main constraint is finding a valid time-step $\Delta t$:
 \begin{align}
     \Delta t_{\text{2D}} \leq \left( \frac{\Delta x}{u_x} + \frac{\Delta y}{u_y} \right) C_{max}
     \quad
     \Delta t_{\text{3D}} \leq \left( \frac{\Delta x}{u_x} + \frac{\Delta y}{u_y} + \frac{\Delta z}{u_z} \right) C_{max}
 \end{align}
 
-Implicit or semi-implicit treatments of diffusion or pressure terms permit larger time steps by solving linear or nonlinear systems ($C_{max} > 1$), as exemplified by semi-Lagrangian advection with implicit viscosity in Stable Fluids. Pressure projection typically entails solving a Poisson equation, for which direct solvers offer accuracy but scale poorly to large grids, while iterative solvers (e.g., conjugate gradient, multigrid) afford scalability at the expense of convergence concerns that must be managed via preconditioning or adaptive tolerance. Time-stepping strategies may incorporate adaptive substepping or projection frequency adjustments to maintain stability without excessive computation.
+Implicit or semi-implicit treatments of diffusion or pressure terms allow larger time steps by solving linear or nonlinear systems ($C_{max} > 1$), as exemplified by semi-Lagrangian advection with implicit viscosity in \cite{Stam1999}. Pressure projection typically entails solving a Poisson equation, for which direct solvers offer accuracy but scale poorly to large grids, while iterative solvers (e.g., conjugate gradient, multigrid) afford scalability at the expense of convergence concerns that must be managed via preconditioning or adaptive tolerance. Time-stepping strategies may incorporate adaptive substepping or projection frequency adjustments to maintain stability without excessive computation.
 
 Accurate handling of free surfaces and boundary conditions is essential for plausible fluid behaviour. Interface-capturing methods in Eulerian solvers, such as level-set or volume-of-fluid, track the free surface implicitly but can suffer volume loss or smearing; corrective reinitialisation or particle-based markers near the interface often mitigate these deficits. Particle-based schemes represent the free surface naturally through particle distribution but require surface reconstruction for rendering and may exhibit clumping or void regions without density control. 
 
@@ -122,9 +111,9 @@ Recent advances in fluid simulation increasingly integrate machine learning tech
 
 Procedural or artistic fluid control has been an emerging topic for the last few decades, striking a balance between user interaction and plausibility of the fluid behaviour without full PDE solving. \cref{chap:semantic-representation} used the Kelvinlet paradigm \cite{DeGoes2017}, an analytic formulation for material deformation derived from Kelvin's state using Green's function of linear elasticity of material, providing more control types than the fluid-specific Stokelets \cite{Chwang1976}. \cite{Wejchert1991} shows that these analytic fluid primitives are an efficient and lightweight approximation of highly controlled fluid simulations. Stroke-based fluid models are closer to the storyboard design of animation artists, making them intuitive to use, but are usually for subsets of frames of an animation, which become time-consuming for the price of high-level control \cite{Xing2016,Patel2005,Yan2020b,Pan2013}. 
 
-Procedural fluids are usually defined by noise functions to artificially introduce motion \cite{Bridson2007c}, but may also be added after computing an accurate fluid simulation to introduce more vortices \cite{Wang2025}. Vortices are usually too small for Eulerian simulations as the grid's cell width used may be larger than a vortex, and the dissipation can remove their presence. Editing velocity fields procedurally may also come through the use of frequency-domain editing of forces \cite{Forootaninia2020, Tang2021}, blending and interpolation techniques to merge a predefined fluid with another \cite{Raveendran2014}, or even morphing techniques to deform a velocity or force field \cite{Lu2019,Raveendran2012,Flynn2019}.
+Procedural fluids are usually defined by noise functions to artificially introduce motion \cite{Bridson2007c}, but may also be added after computing an accurate fluid simulation to introduce more vortices \cite{Wang2025}. Vortices are usually too small for Eulerian simulations as the grid's cell width used may be larger than a vortex, and the dissipation removes their presence. Editing velocity fields procedurally may also come through the use of frequency-domain editing of forces \cite{Forootaninia2020, Tang2021}, blending and interpolation techniques to merge a predefined fluid with another \cite{Raveendran2014}, or even morphing techniques to deform a velocity or force field \cite{Lu2019,Raveendran2012,Flynn2019}.
 
-Procedural and artistic fluids can be included during or after a more computationally expensive simulation, as they introduce variation on many levels: force field and velocity field of Eulerian simulation methods, or the force, velocity, and even position of simulation particles of Lagrangian methods \cite{Sims1990}.
+Non-physical fluid simulations include procedural and artistic fluids during or after a more computationally expensive simulation, as they introduce variation on many levels: force field and velocity field of Eulerian simulation methods, or the force, velocity, and even position of simulation particles of Lagrangian methods \cite{Sims1990}.
 
 
 

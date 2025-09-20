@@ -6,15 +6,16 @@
 \label{app:ellipsoid-matrix}
 
 \shortAbstract{
-    We construct a closed-form height query $z=f(x,y)$ for a rotated ellipsoid, to be used as a deposition/erosion primitive on height fields. The derivation stays in matrix form, gives the operator’s projected footprint, aligns the ellipsoid to the terrain normal, clips it in the local frame to keep a consistent cap, and ends with simple update rules and partial derivatives.
+    We construct a closed-form height query $z=f(x,y)$ for a rotated ellipsoid, to be used as a deposition/erosion primitive on height fields. The derivation stays in matrix form, gives the operator's projected footprint, aligns the ellipsoid to the terrain normal, clips it in the local frame to keep a consistent cap, and ends with simple update rules and partial derivatives.
 }
 
-We start from a representation that already contains the ellipsoid’s orientation, so that subsequent steps only query a single object. Let $\vec r=[x,y,z]^\top \in\mathbb{R}^3$ be global coordinates. In the local (unrotated) frame, an ellipsoid with semi-axes $a,b,c>0$ satisfies
+We start from a representation that already contains the ellipsoid's orientation, so that subsequent steps only query a single object. Let $\vec r=[x,y,z]^\top \in\mathbb{R}^3$ be global coordinates. In the local (unrotated) frame, an ellipsoid with semi-axes $a,b,c>0$ satisfies
 \begin{align}
     \label{eq:app-canonical-ellipsoid}
     \vec r'^\top  A \vec r' = 1 \\
     A=\operatorname{diag}\!\left(1/a^2, 1/b^2, 1/c^2\right)
 \end{align}
+
 with local coordinates $\vec r'=[x',y',z']^\top $. If $R\in \mathrm{SO}(3)$ maps global to local coordinates, i.e.\ $\vec r'=R^\top \vec r$, then substituting into \cref{eq:app-canonical-ellipsoid} and setting $Q=RAR^\top $ gives a single symmetric matrix that describes the rotated ellipsoid in global coordinates:
 \begin{align}
     \label{eq:app-global-implicit}
@@ -24,7 +25,7 @@ with local coordinates $\vec r'=[x',y',z']^\top $. If $R\in \mathrm{SO}(3)$ maps
         Q_{11} & Q_{12} & Q_{13}\\
         Q_{12} & Q_{22} & Q_{23}\\
         Q_{13} & Q_{23} & Q_{33}
-    \end{bmatrix}.
+    \end{bmatrix}
 \end{align}
 
 Expanding the scalar form,
@@ -33,7 +34,7 @@ Expanding the scalar form,
     Q_{11}x^2 + Q_{22}y^2 + Q_{33}z^2 + 2Q_{12}xy + 2Q_{13}xz + 2Q_{23}yz = 1.
 \end{align}
 
-A height field asks for $z$ at a given $(x,y)$. We therefore isolate $z$ in \cref{eq:app-expanded} and obtain a quadratic equation
+A height field asks for $z$ at a given $(x,y)$. We therefore isolate $z$ in \cref{eq:app-expanded} and obtain a quadratic equation:
 \begin{align}
     \label{eq:app-quadratic-coeffs}
     A' z^2 + B' z + C' = 0,
@@ -88,8 +89,9 @@ This ellipse in $(x,y)$ is exactly equivalent to $\Delta(x,y)\ge 0$ and provides
 For terrain applications, the ellipsoid should "follow" the local slope. We orient it by the terrain normal at a query point $(x_0,y_0)$, with
 \begin{align}
     \label{eq:app-terrain-normal}
-    \vec n=\operatorname{normalize} [-\partial_x H, -\partial_y H, 1]^\top .
+    \vec n=\operatorname{normalize} [-\partial_x H, -\partial_y H, 1]^\top
 \end{align}
+
 We build the local frame as
 \begin{align}
     \vec e_z'=\vec n,
@@ -100,7 +102,6 @@ We build the local frame as
 \end{align}
 
 and set
-
 \begin{align}
     \label{eq:app-rotation-from-normal}
     R=[ \vec e_x'\ \ \vec e_y'\ \ \vec e_z' ],
@@ -213,7 +214,7 @@ Change the vertical semi-axis to $c'$ so that the geometric half-cap volume equa
     c'=\frac{3\,\totalErosion}{2\pi a b},\qquad
     A=\operatorname{diag}\!\left(1/a^2,\,1/b^2,\,1/{c'}^{2}\right),\quad Q=RAR^\top,
 \end{align}
-then recompute \cref{eq:app-upper-final}--\cref{eq:app-fy} and use
+then recompute \cref{eq:app-upper-final} to \cref{eq:app-fy} and use
 \begin{align}
     f_B(x,y)=z_{\text{plane}}(x,y)+g_{0}(x,y)\quad\text{with $c$ replaced by $c'$ and $z_0=0$}
 \end{align}
