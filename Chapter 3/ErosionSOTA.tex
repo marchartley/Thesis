@@ -90,7 +90,8 @@ The extent of erosion depends on factors such as rainfall intensity and duration
 
 \smallConclusion
 
-Hydraulic erosion is the main focus of study in terms of erosion for terrain generation as its effects on the surface of terrains are visible on a large scale and are the most stable as we consider a constant amount of rain at every point.
+Hydraulic erosion simulation dominates procedural terrain work because it produces large, coherent landforms and can be simulated efficiently with surface-based models using simple rainfall fields.
+% Hydraulic erosion is the main focus of study in terms of erosion for terrain generation as its effects on the surface of terrains are visible on a large scale and are the most stable as we consider a constant amount of rain at every point.
 
 In procedural terrain generation, fluvial erosion is focused on the generation of rivers and cascades defined as feature-curves \cite{Emilien2015}. First, the path of the river is drawn either by the user \cite{Hnaidi2010} or through simulation \cite{ParisThesis}. Second, the shape of the rivers' beds are modelled \cite{Genevaux2013}. It is then finally possible to provide a geometric representation of the water surface to take into account flow rate, depth, obstacles, and user-defined details \cite{Peytavie2019}.
 
@@ -175,18 +176,22 @@ These erosive processes give rise to distinctive glacial landforms. U-shaped val
 
 The timescale of glacial processes spans over thousands to millions of years, allowing glaciers to leave a lasting impact on the landscape.
 
-Few works have focused their effort on the understanding and modelling of glacial erosion phenomena. In these conditions, \cite{Argudo2020} consider the glacier as a fluid with no inertia, called the Shallow-Ice Approximation, taking only the terrain surface gradient and ice thickness to deduce the velocity of an ice column. The shear stress applied beneath the ice sheet is directly computed by the estimation of the ice column and its velocity. This method results in V-shaped valleys, but when integrating more factors into the simulation, such as debris flow, fluvial erosion and talus slopes, the improved method presented in \cite{Cordonnier2023} generates a large variety of features present in glacial landscapes.
+\AltTextImage{
+    Few works have focused their effort on the understanding and modelling of glacial erosion phenomena. In these conditions, \cite{Argudo2020} consider the glacier as a fluid with no inertia, called the Shallow-Ice Approximation, taking only the terrain surface gradient and ice thickness to deduce the velocity of an ice column. The shear stress applied beneath the ice sheet is directly computed by the estimation of the ice column and its velocity. This method results in V-shaped valleys, but when integrating more factors into the simulation, such as debris flow, fluvial erosion and talus slopes, the improved method presented in \cite{Cordonnier2023} generates a large variety of features present in glacial landscapes as presented in \cref{fig:erosion-glacial-erosion-Cordonnier2023}.
+}{Glacial-Cordonnier2023-2.png}{Glacial erosion from \cite{Cordonnier2023} erodes smoothly valleys, shaping the terrain with natural looking valleys and mountain peaks. }{fig:erosion-glacial-erosion-Cordonnier2023}
 
 \subsubsection{Volcanic activity}
 Volcanic activity is a powerful tectonic process that alters landscapes by creating new landforms through the eruption of magma from the Earth's mantle \cite{Ramalho2013}. Volcanoes form primarily at tectonic boundary zones, either where plates diverge, allowing magma to rise and fill the gaps, or where one plate subducts beneath another, melting into magma due to high pressure and temperature.
 
-The surface changes caused by volcanic activity are substential and varied. When a volcano erupts, it deposits layers of lava that solidify into new rock formations, gradually building the volcanic cones and mountainous structures that are characteristic of volcanic islands and mountain ranges \cite{Woodroffe2003}.
+The surface changes caused by volcanic activity are substantial and varied. When a volcano erupts, it deposits layers of lava that solidify into new rock formations, gradually building the volcanic cones and mountainous structures that are characteristic of volcanic islands and mountain ranges \cite{Woodroffe2003}.
 
 \AltTextImage{
     Pyroclastic flows are another aspect of volcanic activity that dramatically changes the terrain. These fast-moving currents of hot gas and volcanic matter can race down the sides of a volcano, destroying everything in their path and laying down thick deposits that can form natural barriers or change drainage patterns by damming rivers and creating lakes almost instantaneously (see \cref{fig:erosion-volcano-python-fournaise}).
 
     Volcanic activity also leads to the formation of calderas, large depressions that occur when the summit of a volcano collapses into the emptied magma chamber below after an eruption. Calderas can be several kilometres in diameter and significantly alter the local landscape.
 }{Python-fournaise-erupt.jpg}{Piton de la Fournaise, Réunion Island, in eruption - Photo credit: Richard Roquejoffre}{fig:erosion-volcano-python-fournaise}
+
+Although lava and pyroclastic flows have been studied in Computer Graphics, resulting in realistic eruption simulations in recent works, these simulations are not used in the case of procedural terrain modelling but focused on rendering and animation \cite{Zhang2017,Chang2009,Stora1999,LasticThesis}. 
 
 
 
@@ -211,6 +216,34 @@ The canopy of vegetation acts as a first line of defence against the erosive for
 
 The presence of vegetative cover significantly modifies surface runoff dynamics. Dense plant life adds physical barriers that increase the land's surface roughness and impede the flow of runoff water. This roughness slows down water movement, allowing more time for the water to seep into the soil rather than washing it away. Additionally, the process of transpiration, where plants absorb water from the ground and release it into the atmosphere, reduces the soil's moisture level, thereby increasing its capacity to absorb further rainfall. This cycle plays a critical role in maintaining soil hydration balance and reducing the volume of runoff during precipitation events.
 
+
+\begin{table}
+    \centering
+    \begin{tabular}{|l|c|c|c|c|c|}
+        \hline
+        \thead{Process} & \thead{Height field} & \thead{Layered} & \thead{Voxels} & \thead{3D implicit} & \thead{Specific representation} \\
+        \hline
+        Thermal & \cite{Musgrave1989} & \cite{Benes2001} & \cite{Jones2010} &  &  \\
+        \hline
+        Landslide & \cite{Cordonnier2018} &  &  &  & \cite{Hudak2011} \\
+        \hline
+        Hydraulic & \cite{Kelley1988,Genevaux2013} & \cite{Stava2008} & \cite{Benes2006} &  & \cite{Kristof2009} \\
+        \hline
+        Chemical &  &  & \cite{Wojtan2007} & \cite{Paris2019a} &  \\
+        \hline
+        Aeolian & \cite{Paris2019b} &  &  &  &  \\
+        \hline
+        Glacial & \cite{Cordonnier2023,Argudo2020} &  &  &  &  \\
+        \hline
+        Volcanic &  &  &  &  &  \\
+        \hline
+        Biological & \cite{Ecormier-Nocca2021,Alvarado2024} &  &  &  &  \\
+        \hline
+    \end{tabular}
+    \caption{Mapping of erosion processes with terrain representations. Most works target height fields; volumetric and implicit approaches exist but are rarer and typically more computationally demanding. }
+    \label{tab:erosion-processes-representations}
+\end{table}
+
 \midConclusion
 
-In conclusion, various erosion processes occur on terrains over very different timescales. However, each procedural generation algorithm is mimicking a small number of these processes at once. The choice of the terrain representation is a limiting factor in the possibilities offered to the developer. However most of the erosion processes are very similar and are composed of three main steps, even if their names differ depending on the phenomenon: the detachment of matter, its displacement, and the deposition in smaller sediments. The displacement is guided by the environment in which the erosion occurs. It may be only the force of gravity, the water flow, the wind or the trajectories of glaciers.
+In conclusion, various erosion processes occur on terrains over very different timescales. However, each procedural generation algorithm is mimicking a small number of these processes at once. The choice of the terrain representation is a limiting factor in the possibilities offered to the developer. \cref{tab:erosion-processes-representations} lists different erosion processes applicable on different terrain representation; we note that height fields have received the most attention but many processes are not proposed for all representations. However most of the erosion processes are very similar and are composed of three main steps, even if their names differ depending on the phenomenon: the detachment of matter, its displacement, and the deposition in smaller sediments. The displacement is guided by the environment in which the erosion occurs. It may be only the force of gravity, the trajectories of glaciers, the water flow, or the wind. Water and wind forces require fluid simulations to simulate accurately. 
