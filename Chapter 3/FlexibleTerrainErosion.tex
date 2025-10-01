@@ -17,7 +17,7 @@
 % The columns :
 % Name & Results & Terrain representation & Dimensions & particles / iteration & iterations & particle radius & coefficient of restitution & particle density & capacity factor & erosion factor & deposition factor & Velocity field & computation time
 \newcommand{\exampleCoastal}{
-Coastal & \addingFiguresToCell{Coastal_1.png}{Coastal_2.png}{Coastal_3.png}{} & \densityVox & 100x100x30 & 10 & 80 & 3 & 5 & 0.1 & 500 & 10.0 & 5.0 & 0.5 & Uniform & 0.5 & \cref{fig:erosion-results-rain}
+Coastal & \addingFiguresToCell{Coastal_1.png}{Coastal_2.png}{Coastal_3.png}{} & \densityVox & 100x100x30 & 10 & 80 & 3 & 5 & 0.1 & 500 & 10.0 & 5.0 & 0.5 & Uniform & 0.5 & \cref{fig:erosion-results-coastal}
 }
 \newcommand{\exampleGlacier}{
 Glacier & \addingFiguresToCell{Glacier1.png}{Glacier2.png}{Glacier3.png}{Glacier4.png} & \heightmap & 100x100 & 20 & 80 & 3 & 10 & 0.1 & 500 & 1.0 & 1.0 & 1.0 & None & 0.8 & TODO
@@ -112,11 +112,6 @@ The process of terrain alteration caused by the effect of water, air, or any oth
 
 Various phenomena can cause these alterations: \textbf{thermal erosion} (bursting of rocks caused by expansion of water under frost, then falling of debris to the bottom of a slope), \textbf{hydraulic erosion} (detachment caused by the impact of water particles on surfaces and the transport of sediments by the flow of runoff), \textbf{wind erosion} (fine particles carried away in the wind and hit surfaces on their way, creating new fine particles which then also fly away), \textbf{chemical erosion} (chemical decomposition of rocks caused by rainwater or other fluids), other exceptional phenomena such as avalanches, animals, lightning, etc... modify the terrain \cite{Cordonnier2017a, Argudo2020, Cordonnier2018, Cordonnier2017b,Cordonnier2023}.
 
-\begin{figure}
-    \autofitgraphics{main_pipeline.pdf}
-    \caption{Our method requires a base geometry, a small number of parameters for the particles and the medium used for the erosion simulation. It can be easily adapted to be compatible with different mediums and terrain representations.}
-    \label{fig:erosion-pipeline}
-\end{figure}
 
 In practice, the core idea to simulate erosion is to add or remove material from the terrain at given positions on the interface between the terrain and fluid eroding it (e.g., air or water). Hence, the two major problems to tackle are: how to locally alter the terrain geometry for material detachment and deposition and where to perform these alterations given the properties of the environment (terrain slope, fluid density and velocity).
 A terrain is more than often represented in 2.5D using a 2D image called a heightmap whose greyscale values define terrain elevation. While being the major terrain representation, only a limited number of environments can be modelled. Indeed, natural landscapes are intrinsically 3D (overhangs, cavities or geological structures such as arches or goblins), this is particularly true for underwater environments generation. Alternate representations such as voxel grids, material layers or implicit surfaces can be used. A wide variety of methods have been proposed to simulate natural erosion phenomena on heightmaps as the partial differential equations to model erosion can be discretised and solved in 2D and the material detachment and deposition at a given point of the terrain surface can be easily performed by elevating or lowering the ground level i.e. changing locally pixel intensities.
@@ -124,7 +119,7 @@ For volumetric representations, the alteration of the terrain is not as trivial.
 To define where to perform the erosion process, the local slope variations are more than often used combined with eroding medium information. This fluid can be simulated using particle systems, Smoothed Particle Hydrodynamics (SPH) \cite{Kristof2009} or approximated using a simple vector field.
 Proposed methods offer a specific erosion effect tailored to a single terrain representation and fluid simulation.
 
-In this work, we propose an approach to simulate a large part of the geomorphological and meteorological phenomena present in the literature of terrain generation (including 3D and volumetric effects). We introduce a generalised algorithm performing the three stages of erosion on surface and volume representations alike, and expose very few intuitive parameters to be adjusted by the user (\cref{fig:erosion-pipeline}).
+In this work, we propose an approach to simulate a large part of the geomorphological and meteorological phenomena present in the literature of terrain generation (including 3D and volumetric effects). We introduce a generalised algorithm performing the three stages of erosion on surface and volume representations alike, and expose very few intuitive parameters to be adjusted by the user. % (\cref{fig:erosion-pipeline}).
 We propose to tackle separately the material variation and the fluid simulation. Our method relies on a particle system to simulate eroding agents, each thrown particle will collide with the terrain, perform terrain alteration at the collision point and transport material along its path.
 Their motion is computed using simple particle physics accounting for the medium density and particle properties (buoyancy and gravity forces). We consider each particle as independent, hence, they do not interact with each other, no collision detection or response. This simplification allows for efficient parallel computation.
 When more accuracy or control is needed, we propose to provide a vector field used to modify the particle speed at each time step. The nature of this vector field is flexible, it can be computed using a more or less accurate fluid simulation (SPH, FLIP,...) or be manually defined by the user. We propose a particle-based strategy for material alteration that can be applied on surface and volumetric representations.
@@ -252,7 +247,7 @@ Using a pre-calculated flow field to guide particle movement simplifies the simu
 \subsubsection{Detachment}
 As a particle approaches the surface of the terrain, its motion applies friction at the interface between fluid and ground, causing bedrock to dislocate microscopic parts, which we call abrasion. We use pseudoplastic models to approximate the amount of matter removed due to the shear forces while considering the physical properties of the fluid and the ground \cite{Wojtan2007}. 
 
-The shear rate $\shearRate$ is approximated by the relative velocity of the fluid to the solid boundary $\velocity_{rel}$ over a short distance $l$.
+The shear rate $\shearRate$ is approximated by the relative velocity of the fluid to the solid boundary $\particleVelocity_{rel}$ over a short distance $l$.
 We approximate the shear stress $\shearStress$ at the solid boundary by a power law:
 
 \begin{align}
@@ -260,7 +255,7 @@ We approximate the shear stress $\shearStress$ at the solid boundary by a power 
     \shearStress = \shearStressConstant \shearRate^n
 \end{align}
 
-where $\shearRate = \velocity_{rel}/l$, $\shearStressConstant$ is the shear stress constant (often set to $1$), and $n \in [0,1]$ is the flow behaviour index. Shear-thinning models typically assume $n$ close to $\frac{1}{2}$, which is why we used this value as a constant.  
+where $\shearRate = \particleVelocity_{rel}/l$, $\shearStressConstant$ is the shear stress constant (often set to $1$), and $n \in [0,1]$ is the flow behaviour index. Shear-thinning models typically assume $n$ close to $\frac{1}{2}$, which is why we used this value as a constant.  
 
 We can then compute the erosion rate $\erosionRate$ at any contact point between a fluid and a solid boundary using \eqref{eq:erosion-shearStress} by 
 
@@ -278,10 +273,17 @@ In our method, the eroded quantity is approximated as the material contained in 
     \erosionAmount = \erosionRate \frac{ 2 \pi \particleSize^3 }{ 3 }
 \end{align}
 
-to get the final eroded amount $\erosionAmount$. The particle is also defined by a maximal amount of sediment that can be contained in its volume before being saturated, noted $\maxCapacity$. Note that this constant will be used for the settling velocity computation \eqref{eq:erosion-initialSettlingVelocity}.
+to get the final eroded amount $\erosionAmount$. The particle is also defined by a maximal amount of sediment that can be contained in its volume before being saturated, noted $\maxCapacity$. % Note that this constant will be used for the settling velocity computation \eqref{eq:erosion-initialSettlingVelocity}.
 
 \subsubsection{Deposition}
-The eroded sediment is considered to be in suspension in a fluid and is affected by its velocity. A fluid particle then transports the sediment in its flow until gravity settles it onto the ground again. The effect of gravity is modelled by a settling velocity $\settlingVelocity$ defined in Eq~\eqref{eq:erosion-initialSettlingVelocity}. We consider that the amount of sediment settled is proportional to the norm of the settling velocity as proposed in \cite{Wojtan2007}, with $\depositionRate \in [0,1]$: 
+The eroded sediment is considered to be in suspension in a fluid and is affected by its velocity. A fluid particle then transports the sediment in its flow until gravity settles it onto the ground again. The effect of gravity is modelled by a settling velocity $\settlingVelocity$:
+
+\begin{align} 
+    \label{eq:erosion-initialSettlingVelocity}
+    \settlingVelocity = \frac{ 2 }{ 9 }  \gravity \particleSize^2 \frac{(\particleDensity - \fluidDensity)}{\viscosity } f(\capacity)
+\end{align} 
+
+We consider that the amount of sediment settled is proportional to the norm of the settling velocity as proposed in \cite{Wojtan2007}, with $\depositionRate \in [0,1]$: 
 
 \begin{align}
     \label{eq:erosion-deltaDepositon}
@@ -295,46 +297,92 @@ Note that progressively reducing the overall erosion strength can be used as a s
 
 We first present how to compute the particle speed using particle physics, then how to add an optional medium velocity field to add a fluid simulation or user control.
 
+
 \subsubsection{Particle physics}
-Due to their independence from other particles, we consider each particle to follow Newton's laws of motion.
+Due to their independence from other particles, we consider each particle to follow Newton's laws of motion. Each particle has a volume $\volume$, an effective density $\particleDensity$ (which may depend on the amount of carried sediment), and thus a mass $\particleMass = \particleDensity \volume$. The surrounding medium has density $\fluidDensity$, viscosity $\viscosity$, and velocity field $\fluidVelocity(\p,t)$.
 
-First, we define the external forces $\extForce$ applied to each particle. We consider gravity and buoyancy.
-We calculate the buoyancy force $\buoyancyForce = -\fluidDensity \volume \gravity$, with $\fluidDensity$ the density of the fluid, $\volume$ the volume of the particle, and $\gravity$ the gravitational acceleration. We can also calculate the force of gravity $\gravityForce = \particleMass \gravity$, with $\particleMass$ the mass of the particle. We then have the final external force $\extForce = \gravityForce + \buoyancyForce = \particleMass \gravity - \fluidDensity \volume \gravity$. Knowing the density of an object $\particleDensity = \frac{\particleMass}{\volume}$, we have
-
+The external forces $\extForce$ applied to a particle consist of gravity, buoyancy, and drag. Gravity acts as
 \begin{align}
-    \label{eq:erosion-gravity}
-    \extForce = \volume \gravity (\particleDensity - \fluidDensity )
+    \gravityForce = \particleMass \gravity
+\end{align}
+with $\gravity$ the gravitational acceleration vector. Buoyancy opposes gravity as
+\begin{align}
+    \buoyancyForce = -\fluidDensity \volume \gravity
 \end{align}
 
-The particle velocity $\velocity$ can be integrated from \eqref{eq:erosion-gravity} by 
-
+The net body force is then
 \begin{align}
-    \label{eq:erosion-velocity-computation}
-    \velocity = \int{ \frac{\extForce}{\particleMass} \, dt} + \settlingVelocity + \velocity_0
+\label{eq:erosion-bodyforce}
+    \extForce = \volume \big(\particleDensity - \fluidDensity\big)\gravity
 \end{align}
 
-with $\settlingVelocity$ the settling speed of sediment in a fluid with a viscosity $\viscosity$ given by Stokes' Law \cite{Stokes1850}: 
+In addition, drag relaxes the particle velocity $\particleVelocity$ toward the local fluid velocity $\fluidVelocity$. For small Reynolds numbers we use Stokes' drag formula for spheres in a fluid:
+\begin{align}
+    \label{eq:erosion-drag}
+    \dragForce = 6\pi \viscosity \particleSize \big(\fluidVelocity - \particleVelocity\big)
+\end{align}
+where $\particleSize$ denotes the particle radius.
 
-\begin{align} 
-    \label{eq:erosion-initialSettlingVelocity}
-    \settlingVelocity = \frac{ 2 }{ 9 }  \gravity \particleSize^2 \frac{(\particleDensity - \fluidDensity)}{\viscosity } f(\capacity)
-\end{align} 
-
-We use the Richardson-Zaki relation as the hindered settling coefficient $f(\capacity)$: 
+The full equation of motion is therefore
+\begin{align}
+    \label{eq:erosion-ode}
+    \dot{\particleVelocity} = \frac{f(\capacity)\extForce + \dragForce}{\particleMass}
+\end{align}
+where $f(\capacity)$ is a hindered-settling factor that reduces the effective body force as the particle's carried sediment approaches its maximum capacity. Following Richardson-Zaki \cite{Richardson1954}, we take
 \begin{align}
     \label{eq:erosion-Richardson}
-    f(\capacity) = \left( 1 - \frac{\capacity}{ \maxCapacity } \right)^{n}
+    f(\capacity) = \left(1 - \frac{\capacity}{\maxCapacity}\right)^{n},
 \end{align}
+with exponent $n$ typically in the range $4$-$5.5$, and we set $n=5$, similarly as \cite{Wojtan2007}.
 
-with $\capacity$ and $\maxCapacity$ respectively the fraction of volume of sediment contained and the maximal fraction of sediment the particle can contain, and $n$ an exponent typically 4-5.5, which we set to 5 \cite{Richardson1954, Wojtan2007}.
-
-Finally, the particle position can be integrated as: 
-
+The particle position $\p$ evolves as
 \begin{align}
-    \p = \int{ \velocity \, dt} + \p_0
+    \label{eq:erosion-kinematics}
+    \dot{\p} = \particleVelocity
 \end{align}
 
-When the particle hits the ground, a coefficient of restitution affects its behaviour by reducing its velocity post-collision. This value depends on the ground material as it is influenced mainly by the material's particle shape, coefficient of friction and density \cite{Yan2020}. Less bouncy particles lose speed quickly and settle down sooner, forming a steeper pile (\cref{fig:erosion-coefficient of restitution-diagram} blue), or a higher talus angle such as chalk. On the other hand, more bouncy particles disperse more widely upon hitting a surface, resulting in a gentler accumulation such as clay (\cref{fig:erosion-coefficient of restitution-diagram} red).
+When a particle collides with the ground, its post-impact velocity is modified by a coefficient of restitution $COR$. This value depends on the ground material as it is influenced mainly by the material's particle shape, coefficient of friction and density \cite{Yan2020}. Less bouncy particles lose speed quickly and settle down sooner, forming a steeper pile (\cref{fig:erosion-coefficient of restitution-diagram} blue), or a higher talus angle such as chalk. On the other hand, more bouncy particles disperse more widely upon hitting a surface, resulting in a gentler accumulation such as clay (\cref{fig:erosion-coefficient of restitution-diagram} red).
+
+% \subsubsection{Particle physics}
+% Due to their independence from other particles, we consider each particle to follow Newton's laws of motion.
+
+% First, we define the external forces $\extForce$ applied to each particle. We consider gravity and buoyancy.
+% We calculate the buoyancy force $\buoyancyForce = -\fluidDensity \volume \gravity$, with $\fluidDensity$ the density of the fluid, $\volume$ the volume of the particle, and $\gravity$ the gravitational acceleration. We can also calculate the force of gravity $\gravityForce = \particleMass \gravity$, with $\particleMass$ the mass of the particle. We then have the final external force $\extForce = \gravityForce + \buoyancyForce = \particleMass \gravity - \fluidDensity \volume \gravity$. Knowing the density of an object $\particleDensity = \frac{\particleMass}{\volume}$, we have
+
+% \begin{align}
+%     \label{eq:erosion-gravity}
+%     \extForce = \volume \gravity (\particleDensity - \fluidDensity )
+% \end{align}
+
+% The particle velocity $\particleVelocity$ can be integrated from \eqref{eq:erosion-gravity} by 
+
+% \begin{align}
+%     \label{eq:erosion-velocity-computation}
+%     \particleVelocity = \int{ \frac{\extForce}{\particleMass} \, dt} + \settlingVelocity + \particleVelocity_0
+% \end{align}
+
+% with $\settlingVelocity$ the settling speed of sediment in a fluid with a viscosity $\viscosity$ given by Stokes' Law \cite{Stokes1850}: 
+
+% \begin{align} 
+%     \label{eq:erosion-initialSettlingVelocity}
+%     \settlingVelocity = \frac{ 2 }{ 9 }  \gravity \particleSize^2 \frac{(\particleDensity - \fluidDensity)}{\viscosity } f(\capacity)
+% \end{align} 
+
+% We use the Richardson-Zaki relation as the hindered settling coefficient $f(\capacity)$: 
+% \begin{align}
+%     \label{eq:erosion-Richardson}
+%     f(\capacity) = \left( 1 - \frac{\capacity}{ \maxCapacity } \right)^{n}
+% \end{align}
+
+% with $\capacity$ and $\maxCapacity$ respectively the fraction of volume of sediment contained and the maximal fraction of sediment the particle can contain, and $n$ an exponent typically 4-5.5, which we set to 5 \cite{Richardson1954, Wojtan2007}.
+
+% Finally, the particle position can be integrated as: 
+
+% \begin{align}
+%     \p = \int{ \particleVelocity \, dt} + \p_0
+% \end{align}
+
+% When the particle hits the ground, a coefficient of restitution affects its behaviour by reducing its velocity post-collision. This value depends on the ground material as it is influenced mainly by the material's particle shape, coefficient of friction and density \cite{Yan2020}. Less bouncy particles lose speed quickly and settle down sooner, forming a steeper pile (\cref{fig:erosion-coefficient of restitution-diagram} blue), or a higher talus angle such as chalk. On the other hand, more bouncy particles disperse more widely upon hitting a surface, resulting in a gentler accumulation such as clay (\cref{fig:erosion-coefficient of restitution-diagram} red).
 
 
 % Due to their independence from other particles, we consider each particle to follow Newton's laws of motion. Each particle has a volume $\volume$, an effective density $\particleDensity$ (which may depend on the amount of carried sediment), and thus a mass $\particleMass = \particleDensity \volume$. The surrounding medium has density $\fluidDensity$, viscosity $\viscosity$, and velocity field $\fluidVelocity(\p,t)$.
@@ -355,17 +403,17 @@ When the particle hits the ground, a coefficient of restitution affects its beha
 %     \extForce_{\text{body}} = \volume , (\particleDensity - \fluidDensity) , \gravity .
 % \end{align}
 
-% In addition, drag tends to relax the particle velocity $\velocity$ toward the local fluid velocity $\fluidVelocity$. For small Reynolds numbers we use Stokes' drag law:
+% In addition, drag tends to relax the particle velocity $\particleVelocity$ toward the local fluid velocity $\fluidVelocity$. For small Reynolds numbers we use Stokes' drag law:
 % \begin{align}
 %     \label{eq:erosion-drag}
-%     \dragForce = 6\pi \viscosity r ,(\fluidVelocity - \velocity),
+%     \dragForce = 6\pi \viscosity r ,(\fluidVelocity - \particleVelocity),
 % \end{align}
 % with $r$ the particle radius (i.e. half the particle size). For larger Reynolds numbers a more general drag coefficient $C_D$ can be used, e.g. Schiller-Naumann.
 
 % The full equation of motion is therefore
 % \begin{align}
 %     \label{eq:erosion-ode}
-%     \particleMass ,\dot{\velocity}
+%     \particleMass ,\dot{\particleVelocity}
 %     = f(\capacity),\extForce_{\text{body}}
 %     + \dragForce ,
 % \end{align}
@@ -381,7 +429,7 @@ When the particle hits the ground, a coefficient of restitution affects its beha
 % The particle position $\p$ evolves as
 % \begin{align}
 %     \label{eq:erosion-kinematics}
-%     \dot{\p} = \velocity.
+%     \dot{\p} = \particleVelocity.
 % \end{align}
 
 % When a particle collides with the ground, its post-impact velocity is modified by a coefficient of restitution $e$, which reduces the normal component of velocity. In practice, the combined effects of restitution, surface friction, particle shape, and density determine whether deposited material forms a steeper slope (high friction, angular particles, cohesive materials such as chalk) or a gentler slope (lower friction, more rounded particles, cohesive clays) \cite{Yan2020}.
@@ -396,17 +444,17 @@ When the particle hits the ground, a coefficient of restitution affects its beha
 \subsubsection{Velocity field}
 \label{sec:erosion-velocity_field_refinement}
 
-In our model, we allow the user to add a velocity field to the environment that influences particle motion. This velocity field can be the result of a complex fluid simulation, a uniform vector field, or an artistic motion field.
-We modify Equation \eqref{eq:erosion-velocity-computation} such that the particle's speed will be influenced by the velocity field as follows:
+% In our model, we allow the user to add a velocity field to the environment that influences particle motion. This velocity field can be the result of a complex fluid simulation, a uniform vector field, or an artistic motion field.
+% We modify Equation \eqref{eq:erosion-velocity-computation} such that the particle's speed will be influenced by the velocity field as follows:
 
-\begin{align}
-    \label{eq:erosion-velocity-computation-final}
-    \velocity = \int{ \extForce \, dt} + \settlingVelocity + \alpha \fluidVelocity + \velocity_0
-\end{align}
+% \begin{align}
+%     \label{eq:erosion-velocity-computation-final}
+%     \particleVelocity = \int{ \extForce \, dt} + \settlingVelocity + \alpha \fluidVelocity + \particleVelocity_0
+% \end{align}
 
-with $\fluidVelocity$ the medium velocity field modulated by $\alpha \in [0,1]$. 
+% with $\fluidVelocity$ the medium velocity field modulated by $\alpha \in [0,1]$. 
 
-With our particle system, we propose to model intricate scenarios, such as the erosion caused by water currents on the seabed or aeolian erosion. The velocity field remains static during the erosion, which may cause inconsistencies in the fluid velocity field. However, minor changes can be overlooked to maintain a balance between realism and computational efficiency \cite{Tychonievich2010}. We offer several velocity improvement methods: 
+With our particle system, we propose to model intricate scenarios, such as the erosion caused by water currents on the seabed or aeolian erosion. The velocity field remains static during the erosion, which may cause inconsistencies in the fluid velocity field. However, minor changes can be overlooked to maintain a balance between realism and computational efficiency \cite{Tychonievich2010}. We note several velocity improvement methods: 
 \begin{Itemize}
     \Item{Fluid simulation refinement:} Many erosion systems incorporate fluid simulation, requiring regular updates for erosion and velocity \cite{Kristof2009, Wojtan2007}. Our method can use fluid simulations with multi-resolution refinement, with the possibility to focus the velocity field adjustments near the updated boundaries of the surface \cite{Roose2011}. 
     
@@ -420,13 +468,25 @@ With our particle system, we propose to model intricate scenarios, such as the e
 \section{Our erosion method}
 \label{sec:erosion-application_on_representations}
 
+% \begin{figure}
+%     \autofitgraphics{figure_pipeline.pdf}
+%     \caption{Our overall pipeline: our erosion process computes matter displacement of a terrain using an arbitrary representation as long as intersections between particles and the ground can be detected. An optional velocity field, provided by the user, guides the particle trajectories. We propose surface alteration methods to apply the erosion to the terrain in a coherent way between possible representations.}
+%     \label{fig:erosion-pipeline}
+% \end{figure}
+
 \begin{figure}
-    \autofitgraphics{figure_pipeline.pdf}
-    \caption{Our overall pipeline: our erosion process computes matter displacement of a terrain using an arbitrary representation as long as intersections between particles and the ground can be detected. An optional velocity field, provided by the user, guides the particle trajectories. We propose surface alteration methods to apply the erosion to the terrain in a coherent way between possible representations.}
-    \label{fig:erosion-figure_pipeline}
+    \autofitgraphics{main_pipeline.pdf}
+    \caption{Our method requires a base geometry, a small number of parameters for the particles and the medium used for the erosion simulation. It can be easily adapted to be compatible with different mediums and terrain representations.}
+    \label{fig:erosion-pipeline}
 \end{figure}
 
-In this section, we describe how to apply detachment and deposition to different terrain representations with our method (\cref{fig:erosion-figure_pipeline}). We cover the most commonly used representations, namely height fields, layered terrains, voxel grids and implicit surfaces. Note that our work could be extended to additional representations. Two conditions need to be satisfied for a representation to be eligible for our erosion method: the ability to evaluate the intersection of a particle with the ground and to compute the normal of the terrain at this point. To the best of our knowledge, all representations do.
+\begin{figure}
+    \autofitgraphics{pipeline_with_terrain.pdf}
+    \caption{An iteration of the erosion pipeline consist of an initial terrain onto which we simulate a particle system. The collisions are tracked and we model the detachment and deposition at each point, resulting in a final eroded terrain. }
+    \label{fig:erosion-pipeline-with-terrain}
+\end{figure}
+
+In this section, we describe how to apply detachment and deposition to different terrain representations with our method (\cref{fig:erosion-pipeline}). We cover the most commonly used representations, namely height fields, layered terrains, voxel grids and implicit surfaces. Note that our work could be extended to additional representations. Two conditions need to be satisfied for a representation to be eligible for our erosion method: the ability to evaluate the intersection of a particle with the ground and to compute the normal of the terrain at this point. To the best of our knowledge, all representations do.
 
 We use Verlet integration for the particle physics \cite{Verlet1967}, with low error rate and stability even for high $dt$, reducing computation time for negligible imprecision \cite{Baraff1998, Swope1982}.
 
@@ -746,7 +806,7 @@ Our method works in a water environment by assigning at least water density to p
 
 In the example presented in \cref{fig:erosion-results-underwater}, the velocity field is given by a simple 3D fluid simulation \cite{Stam1999} applied to the terrain. % \referenceExemple{Underwater}, the velocity field is given by a simple 3D fluid simulation \cite{Stam1999} applied to the terrain.
 
-A complex water flow simulation is computed using SIMPLE \cite{Caretto1973} fluid simulation with OpenFOAM. The resulting erosion can then follow complex water movement and erode the terrain at the most affected parts of the 3D terrain, as the trajectories of the particles (green) are highly affected by the fluid velocity (blue). The densities of the particles and the environment being close, the buoyancy cancels most of the gravity force, leaving the velocity of the particles computed by the fluid velocity $\fluidVelocity$ and settling velocity $\settlingVelocity$ from \eqref{eq:erosion-velocity-computation-final} (\cref{fig:erosion-underwater_result}).
+A complex water flow simulation is computed using SIMPLE \cite{Caretto1973} fluid simulation with OpenFOAM. The resulting erosion can then follow complex water movement and erode the terrain at the most affected parts of the 3D terrain, as the trajectories of the particles (green) are highly affected by the fluid velocity (blue). The densities of the particles and the environment being close, the buoyancy cancels most of the gravity force, leaving the velocity of the particles computed by the fluid velocity $\fluidVelocity$ (\cref{fig:erosion-underwater_result}). % and settling velocity $\settlingVelocity$ from \eqref{eq:erosion-velocity-computation-final} (\cref{fig:erosion-underwater_result}).
 
 \begin{figure}
     \autofitgraphics{flowfield.pdf}
@@ -884,11 +944,11 @@ In the following section, we compare our method with existing ones to show that 
 
 % Another possible adaptation of the erosion strategy for material voxels is to extend the erosion computation from binary voxels by defining transformation rules from one material to another when a voxel is eroded a number of times $\#hits < -C$ or $\#hits > C$. For example, the material "clay" may transform to "sand" when eroded, or to "rock" when many depositions occur.
 
-\begin{figure}
-    \autofitgraphics[]{island-0.png,island-1.png,island-2.png,island-10.png}
-    \caption{}
-    \label{fig:erosion-island-reef}
-\end{figure}
+% \begin{figure}
+%     \autofitgraphics[]{island-0.png,island-1.png,island-2.png,island-10.png}
+%     \caption{}
+%     \label{fig:erosion-island-reef}
+% \end{figure}
 
 \section{Conclusion}
 \label{sec:erosion-conclusion}
@@ -913,7 +973,7 @@ The resolution is also limited by the number and size of the particles, which ca
 Our method allows erosion on implicit terrains. However, in its current form, our algorithm is time-expensive on implicit representations, since a large number of primitives are added to the composition tree. Using skeleton-defined primitives \cite{Hong2013, Rigaudiere2000} from particle trajectories and erosion/deposition values could be a solution to optimise computation time.
 
 \paragraph{Usage of velocity fields}
-In our erosion algorithm, we simplify particle physics to enhance computational efficiency and facilitate parameterisation. We use the velocity field from fluid simulations to approximate particle velocities. Sediment mass is harnessed to compensate for this approximation, allowing compatibility with various fluid simulation algorithms. Velocity fields can be recomputed at a frequency that meets the application's needs, ranging from "classic erosion simulation" (recomputed at each time step) to "simple simulation" (never recomputed). We addressed provisional adjustments to mitigate discrepancies when terrain changes due to erosion are not reflected in a static velocity field in section “3.3 Transport”. However, it is important to note that these are expedient solutions and may not fully capture the precise dynamics of an evolving terrain.
+In our erosion algorithm, we simplify particle physics to enhance computational efficiency and facilitate parameterisation. We use the velocity field from fluid simulations to approximate particle velocities. Sediment mass is harnessed to compensate for this approximation, allowing compatibility with various fluid simulation algorithms. Velocity fields can be recomputed at a frequency that meets the application's needs, ranging from "classic erosion simulation" (recomputed at each time step) to "simple simulation" (never recomputed). We addressed provisional adjustments to mitigate discrepancies when terrain changes due to erosion are not reflected in a static velocity field in section \cref{sec:erosion-velocity_field_refinement}. However, it is important to note that these are expedient solutions and may not fully capture the precise dynamics of an evolving terrain.
 
 \paragraph{Performances}
 To facilitate parallelisation, we intentionally overlook particle interactions and sediment exchanges, albeit at the expense of achieving smoother results. Surface collisions are simplified to basic bounces with a damping parameter instead of relying on complex particle and ground properties (Young's modulus, friction, material, ...) \cite{Yan2020}, further easing the parameterisation process. However, these simplifications, combined with the inherent discrete nature of particles, as opposed to the continuous nature of erosion, result in a correlation between realism and particle count.

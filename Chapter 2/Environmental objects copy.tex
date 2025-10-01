@@ -857,7 +857,7 @@ with
     \label{eq:env-obj-snake-energy-equation-shape}
     \Eshape &= \Ashape \left( \Length - \int_{\curve}{ , ds } \right)^2 \\
     \label{eq:env-obj-snake-energy-equation-gradient}
-    \Egradient &= \Agradient \int_{\curve}{\bigl\langle \curve'(s),\nabla\fittingFunc\left(\curve(s)\right)\bigr\rangle ds}
+    \Egradient &= \Agradient \int_{\curve}{\dotProd{\curve'(s)}{\nabla\fittingFunc\left(\curve(s)\right)}^2 ds}
 \end{align}
 
 Here $\alpha_{\bullet}$ are user-tunable weights and $\Length$ is an optional target length. The minus sign in $\Eexternal$ converts the integrand into an attraction term (high $\fittingFunc$ lowers the energy).
@@ -902,7 +902,7 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
 \AltTextImage{
     \subsubsubsection{Gradient energy}
     \begin{align}
-        \Egradient &= \Agradient \int_{\curve}{\bigl\langle \curve'(s),\nabla\fittingFunc\left(\curve(s)\right)\bigr\rangle ds} \nonumber
+        \Egradient &= \Agradient \int_{\curve}{\dotProd{\curve'(s)}{\nabla\fittingFunc\left(\curve(s)\right)}^2 ds} \nonumber
     \end{align}
     In our application, having information about the orientation of \glosses{EnvObj} may be essential. For this purpose, we introduced a gradient energy component in the formulation. The equation imposes that the direction of the curve at any point should be directed towards the gradient of the scalar field (\cref{fig:env-obj-snake-gradient}). As the external energy pushes points towards the lowest point of the scalar field, the gradient field restricts the gradient descent for the global curve into a specific way, which may feel more natural.
 
@@ -939,7 +939,7 @@ At every global iteration, each object re-evaluates $\fitnessFunc$. If $\fitness
 
 % The internal energy is expressed identically as for curve-based \glosses{EnvObj}. The extenal energy however, has to be modified to take into account the interior of the region instead of only the borders. We will use the idea of the Chan-Vese algorithm, differentiating the energy value for the inside $\domain$ and the borders $\curve$ of the region \cite{Chan2001, Getreuer2012}.
 
-% By adding a factor for the inside $\lambda_1$ and a factor for the borders $\lambda_2$, we can add weight depending on the required optimization. We can then define the external energy component $\Eexternal$ as:
+% By adding a factor for the inside $\lambda_1$ and a factor for the borders $\lambda_2$, we can add weight depending on the required optimisation. We can then define the external energy component $\Eexternal$ as:
 % \begin{align}
 %     \Eexternal = \lambda_1 \int_{\domain}{ \fittingFunc(s) \, ds } + \lambda_2 \int_{\curve}{ \fittingFunc(\curve(s)) \, ds }
 % \end{align}

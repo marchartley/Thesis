@@ -596,13 +596,13 @@ Using an Active-Contour ("snake") formulation \cite{Kass1988}, we seek a paramet
 with
 \begin{align}
     \label{eq:env-obj-snake-energy-equation-internal}
-    \Einternal &= \Ainternal \left( \int_{\curve}{ \norm{\curve'(s)}^2 , ds} + \int_{\curve}{ \norm{\curve''(s)}^2 , ds} \right) \\
+    \Einternal &= \Ainternal \left( \int_{\curve}{ \norm{\curve'(s)}^2 \, ds} + \int_{\curve}{ \norm{\curve''(s)}^2 \, ds} \right) \\
     \label{eq:env-obj-snake-energy-equation-external}
-    \Eexternal &= -\Aexternal \int_{\curve}{ \fittingFunc(\curve(s)) , ds } \\
+    \Eexternal &= -\Aexternal \int_{\curve}{ \fittingFunc(\curve(s)) \, ds } \\
     \label{eq:env-obj-snake-energy-equation-shape}
-    \Eshape &= \Ashape \left( \Length - \int_{\curve}{ , ds } \right)^2 \\
+    \Eshape &= \Ashape \left( \Length - \int_{\curve}{ \, ds } \right)^2 \\
     \label{eq:env-obj-snake-energy-equation-gradient}
-    \Egradient &= \Agradient \int_{\curve}{\bigl\langle \curve'(s),\nabla\fittingFunc\left(\curve(s)\right)\bigr\rangle ds}
+    \Egradient &= \Agradient \int_{\curve}{-\dotProd{\curve'(s)}{\nabla\fittingFunc\left(\curve(s)\right)}^2 ds}
 \end{align}
 
 Here $\alpha_{\bullet}$ are user-tunable weights and $\Length$ is an optional target length. The minus sign in $\Eexternal$ converts the integrand into an attraction term (high $\fittingFunc$ lowers the energy).
@@ -615,7 +615,7 @@ If a steep coast can be found where the terrain slope is significant near the wa
 \AltTextImage{
     \subsubsubsection{Internal energy}
     \begin{align}
-        \Einternal &= \Ainternal \left( \int_{\curve}{ \norm{\curve'(s)}^2 , ds} + \int_{\curve}{ \norm{\curve''(s)}^2 , ds} \right) \nonumber
+        \Einternal &= \Ainternal \left( \int_{\curve}{ \norm{\curve'(s)}^2 \, ds} + \int_{\curve}{ \norm{\curve''(s)}^2 \, ds} \right) \nonumber
     \end{align}
     The internal energy introduced in \cite{Kass1988} is composed of two components imposing penalties on the local properties of the points of the curve. The first derivative forces the points along the curve to be evenly spaced by minimising the curve tension, while the second derivative restricts it from forming sharp corners. As our aim is to represent natural elements, we rarely find sharp features and thus we use the original definition from the Snake formulation.
 }{snake_algorithm_internal.png}{Internal energy minimisation for one vertex is done by reducing the difference of length with the next and with the previous vertices, while reducing the curvature at this point.}{fig:env-obj-snake-internal}
@@ -625,7 +625,7 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
 \AltTextImage{
     \subsubsubsection{External energy}
     \begin{align}
-        \Eexternal &= -\Aexternal \int_{\curve}{ \fittingFunc(\curve(s)) , ds } \nonumber
+        \Eexternal &= -\Aexternal \int_{\curve}{ \fittingFunc(\curve(s)) \, ds } \nonumber
     \end{align}
     The external energy is also present in the original work. Using an external scalar field, each point of the curve is forced to follow the steepest slope of the field. The external field can be seen as an attractor for the curve (\cref{fig:env-obj-snake-external}).
 
@@ -636,7 +636,7 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
 \AltTextImage{
     \subsubsubsection{Shape energy}
     \begin{align}
-        \Eshape &= \Ashape \left( \Length - \int_{\curve}{ , ds } \right)^2 \nonumber
+        \Eshape &= \Ashape \left( \Length - \int_{\curve}{\|\curve'\| \, ds } \right)^2 \nonumber
     \end{align}
     We introduce the shape energy, an energy defined on the whole curve to apply constraints on its final shape. As natural features often have a given dimension, we propose to add a constraint on the length of the \gloss{Skeleton} (\cref{fig:env-obj-snake-shape}).
 
@@ -647,12 +647,20 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
 \AltTextImage{
     \subsubsubsection{Gradient energy}
     \begin{align}
-        \Egradient &= \Agradient \int_{\curve}{\bigl\langle \curve'(s),\nabla\fittingFunc\left(\curve(s)\right)\bigr\rangle ds} \nonumber
+        \Egradient &= \Agradient \int_{\curve}{-\dotProd{\curve'(s)}{\nabla\fittingFunc\left(\curve(s)\right)}^2 ds} \nonumber
     \end{align}
-    In our application, having information about the orientation of \glosses{EnvObj} may be essential. For this purpose, we introduced a gradient energy component in the formulation. The equation imposes that the direction of the curve at any point should be directed towards the gradient of the scalar field (\cref{fig:env-obj-snake-gradient}). As the external energy pushes points towards the lowest point of the scalar field, the gradient field restricts the gradient descent for the global curve into a specific way, which may feel more natural.
+    In our application, having information about the orientation of \glosses{EnvObj} may be essential. For this purpose, we introduced a gradient energy component in the formulation. The equation imposes that the direction of the curve at any point should be directed towards the gradient of the scalar field (\cref{fig:env-obj-snake-gradient}). As the external energy pushes points towards the lowest point of the scalar field, the gradient field restricts the gradient descent for the global curve into a specific way, which may feel more natural. \cref{fig:env-obj-snake-gradient-example} presents the effect of gradient energy with three identical initial curves: a strong gradient energy factor (top) drives the curve uphill while a negative coefficient (bottom) forces the curve to avoid steep slopes. 
 
     During the optimisation process, the gradient of the scalar field is already evaluated by the external energy optimisation, so the addition of the gradient component is almost free.
-}{snake_algorithm_gradient.png}{The gradient energy is minimised when the curve crosses perpendicularly the gradient function. Black: the initial curve, Blue: a possible curve crossing the gradient. The scalar field is stylised to display isolines that the optimal curve has to cross.}{fig:env-obj-snake-gradient}
+}{snake_algorithm_gradient.png}{The gradient energy is minimised when the curve crosses perpendicularly the isolines of the function. Black: the initial curve, Blue: a possible curve crossing the gradient. The scalar field is stylised to display isolines that the optimal curve has to cross.}{fig:env-obj-snake-gradient}
+
+\begin{figure}
+    \autofitgraphics[]{snake1.png, snake2.png, snake3.png}
+    \autofitgraphics[]{snake1-noGrad.png, snake2-noGrad.png, snake3-noGrad.png}
+    \autofitgraphics[]{snake1-negGrad.png, snake2-negGrad.png, snake3-negGrad.png}
+    \caption{Three examples of Snake optimisation from an initial curve (orange line). One vertex of the curve is fixed. Top has a strong gradient energy coefficient $\Agradient > 0$, middle has no gradient energy coefficient $\Agradient=0$, and bottom has negative gradient energy coefficent $\Agradient < 0$. }
+    \label{fig:env-obj-snake-gradient-example}
+\end{figure}
 
 \subsubsection{Region-based \gloss{Skeleton}}
 
@@ -662,14 +670,14 @@ The resulting energy $\energy$ to minimise for a closed region whose borders are
 
 The internal energy is expressed identically as for curve-based \glosses{EnvObj}. The external energy, however, is modified to take into account the interior of the region instead of only the borders. We use the idea of the Chan-Vese algorithm, separating the energy value for the inside $\domain$ and the borders $\curve$ of the region \cite{Chan2001, Getreuer2012}:
 \begin{align}
-    \Eexternal = \lambda_1 \int_{\domain}{ \fittingFunc(s) , ds } + \lambda_2 \int_{\curve}{ \fittingFunc(\curve(s)) , ds }
+    \Eexternal = \lambda_1 \int_{\domain}{ \fittingFunc(s) \, ds } + \lambda_2 \int_{\curve}{ \fittingFunc(\curve(s)) \, ds }
 \end{align}
 
 $\lambda_1$ emphasises interior homogeneity (e.g.\ constant humidity for a forest), while $\lambda_2$ attracts the boundary to strong gradients (reef rim at the lagoon edge).
 
 Finally, the shape constraint energy $\Eshape$ can target an area $\Area$, for example:
 \begin{align}
-    \Eshape = \left( \Area - \int_{\domain}{ , ds } \right)^2
+    \Eshape = \left( \Area - \int_{\domain}{1 \, ds } \right)^2
 \end{align}
 
 In our implementation, each \gloss{EnvObj}'s \gloss{Skeleton} is a connected component, as we define the boundaries by the connected curve $\curve$, but it can be convex or concave. An infinite penalty is added for the curve's self-intersection.
@@ -1008,7 +1016,7 @@ Our method provides a way to generate scenes at different scales. We demonstrate
 % In the examples, we rendered the \glosses{EnvObj} as an implicit tree or as individual meshes. The island, lagoons, reefs, canyons and sand ripples as implicit surfaces.
 
 \begin{figure}
-    \autofitgraphics[]{2025-06-20__10-32-20_render_top_view.png , 2025-06-20__10-32-20_render_top_view-with-flow.png }
+    \autofitgraphics[]{2025-06-20__10-32-20_render_top_view.png, 2025-06-20__10-32-20_render_top_view-with-flow.png }
     \caption{A canyon creates a water current in its direction.}
     \label{fig:env-obj-canyon-flow}
 \end{figure}
