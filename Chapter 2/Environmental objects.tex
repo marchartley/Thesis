@@ -521,7 +521,7 @@ This section details each phase and explains how the system dynamically adapts t
     \label{alg:env-obj-pipeline}
     \KwIn{Base height field $h$, water level $\Wlevel$, user flow $\Wuser$, catalogue $\availableObjects$, target multiset $\targetObjects$, material params for $\material$}
     \KwOut{Sparse set of instantiated \glosses{EnvObj}}
-
+    \BlankLine
     % --- Initialisation ---
     \textbf{Initialisation:}\;
     $\height \gets h - \Wlevel$ \tcp*{signed height}
@@ -794,6 +794,7 @@ The effects of varying the different material properties of sand spread from roc
     \label{alg:env-obj-advection-reaction-diffusion}
     \KwIn{$\concentration(\cdot)$, $\Water$, $\height$, params $(\mass,\velFactor,\diffusion,\decay)$, sources and sinks $S(\cdot)$, step size $dt$}
     \KwOut{Steady state \gloss{EnvMat}}
+    \BlankLine
     $\warp(\p) \gets \mass \nabla \height(\p) + \velFactor \Water(\p)$ for all $\p$\;
     $\hat{\concentration} \gets \concentration$\;
     \DoWhile{$\frac{1}{|\Omega|}\sum_{\p} |\hat{\concentration}(\p)-\concentration(\p)| > \tau$ \tcp*{MAE < $\tau$}}{
@@ -857,6 +858,7 @@ This setup allows direct queries for the distance to any specific type without a
     \label{alg:env-obj-distance-estimation}
     \KwIn{Screened field $\concentration_{\text{object}}(\cdot)$ with Dirichlet $\concentration_{\text{object}}=C_s$ on skeleton $\Gamma$, query point $\p_0$}
     \KwOut{Approximated distance $\hat d$}
+    \BlankLine
     $\p \gets \p_0$\;
     \While{$\concentration_{\text{object}}(\p) < C_s - \varepsilon$}{
         $\p \gets \p + \eta \nabla \concentration_{\text{object}}(\p)$ \tcp*{gradient ascent}
@@ -1099,6 +1101,8 @@ Our framework can easily be extended as the \gloss{GeoEvent} system remains simi
     \caption{Applying \glosses{GeoEvent}}
     \label{alg:env-obj-geoevents}
     \KwIn{$\height,\Wlevel,\Wuser$, events, $t$}
+    \KwOut{$\height,\Wlevel,\Wuser$ after applying \glosses{GeoEvent} changes}
+    \BlankLine
     \ForEach{$e$ in events}{$\tEvent \gets \frac{t - t_{e, \text{start}}}{t_{e, \text{end}} - t_{e, \text{start}}}$}
     $\Wlevel \gets \Wlevel + \sum_{e \in \text{water events}} \Delta \Wlevel \tEvent$\;
     $\height(\p) \gets \height(\p) + \sum_{e \in \text{subsidence events}} \Delta \height_e\, G_{\sigma_e}(\|\p-\q_e\|)\tEvent$\;

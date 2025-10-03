@@ -447,7 +447,7 @@ We connect these two algorithms through a process of dataset generation (central
 
 We propose a structured process for generating coral reef island terrains that takes the user's sketches and produces a complete 3D terrain model. This process begins with the creation of an initial height field based on user inputs, and applies wind deformation to introduce natural variations, and finally integrate coral reef features via subsidence and coral growth modelling.
 
-The generation of coral reef islands in our system begins with two intuitive sketch-based inputs from the user: a top-view sketch and a profile-view sketch, which define the island's horizontal layout and vertical elevation profile. Users further refine the terrain by applying wind deformation strokes, approximating wind and waves effects on the island's shape. This combination of sketches and wind inputs gives users precise control over both the island's structure and its natural variations, such as irregular coastlines or concave features. In this section we demonstrate the usefulness of these sketches, and describe the technical details in the next section.
+The generation of coral reef islands in our system begins with two intuitive sketch-based inputs from the user: a top-view sketch and a profile-view sketch, which define the island's horizontal layout and vertical elevation profile. Users further refine the terrain by applying wind deformation strokes, approximating wind and waves effects on the island's shape. This combination of sketches and wind inputs gives users precise control over both the island's structure and its natural variations, such as irregular coastlines or concave features. In this section we demonstrate the usefulness of these sketches, describe the technical details, and warp up the method in \cref{alg:sketch-to-height-wind}.
 
 \subsection{Initial height field generation}
 \label{sec:coral-island-generation-initial}
@@ -637,6 +637,41 @@ The deformation vector previously described is then scaled by the resistance fun
     \Tilde{\warp}(\p) = \left(1 - \resistance(\distRegions_\p) \right) \cdot \warp(\p)
 \end{align}
 
+\begin{algorithm}[H]
+    \caption{Sketches to height field with wind deformation}
+    \label{alg:sketch-to-height-wind}
+    \DontPrintSemicolon
+    \KwIn{Top-view boundaries $\{\Radius_0(\angl),\dots,\Radius_n(\angl)\}$, profile function $\heightProfile$, resistance $\resistance(\distRegions_\p)$, user strokes $\{\curve\}$ with width $\std$ and strength $S_\curve$}
+    \KwOut{Deformed height field $\Tilde{h}$ and label map $\Tilde{I}$}
+
+    \BlankLine
+
+    \tcp{(1) Initial height field and label map from sketches}
+    \ForEach{pixel $\p \in \R^2$}{
+    $\radius_\p \gets \|\p - \center\|$\;
+    $\angl_\p \gets \operatorname{atan2}(\p.y-\center.y,\;\p.x-\center.x)$\;
+    Find $i$ such that $\Radius_i(\angl_\p) \le \radius_\p < \Radius_{i+1}(\angl_\p)$\;
+    $\distRegions_\p \gets i + \dfrac{\radius_\p - \Radius_i(\angl_\p)}{\Radius_{i+1}(\angl_\p) - \Radius_i(\angl_\p)}$\;
+    $h(\p) \gets \heightProfile(\distRegions_\p)$\;
+    $I(\p) \gets i$\;
+    }
+
+    \tcp{(2) Wind-field deformation from strokes}
+    \ForEach{pixel $\p \in \R^2$}{
+    $\warp(\p) \gets \mathbf{0}$\;
+    \ForEach{stroke $\curve$}{
+        $\closestCp \gets \arg\min_{\q \in \curve}\|\p-\q\|$ \tcp*{$\closestCp \gets$ closest point of the curve $\curve$ to the point $\p$}
+        $\warp_\curve(\p) \gets S_\curve \cdot \dfrac{\curve'(\closestCp)}{\|\curve'(\closestCp)\|}\cdot G_\std\!\left(\|\p-\closestCp\|\right)$\tcp*{$G_\std(x)=\frac{1}{\std\sqrt{2\pi}}e^{-\frac{x^2}{2\std^2}}$}
+        $\warp(\p) \gets \warp(\p) + \warp_\curve(\p)$\;
+    }
+    $\Tilde{\warp}(\p) \gets \bigl(1-\resistance(\distRegions_\p)\bigr)\cdot \warp(\p)$ \tcp*{Modulation from resistance function}
+    }
+
+    $\Tilde{h} \gets \Tilde{\warp}^{-1}\!\circ h$ \tcp*{$\Tilde{h}(\p) \gets h(\p - \Tilde{\warp})$ for backward warping}
+    $\Tilde{I} \gets \Tilde{\warp}^{-1}\!\circ I$\;
+    \Return $\Tilde{h}, \Tilde{I}$
+\end{algorithm}
+
 \begin{figure}
     \autofitgraphics[]{result_low_resistance.png, result_high_resistance.png}
     \caption{(Left) Given a uniform velocity field and a resistance function similar to \cref{fig:coral-island-resistance-function}, the coasts are smoothly eroded while the interior of the island is almost unaffected. (Right) Modifying the resistance function to affect a strong resistance to borders emulates the effect of coast reinforcements.}
@@ -665,6 +700,7 @@ In \cref{fig:coral-island-wind-stroke-edition}, a simple circular island is gene
     \caption{A top-view velocity field is defined from user-provided strokes (top, blue), in association with a resistance function (top, red); a height field is deformed accordingly. Left: original height field and render; right: altered results. The beach and lagoon regions are defined with low resistance, which is visible by having only these regions deformed in bottom results.}
     \label{fig:coral-island-wind-effect-result}
 \end{figure}
+
 
 \subsection{Coral reef modelling}
 \label{sec:coral-island-coral-reef}
@@ -786,6 +822,30 @@ Note that the $\smoothmax$ function is undefined for $a = b$, however, a proof o
     \end{dcases}
 \end{align}
 
+\begin{algorithm}[H]
+    \caption{Subsidence, coral growth, and smooth blending}
+    \label{alg:subsidence-coral-blend}
+    \DontPrintSemicolon
+    \KwIn{Deformed height field $\Tilde{h}$, subsidence rate $\subsidRate \in [0,1]$, coral growth function $\heightCoral$ (piecewise with transitions via $\smooth$)}
+    \KwOut{Final height field $\hat{h}$}
+    \BlankLine
+
+    \tcp{(1) Subsidence}
+    \ForEach{$\p$}{ $\heightSubsid(\p) \gets (1-\subsidRate)\cdot \Tilde{h}(\p)$ }
+
+    \tcp{(2) Coral growth evaluation}
+    \ForEach{$\p$}{
+        \tcp{Use same $\distRegions_\p$ as in \cref{alg:sketch-to-height-wind}}
+        $x \gets \distRegions_\p - i_{\text{reef}}$ \tcp*{$i_{\text{reef}} =$ reef region ID}
+        $c(\p) \gets \heightCoral(x)$
+    }
+
+    \tcp{(3) Smooth maximum blend}
+    \ForEach{$\p$}{ $\hat{h}(\p) \gets \smoothmax\bigl(\heightSubsid(\p),\, c(\p)\bigr)$ }
+
+    \Return $\hat{h}$
+\end{algorithm}
+
 \subsubsection{Output}
 \label{sec:coral-island-procedural-output}
 
@@ -799,7 +859,8 @@ Note that the $\smoothmax$ function is undefined for $a = b$, however, a proof o
 
 The resulting terrain represents a plausible coral reef island, where the volcanic island has subsided, and coral reefs have grown upward to keep pace with the water level. The smooth blending between the subsided terrain and the coral features ensures a natural transition between regions (island, lagoon, coral reefs, and abysses).
 
-One of the key strengths of this method is its flexibility, as the subsidence and coral reef growth processes are modelled independently, allowing for a wide range of configurations. Users can generate plausible island terrains with or without coral features, or apply the coral reef growth modelling to existing height fields from other sources.
+One of the key strengths of this method is its flexibility, as the subsidence and coral reef growth processes are modelled independently, allowing for a wide range of configurations. Users can generate plausible island terrains with or without coral features, or apply the coral reef growth modelling to existing height fields from other sources. Moreover each of the pseudo-code section proposed in \cref{alg:subsidence-coral-blend} can be replaced with surrogate methods if desired (e.g., realistic subsidence or coral reef simulations, or the use of another blending function).
+
 
 \section{Data generation}
 \label{sec:coral-island-dataset-generation}
@@ -883,6 +944,39 @@ To enhance the variety of the dataset and improve the model's ability to general
 
 All augmentation techniques are simultaneously applied to both the height field and the label map ensuring consistency between input (the label map) and output (the height field).
 
+
+\begin{algorithm}[H]
+    \caption{Procedural dataset generation}
+    \label{alg:dataset-generation}
+    \DontPrintSemicolon
+    \KwIn{Base outline radii $\radius^*$, profile $\heightProfile^*$, resistance $\resistance^*$, noise $\noise$, stroke generator, subsidence grid $\{\subsidRate\}$}
+    \KwOut{Pairs $\{(\text{label map},\ \text{height field})\}$}
+
+    \BlankLine
+    \tcp{(1) Randomise sketches}
+    \ForEach{outline}{
+    $\radius(\angl) \gets \radius^* + \noise(\angl)$
+    }
+    $\heightProfile(\distRegions_\p) \gets \heightProfile^*(\distRegions_\p)\cdot \noise(\distRegions_\p)$\;
+    $\resistance(\distRegions_\p) \gets \resistance^*(\distRegions_\p)\cdot \noise(\distRegions_\p)$\;
+
+    \tcp{(2) Random strokes}
+    Generate $n$ strokes $\{\curve\}$ by uniformly sampling $m$ control points each; sample $\std$ and $S_\curve$ per stroke\;
+
+    \tcp{(3) Synthesis over subsidence levels}
+    \ForEach{$\subsidRate \in [0,1]$}{
+    Build $h$ and $I$ via \cref{alg:sketch-to-height-wind} and apply \cref{alg:subsidence-coral-blend} to get $\hat{h}$\;
+    label map $\gets$ HSV image with $I$ in the Hue channel and $\subsidRate$ in the Value channel\;
+    Store pair $(\text{label map},\, \hat{h})$\;
+    }
+
+    \tcp{(4) Augmentation}
+    Apply translations with wrapping, rotations, scalings, flips to both label map and height field consistently\;
+    Copy-paste multiple islands with IoU$\le 0.1$; blend heights with $\smoothmax$ and labels with $\max$; and assign abyss ID for uncovered regions\;
+
+    \Return dataset
+\end{algorithm}
+
 \section{Learning-based generation}
 \label{sec:coral-island-cGAN-training}
 
@@ -946,6 +1040,8 @@ Because our curve-based procedural phase included low randomness, the output of 
     \caption{Comparison between real (left, from Google Earth) and synthetic (right) islands of Mayotte. The label map (centre) is hand-drawn to match approximately its real-world counterpart.}
     \label{fig:coral-island-example-Mayotte}
 \end{figure}
+
+
 
 
 \subsection{Advantages of the approach}
