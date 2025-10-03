@@ -664,7 +664,7 @@ The deformation vector previously described is then scaled by the resistance fun
         $\warp_\curve(\p) \gets S_\curve \cdot \dfrac{\curve'(\closestCp)}{\|\curve'(\closestCp)\|}\cdot G_\std\!\left(\|\p-\closestCp\|\right)$\tcp*{$G_\std(x)=\frac{1}{\std\sqrt{2\pi}}e^{-\frac{x^2}{2\std^2}}$}
         $\warp(\p) \gets \warp(\p) + \warp_\curve(\p)$\;
     }
-    $\Tilde{\warp}(\p) \gets \bigl(1-\resistance(\distRegions_\p)\bigr)\cdot \warp(\p)$ \tcp*{Modulation from resistance function}
+    $\Tilde{\warp}(\p) \gets \left(1-\resistance(\distRegions_\p)\right)\cdot \warp(\p)$ \tcp*{Modulation from resistance function}
     }
 
     $\Tilde{h} \gets \Tilde{\warp}^{-1}\!\circ h$ \tcp*{$\Tilde{h}(\p) \gets h(\p - \Tilde{\warp})$ for backward warping}
@@ -841,7 +841,7 @@ Note that the $\smoothmax$ function is undefined for $a = b$, however, a proof o
     }
 
     \tcp{(3) Smooth maximum blend}
-    \ForEach{$\p$}{ $\hat{h}(\p) \gets \smoothmax\bigl(\heightSubsid(\p),\, c(\p)\bigr)$ }
+    \ForEach{$\p$}{ $\hat{h}(\p) \gets \smoothmax\left(\heightSubsid(\p),\, c(\p)\right)$ }
 
     \Return $\hat{h}$
 \end{algorithm}

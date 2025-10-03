@@ -227,7 +227,7 @@ In this section, we first review a subset of the major simulated phenomena used 
 % \section{Technical background}
 \section{Particle erosion}
 \label{sec:erosion-method}
-Erosion occurs in three stages: material detachment, transport and deposition (respectively in red, black and green in \cref{fig:erosion-ablation_erosion}). In our approach, particles move through the medium following its flow (i.e. wind in air or currents in water) and then absorb or deposit a small amount of material upon contact with the land surface, effectively fulfilling the three stages of erosion, separating the transport process from the detachment and deposition processes (\cref{fig:erosion-pipeline-with-terrain}).
+Erosion occurs in three stages: material detachment, transport and deposition (respectively in red, black and green in \cref{fig:erosion-ablation_erosion}). In our approach, particles move through the medium following its flow (i.e. wind in air or currents in water) and then absorb or deposit a small amount of material upon contact with the land surface, effectively fulfilling the three stages of erosion, separating the transport process from the detachment and deposition processes (\cref{fig:erosion-pipeline-with-terrain}). The overall algorithm presented in \cref{alg:erosion-main-loop} illustrate the separation of these processes.
 
 \begin{figure}
     \autofitgraphics[width=0.8\linewidth]{ablation_erosion.pdf}
@@ -242,6 +242,51 @@ Erosion occurs in three stages: material detachment, transport and deposition (r
     \caption{An iteration of the erosion pipeline consist of an initial terrain onto which we simulate a particle system. The collisions are tracked and we model the detachment and deposition at each point, resulting in a final eroded terrain. }
     \label{fig:erosion-pipeline-with-terrain}
 \end{figure}
+
+\zzcommand{\Terrain}{\mathcal{T}}
+\zzcommand{\Particles}{{P}}
+\zzcommand{\particle}{p}
+\zzcommand{\normal}{\vec{n}}
+\zzcommand{\Normal}{\vec{N}}
+\begin{algorithm}[H]
+    \caption{Particle-based erosion iteration}
+    \label{alg:erosion-main-loop}
+    \DontPrintSemicolon
+    \KwIn{Terrain $\Terrain$, particle parameters $(\particleSize, \particleDensity, COR, \maxCapacity, \erosionStrength, \depositionRate)$, medium params $(\fluidDensity,\viscosity)$, velocity field $\fluidVelocity$}
+    \KwOut{Updated terrain $\Tilde{\Terrain}$}
+    \BlankLine
+
+    \For{$iter \gets 1$ \KwTo $N_{iters}$}{
+        $C \gets \emptyset$ \tcp*{Collisions list}
+        \tcp{(1) Emit particles in domain}
+        $\Particles \gets \text{SampleParticles}(\Terrain, params)$\;
+
+        \tcp{(2) Particle transport}
+        \ForEach{$\particle \in \Particles$}{
+            \While{$p$ in terrain}{
+                integrate motion \tcp*{\cref{eq:erosion-ode,eq:erosion-kinematics}}
+                \If{$\particle$ intersects $\Terrain$}{
+                    % $\normal \gets \Terrain.\Normal(\p)$\;
+                    add collision data to $C$ \tcp*{particle + terrain properties}\;
+                    apply collision response \tcp*{\cref{alg:erosion-collision}}
+                }
+            }
+        }
+                
+        \tcp{(3) Terrain updates}
+        \ForEach{collision in $C$} {
+            % \tcp{\cref{alg:erosion-heightfield}, \cref{alg:erosion-sdf}, \cref{alg:erosion-voxels}, ...}
+            accumulate terrain change $\Delta h, \Delta f, or \Delta \mu$ \tcp*{\cref{sec:erosion-application-on-representations}}
+        }
+        commit to $\Terrain$ and recompute normals\;
+
+        % \tcp{(4) Optional: velocity repair}
+        % apply \cref{alg:erosion-velocity-repair} if $\fluidVelocity$ static\;
+    }
+    \Return{$\Tilde{\Terrain}$}
+\end{algorithm}
+
+
 
 Particles are transported through the medium and can pass through several different media. Each medium is defined by a density and a flow. Consider, for example, water density to be \SI{1000}{\kilogram \per \cubic \meter} and that of air to be \SI{1}{\kilogram \per \cubic \meter}. The gravity applied to the particles is then very different between open and submerged environments due to the difference in buoyancy, while the process remains similar.
 Using a pre-calculated flow field to guide particle movement simplifies the simulation by treating particles as independent entities, eliminating the need for inter-particle calculations. This not only significantly reduces the overall execution time but also offers users high flexibility over the quality of the simulation and simplifies the implementation. Moreover, we consider that particles in a fluid do not influence the flow as it would become "overkill" for such lightweight objects \cite{Wei2003}.
@@ -351,7 +396,30 @@ The particle position $\p$ evolves as
     \dot{\p} = \particleVelocity
 \end{align}
 
-When a particle collides with the ground, its post-impact velocity is modified by a coefficient of restitution $COR$. This value depends on the ground material as it is influenced mainly by the material's particle shape, coefficient of friction and density \cite{Yan2020}. Less bouncy particles lose speed quickly and settle down sooner, forming a steeper pile (\cref{fig:erosion-coefficient of restitution-diagram} blue), or a higher talus angle such as chalk. On the other hand, more bouncy particles disperse more widely upon hitting a surface, resulting in a gentler accumulation such as clay (\cref{fig:erosion-coefficient of restitution-diagram} red).
+When a particle collides with the ground, its post-impact velocity is modified by a coefficient of restitution $COR$. This value depends on the ground material as it is influenced mainly by the material's particle shape, coefficient of friction and density \cite{Yan2020}. Less bouncy particles lose speed quickly and settle down sooner, forming a steeper pile (\cref{fig:erosion-coefficient of restitution-diagram} blue), or a higher talus angle such as chalk. On the other hand, more bouncy particles disperse more widely upon hitting a surface, resulting in a gentler accumulation such as clay (\cref{fig:erosion-coefficient of restitution-diagram} red). We propose this simple collision response in \cref{alg:erosion-collision}. 
+
+\begin{algorithm}[H]
+    \caption{Particle-terrain collision response}
+    \label{alg:erosion-collision}
+    \DontPrintSemicolon
+    \KwIn{Particle $(\p,\particleVelocity,\capacity)$, terrain $\Terrain$, restitution $COR$}
+    \KwOut{Updated particle state $(\particleVelocity,\capacity)$}
+    \BlankLine
+
+    $\normal \gets \Terrain.\Normal(\p)$\;
+    % $v_n \gets (\particleVelocity \cdot \normal)\normal$\;
+    % $v_t \gets \particleVelocity - v_n$\;
+    % $v'_n \gets -COR \cdot v_n$ \tcp*{Apply restitution on normal}
+    % $\particleVelocity \gets v_t + v'_n$ \tcp*{Final velocity after collision}
+    $\particleVelocity \gets COR \left(\particleVelocity - 2 \dotProd{\particleVelocity}{\normal} \normal\right)$ \;
+
+    \tcp{Update sediment capacity at this point}
+    compute $\erosionAmount, \depositAmount$ \tcp*{\cref{eq:erosion-erosionAmount,eq:erosion-deltaDepositon}}
+    $\capacity \gets \capacity + \erosionAmount - \depositAmount$\;
+
+    \Return{$(\particleVelocity,\capacity)$}
+\end{algorithm}
+
 
 % \subsubsection{Particle physics}
 % Due to their independence from other particles, we consider each particle to follow Newton's laws of motion.
@@ -476,7 +544,7 @@ With our particle system, we propose to model intricate scenarios, such as the e
 % Our contribution part
 % ------------------------------------------------------------
 \section{Our erosion method}
-\label{sec:erosion-application_on_representations}
+\label{sec:erosion-application-on-representations}
 
 % \begin{figure}
 %     \autofitgraphics{figure_pipeline.pdf}
@@ -520,6 +588,23 @@ This change of height can be sampled at all points of the 2D grid by reducing th
 \end{align}
 
 The height at each point after an erosion is then computed as $\Tilde{h}(\p) = h(\p) + \Delta h(\p)$.
+
+% \begin{algorithm}[H]
+%     \caption{Height-field terrain update}
+%     \label{alg:erosion-heightfield}
+%     \DontPrintSemicolon
+%     \KwIn{Heightmap $h(\p)$, contact point $\center$, erosion radius $\particleSize$, volume change $\totalErosion$}
+%     \KwOut{Updated heightmap $\Tilde{h}$}
+%     \BlankLine
+
+%     \ForEach{pixel $\p$ with $\|\p-\center\| < \particleSize$}{
+%         $d \gets \|\p - \center\|$\;
+%         $\Delta h(\p) \gets \frac{\totalErosion}{\frac{2}{3}\pi \particleSize^3}\,\sqrt{\particleSize^2 - d^2}$ \tcp*{\cref{eq:erosion-erosionHeightfield}}
+%         $h(\p) \gets h(\p) + \Delta h(\p)$\;
+%     }
+%     \Return{$\Tilde{h}$}
+% \end{algorithm}
+
 
 
 \subsection{Application on layered terrains}
@@ -569,18 +654,44 @@ Now the eroded terrain function $\Tilde{f}(\p)$ will be evaluated at each point 
 
 As a metaball is added for each particle bounce on the terrain, space partitioning optimisation algorithms such as k-d trees, BSP trees or BVH can easily be used to improve performance.
 
+% \begin{algorithm}[H]
+%     \caption{Implicit terrain update via metaball composition}
+%     \label{alg:erosion-sdf}
+%     \DontPrintSemicolon
+%     \KwIn{Signed distance function $f(\p)$, contact point $\center$, erosion radius $\particleSize$, volume change $\totalErosion$}
+%     \KwOut{Updated SDF $\Tilde{f}(\p)$}
+%     \BlankLine
+
+%     $d = \|\p - \center\|$\;
+%     \tcp{Metaball primitive at collision}
+%     $metaball(\p) \gets -\frac{3\totalErosion}{\pi \particleSize^3}\,\frac{(1-d)}{\particleSize}$, $metaball(\p)=0$ if $d>\particleSize$ \tcp*{\cref{eq:erosion-erosionMetaball}}
+
+%     \tcp{Boolean composition}
+%     $\Tilde{f}(\p) \gets g\left(f(\p),metaball(\p)\right)$ \tcp*{smooth union or subtraction}
+%     \Return{$\Tilde{f}$}
+% \end{algorithm}
+
+
 \subsubsection{Other implicit terrains}
 \label{sec:erosion-application_on_other_implicit}
 Other implicit terrain models are present in the literature, notably a 2.5D representation based on the surface gradient \cite{Guerin2022} and a 3D representation based on curves \cite{Becher2017}, for which the trajectory of each particle projected to the closest surface could be used to define the alteration of the terrain.
 
-In the case of gradient-based representation, we propose to use the partial derivative from the equation of the 2D scalar fields \eqref{eq:erosion-erosionHeightfield}, which gives
+In the case of gradient-based representation, we propose to use the partial derivative from the equation of the 2D scalar fields \eqref{eq:erosion-erosionHeightfield}, which gives, for $d \leq \particleSize$,
 
 \begin{align}
     \label{eq:erosion-erosion-gradients}
-    \nabla h' = - \frac{\totalErosion}{\frac{2}{3}\particleSize^3} \frac{1}{\sqrt{\particleSize^2 - d^2} } \vec{CP}
+    \nabla h' = - \frac{\totalErosion}{\frac{2}{3} \pi \particleSize^3} \frac{1}{\sqrt{\particleSize^2 - d^2} } \vec{CP}
 \end{align}
 
-with $\vec{CP}$ the vector from the position $\p$ to evaluate to the centre of the erosion point $\center$.
+with $\vec{CP}$ the vector from the centre of the erosion point $\center$ to evaluate to the position $\p$.
+
+Avoiding the blow up for $\particleSize = d$ can be done using a regularisation by introducing $\eps \ll \particleSize$ in \cref{eq:erosion-erosion-gradients}:
+
+\begin{align}
+    \label{eq:erosion-erosion-gradients-corrected}
+    \nabla h' = - \frac{\totalErosion}{\frac{2}{3} \pi \particleSize^3} \frac{1}{\sqrt{\particleSize^2 - d^2 + \eps^2} } \vec{CP}
+\end{align}
+
 Now the new gradient field can be computed as: 
 
 \begin{align*}
@@ -604,7 +715,7 @@ We consider two of the voxel grid representations: density-voxel grids and binar
 
 We consider "density-voxel" grids defined on $f: \Z^3 \to [-1, 1]$, for which a voxel is full for $f(\p) = 1$, partially full for $-1 < f(\p) < 1$, or empty for $f(\p) \leq -1$.  
 This definition allows us to erode them smoothly.  
-Since this kind of grid is a discretisation of a scalar function, we could directly use \eqref{eq:erosion-erosionMetaball}, as described previously, but we take advantage of the discrete nature of the representation to avoid expensive computation. 
+Since this kind of grid is a discretisation of a scalar function, we could directly use \eqref{eq:erosion-erosionMetaball}, as described previously, but we take advantage of the discrete nature of the representation to avoid expensive computation, illustrated in \cref{alg:erosion-voxels}. 
 
 We apply the erosion from a particle at position $\center$ on all points $\p$ in the volume, proportionally to the distance from the centre of the sphere $d = ||\p - \center||$, to find an approximation to the real erosion value per voxel $\totalErosion_{approx} = \totalErosion \frac{1 - d}{\particleSize}$.  
 Using their discrete nature, we rectify this value to sum up the total erosion value to $\totalErosion$ by dividing each value by the sum of the distances. We now consider eroding the "empty" voxels since their density can drop to $-1$. We then have for all surrounding voxels 
@@ -616,6 +727,25 @@ Using their discrete nature, we rectify this value to sum up the total erosion v
 
 The resulting voxel value is computed as $\Tilde{f}(\p) = f(\p) + \Delta f(\p)$.  
 In our implementation, when $f(\p) > 1$, we simply transport the density excess to the voxel above, giving it a very close analogy to height fields as long as $|\Delta f| < 1$. 
+
+\begin{algorithm}[H]
+    \caption{Density-voxel terrain update}
+    \label{alg:erosion-voxels}
+    \DontPrintSemicolon
+    \KwIn{Voxel grid $f:\Z^3 \to [-1,1]$, contact point $\center$, erosion radius $\particleSize$, volume change $\totalErosion$}
+    \KwOut{Updated grid $\Tilde{f}$}
+    \BlankLine
+
+    $\text{total} \gets \sum_{\q \in \|\q - \center\| < \particleSize}(1-\tfrac{\|\q-\center\|}{\particleSize})$\;
+    \ForEach{voxel $\p$ with $\|\p-\center\| < \particleSize$}{
+        $d \gets \|\p - \center\|$\;
+        $\Delta f(\p) \gets \totalErosion \cdot \dfrac{(1-\tfrac{d}{\particleSize})}{\text{total}}$ \tcp*{\cref{eq:erosion-erosionVoxels}}
+        $f(\p) \gets f(\p) + \Delta f(\p)$\;
+        \If{$f(\p) > 1$}{spill excess upward voxel}
+    }
+    \Return{$\Tilde{f}$}
+\end{algorithm}
+
 
 \subsubsection{Binary voxels}
 \label{sec:erosion-application_on_binary_voxels}

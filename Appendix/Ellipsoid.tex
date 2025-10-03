@@ -89,14 +89,14 @@ This ellipse in $(x,y)$ is exactly equivalent to $\Delta(x,y)\ge 0$ and provides
 For terrain applications, the ellipsoid should "follow" the local slope. We orient it by the terrain normal at a query point $(x_0,y_0)$, with
 \begin{align}
     \label{eq:app-terrain-normal}
-    \vec n=\operatorname{normalize} [-\partial_x H, -\partial_y H, 1]^\top
+    \vec n=\operatorname{normalise} [-\partial_x H, -\partial_y H, 1]^\top
 \end{align}
 
 We build the local frame as
 \begin{align}
     \vec e_z'=\vec n,
     \qquad
-    \vec e_x'=\operatorname{normalize} [1,0,-\partial_x H]^\top ,
+    \vec e_x'=\operatorname{normalise} [1,0,-\partial_x H]^\top ,
     \qquad
     \vec e_y'=\vec e_z'\times \vec e_x',
 \end{align}
@@ -159,18 +159,18 @@ to avoid floating-point precision error when $b^2 \gg 4ac$.}
 
 
 
-\section*{Normalization to a specific volume change}
+\section*{normalisation to a specific volume change}
 
 We often want the primitive to produce a prescribed volume change $\totalErosion>0$ (amount of material added/removed). Because the ellipsoid is built in its local principal frame and then rotated, we rely on the fact that rotation does not change volumes. Let the semi-axes be $(a,b,c)$ in the local frame, the clipping plane be $z'=z_0$ with $z_0\in[0,c]$ (default $z_0=0$), and denote by
 \[
-V(z_0)=\iint \bigl(z_{\text{ellip}}(x,y)-z_{\text{plane}}(x,y)\bigr)_+\,dx\,dy
+V(z_0)=\iint \left(z_{\text{ellip}}(x,y)-z_{\text{plane}}(x,y)\right)_+\,dx\,dy
 \]
 the cap volume above the plane, where $(\cdot)_+=\max(\cdot,0)$ and the integral is over the planar footprint. In the local frame one has the closed form
 \begin{align}
     \label{eq:app-cap-volume}
-    V(z_0)=\pi a b\Bigl(\frac{2c}{3}-z_0+\frac{z_0^3}{3c^2}\Bigr),\qquad V(0)=\frac{2}{3}\pi a b c.
+    V(z_0)=\pi a b\left(\frac{2c}{3}-z_0+\frac{z_0^3}{3c^2}\right),\qquad V(0)=\frac{2}{3}\pi a b c.
 \end{align}
-This expression is strictly decreasing in $z_0\in[0,c)$ since $V'(z_0)=-\pi a b\bigl(1-(z_0/c)^2\bigr)<0$.
+This expression is strictly decreasing in $z_0\in[0,c)$ since $V'(z_0)=-\pi a b\left(1-(z_0/c)^2\right)<0$.
 
 For implementation on a height field, it is convenient to separate the cap into a \emph{plane} and a \emph{thickness}. With $\vec r_0=[x_0,y_0,H(x_0,y_0)]^\top$, terrain normal $\vec n=[n_x,n_y,n_z]^\top$ as in \cref{eq:app-terrain-normal}, and the local offset $z_0\ge 0$, the clipping plane in global coordinates is
 \begin{align}
@@ -182,7 +182,7 @@ For implementation on a height field, it is convenient to separate the cap into 
 Let $z_{\text{ellip}}(x,y)$ denote the upper shell from \cref{eq:app-upper-final} (evaluated with the centered coordinates used in the chapter). The (nonnegative) cap thickness is
 \begin{align}
     \label{eq:app-cap-thickness}
-    g_{z_0}(x,y)=\bigl(z_{\text{ellip}}(x,y)-z_{\text{plane}}(x,y)\bigr)_+.
+    g_{z_0}(x,y)=\left(z_{\text{ellip}}(x,y)-z_{\text{plane}}(x,y)\right)_+.
 \end{align}
 The three strategies below differ only in how they achieve $\iint g\,dx\,dy=\totalErosion$ (\cref{fig:ellipsoid-strategies}).
 
@@ -218,7 +218,7 @@ then recompute \cref{eq:app-upper-final} to \cref{eq:app-fy} and use
 \begin{align}
     f_B(x,y)=z_{\text{plane}}(x,y)+g_{0}(x,y)\quad\text{with $c$ replaced by $c'$ and $z_0=0$}
 \end{align}
-This exactly normalizes the half-volume. Note that changing $c$ modifies $Q$ and therefore the projected footprint $M$ via the Schur complement.
+This exactly normalises the half-volume. Note that changing $c$ modifies $Q$ and therefore the projected footprint $M$ via the Schur complement.
 
 \subsection*{Strategy C: plane-cutting}
 Keep $(a,b,c)$ fixed and choose the clipping offset $z_0$ so that the cap volume equals $\totalErosion$:
@@ -229,15 +229,15 @@ Keep $(a,b,c)$ fixed and choose the clipping offset $z_0$ so that the cap volume
 Since $V$ in \cref{eq:app-cap-volume} is monotone, $z_0$ is unique. A robust choice is bisection on $[0,c]$; Newton is also effective with
 \begin{align}
     z_0^{(k+1)}=z_0^{(k)}-\frac{V(z_0^{(k)})-\totalErosion}{V'(z_0^{(k)})},\qquad
-    V'(z_0)=-\pi a b\Bigl(1-\frac{z_0^2}{c^2}\Bigr).
+    V'(z_0)=-\pi a b\left(1-\frac{z_0^2}{c^2}\right).
 \end{align}
 This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifting the plane.
 
 % \subsection*{Applying the strategies}
 % In the deposition/erosion rules, replace $f_{+}(x,y)$ by $f_A$, $f_B$, or $f_C$ from \cref{eq:app-stratA,eq:app-stratB,eq:app-stratC}. Use $\totalErosion$ as a magnitude; the sign is handled by the $\max/\min$ update:
 % \begin{align}
-% \text{deposition: } H_{\text{new}}(x,y)=\max\!\bigl(H(x,y),\,f_\star(x,y)\bigr),\qquad
-% \text{erosion: } H_{\text{new}}(x,y)=\min\!\bigl(H(x,y),\,f_\star(x,y)\bigr),
+% \text{deposition: } H_{\text{new}}(x,y)=\max\!\left(H(x,y),\,f_\star(x,y)\right),\qquad
+% \text{erosion: } H_{\text{new}}(x,y)=\min\!\left(H(x,y),\,f_\star(x,y)\right),
 % \end{align}
 % with $f_\star\in\{f_A,f_B,f_C\}$. Strategy~C requires $\totalErosion\le V(0)$ if we restrict to $z_0\in[0,c]$; otherwise use Strategy~A or~B (or allow $z_0<0$ to include more than half the ellipsoid).
 
@@ -566,7 +566,7 @@ This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifti
 % \begin{equation}
 %     \label{eq:app-terrain-normal}
 %     \vec n \;=\; 
-%     \operatorname{normalize}
+%     \operatorname{normalise}
 %     \left[ -\partial_x H,\; -\partial_y H,\; 1 \right]^\top .
 % \end{equation}
 
@@ -576,7 +576,7 @@ This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifti
 %     \vec e_z' = \vec n,
 %     \quad
 %     \vec e_x' = 
-%     \operatorname{normalize}\!\left[ 1,0,-\partial_x H \right]^\top ,
+%     \operatorname{normalise}\!\left[ 1,0,-\partial_x H \right]^\top ,
 %     \quad
 %     \vec e_y' = \vec e_z' \times \vec e_x'.
 % \end{equation}
@@ -712,4 +712,4 @@ This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifti
 %     f_y &= -\frac{Q_{23}f + Q_{12}x + Q_{22}y}{Q_{33}f + Q_{13}x + Q_{23}y}.
 % \end{align}
 
-% The gradient $(f_x,f_y,-1)$ (or its normalized version) supplies the local normal, slopes, or analytic curvature, which is useful, for example, in terrain  shading, adaptive meshing, or erosion flux models.
+% The gradient $(f_x,f_y,-1)$ (or its normalised version) supplies the local normal, slopes, or analytic curvature, which is useful, for example, in terrain  shading, adaptive meshing, or erosion flux models.
