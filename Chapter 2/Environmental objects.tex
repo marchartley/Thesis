@@ -439,10 +439,10 @@ These mechanisms are the backbone of how we model the interaction between discre
 \section{Core concepts}
 \label{sec:env-obj-pipeline}
 
-Our approach introduces the concept of \glosses{EnvObj}, simplified, scale-agnostic terrain features that interact with their surroundings to simulate complex ecosystem dynamics. These \glosses{EnvObj}, which represent natural features (corals, algae, islands, rocks, ...) influence and are influenced by scalar fields (temperature, humidity, elevation, ...). 
+Our approach introduces the concept of \glosses{EnvObj}, simplified, scale-agnostic terrain features that interact with their surroundings to simulate complex ecosystem dynamics. These \glosses{EnvObj}, which represent natural features (corals, algae, islands, rocks, ...) influence and are influenced by environmental fields (temperature, humidity, elevation, ...). 
 
 In this section, we present the different related concepts that underpins our method.
-We first introduce the continuous environmental fields (\glosses{EnvVal}), then the discrete actors that perceive and affect those fields (\glosses{EnvObj}), before detailing how they modify the fields (\glosses{EnvModif}) and how the full pipeline orchestrates their interaction.
+We first introduce the continuous environmental fields (\glosses{EnvVal}), then the discrete actors that perceive and affect these fields (\glosses{EnvObj}), before detailing how they modify the fields (\glosses{EnvModif}) and how the full pipeline orchestrates their interaction.
 
 \subsection{\Glosses{EnvVal}}
 \label{sec:env-obj-communication}
@@ -453,10 +453,10 @@ In an ecosystem simulation, each actor has an impact on all other actors, which 
 Instead, we adopt the standard EFM strategy: every \gloss{EnvObj} writes to local \glosses{EnvVal} through its \gloss{EnvModif}.
 Each object then reads them, turning the global complexity into a linear complexity per simulation step and thus remaining interactive even for thousands of objects.
 
-We bundle the currently supported fields under the unified term "environment", denoted as $\environment = (\height, \; \Water, \; \Wlevel, \; \material)$,
+We bundle the currently supported fields under the unified term "environment", denoted as $\environment=(\height,\;\Water,\;\Wlevel,\;\material)$,
 where $\height$ (height) and $\Wlevel$ (water level) are scalars, $\Water$ (water currents) is a 2D vector field, and $\material$ (\glosses{EnvMat}) is a vector of per-point resource stocks (sand, salt, moisture, limestone, ...).
 
-These \glosses{EnvMat} are conceptual reservoirs used by rule sets. They need not be visualised nor stored as layered textures.
+% These \glosses{EnvMat} are conceptual reservoirs used by rule sets. They need not be visualised nor stored as layered textures.
 
 \subsection{\Glosses{EnvObj}}
 \label{sec:env-obj-environmental-objects}
@@ -495,7 +495,7 @@ Each \gloss{EnvObj} possesses intrinsic \glosses{EnvMat} that both spread and ar
 In our model the colony contributes a deposition term $\materialModif_{\text{limestone}}$, and the reef absorbs it. No direct object-object communication is required.
 
 Scalar \glosses{EnvVal} are updated by adding or removing mass around the \gloss{Skeleton} and then diffusing it, biased by $\Water$.
-We assume a \gloss{SteadyState} regime, guaranteed by a decay rate~$\decay \in;]0, 1[$ that prevents unbounded accumulation during advection-diffusion.
+We assume a \gloss{SteadyState} regime, guaranteed by a decay rate~$\decay \in [0, 1[$ that prevents unbounded accumulation during advection-diffusion.
 
 \section{Pipeline}
 
@@ -505,13 +505,60 @@ The method is structured into three key phases:
     \Item{iterative generation process} instantiates \glosses{EnvObj} and updates their surrounding environment; 
     \Item{output stage} that yields a sparse representation of the scene's features. 
 \end{Itemize}
-This section details each phase and explains how the system dynamically adapts to user input and environmental changes.
+This section details each phase and explains how the system dynamically adapts to user input and environmental changes. \cref{alg:env-obj-pipeline} summarise the overall process of our method.
 
 \begin{figure}[H]
     \autofitgraphics{pipeline.pdf}
     \caption{Overview of the pipeline of the method. Three different inputs are required at initialization (left): a base terrain and a given water level directly given by the user for each generated scene, a set of properties for the \glosses{EnvMat} available (\cref{sec:env-obj-pipeline}), and the properties and generation rules of \glosses{EnvObj} available (\cref{sec:env-obj-environmental-objects}), established with experts. The generation process (middle) iteratively proceed in three steps: instantiating new \glosses{EnvObj} (\cref{sec:env-obj-generation-rules}), evaluating the fitness of each entity with respect to user modifications (\cref{sec:env-obj-interaction}), and updating the environment until stabilisation (\cref{sec:env-obj-materials}) with user-defined geomorphological events (\cref{sec:env-obj-events}). When the scene suits the user, the sparse representation of \glosses{EnvObj} in the scene is returned and can be rendered (right). }
     \label{fig:env-obj-pipeline}
 \end{figure}
+
+
+
+\begin{algorithm}%[H]
+    \DontPrintSemicolon
+    \caption{\glosses{EnvObj} generation pipeline}
+    \label{alg:env-obj-pipeline}
+    \KwIn{Base height field $h$, water level $\Wlevel$, user flow $\Wuser$, catalogue $\availableObjects$, target multiset $\targetObjects$, material params for $\material$}
+    \KwOut{Sparse set of instantiated \glosses{EnvObj}}
+
+    % --- Initialisation ---
+    \textbf{Initialisation:}\;
+    $\height \gets h - \Wlevel$ \tcp*{signed height}
+    Initialise $\material$ scalar fields (zeros or expert priors)
+    $\Wsimu \gets \text{terrain-aware flow from } \height$
+    $\Water \gets \Wuser + \Wsimu$ 
+    $\environment \gets (\height,\;\Water,\;\Wlevel,\;\material)$ \;
+    $\objects \gets \varnothing$ \;
+
+    % --- Main loop ---
+    \textbf{Generation loop:}\;
+    \While{\text{not stop (max iters / $\targetObjects$ reached / user approval)}}{
+        % Instantiation
+        \tcp{(1) Instantiate new objects (\cref{sec:env-obj-generation-rules})}
+        \ForEach{$\text{class} \in \availableObjects$}{
+            sample position: $\p_s \gets \arg\max_{\p_k}\;\fitnessFunc_{\text{class}}(\p_k,\environment)$ \tcp*{Best position \cref{sec:env-obj-fitness-func}}
+            \If{$\fitnessFunc_{\text{class}}(\p_s,\environment) > threshold_{\text{class}}$}{
+            compute object's \gloss{Skeleton}: $\gloss{Skeleton}_o \gets \fittingFunc_{\text{class}}(\environment)$ \tcp*{\cref{sec:env-obj-fitting-func}}
+            add new object $o$ to $\objects$\;
+            }
+        }
+
+        % Environment update
+        \tcp{(2) Environment update from \glosses{EnvModif} (\cref{sec:env-obj-materials})}
+        $\height \gets \text{recompute from all objects height modifiers } \heightModif_o$ \tcp*{\cref{sec:env-obj-height-modifiers}}
+        $\Wsimu \gets \text{recompute from } \height$ \tcp*{\cref{sec:env-obj-water-currents}}
+        $\Wobj \gets \sum_{o \in \objects}\lambda_o\,\tensor{u}_o$\;
+        $\Water \gets \Wuser + \Wsimu + \Wobj$\;
+        $\material \gets \text{advection-reaction-diffusion}$ \tcp*{\cref{sec:env-obj-material-modifiers}}
+        $\environment \gets (\height,\;\Water,\;\Wlevel,\;\material)$\;
+        apply direct user edits to \gloss{Skeleton} \tcp*{\cref{sec:env-obj-manual-interaction}}
+        apply \glosses{GeoEvent} analytically on $\environment$ \tcp*{\cref{sec:env-obj-events}}
+        $\objects \gets \text{remove unfit objects}$\;
+    }
+    \Return{$\objects$} \tcp*{sparse \glosses{EnvObj}}
+\end{algorithm}
+
 
 \subsection{Initialization}
 
@@ -550,6 +597,7 @@ At any iteration, the user may edit individual \glosses{EnvObj} interactively (\
 
 The output of our system is a set of \glosses{EnvObj} stored as 2D skeletons in the plane. We deliberately stop at this sparse, symbolic level; meshing, texturing, and final rendering are left to downstream tools chosen by the end-user. For each object, we export its skeleton geometry, semantic class, and environment-modifier parameters, enough to drive terrain synthesis or placement of assets in a game engine or simulator. Figures in this chapter illustrate possible renderings generated with a mix of implicit surfaces and triangular meshes (\cref{fig:env-obj-assets}).
 
+
 \section{Placement of \glosses{EnvObj} in an environment}
 \label{sec:env-obj-generation-rules}
 
@@ -561,6 +609,7 @@ Our placement algorithm proceeds in two steps: first, it identifies the globally
 % For notational simplicity, we abbreviate $\fitnessFunc(\environment(\p))$ and $\fittingFunc(\environment(\p))$ as $\fitnessFunc(\p)$ and $\fittingFunc(\p)$, respectively.
 
 \subsection{\Gloss{FitnessFunc}}
+\label{sec:env-obj-fitness-func}
 
 \begin{figure}
     \autofitgraphics[]{coral-erosion-example.pdf, rock-erosion-example.pdf}
@@ -570,7 +619,7 @@ Our placement algorithm proceeds in two steps: first, it identifies the globally
 
 Our placement method take inspiration from "Darwinian fitness", refering to an organism's ability to survive and reproduce in its environment. It is a measure of how well-suited an organism is to its surroundings, and those with higher fitness are more likely to pass on their genes to the next generation. In a similar manner, the \gloss{FitnessFunc} of an \gloss{EnvObj} evaluates its suitability at a location in the terrain, extending the meaning to living features (e.g., forests and corals) and non-living elements (e.g., reefs and lagoons).
 
-The fitness function $\fitnessFunc: \environment \to \R$ quantitatively evaluates how well a given environment location satisfies the requirements of \glosses{EnvObj}. In other words, $\fitnessFunc$ returns a numeric score representing the suitability of local environmental conditions for each object. This function considers various environmental variables such as altitude, the presence of specific materials, water current strength, and their respective gradients. Defining separately $\fitnessFunc$ for each \gloss{EnvObj} class allows the algorithm to be tailored to the unique needs and tolerances of different object types. High $\fitnessFunc$ values indicate favourable sites for the object, while low values correspond to unsuitable or inhospitable locations.
+The fitness function $\fitnessFunc(\environment): \R^2 \to \R$ quantitatively evaluates how well a given environment location satisfies the requirements of \glosses{EnvObj}. In other words, $\fitnessFunc$ returns a numeric score representing the suitability of local environmental conditions for each object. This function considers various environmental variables such as altitude, the presence of specific materials, water current strength, and their respective gradients. Defining separately $\fitnessFunc$ for each \gloss{EnvObj} class allows the algorithm to be tailored to the unique needs and tolerances of different object types. High $\fitnessFunc$ values indicate favourable sites for the object, while low values correspond to unsuitable or inhospitable locations.
 
 Different types of \glosses{EnvObj} require different criteria for their fitness evaluation. For example, a river might prioritise lower altitude and proximity to water currents, while a forest might prioritise higher altitude and specific material availability. The flexibility of the fitness function allows it to be customised for each \gloss{EnvObj}, ensuring that the generated terrain remains coherent and realistic.
 
@@ -579,12 +628,13 @@ In practice, to find suitable locations for an object, we evaluate its $\fitness
 The value of the \gloss{FitnessFunc} can be used later on to modify the geometric representation or the appearance of the \gloss{EnvObj} to appear more eroded (\cref{fig:env-obj-procedural-erosion}).
 
 \subsection{\Gloss{FittingFunc}}
+\label{sec:env-obj-fitting-func}
 
-A candidate object is first seeded at the position $\p_s = \arg \max_\p \fitnessFunc(\p)$, i.e. the global maximum of the fitness map. This seed acts as the initial guess for the subsequent shape optimisation for the \gloss{FittingFunc} $\fittingFunc: \environment \to \R$ described below. Moreover, this two-step optimisation allows a coarse approximation of the global maximum of the \gloss{FitnessFunc} with few samples, reducing its computational demand, as the \gloss{FittingFunc} optimisation is focused on a single seed.
+A candidate object is first seeded at the position $\p_s = \arg \max_\p \fitnessFunc(\p)$, i.e. the global maximum of the fitness map. This seed acts as the initial guess for the subsequent shape optimisation for the \gloss{FittingFunc} $\fittingFunc(\environment): \R^2 \to \R$ described below. Moreover, this two-step optimisation allows a coarse approximation of the global maximum of the \gloss{FitnessFunc} with few samples, reducing its computational demand, as the \gloss{FittingFunc} optimisation is focused on a single seed.
 
 \subsubsection{Point-based \gloss{Skeleton}}
 
-For objects whose skeleton reduces to a single point (boulders, solitary corals, etc.), we refine the seed by hill-climbing on a (possibly different) fitting field $\fittingFunc$. In most cases we simply set $\fittingFunc = \fitnessFunc$, but the user may supply a sharper or multi-objective field when needed. Optimisation proceeds by gradient ascent on $\nabla\fittingFunc$ with a small step size and terminates when $|\nabla \fittingFunc|<\varepsilon$.
+For objects whose skeleton reduces to a single point (boulders, individual corals, etc.), we refine the seed by hill-climbing on a (possibly different) fitting field $\fittingFunc$. In most cases we simply set $\fittingFunc = \fitnessFunc$, but the user may supply a sharper or multi-objective field when needed. Optimisation proceeds by gradient ascent on $\nabla\fittingFunc$ with a small step size and terminates when $|\nabla \fittingFunc|<\varepsilon$.
 
 \subsubsection{Curve-based \gloss{Skeleton}}
 
@@ -617,8 +667,8 @@ If a steep coast can be found where the terrain slope is significant near the wa
     \begin{align}
         \Einternal &= \Ainternal \left( \int_{\curve}{ \norm{\curve'(s)}^2 \, ds} + \int_{\curve}{ \norm{\curve''(s)}^2 \, ds} \right) \nonumber
     \end{align}
-    The internal energy introduced in \cite{Kass1988} is composed of two components imposing penalties on the local properties of the points of the curve. The first derivative forces the points along the curve to be evenly spaced by minimising the curve tension, while the second derivative restricts it from forming sharp corners. As our aim is to represent natural elements, we rarely find sharp features and thus we use the original definition from the Snake formulation.
-}{snake_algorithm_internal.png}{Internal energy minimisation for one vertex is done by reducing the difference of length with the next and with the previous vertices, while reducing the curvature at this point.}{fig:env-obj-snake-internal}
+    The internal energy introduced in \cite{Kass1988} is composed of two components imposing penalties on the local properties of the points of the curve. The first derivative forces the points along the curve to be evenly spaced by minimising the curve tension, while the second derivative restricts it from forming sharp corners, increasing the rigidity of the curve. As our aim is to represent natural elements, we rarely find sharp features and thus we use the original definition from the Snake formulation.
+}{snake_algorithm_internal.pdf}{Internal energy minimisation for one vertex is done by reducing the difference of length with the next and with the previous vertices (tension), while reducing the curvature at this point (rigidity).}{fig:env-obj-snake-internal}
 
 In \cref{fig:env-obj-snake-internal} we see the two different components of this energy minimisation: averaging the vector formed by the previous segment with the vector formed by the next segment, we can move the vertex to a position for which the two new segments are equal in length. On the other hand, translating the vertex towards its projection minimises the curvature at this vertex.
 
@@ -631,7 +681,7 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
 
     The energy is minimised when the vertex is positioned at the global maximum of the scalar field.
 
-}{snake_algorithm_external.png}{The central vertex can optimise its external energy by translating in the same direction as the function gradient $\nabla \fitnessFunc$.}{fig:env-obj-snake-external}
+}{snake_algorithm_external.pdf}{The central vertex can optimise its external energy by translating in the same direction as the function gradient $\nabla \fitnessFunc$.}{fig:env-obj-snake-external}
 
 \AltTextImage{
     \subsubsubsection{Shape energy}
@@ -642,7 +692,7 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
 
     The original Snake algorithm is biased, forcing the curve to shrink as the internal forces attract the vertices towards their neighbours. The introduction of a target length cancels this effect.
 
-}{snake_algorithm_shape.png}{The shape energy is minimised when the arc length of the curve $\curve$ is equal to a parameter $\Length$, obtainable by moving towards or in opposition to its neighbours.}{fig:env-obj-snake-shape}
+}{snake_algorithm_shape.pdf}{The shape energy is minimised when the arc length of the curve $\curve$ is equal to a parameter $\Length$, obtainable by moving towards or in opposition to its neighbours.}{fig:env-obj-snake-shape}
 
 \AltTextImage{
     \subsubsubsection{Gradient energy}
@@ -650,9 +700,9 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
         \Egradient &= \Agradient \int_{\curve}{-\dotProd{\curve'(s)}{\nabla\fittingFunc\left(\curve(s)\right)}^2 ds} \nonumber
     \end{align}
     In our application, having information about the orientation of \glosses{EnvObj} may be essential. For this purpose, we introduced a gradient energy component in the formulation. The equation imposes that the direction of the curve at any point should be directed towards the gradient of the scalar field (\cref{fig:env-obj-snake-gradient}). As the external energy pushes points towards the lowest point of the scalar field, the gradient field restricts the gradient descent for the global curve into a specific way, which may feel more natural. \cref{fig:env-obj-snake-gradient-example} presents the effect of gradient energy with three identical initial curves: a strong gradient energy factor (top) drives the curve uphill while a negative coefficient (bottom) forces the curve to avoid steep slopes. 
-
-    During the optimisation process, the gradient of the scalar field is already evaluated by the external energy optimisation, so the addition of the gradient component is almost free.
-}{snake_algorithm_gradient.png}{The gradient energy is minimised when the curve crosses perpendicularly the isolines of the function. Black: the initial curve, Blue: a possible curve crossing the gradient. The scalar field is stylised to display isolines that the optimal curve has to cross.}{fig:env-obj-snake-gradient}
+    }{snake_algorithm_gradient.pdf}{The gradient energy is minimised when the curve crosses perpendicularly the isolines of the function. Black: the initial curve, Blue: a possible curve crossing the gradient obtained by displacing the vertices. % The scalar field is stylised to display isolines that the optimal curve has to cross.
+}{fig:env-obj-snake-gradient}
+During the optimisation process, the gradient of the scalar field is already evaluated by the external energy optimisation, so the addition of the gradient component is almost free.
 
 \begin{figure}
     \autofitgraphics[]{snake1.png, snake2.png, snake3.png}
@@ -682,7 +732,7 @@ Finally, the shape constraint energy $\Eshape$ can target an area $\Area$, for e
 
 In our implementation, each \gloss{EnvObj}'s \gloss{Skeleton} is a connected component, as we define the boundaries by the connected curve $\curve$, but it can be convex or concave. An infinite penalty is added for the curve's self-intersection.
 
-At every global iteration, each object re-evaluates $\fitnessFunc(\curve) < T_{\text{fit}}$ with $T_{\text{fit}}$ a threshold for which the object is removed; otherwise we take advantage of the iterative nature of the Snake algorithm and improve the shape of the \gloss{Skeleton} by optimising their \gloss{FittingFunc} again. %, multiple global iterations after their instantiation. As the number of \glosses{EnvObj} becomes large, readjusting all \glosses{Skeleton} becomes time-consuming, so we can use this process for the $n$ most recent \glosses{EnvObj} in the scene.
+At every global iteration, each object re-evaluates $\fitnessFunc(\curve, \environment) < T_{\text{fit}}$ with $T_{\text{fit}}$ a threshold for which the object is removed, fixed for each object class; otherwise we take advantage of the iterative nature of the Snake algorithm and improve the shape of the \gloss{Skeleton} by optimising their \gloss{FittingFunc} again. If the user fixed the position of vertices, we simply set $\nabla \energy = \vec{0}$ at the given vertices. %, multiple global iterations after their instantiation. As the number of \glosses{EnvObj} becomes large, readjusting all \glosses{Skeleton} becomes time-consuming, so we can use this process for the $n$ most recent \glosses{EnvObj} in the scene.
 
 % ---------- Environment modifiers -------------------------------------------
 \section{\Glosses{EnvModif}}
@@ -695,6 +745,7 @@ Every instantiated \gloss{EnvObj} contributes a local \gloss{EnvModif} tuple $\e
 before advection-diffusion relaxation and viability tests.
 
 \subsection{\Gloss{EnvMat} modifiers}
+\label{sec:env-obj-material-modifiers}
 For every material layer $\oneMaterial \in \material$ (sand, limestone, nutrients, ...), we store a scalar availability field $\concentration_\oneMaterial(\p,t)$ defined on the plane. %This is not a volumetric thickness, merely a stock or probability used by the placement rules (Sec.~\ref{sec:env-obj-communication}).
 
 Each material has four transport parameters $(\mass_\oneMaterial, \velFactor_\oneMaterial, \diffusion_\oneMaterial, \decay_\oneMaterial)$: mass density $\mass_\oneMaterial$, flow-coupling factor $\velFactor_\oneMaterial$, molecular diffusivity $\diffusion_\oneMaterial$, and first-order decay rate $\decay_\oneMaterial$.
@@ -730,12 +781,30 @@ We solve \eqref{eq:material-displacement-equation} numerically using an Euler in
     + \sum_{\oneObject \in \objects}{ S_{\oneMaterial, \oneObject}(\p) } \big) \big) \nonumber
 \end{align}
 
-The linear decay $\decay_\oneMaterial$ prevents indefinite mass build-up and drives the system toward a bounded equilibrium, following the practice of ecological field models \cite{Seidl2012}. \cref{fig:env-obj-stability-examples} shows the stability of a diffusion simulation over 200s with and without decay, with and without a flow field. A steady state is visible as the MAE (Mean Average Error, i.e. discrete approximation of $L^1$-norm) from one time step to another drops at $t=50s$ in the case of a small decay, while the MAE blows up in the case without decay.
+The linear decay $\decay_\oneMaterial$ prevents indefinite mass build-up and drives the system toward a bounded equilibrium, following the practice of ecological field models \cite{Seidl2012}. \cref{fig:env-obj-stability-examples} shows the stability of a diffusion simulation over 200s with and without decay, with and without a flow field. A steady state is visible as the MAE (Mean Average Error, i.e. discrete approximation of $L^1$-norm) from one time step to another drops at $t=50s$ in the case of a small decay, while the MAE blows up in the case without decay. The pseudo code presented in \cref{alg:env-obj-advection-reaction-diffusion} illustrate conciseness of the implementation.
 
 
 An example of deposition of sand from an \gloss{EnvObj} is provided in \cref{fig:env-obj-double-island-sand-deposition}, which is mainly affected by the water flow generated by the islands.
 
 The effects of varying the different material properties of sand spread from rocks in a canyon with high water currents are presented in \cref{fig:env-obj-material-diffusion-parameters}. The special case of shade and coral calcareous deposition (reef-building material) only relies on diffusivity and decay to conserve a static modification on the surface, without the need for another framework for this unique type of environmental change (\cref{fig:env-obj-shade,fig:env-obj-iterative-island}).
+
+\begin{algorithm}%[H]
+    \DontPrintSemicolon
+    \caption{Advection-diffusion-reaction for a single \gloss{EnvMat}}
+    \label{alg:env-obj-advection-reaction-diffusion}
+    \KwIn{$\concentration(\cdot)$, $\Water$, $\height$, params $(\mass,\velFactor,\diffusion,\decay)$, sources and sinks $S(\cdot)$, step size $dt$}
+    \KwOut{Steady state \gloss{EnvMat}}
+    $\warp(\p) \gets \mass \nabla \height(\p) + \velFactor \Water(\p)$ for all $\p$\;
+    $\hat{\concentration} \gets \concentration$\;
+    \DoWhile{$\frac{1}{|\Omega|}\sum_{\p} |\hat{\concentration}(\p)-\concentration(\p)| > \tau$ \tcp*{MAE < $\tau$}}{
+        $\concentration \gets \hat{\concentration}$\;
+        \ForEach{$\p$}{
+            $\hat{\concentration}(\p) \gets \max\{0,\; \concentration(\p) + dt\,[\diffusion \nabla^2 \concentration
+            - \decay \concentration - \warp\cdot\nabla \concentration + S(\p)]\}$\;
+        }
+    }
+    \Return{$\hat{\concentration}$}
+\end{algorithm}
 
 \begin{figure}
     \autofitgraphics[]{2025-06-20__09-41-21_render_top_view-with-sand.png, 2025-06-20__09-44-50_render_top_view-with-sand.png, 2025-06-20__09-44-50_render_top_view-with-sand-with-flow.png }
@@ -780,7 +849,21 @@ To approximate the distance from a query point $\p_0$ to the nearest object, we 
 \end{align}
 % Because the diffusion-reaction field is harmonic (or screened harmonic) with no interior maxima, gradient ascent is guaranteed to terminate on some skeleton point. In regions where multiple skeleton components compete, the ascent path may occasionally terminate on a non-nearest component, but in practice this effect is rare and does not materially affect the general applicability of the method.
 
-This setup allows direct queries for the distance to any specific type without additional preprocessing on the complete terrain, while alternative strategies such as using Euclidean distance transforms could also be applied to avoid the gradient ascent with a single lookup at the cost of heavier computation.
+This setup allows direct queries for the distance to any specific type without additional preprocessing on the complete terrain, while alternative strategies such as using Euclidean distance transforms could also be applied to avoid the gradient ascent with a single lookup at the cost of heavier computation. The complete distance-query procedure is given in \cref{alg:env-obj-distance-estimation}.
+
+\begin{algorithm}%[H]
+    \DontPrintSemicolon
+    \caption{Distance query to nearest object of a given type}
+    \label{alg:env-obj-distance-estimation}
+    \KwIn{Screened field $\concentration_{\text{object}}(\cdot)$ with Dirichlet $\concentration_{\text{object}}=C_s$ on skeleton $\Gamma$, query point $\p_0$}
+    \KwOut{Approximated distance $\hat d$}
+    $\p \gets \p_0$\;
+    \While{$\concentration_{\text{object}}(\p) < C_s - \varepsilon$}{
+        $\p \gets \p + \eta \nabla \concentration_{\text{object}}(\p)$ \tcp*{gradient ascent}
+    }
+    \Return{$\hat d \gets \|\p - \p_0\|$}
+\end{algorithm}
+
 
 
 
@@ -788,6 +871,7 @@ This setup allows direct queries for the distance to any specific type without a
 
 
 \subsection{Height modifiers}
+\label{sec:env-obj-height-modifiers}
 
 Terrain elevation is updated by blending the \gloss{CoarseHeight} functions of all objects that overlap a query point $\p$. We simplify the shape of \glosses{EnvObj} to analytical functions such as a mountain to a cone, a reef as a curved cylinder, or a coral boulder as a sphere, enabling fast, on-demand, and multi-scale computation of the altitude at any point. Because we work with a DEM, overhangs are ignored.
 
@@ -1008,7 +1092,21 @@ In this case, we did not include the linear factor $\tEvent$ as storms are usual
 
 \midConclusion
 
-Our framework can easily be extended as the \gloss{GeoEvent} system remains similar for all \glosses{GeoEvent}. Including higher-level simulations in the \gloss{GeoEvent} system can be added, such as the simulation of tectonic activity, the use of fluid dynamics for tsunami \glosses{GeoEvent}, the integration of human activity, etc...
+Our framework can easily be extended as the \gloss{GeoEvent} system remains similar for all \glosses{GeoEvent} as we see in \cref{alg:env-obj-geoevents}. Including higher-level simulations in the \gloss{GeoEvent} system can be added, such as the simulation of tectonic activity, the use of fluid dynamics for tsunami \glosses{GeoEvent}, the integration of human activity to alter specific \glosses{EnvMat}, etc...
+
+\begin{algorithm}%[H]
+    \DontPrintSemicolon
+    \caption{Applying \glosses{GeoEvent}}
+    \label{alg:env-obj-geoevents}
+    \KwIn{$\height,\Wlevel,\Wuser$, events, $t$}
+    \ForEach{$e$ in events}{$\tEvent \gets \frac{t - t_{e, \text{start}}}{t_{e, \text{end}} - t_{e, \text{start}}}$}
+    $\Wlevel \gets \Wlevel + \sum_{e \in \text{water events}} \Delta \Wlevel \tEvent$\;
+    $\height(\p) \gets \height(\p) + \sum_{e \in \text{subsidence events}} \Delta \height_e\, G_{\sigma_e}(\|\p-\q_e\|)\tEvent$\;
+    $\Wuser(\p) \gets \Wuser(\p) + \sum_{e \in \text{storm events}} \velocity_e \, G_{\sigma_e}(\|\p-\q_e\|)$\;
+    \Return{$\height,\Wlevel,\Wuser$}
+\end{algorithm}
+
+
 
 \section{Results and discussion}
 \label{sec:env-obj-results}

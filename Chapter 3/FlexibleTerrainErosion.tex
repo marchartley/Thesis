@@ -227,7 +227,8 @@ In this section, we first review a subset of the major simulated phenomena used 
 % \section{Technical background}
 \section{Particle erosion}
 \label{sec:erosion-method}
-Erosion occurs in three stages: material detachment, transport and deposition (respectively in red, black and green in \cref{fig:erosion-ablation_erosion}). In our approach, particles move through the medium following its flow (i.e. wind in air or currents in water) and then absorb or deposit a small amount of material upon contact with the land surface, effectively fulfilling the three stages of erosion.
+Erosion occurs in three stages: material detachment, transport and deposition (respectively in red, black and green in \cref{fig:erosion-ablation_erosion}). In our approach, particles move through the medium following its flow (i.e. wind in air or currents in water) and then absorb or deposit a small amount of material upon contact with the land surface, effectively fulfilling the three stages of erosion, separating the transport process from the detachment and deposition processes (\cref{fig:erosion-pipeline-with-terrain}).
+
 \begin{figure}
     \autofitgraphics[width=0.8\linewidth]{ablation_erosion.pdf}
     \caption{Three steps of the erosion process from the sediment point of view: detachment from its original location (dotted red circle), transport in a fluid (dotted black circle), deposition at a new location (dotted green circle).}
@@ -235,6 +236,13 @@ Erosion occurs in three stages: material detachment, transport and deposition (r
 \end{figure}
 
 \subsection{Overview}
+
+\begin{figure}
+    \autofitgraphics{pipeline_with_terrain.pdf}
+    \caption{An iteration of the erosion pipeline consist of an initial terrain onto which we simulate a particle system. The collisions are tracked and we model the detachment and deposition at each point, resulting in a final eroded terrain. }
+    \label{fig:erosion-pipeline-with-terrain}
+\end{figure}
+
 Particles are transported through the medium and can pass through several different media. Each medium is defined by a density and a flow. Consider, for example, water density to be \SI{1000}{\kilogram \per \cubic \meter} and that of air to be \SI{1}{\kilogram \per \cubic \meter}. The gravity applied to the particles is then very different between open and submerged environments due to the difference in buoyancy, while the process remains similar.
 Using a pre-calculated flow field to guide particle movement simplifies the simulation by treating particles as independent entities, eliminating the need for inter-particle calculations. This not only significantly reduces the overall execution time but also offers users high flexibility over the quality of the simulation and simplifies the implementation. Moreover, we consider that particles in a fluid do not influence the flow as it would become "overkill" for such lightweight objects \cite{Wei2003}.
 
@@ -301,27 +309,29 @@ We first present how to compute the particle speed using particle physics, then 
 \subsubsection{Particle physics}
 Due to their independence from other particles, we consider each particle to follow Newton's laws of motion. Each particle has a volume $\volume$, an effective density $\particleDensity$ (which may depend on the amount of carried sediment), and thus a mass $\particleMass = \particleDensity \volume$. The surrounding medium has density $\fluidDensity$, viscosity $\viscosity$, and velocity field $\fluidVelocity(\p,t)$.
 
-The external forces $\extForce$ applied to a particle consist of gravity, buoyancy, and drag. Gravity acts as
-\begin{align}
-    \gravityForce = \particleMass \gravity
-\end{align}
-with $\gravity$ the gravitational acceleration vector. Buoyancy opposes gravity as
-\begin{align}
-    \buoyancyForce = -\fluidDensity \volume \gravity
-\end{align}
+\AltTextImage{
+    The external forces $\extForce$ applied to a particle consist of gravity, buoyancy, and drag (\cref{fig:erosion-forces}). Gravity acts as
+    \begin{align}
+        \gravityForce = \particleMass \gravity
+    \end{align}
+    with $\gravity$ the gravitational acceleration vector. Buoyancy opposes gravity as
+    \begin{align}
+        \buoyancyForce = -\fluidDensity \volume \gravity
+    \end{align}
 
-The net body force is then
-\begin{align}
-\label{eq:erosion-bodyforce}
-    \extForce = \volume \big(\particleDensity - \fluidDensity\big)\gravity
-\end{align}
+    The net body force is then
+    \begin{align}
+    \label{eq:erosion-bodyforce}
+        \extForce = \volume \left(\particleDensity - \fluidDensity\right)\gravity
+    \end{align}
 
-In addition, drag relaxes the particle velocity $\particleVelocity$ toward the local fluid velocity $\fluidVelocity$. For small Reynolds numbers we use Stokes' drag formula for spheres in a fluid:
-\begin{align}
-    \label{eq:erosion-drag}
-    \dragForce = 6\pi \viscosity \particleSize \big(\fluidVelocity - \particleVelocity\big)
-\end{align}
-where $\particleSize$ denotes the particle radius.
+    In addition, drag relaxes the particle velocity $\particleVelocity$ toward the local fluid velocity $\fluidVelocity$. For small Reynolds numbers we use Stokes' drag formula for spheres in a fluid:
+    \begin{align}
+        \label{eq:erosion-drag}
+        \dragForce = 6\pi \viscosity \particleSize \left(\fluidVelocity - \particleVelocity\right)
+    \end{align}
+    where $\particleSize$ denotes the particle radius.
+}{particle_force.pdf}{Particle's motion in a fluid consist of three forces: gravity, buoyancy, and drag. The later is acting opposite direction to the relative particle velocity in the fluid. }{fig:erosion-forces}
 
 The full equation of motion is therefore
 \begin{align}
@@ -478,12 +488,6 @@ With our particle system, we propose to model intricate scenarios, such as the e
     \autofitgraphics{main_pipeline.pdf}
     \caption{Our method requires a base geometry, a small number of parameters for the particles and the medium used for the erosion simulation. It can be easily adapted to be compatible with different mediums and terrain representations.}
     \label{fig:erosion-pipeline}
-\end{figure}
-
-\begin{figure}
-    \autofitgraphics{pipeline_with_terrain.pdf}
-    \caption{An iteration of the erosion pipeline consist of an initial terrain onto which we simulate a particle system. The collisions are tracked and we model the detachment and deposition at each point, resulting in a final eroded terrain. }
-    \label{fig:erosion-pipeline-with-terrain}
 \end{figure}
 
 In this section, we describe how to apply detachment and deposition to different terrain representations with our method (\cref{fig:erosion-pipeline}). We cover the most commonly used representations, namely height fields, layered terrains, voxel grids and implicit surfaces. Note that our work could be extended to additional representations. Two conditions need to be satisfied for a representation to be eligible for our erosion method: the ability to evaluate the intersection of a particle with the ground and to compute the normal of the terrain at this point. To the best of our knowledge, all representations do.
