@@ -1,0 +1,377 @@
+\chapter*{Résumé long (FR)}
+
+Cette thèse porte sur la génération procédurale d'environnements sous-marins tridimensionnels, avec une attention particulière portée aux récifs coralliens. \\
+Elle s'inscrit plus largement dans le cadre d'une collaboration entre roboticiens, écologistes marins et informaticiens. \\
+Le projet vise à développer des outils robotiques et informatiques pour mieux comprendre l'évolution de la biodiversité marine et faciliter l'observation écologique de long terme.
+
+Les missions de robotique sous-marine présentent des défis majeurs~: conditions environnementales imprévisibles, logistique coûteuse et risques matériels et humains élevés. \\
+Dans ce contexte, la simulation virtuelle d'environnements réalistes offre une solution complémentaire permettant de vérifier et valider les comportements des robots autonomes dans des milieux complexes avant toute campagne en mer. \\
+La génération procédurale d'environnements 3D vise précisément à produire de tels mondes virtuels crédibles, contrôlables et multi-échelles, tout en conservant l'humain au centre du processus créatif.
+
+\section*{Contexte scientifique et enjeux}
+Les océans recouvrent plus de 70 \% de la surface terrestre et jouent un rôle essentiel dans la régulation du climat et la préservation de la biodiversité. \\
+Les récifs coralliens, bien que couvrant moins de 0,1 \% du plancher océanique, abritent près du quart des espèces marines connues. Leur observation régulière est indispensable pour détecter les changements écologiques et orienter les politiques de conservation. \\
+Cependant, les méthodes classiques de suivi (plongeurs, comptages visuels, capteurs embarqués) demeurent coûteuses et limitées spatialement.
+
+Les robots autonomes tels que REMI, développés au LIRMM, permettent de pallier ces limites. \\
+Néanmoins, leur validation nécessite des environnements d'essai diversifiés et reproductibles, difficiles à obtenir dans le monde réel. \\
+Les tests unitaires ou en bassin ne couvrent que des comportements simples, tandis que les campagnes en mer introduisent une grande variabilité (remous, turbidité, faune, courants, etc.). \\
+L'usage de simulateurs robotiques permet alors de tester des comportements complexes, mais la création de ces environnements requiert expertise logicielle et temps. \\
+La conception automatisée de paysages sous-marins virtuels constitue donc un enjeu central, tant pour la vérification robotique que pour la modélisation écologique et l'informatique graphique.
+
+\section*{Objectifs de la thèse}
+Cette recherche explore de nouveaux moyens de concevoir et générer des environnements sous-marins procéduraux, plausibles et multi-échelles, afin de~:
+\begin{Itemize}
+    \Item{} Fournir des terrains de simulation réalistes pour la robotique et la modélisation écologique;
+    \Item{} Offrir des outils de création interactifs à la fois rapides, contrôlables et scientifiquement cohérents;
+    \Item{} Intégrer dans la génération des contraintes géologiques, biologiques et océanographiques. \\
+\end{Itemize}
+
+La question centrale posée est la suivante~:
+Comment guider efficacement l'utilisateur dans la création de mondes virtuels tout en maintenant un contrôle maximal sur le résultat final ?
+
+\section*{Contributions principales}
+La thèse s'articule autour de trois contributions complémentaires formant un pipeline complet de génération, de la conception sémantique d'un paysage jusqu'à sa simulation physique finale. \\
+
+\subsection*{Génération d'îles coralliennes par esquisse et apprentissage automatique}
+La première contribution introduit une méthode originale de génération d'îles volcaniques coralliennes à partir d'esquisses interactives en deux projections (plan et profil) couramment utilisées en géologie et en télédétection. \\
+L'utilisateur définit la forme générale de l'île (vue de dessus) et son profil altimétrique (vue latérale) pour obtenir un premier modèle 3D. \\
+Un champ vectoriel de vent, dessiné par l'utilisateur, déforme cette esquisse pour simuler les effets morphologiques à long terme du vent et des vagues. \\
+Une fonction de résistance à la déformation contrôle la sensibilité des différentes zones (roche volcanique, plage, récif, fond marin) à ces forçages, permettant de reproduire des reliefs cohérents tout en restant interactif et intuitif. \\
+
+Nous intégrons ensuite un modèle analytique de croissance récifale inspiré de la théorie de Darwin sur la formation des récifs coralliens. \\
+Celui-ci simule l'évolution conjointe du volcan (subsidence) et du récif (croissance verticale) afin de reproduire les principales morphologies observées~: récifs frangeants, récifs barrières et atolls. \\
+Les résultats de ce modèle procédural servent à générer un ensemble de données synthétiques, composé de paires (cartes sémantiques, champs de hauteur), qui alimentent l'apprentissage d'un réseau antagoniste génératif conditionnel (cGAN pix2pix). \\
+Ce dernier associe un générateur U-Net et un discriminateur PatchGAN, entraînés avec une perte combinée L1 + adversarielle, via l'optimiseur Adam, sur ~10 000-20 000 échantillons issus du modèle procédural enrichis par augmentations géométriques et fusion douce smoothmax multi-îles. \\
+Le réseau apprend ainsi la distribution statistique des structures coralliennes tout en relâchant les contraintes initiales (symétrie radiale, îlot central). \\
+L'approche combine la rigueur géologique du modèle procédural et la flexibilité créative offerte par l'apprentissage automatique, ouvrant la voie à une génération d'îles coralliennes contrôlable, réaliste et diversifiée. \\
+
+\subsubsection*{Aspects techniques développés}
+\begin{Itemize}
+    \Item{Interface à deux projections et esquisses paramétriques} Définition géométrique de l'île à partir de deux vues complémentaires (plan et profil) fixant structure et échelle.
+    \Item{Déformation contrôlée par champ vectoriel} Les tracés de vent produisent un champ anisotrope simulant les effets morphogéniques du vent et des vagues.
+    \Item{Fonction de résistance paramétrée} Régule localement l'amplitude des déformations selon profondeur et matériau.
+    \Item{Modèle analytique de croissance récifale} Couplage subsidence volcanique / croissance corallienne pour générer récifs frangeants, barrières et atolls.
+    \Item{Génération et augmentation de données synthétiques} Corpus structuré (cartes sémantiques-hauteur) enrichi par translations, rotations, mises à l'échelle et smoothmax multi-îles.
+    \Item{Apprentissage adversarial conditionnel} Entraînement du cGAN pix2pix (U-Net + PatchGAN) assurant cohérence locale et diversité morphologique.
+    \Item{Correction des biais procéduraux} Le réseau surmonte la symétrie radiale et le centrage imposés par le générateur procédural.
+    \Item{Interopérabilité et export} Sorties (cartes de hauteur et cartes sémantiques) directement exploitables dans des simulateurs robotiques ou moteurs 3D.
+    % \Item{Évaluation multi-critères} Validation morphologique (lagons, passes, pentes) et fonctionnelle (navigabilité, obstacles) pour les usages robotique ou écologiques.
+\end{Itemize}
+
+\subsection*{Représentation sémantique des environnements}
+La seconde contribution introduit un cadre de représentation sémantique multi-niveau pour la description et la génération d'environnements sous-marins. \\
+Alors que les approches classiques reposent principalement sur la géométrie des objets, notre modèle propose une structuration hiérarchique d'entités symboliques (coraux, roches, sédiments, algues, îles, etc.) reliées par des relations spatiales et écologiques. \\
+Chaque entité est décrite par ses attributs géométriques (forme, orientation, échelle) et sémantiques (type biologique, conditions préférentielles, interactions locales).
+
+Cette organisation sémantique assure la cohérence écologique et morphologique d'un paysage à différentes échelles, depuis la topographie globale jusqu'à la distribution locale des colonies. \\
+Le modèle fonctionne comme une boucle de génération itérative~: chaque placement est évalué selon des critères de viabilité, les champs environnementaux sont mis à jour (diffusion, advection, dépôt), puis de nouvelles entités apparaissent dans les zones restées favorables. \\
+Les interactions reposent sur un schéma advection-réaction-diffusion appliqué à des champs scalaires et vectoriels (énergie des vagues, luminosité, composition du sol, humidité, sédiments). \\
+Ces échanges produisent des effets d'auto-organisation comparables à ceux observés dans les récifs réels~: zonation, densité différentielle, colonisation préférentielle. \\
+La représentation, indépendante du support géométrique (carte de hauteur, voxels, maillages implicites), s'intègre aisément dans des pipelines de simulation ou de création et relie modélisation géométrique et écologique dans un cadre unifié.
+
+\subsubsection*{Aspects techniques développés}
+\begin{Itemize}
+    \Item{Boucle itérative de génération et rétroaction} Cycle instanciation-évaluation-mise à jour couplant entités et champs environnementaux, garantissant convergence et stabilité.
+    % \Item{Hiérarchie sémantique multi-échelle} Organisation macro / méso / micro assurant continuité perceptive et écologique.
+    \Item{Fonctions de fitness et fitting squelettique} Placement guidé par compatibilité environnementale et ajustement des courbes par minimisation d'énergie.
+    \Item{Modificateurs et propagation des effets} Opérateurs locaux (matériaux, flux, reliefs) simulant dépôts et perturbations hydrodynamiques.
+    \Item{Matériaux environnementaux paramétrés} Diffusion multi-couches (sable, calcaire, matière organique) sous advection contrôlée, sans solveur fluide explicite.
+    \Item{Événements géomorphologiques et interactivité} Injection d'événements globaux (tempêtes, dépôts, hausse du niveau d'eau) modifiant les champs écologiques tout en préservant la cohérence sémantique.
+    \Item{Compatibilité multi-représentations et export} Instanciation possible en cartes de hauteur, voxels ou surfaces implicites pour édition ou simulation.
+\end{Itemize}
+
+\subsection*{Simulation d'érosion physique}
+La troisième contribution présente un modèle générique d'érosion par particules, destiné à reproduire les processus de vieillissement et de remodelage des paysages terrestres et sous-marins. \\
+L'approche repose sur une formulation lagrangienne~: des particules indépendantes suivent la dynamique d'un fluide (air ou eau) et interagissent localement avec le terrain. \\
+À chaque collision, elles détachent, transportent puis déposent de la matière selon des lois physiques simplifiées dérivées de modèles de cisaillement pseudoplastiques et de sédimentation. \\
+Cette séparation explicite entre transport du fluide et modification du matériau permet d'appliquer le modèle à différents supports (cartes de hauteur, voxels, terrains à couches ou surfaces implicites) sans ajustement structurel majeur.
+
+Chaque particule constite une unité indépendante, permettant une implémentation parallèle. \\
+Le simulateur atteint ainsi des performances interactives tout en reproduisant des effets de long terme tels que abrasion, dépôt sédimentaire ou formation de pentes d'équilibre. \\
+Ce cadre unifié couvre aussi bien des phénomènes atmosphériques que sous-marins (pluie, vent, houle, courants) et peut modéliser l'érosion chimique ou le scouring autour d'obstacles. \\
+Il s'intègre dans des pipelines de rendu, de génération procédurale ou de validation robotique.
+
+\subsubsection*{Aspects techniques développés}
+\begin{Itemize}
+    \Item{Schéma lagrangien indépendant} Chaque particule suit un cycle détachement-transport-dépôt, sans interaction inter-particules, garantissant parallélisation et stabilité.
+    \Item{Découplage fluide / matériau} Le champ de vitesse est soit prescrit, soit fourni par un solveur externe (SPH, FLIP), permettant un contrôle flexible.
+    \Item{Modèle d'abrasion et de dépôt} Les quantités érodées et déposées dépendent de lois pseudoplastiques et de vitesses de sédimentation régies par densité, viscosité et capacité de charge.
+    % \Item{Conservation et stabilité numérique} Des correctifs locaux imposent la conservation de masse et limitent les oscillations sur pentes faibles.
+    \Item{Agnosticité représentationnelle} Schéma commun pour cartes de hauteur, terrains à couches, voxels et surfaces implicites.
+    % \Item{Formulations par représentation} Équations spécifiques (cartes de hauteur, SDF, voxels) assurant cohérence et conservation du volume.
+    % \Item{Implémentation GPU parallèle} Un thread par particule permet de simuler des millions d'agents en temps interactif, avec réglage dynamique du nombre d'itérations.
+    % \Item{Modes d'exécution adaptatifs} Deux modes (interactif et raffinement) équilibrent précision et performance selon l'usage.
+    % \Item{Collision et restitution d'énergie} Un coefficient de restitution contrôle la dispersion ou l'accumulation du sédiment, reproduisant divers comportements physiques.
+    % \Item{Diagnostics et cas d'usage} Cartes d'érosion/dépôt, mesure de rugosité et simulation de phénomènes tels que pluie, ravinement, houle ou abrasion corallienne.
+\end{Itemize}
+
+\section*{Apports et retombées}
+Réunies, ces contributions forment un pipeline cohérent plaçant l'utilisateur au centre~: du grand paysage (définition d'îles et plateformes) jusqu'au détail robotique (micro-habitats, obstacles, turbidité), avec traçabilité des choix et contrôles explicites à chaque étape. \\
+L'approche combine modèles informés par les processus, règles écologiques simplifiées et expertise humaine, conciliant exploration créative et exigence scientifique. \\
+
+Sur le plan applicatif, ces outils ouvrent plusieurs perspectives~:
+\begin{Itemize}
+    \Item{} Robotique sous-marine~: création d'environnements de test pour la navigation autonome, la vision par ordinateur et la planification de trajectoires;
+    \Item{} Informatique graphique et divertissement~: génération de mondes sous-marins crédibles pour le cinéma, les jeux vidéo ou la réalité virtuelle;
+    \Item{} Écologie et géosciences~: exploration virtuelle d'hypothèses sur la formation, l'évolution et l'érosion des récifs coralliens.
+\end{Itemize}
+
+\section*{Perspectives}
+Plusieurs prolongements sont envisagés~: 
+\begin{Itemize}
+    \Item{} (i) procédurale inverse pour inférer des règles à partir de scènes observées;
+    \Item{} (ii) guidage par données utilisateur pour capturer le style créatif et adapter la génération;
+    \Item{} (iii) modèles substitutifs appris pour accélérer le vieillissement sous contrainte de fidélité;
+    \Item{} (iv) couplage plus étroit avec des solveurs d'écoulement lorsque la précision hydrodynamique est requise.
+\end{Itemize}
+
+
+\section*{Conclusion}
+La thèse démontre qu'il est possible de concevoir des environnements sous-marins virtuels à la fois réalistes, contrôlables et scientifiquement crédibles, en combinant modélisation procédurale, apprentissage automatique, représentation sémantique et simulation physique. \\
+En plaçant l'utilisateur au centre de la boucle de création, elle dépasse les approches purement automatiques pour proposer des outils collaboratifs entre humain et machine. \\
+% Ce cadre rend les hypothèses visibles, modulables et testables, et prépare des bancs d'essai virtuels explicables pour la robotique tout en offrant des environnements immersifs pour l'informatique graphique et des terrains d'exploration pour l'écologie.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \chapter*{Résumé long (FR)}
+% % \addcontentsline{toc}{chapter}{Résumé long}
+
+% Cette thèse porte sur la génération procédurale d'environnements sous-marins tridimensionnels, avec une attention particulière portée aux récifs coralliens. Elle s'inscrit dans le cadre du projet BUBOT (Better Understanding Biodiversity changes thanks to new Observation Tools), mené au LIRMM (Université de Montpellier, CNRS) en collaboration avec plusieurs laboratoires internationaux. Le projet vise à développer des outils robotiques et informatiques pour mieux comprendre l'évolution de la biodiversité marine et faciliter l'observation écologique de long terme.
+
+% Les missions de robotique sous-marine présentent des défis majeurs~: conditions environnementales imprévisibles, logistique coûteuse et risques matériels élevés. Dans ce contexte, la simulation virtuelle d'environnements réalistes offre une solution complémentaire permettant de tester, entraîner et valider les comportements des robots dans des milieux complexes avant toute campagne en mer. La génération procédurale d'environnements 3D vise précisément à produire de tels mondes virtuels crédibles, contrôlables et multi-échelles, tout en conservant l'humain au centre du processus créatif.
+
+% \section*{Contexte scientifique et enjeux}
+% Les océans recouvrent plus de 70\,\% de la surface terrestre et jouent un rôle essentiel dans la régulation du climat et la préservation de la biodiversité. Les récifs coralliens, bien que couvrant moins de 0,1\,\% du plancher océanique, abritent près du quart des espèces marines connues. Leur observation régulière est indispensable pour détecter les changements écologiques et orienter les politiques de conservation. Cependant, les méthodes classiques de suivi (plongeurs, comptages visuels, capteurs embarqués) demeurent coûteuses et limitées spatialement.  
+
+% Les robots autonomes tels que REMI, développés au LIRMM, permettent de pallier ces limites. Néanmoins, leur validation nécessite des environnements d'essai diversifiés et reproductibles, difficiles à obtenir dans le monde réel. La création de paysages sous-marins virtuels représente donc un enjeu majeur pour la vérification et la validation robotique, mais aussi pour l'écologie numérique et l'informatique graphique.
+
+% \section*{Objectifs de la thèse}
+% Cette recherche explore comment concevoir et générer des environnements sous-marins procéduraux, plausibles et multi-échelles, afin de~:
+% \begin{Itemize}
+%   \Item{} Fournir des terrains de simulation réalistes pour la robotique et la modélisation écologique~;
+%   \Item{} Offrir des outils de création interactifs à la fois rapides, contrôlables et scientifiquement cohérents~;
+%   \Item{} Intégrer dans la génération des contraintes géologiques, biologiques et océanographiques.
+% \end{Itemize}
+
+% La question centrale posée est la suivante~: Comment guider efficacement l'utilisateur dans la création de mondes virtuels tout en maintenant un contrôle maximal sur le résultat final~?
+
+% \section*{Contributions principales}
+% La thèse s'articule autour de trois contributions complémentaires, formant un pipeline complet de génération, de la conception sémantique d'un paysage jusqu'à sa simulation physique finale.
+
+% \subsection*{Génération d'îles coralliennes par esquisse et apprentissage automatique}
+% La première contribution introduit une méthode originale permettant de générer de vastes îles coralliennes volcaniques à partir d'esquisses interactives.  
+% L'utilisateur peut dessiner la forme générale d'une île et son profil bathymétrique; un modèle procédural d'altération éolienne et marine, basé sur un champ vectoriel de vent simulé, permet de transformer cette esquisse initiale en un relief cohérent.  
+% Le système intègre ensuite un modèle empirique de croissance corallienne, inspiré de la distribution naturelle des espèces et de la morphologie typique des récifs frangeants.  
+
+% Pour élargir la diversité des formes, ces données servent à l'entraînement d'un réseau antagoniste génératif conditionnel (cGAN) capable de produire automatiquement de nouvelles îles réalistes à partir d'un jeu limité d'exemples. Ce modèle apprend la distribution statistique des structures coralliennes et en génère des variantes plausibles, tout en respectant les contraintes dessinées par l'utilisateur.  
+% L'approche combine ainsi la liberté artistique de l'esquisse avec la richesse morphologique offerte par l'apprentissage automatique, ouvrant la voie à la création de jeux de données synthétiques pour la robotique et l'écologie marine.
+
+% \subsection*{Représentation sémantique des environnements}
+% La deuxième contribution porte sur la définition d'une représentation sémantique multi-niveau des paysages sous-marins.  
+% Au lieu de décrire un environnement uniquement par sa géométrie, le modèle repose sur une structure hiérarchique d'entités symboliques (coraux, roches, algues, faune mobile) reliées par des relations spatiales et écologiques.  
+% Chaque entité est associée à des attributs sémantiques (position, type biologique, conditions environnementales préférentielles) et à des règles de cohabitation issues de la littérature écologique.  
+
+% Cette approche permet de peupler automatiquement un terrain 3D avec des organismes cohérents selon l'échelle d'observation, depuis la colonie de coraux jusqu'au récif entier.  
+% La formalisation sémantique est compatible avec différents formats géométriques et moteurs de rendu (mesh, voxel, heightmap) et facilite la génération multi-échelle, c'est-à-dire la transition fluide entre le macro-paysage et le micro-habitat.  
+% Elle constitue ainsi une base solide pour relier modélisation écologique et modélisation géométrique dans un cadre unifié et extensible.
+
+% \subsection*{Simulation d'érosion physique}
+% La troisième contribution propose un modèle générique d'érosion par particules, destiné à reproduire les processus de vieillissement et de déformation des terrains terrestres et sous-marins.  
+% L'algorithme repose sur le suivi de particules fluides simulant le transport de sédiments~: chaque particule transporte, dépose ou emporte de la matière selon la pente locale, la vitesse du flux et les propriétés physiques du sol.  
+% Ce modèle est indépendant du support de représentation (grille de hauteur, maillage, ou surface implicite) et compatible avec plusieurs solveurs de fluides existants.  
+
+% L'implémentation GPU permet d'obtenir des résultats visuellement convaincants en quelques secondes, ouvrant la possibilité d'un usage interactif pour des artistes ou des chercheurs.  
+% Au-delà de l'aspect visuel, ce simulateur reproduit aussi des phénomènes observés dans les récifs réels~: abrasion des coraux morts, dépôts sédimentaires, ou évolution des pentes sous-marines.  
+% L'outil fournit donc un cadre unifié pour la simulation du vieillissement naturel des paysages, pouvant être intégré dans des pipelines de rendu ou de validation robotique.
+
+% \section*{Apports et retombées}
+% Les méthodes proposées forment un ensemble modulaire et interactif d'outils de génération de paysages sous-marins, où l'utilisateur reste au cœur du processus de création.  
+% Elles offrent une nouvelle articulation entre contrôle, réalisme et performance, en conciliant contraintes scientifiques et besoins de création numérique.  
+
+% Sur le plan applicatif, ces outils ouvrent plusieurs perspectives~:
+% \begin{Itemize}
+%   \Item{} Robotique sous-marine~: création d'environnements de test pour la navigation autonome, la vision par ordinateur et la planification de trajectoires~;
+%   \Item{} Informatique graphique et divertissement~: génération de mondes sous-marins crédibles pour le cinéma, les jeux vidéo ou la réalité virtuelle~;
+%   \Item{} Écologie et géosciences~: exploration virtuelle d'hypothèses sur la formation, l'évolution et l'érosion des récifs coralliens.
+% \end{Itemize}
+
+% Cette recherche contribue à un dialogue interdisciplinaire entre informatique graphique, robotique, biologie marine et géologie, en proposant un cadre méthodologique pour la synthèse procédurale d'environnements naturels cohérents et contrôlables.
+
+% \section*{Conclusion}
+% La thèse démontre qu'il est possible de concevoir des environnements sous-marins virtuels à la fois réalistes, contrôlables et scientifiquement crédibles, en combinant modélisation procédurale, apprentissage automatique, représentation sémantique et simulation physique.  
+% En plaçant l'utilisateur au centre de la boucle de création, elle dépasse les approches purement automatiques pour proposer des outils collaboratifs entre l'humain et la machine.  
+
+% Ces travaux ouvrent la voie à de nouvelles formes d'expérimentation et de validation robotique, mais aussi à la production d'environnements numériques immersifs au service de la science et de la création visuelle.
+
+
+
+
+
+
+
+
+% \chapter*{Résumé substantiel en français}
+% \addcontentsline{toc}{chapter}{Résumé substantiel en français}
+
+% Cette thèse porte sur la \textbf{génération procédurale d'environnements sous-marins tridimensionnels}, avec une attention particulière portée aux récifs coralliens. Elle s'inscrit dans un contexte de \textbf{crise écologique} (réchauffement global, perte accélérée de biodiversité, dégradation des écosystèmes) où les océans, qui couvrent plus de 70\,\% de la surface de la Terre, jouent un rôle central dans la régulation du climat et le soutien du vivant. Les récifs coralliens, bien que n'occupant qu'une faible portion du plancher océanique, abritent près d'un quart des espèces marines connues et protègent les côtes tout en soutenant des activités halieutiques et touristiques vitales. Dans ce contexte, l'\textbf{observation de la biodiversité} devient stratégique, mais les suivis sous-marins sont coûteux, limités spatio-temporellement et sujets à des biais d'observation, notamment dans les récifs où l'éclairage, les courants et la fragilité des habitats compliquent la collecte régulière de données. \textbf{BUBOT} (Better Understanding Biodiversity changes thanks to new Observation Tools), mené au LIRMM avec plusieurs partenaires, a été lancé pour répondre à ces enjeux en combinant robotique, vision par ordinateur, écologie et SHS, et a conduit au développement du robot sous-marin \textbf{REMI} pour automatiser des suivis in situ}. Les campagnes ont démontré son potentiel, mais aussi les fortes contraintes des missions réelles: topographies accidentées, courants imprévisibles, turbidité variable, autonomie énergétique et communications limitées. \textbf{D'où l'intérêt d'environnements virtuels réalistes et contrôlables} pour tester et valider les algorithmes avant le terrain, afin d'explorer des scénarios rares (arches, grottes, surplombs, bancs de poissons, sables remis en suspension) difficilement réunissables lors d'une seule mission.
+
+% \section*{Contexte scientifique et enjeux}
+% La \textbf{génération de terrains} est un champ actif de l'informatique graphique, porté par les progrès du rendu, de la simulation et de l'interaction, et s'ouvre à des collaborations avec les sciences du terrain (géologie, océanographie, biologie, robotique). Dans les \textbf{paysages sous-marins} (``seascapes''), les hypothèses et représentations standard des paysages aériens (modèles 2.5D, bruit procédural pur) atteignent vite leurs limites: porosité des récifs, surplombs et cavités, interactions hydrodynamiques/biologiques, et \textbf{contraintes d'observation} (données volumétriques rares, optique limitée, bathymétrie incomplète). Cela appelle des \textbf{modèles procéduraux informés par les processus} (géologiques, écologiques, hydrodynamiques) et capables d'opérer \textbf{à plusieurs échelles} (du kilomètre au centimètre) tout en gardant l'utilisateur au centre de la création.
+
+% \section*{Objectifs de la thèse}
+% Cette recherche explore la conception d'\textbf{environnements sous-marins procéduraux, plausibles, contrôlables et multi-échelles} pour:
+% \begin{Itemize}
+%   \Item{Fournir des terrains de simulation réalistes} pour la robotique et la modélisation écologique. L'objectif n'est pas seulement de reproduire des formes visuellement crédibles, mais de générer des \emph{conditions de test} variées et reproductibles (géométries, matériaux, turbidité) où la navigation, la perception et la prise de décision d'un robot peuvent être éprouvées sur des \emph{cas limites} rarement observables sur le terrain.
+%   \Item{Proposer des outils interactifs rapides, contrôlables et explicables}. La boucle de rétroaction courte (prévisualisation quasi-instantanée), la présence de \emph{paramètres interprétables} (croquis, champs de vent/courant, règles écologiques) et l'\emph{éditabilité locale} doivent permettre à l'utilisateur d'affiner une scène sans tout régénérer, en comprenant l'effet de ses choix.
+%   \Item{Intégrer des contraintes géologiques, biologiques et océanographiques}. Les règles de croissance corallienne, les gabarits géomorphologiques, et l'influence simplifiée des flux hydrodynamiques encadrent l'espace des formes possibles, de sorte que les variations restent \emph{plausibles} sans recourir à une multiphysique lourde.
+% \end{Itemize}
+% Question directrice: \emph{comment guider efficacement l'utilisateur tout au long de la production pour maximiser son contrôle sans sacrifier la plausibilité scientifique?}
+
+% \section*{Contributions principales}
+% La thèse propose \textbf{trois contributions complémentaires} qui forment un pipeline complet, de l'esquisse sémantique à la simulation physique de l'érosion, avec un accent constant sur le contrôle utilisateur, la diversité des formes et l'indépendance vis-à-vis des représentations géométriques.
+
+% \subsection*{(1) Génération d'îles coralliennes guidée par l'esquisse et l'apprentissage}
+% Nous présentons une méthode de \textbf{création rapide d'îles coralliennes volcaniques} guidée par l'utilisateur. Celui-ci \textbf{esquisse} la forme (plan) et le \textbf{profil altimétrique} (élévation), puis définit un \textbf{champ de vent/courant} synthétisant des déformations à long terme (abrasion, transport sédimentaire dirigé). Cette phase produit un \textbf{relief cohérent} au regard des contraintes physiques générales, puis intègre un \textbf{modèle empirique de croissance corallienne} (distribution des morphologies et zones de croissance selon la profondeur et l'énergie du milieu) pour aboutir à des \textbf{heightmaps} réalistes incluant récif frangeant, lagon, bourrelets, passes. Afin d'élargir la \textbf{diversité morphologique} tout en conservant le contrôle, ces données synthétiques servent à l'entraînement d'un \textbf{cGAN conditionnel} qui apprend la distribution de formes récifales et \textbf{génère des variantes} conformes aux \textbf{contraintes dessinées} (contour, élévation, direction de vent/courant).
+
+% \subsubsection*{Aspects techniques développés}
+% \begin{Itemize}
+%   \Item{Esquisse bi-projection et déformation par champ vectoriel} L'utilisateur définit la géométrie générale par deux vues complémentaires (plan et profil), ce qui fixe d'emblée l'\emph{échelle} et la \emph{structure} de l'île. Un champ vectoriel (vent/courant), spécifié par directions, intensités et zones d'influence, induit des \emph{anisotropies morphogénétiques} (étirement des crêtes, formation de passes préférentielles) analogues à des forçages environnementaux persistants. Cette étape sert de \emph{contrainte forte} qui borne l'espace des solutions et évite les dérives de l'apprentissage.
+%   \Item{Modèle de croissance corallienne piloté par l'environnement} Des règles locales, informées par la profondeur relative, l'exposition à l'énergie des vagues et la disponibilité lumineuse, favorisent certaines morphologies (massives/branchues/foliacées) dans des \emph{fenêtres} de conditions. Plutôt qu'une simulation détaillée, un \emph{score d'adéquation} guide le dépôt de structures récifales, ce qui préserve le réalisme \emph{global} tout en gardant des temps de calcul compatibles avec l'interactivité.
+%   \Item{Apprentissage conditionnel (cGAN) et contrôle explicite} Les entrées du réseau incluent le croquis plan, le profil, et les cartes de contraintes (champ de vent, masques). Le bruit latent agit comme \emph{source de diversité}, tandis que les conditions imposent la \emph{fidélité aux intentions}. L'entraînement s'appuie sur un \emph{jeu synthétique} équilibré et des schémas d'augmentation (déformations légères, permutations, bruit) afin d'éviter le sur-apprentissage sur quelques motifs. On obtient ainsi des îles \emph{variées} mais \emph{consistantes} avec la sémantique de départ.
+%   \Item{Évaluation par tâches et contraintes} Outre des critères visuels (cohérence des passes/lagons, continuité des pentes), nous considérons l'\emph{utilité robotique}: existence de couloirs de navigation, diversité d'obstacles (arcs, surplombs), zones de turbidité simulables. Le respect des contraintes d'esquisse est mesuré via des \emph{distances de contours/profils} et la stabilité des détails est vérifiée par \emph{re-générations} sous conditions identiques.
+% \end{Itemize}
+
+% \subsection*{(2) Représentation sémantique multi-niveaux et peuplement d'écosystèmes}
+% Nous introduisons une \textbf{représentation sémantique hiérarchique} fondée sur des \textbf{objets environnementaux} (abiotiques/biotiques) reliés par des \textbf{relations spatiales et écologiques}. Plutôt que d'imposer d'emblée une géométrie 3D, nous explicitons des \textbf{attributs d'environnement} (profondeur, énergie locale, rugosité, substrat, turbidité), des \textbf{préférences d'habitat} et des \textbf{interactions} élémentaires. Le \textbf{pipeline} associe \textbf{fonctions d'adéquation} (fitness) et \textbf{ajustement de squelettes} pour placer et \textbf{adapter} les objets au contexte, en respectant \textbf{règles de cohabitation} et \textbf{échelles} (du micro-habitat à la formation récifale). La \textbf{sortie} peut ensuite être instanciée sur \textbf{différentes représentations} (heightmap, voxels, implicites/maillages), ce qui \textbf{désolidarise la sémantique des choix géométriques} et \textbf{facilite l'édition interactive}.
+
+% \subsubsection*{Aspects techniques développés}
+% \begin{Itemize}
+%   \Item{Hiérarchie sémantique et transitions d'échelle} Les entités sont organisées en niveaux (macro \(\rightarrow\) méso \(\rightarrow\) micro), chaque niveau héritant de contraintes globales et ajoutant ses \emph{spécificités locales}. Des \emph{règles de transition} garantissent une continuité perceptive: par exemple, une crête récifale (macro) induit des zones de \emph{rugosité} (méso) propices à l'implantation de colonies (micro).
+%   \Item{Fitness multi-critères et fitting géométrique} Chaque placement est décidé par un \emph{score} combinant compatibilité environnementale (profondeur, énergie), \emph{voisinage} (distance et densité d'objets similaires/complémentaires) et \emph{cohérence} avec la structure globale. Un \emph{fitting} ajuste ensuite l'orientation, l'échelle et la forme au support (p.~ex. alignement d'un surplomb à une paroi), limitant les interférences géométriques et les intersections non physiques.
+%   \Item{Modificateurs et propagation locale des effets} Des \emph{modificateurs} (EnvModif) altèrent localement matériaux, reliefs ou flux (durcissement du substrat, dépôt sédimentaire, perturbations de courant), simulant l'\emph{empreinte} de chaque objet sur son voisinage. Cette propagation contrôlée produit des \emph{boucles simples} éco-hydro plausibles sans avoir à résoudre une multiphysique complète.
+%   \Item{Compatibilité multi-représentations et export} L'instance finale peut être émise vers des \emph{heightmaps}, des grilles \emph{voxels} ou des \emph{surfaces implicites/maillages}. Ce découplage favorise l'intégration dans des moteurs de rendu/simulateurs robotiques hétérogènes et autorise des \emph{allers-retours} édition \(\leftrightarrow\) instanciation sans perte sémantique.
+% \end{Itemize}
+
+% \subsection*{(3) Simulation d'érosion par particules: vieillissement multi-représentations}
+% Nous proposons une méthode \textbf{générique et efficace} d'\textbf{érosion par particules} pour vieillir des paysages marins et terrestres. Les \textbf{particules} transportent/déposent de la matière sous l'action de forces gravitaires et \textbf{hydrodynamiques simplifiées}; elles \textbf{érosent} les pentes, \textbf{transportent} le sédiment puis \textbf{déposent} en zones de moindre énergie. L'algorithme est \textbf{indépendant de la représentation} (heightfields, grilles voxel, surfaces implicites, terrains stratifiés) et \textbf{conçu pour le parallélisme} (implémentation GPU). Il simule notamment \textbf{érosion côtière}, \textbf{remodelage de pentes récifales}, \textbf{comblement de lagons}, \textbf{karsts}, \textbf{vents} et \textbf{courants sous-marins}.
+
+% \subsubsection*{Aspects techniques développés}
+% \begin{Itemize}
+%   \Item{Schéma Lagrangien, conservation et stabilité} Chaque particule suit un schéma discret de \emph{ramassage/dépôt} dépendant de la vitesse locale, de la pente et d'une \emph{capacité} liée au matériau. Des correctifs imposent la \emph{conservation de masse} au premier ordre et limitent les \emph{oscillations numériques} sur pentes faibles, assurant un vieillissement \emph{progressif} plutôt que des artefacts en escalier.
+%   \Item{Couplage hydrodynamique léger et modes d'exécution} Le champ d'écoulement peut être imposé (patrons simplifiés: jets, gyres, houle) ou \emph{issu d'un solveur externe} lorsque disponible. Deux modes sont prévus: \emph{interactif} (aperçu rapide pour le design) et \emph{raffinement} (itérations plus longues pour la qualité), ce qui facilite l'exploration créative sans sacrifier la vraisemblance finale.
+%   \Item{Agnosticité représentationnelle et passerelles} Les mêmes règles de transport/dépôt sont appliquées quels que soient les supports. Des \emph{passerelles} (échantillonnage implicite, extraction de surface, mise à jour de grilles) permettent d'\emph{enchaîner} les étapes sans coût de conversion excessif et sans perdre de détails géométriques pertinents.
+%   \Item{Cas d'usage sous-marins et diagnostics} L'outil reproduit des \emph{signatures} attendues: recul de falaises, ravinement en pied de pente, \emph{scouring} autour d'obstacles, dépôt en zones d'ombre hydrodynamique. Des \emph{diagnostics} (cartes d'érosion/dépôt, volumes déplacés, rugosité) aident à calibrer la simulation au regard d'un objectif (visuel ou robotique).
+% \end{Itemize}
+
+% \section*{Apports, intégration et retombées}
+% Réunies, ces contributions composent un \textbf{pipeline cohérent} qui maintient l'utilisateur au centre de la boucle, du \textbf{grand paysage} (définition des îles/plateformes) au \textbf{détail robotique} (micro-habitats, obstacles, turbidité), avec une \textbf{traçabilité des choix} et des \textbf{contrôles explicites} à chaque étape. Au-delà des méthodes, la thèse illustre que la génération procédurale sous-marine gagne en puissance lorsqu'elle \textbf{mêle modèles informés par les processus}, \textbf{règles écologiques simplifiées} et \textbf{expertise humaine}, pour concilier \textbf{exploration créative} et \textbf{exigence scientifique}. Applications visées:
+% \begin{Itemize}
+%   \Item{Robotique sous-marine} Les environnements générés servent de \emph{bancs d'essai} multi-scénarios pour la navigation, la perception et la planification. Ils permettent d'\emph{orchestrer} des séquences rares (pièges topologiques: grottes, surplombs; événements particulaires: sables soulevés) et d'évaluer la \emph{robustesse} d'algorithmes (évitement, localisation, segmentation) sur des séries reproductibles.
+%   \Item{Informatique graphique et divertissement} Le pipeline fournit des \emph{mondes sous-marins crédibles} où l'artiste contrôle forme, densité et vieillissement, tout en bénéficiant de \emph{raccourcis} procéduraux pour accélérer la production. La compatibilité multi-représentations facilite l'intégration dans des moteurs de rendu temps réel ou de VFX.
+%   \Item{Écologie et géosciences} En l'absence de données exhaustives, les scènes synthétiques permettent d'\emph{explorer des hypothèses} (sensibilité à la profondeur, effet d'un régime de houle) et de \emph{tester des scénarios alternatifs} de trajectoires morphologiques. Les \emph{cartes de diagnostics} issues du pipeline (rugosité, dépôt/érosion) peuvent étayer une discussion avec des experts de terrain.
+% \end{Itemize}
+% Nous discutons enfin des \textbf{perspectives}: \emph{inverse procedural} pour inférer des règles depuis une scène observée; \emph{user-data-driven} pour capturer le style d'un utilisateur; \emph{surrogates} appris pour accélérer le vieillissement sous contrainte de fidélité; et couplage plus étroit avec des solveurs d'écoulement lorsque la précision hydrodynamique est requise.
+
+% \section*{Conclusion}
+% La thèse démontre la faisabilité d'\textbf{environnements sous-marins virtuels} à la fois \textbf{réalistes}, \textbf{contrôlables} et \textbf{scientifiquement crédibles}, en articulant \textbf{modélisation procédurale}, \textbf{apprentissage}, \textbf{sémantique multi-niveaux} et \textbf{simulation physique}. Cette philosophie du \textbf{guidage} (plutôt que le remplacement) de l'utilisateur ouvre la voie à des bancs d'essai virtuels explicables pour la robotique, à des expériences visuelles immersives et à des cadres de modélisation où les hypothèses sont \textbf{visibles, paramétrables et testables}.
+
+
+
+
+
+
+
+
+
+
+% \chapter*{Résumé long}
+% Au cours des 50 dernières années, la génération de terrains est devenue un domaine de plus en plus actif dans le champ de l'informatique graphique \cite{Fournier1982,Musgrave1989,Miller1986,Galin2019}. Avec la demande croissante de procédés réalistes et automatisés permettant de créer des paysages toujours plus vastes et détaillés sans effort humain, les techniques de génération de terrains ont évolué en conséquence. Alors que ces objectifs sont progressivement atteints, une nouvelle tendance déplace l'attention vers un meilleur contrôle utilisateur. Notre travail se concentre sur une branche spécifique de la génération de terrains~: la création et la modélisation interactive de paysages.
+
+% La génération de paysages trouve des applications dans des domaines variés tels que la biologie, la géologie et la robotique \cite{Tzachor2023,Chen2023,Gerigk2025,Rudin2022}. Elle est également devenue un outil central dans l'industrie du divertissement, notamment dans les jeux vidéo et le cinéma, où la création d'environnements réalistes et dynamiques est essentielle pour des expériences immersives. La capacité à générer des paysages permettant de mieux comprendre les règles naturelles et de tester des hypothèses en fait un outil idéal pour les chercheurs comme pour les industriels.
+
+% Cependant, l'exploration de ce domaine s'accompagne de défis importants. Dans le cas des environnements sous-marins, trouver un équilibre entre automatisation et créativité de l'utilisateur est particulièrement complexe~: les règles visuelles et physiques qui régissent les paysages marins (comme la croissance des coraux, le dépôt de sédiments, l'érosion par les courants ou encore l'interaction de la lumière avec l'eau) diffèrent fortement de celles des paysages terrestres. La gestion des échelles est également essentielle dans ce contexte, car les paysages sous-marines impliquent souvent de vastes structures bathymétriques tout en exigeant simultanément des détails fins (par ex. la présence de colonies de coraux, rochers, végétation) pour rester scientifiquement pertinentes ou visuellement convaincantes.
+
+% La question centrale guidant cette recherche est~: "Comment peut-on guider efficacement l'utilisateur dans la création de contenu virtuel tout au long de la chaîne de production afin de maintenir le plus de contrôle possible sur le produit final ?". Ce concept de "guider" plutôt que de "remplacer" l'utilisateur est, de mon point de vue, fondamental, car aucune machine ne peut réellement savoir mieux qu'un humain à quoi le produit final devrait ressembler. L'objectif est de présenter des algorithmes pouvant être utilisés de manière flexible dans une chaîne de production, capables de s'adapter à de nombreuses représentations de terrain, solveurs de fluides, types de paysages, configurations matérielles ou objectifs des utilisateurs, que l'usage final soit le rendu temps réel, le réalisme ou l'animation.
+
+% Maintenir le contrôle sur le processus créatif est essentiel. Chaque résultat généré doit sembler unique, répondre aux attentes de l'utilisateur, être explicable et facilement corrigeable sans nécessiter une régénération complète. Cette approche garantit que l'utilisateur reste au centre du processus créatif, les outils et algorithmes servant à renforcer ses objectifs, et non à le remplacer.
+
+% Ce qui distingue ce travail est son accent sur les paysages sous-marins, un domaine peu exploré en informatique graphique, mais important en biologie marine, océanographie et robotique sous-marine. De plus, l'extension de ces techniques vers de nouveaux horizons dans l'industrie du divertissement ouvre la voie à de nouvelles expériences visuelles et narrations qui exploitent pleinement les caractéristiques esthétiques et physiques uniques des environnements sous-marins.
+
+% Cette thèse est développée en parallèle de la création d'un robot autonome d'observation de biologie marine sous-marine \cite{Maslin2021}. Dans ce contexte, les environnements virtuels sont essentiels car les expériences de terrain sont coûteuses et sujettes à l'échec. Les jumeaux numériques du robot et de son environnement permettent de simuler des défaillances matérielles et des scénarios rares ou imprévisibles.
+
+% \section*{Génération d'environnements sous-marins pour la robotique}
+
+% % \AltTextImage{
+%     Pour modéliser avec précision une mission robotique, les simulateurs de robotique (tels que Gazebo et Isaac Sim) ont besoin de la géométrie du terrain, de la faune et de la flore que le robot pourrait rencontrer. Ils nécessitent également les propriétés des matériaux afin de simuler de manière réaliste le comportement des capteurs et les forces externes agissant sur le robot.
+
+% La géométrie de la scène doit être correctement mise à l'échelle, depuis la précision au centimètre pour le robot jusqu'aux zones de mission couvrant des milliers de mètres carrés. Les environnements sous-marins exigent aussi de prendre en compte la profondeur. Les matériaux simulés doivent répondre de manière réaliste à la lumière et à l'acoustique en tenant compte de la porosité, de la granularité et de la réflectance, ces facteurs affectant considérablement la précision des capteurs.
+% Les courants marins influencent fortement la navigation. Une simulation réaliste et interactive nécessite donc une modélisation avancée des courants.
+% % }{REMI-robot.png}{Notre robot semi-AUV REMI exécutant un transect dans le lagon de Mayotte}{fig:intro-REMI}
+
+% La conception de terrains virtuels de test implique la création de surfaces et d'obstacles, ainsi que la possibilité de rejouer des simulations avec des configurations identiques ou légèrement modifiées. Ajouter de l'aléatoire tout en préservant l'intention du concepteur représente veritable défi.
+
+% \section*{Génération d'environnements sous-marins pour la biologie}
+
+% Les environnements virtuels jouent un rôle crucial dans la recherche biologique en permettant l'observation et l'étude des interactions au sein des écosystèmes. La biologie repose fortement sur la phénoménologie, où la compréhension émerge de l'observation de la manière dont les entités se comportent et interagissent dans des conditions spécifiques.
+
+% La simulation de ces interactions permet aux scientifiques de tester et d'affiner leurs théories. Les modèles peuvent révéler des comportements inattendus, mettre en évidence des lacunes dans la compréhension et dévoiler des corrélations cachées. Ce processus itératif entre théorie, simulation et travail de terrain est central dans l'avancée des connaissances biologiques.
+
+% Pour être utiles, les simulations doivent suivre de près les règles biologiques tout en intégrant un aléatoire contrôlé. Cet équilibre permet un comportement réaliste tout en laissant la place à la découverte de phénomènes nouveaux. L'Interaction Homme-Machine doit aider à combler le fossé entre expertise biologique et outils computationnels, afin de permettre aux experts du domaine de contribuer efficacement sans introduire de biais.
+
+% Ces environnements doivent également fonctionner sur plusieurs échelles spatiales. Les simulations doivent couvrir de vastes zones pour refléter les écosystèmes dans leur ensemble tout en capturant les interactions fines entre entités proches.
+
+% \section*{Génération d'environnements sous-marins en informatique graphique}
+
+% Globalement, ce travail se situe dans le domaine de l'informatique graphique, et plus précisément dans les champs de la modélisation et de l'interaction.
+
+% La conception d'outils interactifs efficaces nécessite une attention particulière aux besoins des utilisateurs et aux contraintes techniques. Cela implique d'explorer la manière dont les utilisateurs interagissent avec les éléments de terrain, de définir des contrôles intuitifs et de s'assurer que l'interface soutient un flux de travail à la fois créatif et efficace. Derrière ces outils se cachent des choix d'implémentation critiques qui affectent directement l'utilisabilité et la performance. Par exemple, le choix des structures de données détermine la capacité du système à gérer des environnements vastes ou complexes. Les modèles mathématiques et physiques utilisés doivent trouver un équilibre entre réalisme et coût computationnel, notamment dans des scénarios où l'interaction doit rester fluide et réactive. Les algorithmes doivent également être parallélisables afin de tirer parti du matériel moderne, permettant des mises à jour et un retour visuel en temps réel. Enfin, simplifier certains aspects des phénomènes naturels est souvent nécessaire pour réduire la charge computationnelle tout en maintenant une plausibilité visuelle et comportementale. Ces décisions, réparties sur plusieurs niveaux allant de la conception de l'interaction à l'efficacité algorithmique, garantissent que le système reste à la fois centré sur l'utilisateur et techniquement robuste.
+
+% \section*{Contributions et plan}
+
+% Cette thèse explore la génération procédurale d'environnements sous-marins, avec une attention particulière portée aux îles coralliennes. Nos contributions sont organisées en trois parties complémentaires, couvrant la création, la structuration et l'évolution physique des terrains sous-marins.
+
+% Dans le chapitre~\ref{chap:background}, nous introduisons d'abord les bases de la génération procédurale de terrains. Une description des différentes représentations de terrain est fournie, ainsi qu'un aperçu de la biologie des coraux et de la formation des récifs coralliens.
+
+% % \AltTextImageR{
+%     Dans le chapitre~\ref{chap:coral-island}, nous proposons une méthode guidée par l'utilisateur pour la création procédurale d'îles coralliennes. L'utilisateur esquisse la forme et l'élévation de l'île à partir de deux projections et définit un champ de deformation simulant l'évolution de l'île à long terme. Le système modélise la croissance corallienne et produit des cartes de hauteur, utilisées ensuite pour entraîner un réseau antagoniste génératif conditionnel (cGAN) pour une génération rapide et contrôlable par l'utilisateur de configurations variées d'îles récifales.
+% % }{Introduction/figures/cGAN-example.png}{Exemple d'île générée dans le chapitre~\ref{chap:coral-island}. }{fig:intro-example-cgan}
+
+% % \AltTextImageR{
+%     La représentation sémantique que nous présentons dans le chapitre~\ref{chap:semantic-representation} vise à concevoir des terrains avec une abstraction de l'aspect 3D de la surface. Nous introduisons les "\glosses{EnvObj}" et leur représentation simplifiée du monde réel, que nous utilisons pour obtenir une représentation symbolique des caractéristiques du terrain, biotiques et abiotiques, présentes dans la scène. L'utilisation du symbolisme permet de se concentrer sur les interactions entre les différents éléments pour générer un écosystème plausible sans les besoins computationnels élevés d'une simulation physique précise. De plus, la représentation simplifiée utilisée permet à l'utilisateur de manipuler la disposition du terrain final sans avoir à choisir une représentation de terrain spécifique.
+% % }{Chapter 2/figures/Canyon5.png}{Exemple d'écosystème généré dans le chapitre~\ref{chap:semantic-representation}. }{fig:intro-example-env-obj}
+
+% % \AltTextImageR{
+%     Pour accroître le réalisme et l'impact visuel des paysages synthétiques générés, l'utilisation de techniques d'enrichissement du terrain est souvent nécessaire. Dans le chapitre~\ref{chap:erosion}, nous avons abordé le défi spécifique des simulations d'érosion, un type d'enrichissement qui imite les effets de l'eau, du vent et des forces érosives sur un terrain virtuel afin d'améliorer la crédibilité du paysage final. Une méthode d'érosion basée sur les particules est proposée, conçue pour être généralisable afin de rester flexible à plusieurs échelles, et dont l'implémentation est orientée vers la vitesse et la parallélisation. La principale flexibilité de notre méthode réside dans sa capacité à s'appliquer à plusieurs représentations de terrain, indépendamment du solveur de fluides utilisé, et à être généralisée aussi bien pour les paysages terrestres que marins.
+% % }{Chapter 3/results/karst.pdf}{Exemple de grottes marines générées dans le chapitre~\ref{chap:erosion}. }{fig:intro-example-erosion}
+

@@ -99,7 +99,7 @@ In this chapter, we present a novel particle-based method for simulating erosion
 \minitoc
 
 \section{Introduction}
-Building on the sparse semantic framework of the previous chapter, we now turn to the problem of terrain evolution, focusing on erosion as a key process shaping both aerial and underwater landscapes. 
+We finally turn to the problem of terrain evolution, focusing on erosion as a key process shaping both aerial and underwater landscapes. 
 
 A standard approach for realistic terrain modelling is to first generate a base terrain geometry using noise to define the height on the input domain \cite{Musgrave1989, Olsen2004, Roudier1993} or to use the methods proposed in our previous chapters (\cref{chap:coral-island} and \cref{chap:semantic-representation}), the result will most likely lack realism and feel synthetic. Erosion simulation algorithms are applied to simulate thousands of years of ageing by reproducing physical phenomena (i.e. effects of the rain, wind, and running water erosion agents) affecting the terrain making it more believable \cite{Stachniak2005, Smelik2009, Galin2019}.
 
@@ -154,7 +154,7 @@ In this section, we first review a subset of the major simulated phenomena used 
 %     \label{fig:erosion-elevation-representation}
 % \end{figure}
 
-% Elevation models are a fundamental approach in terrain representation, widely used in procedural generation due to their simplicity and efficiency. These models define the terrain as a function $h : \R^2 \to \R$, where each point in a 2D plane is mapped to an elevation value. This approach is particularly effective for representing terrains where the elevation is the only varying factor, such as hills, valleys, and plateaus, and it is best suited for terrains without complex 3D features such as overhangs or caves. While we visualize elevation models in three dimensions, they are mathematically considered two-dimensional functions. In the domain of terrain generation, we will name them 2.5D models.
+% Elevation models are a fundamental approach in terrain representation, widely used in procedural generation due to their simplicity and efficiency. These models define the terrain as a function $h: \R^2 \to \R$, where each point in a 2D plane is mapped to an elevation value. This approach is particularly effective for representing terrains where the elevation is the only varying factor, such as hills, valleys, and plateaus, and it is best suited for terrains without complex 3D features such as overhangs or caves. While we visualize elevation models in three dimensions, they are mathematically considered two-dimensional functions. In the domain of terrain generation, we will name them 2.5D models.
 
 % Elevation models are widely used in industries where large-scale terrain representation is crucial. In video games, they provide the foundation for creating vast open-world environments. In geographic information systems (GIS) and remote sensing, height fields are used to represent real-world terrain data, offering a practical means of visualizing and analyzing geographical features. The ability to manipulate and control terrain features procedurally makes elevation models a common choice for applications that require efficient terrain generation and rendering.
 
@@ -193,7 +193,7 @@ In this section, we first review a subset of the major simulated phenomena used 
 % One of the key advantages of implicit models is their ability to produce smooth surfaces without the need for discrete polygonal meshes, which can result in realistic and natural-looking terrains. However, the computational complexity of evaluating the implicit function, especially for large terrains, can be a significant drawback. Additionally, converting an implicit surface into a mesh for rendering can be challenging and resource-intensive. \cite{Araujo2015} 
 
 % \subsubsubsection{Layered models}
-% Layered models are a type of volumetric representation that encode different material layers within the terrain and are defined by a function $\mu : \R^3 \to \material$, where $\material$ denotes the material type at any given point in 3D space. This allows for a detailed representation of the terrain's internal composition, which can be crucial for applications requiring realistic geological simulations. Each layer is defined by its thickness or elevation, and multiple layers can be stacked to represent complex geological formations. These layers might include materials such as bedrock, sand, soil, or water, each contributing to the overall structure of the terrain. Layered models are particularly useful in simulations that involve processes such as erosion or sedimentation, where the interaction between different material layers affects the physical process.
+% Layered models are a type of volumetric representation that encode different material layers within the terrain and are defined by a function $\mu: \R^3 \to \material$, where $\material$ denotes the material type at any given point in 3D space. This allows for a detailed representation of the terrain's internal composition, which can be crucial for applications requiring realistic geological simulations. Each layer is defined by its thickness or elevation, and multiple layers can be stacked to represent complex geological formations. These layers might include materials such as bedrock, sand, soil, or water, each contributing to the overall structure of the terrain. Layered models are particularly useful in simulations that involve processes such as erosion or sedimentation, where the interaction between different material layers affects the physical process.
 
 % The primary advantage of layered models is their ability to represent a stratified terrain with distinct material properties, which can be manipulated individually. This makes them well-suited for simulations that require detailed geological accuracy. However, they are more complex to implement than simple elevation models and require additional computational resources to manage the interactions between layers. 
 
@@ -354,48 +354,48 @@ We first present how to compute the particle speed using particle physics, then 
 \subsubsection{Particle physics}
 Due to their independence from other particles, we consider each particle to follow Newton's laws of motion. Each particle has a volume $\volume$, an effective density $\particleDensity$ (which may depend on the amount of carried sediment), and thus a mass $\particleMass = \particleDensity \volume$. The surrounding medium has density $\fluidDensity$, viscosity $\viscosity$, and velocity field $\fluidVelocity(\p,t)$.
 
+The exerced forces applied to a particle consist of external forces $\extForce$ (gravity and buoyancy), and drag force $\dragForce$ (\cref{fig:erosion-forces}). Gravity acts as
+\begin{align}
+    \gravityForce = \particleMass \gravity
+\end{align}
+with $\gravity$ the gravitational acceleration vector. Buoyancy opposes gravity as
+\begin{align}
+    \buoyancyForce = -\fluidDensity \volume \gravity
+\end{align}
+
+The net body external force is then
+\begin{align}
+\label{eq:erosion-bodyforce}
+    \extForce = \volume \left(\particleDensity - \fluidDensity\right)\gravity
+\end{align}
+
+In addition, drag relaxes the particle velocity $\particleVelocity$ toward the local fluid velocity $\fluidVelocity$. For small Reynolds numbers we use Stokes' drag formula for spheres in a fluid:
+\begin{align}
+    \label{eq:erosion-drag}
+    \dragForce = 6\pi \viscosity \particleSize \left(\fluidVelocity - \particleVelocity\right)
+\end{align}
+where $\particleSize$ denotes the particle radius.
+
 \AltTextImage{
-    The external forces $\extForce$ applied to a particle consist of gravity, buoyancy, and drag (\cref{fig:erosion-forces}). Gravity acts as
+    The full equation of motion is therefore
     \begin{align}
-        \gravityForce = \particleMass \gravity
+        \label{eq:erosion-ode}
+        \dot{\particleVelocity} = \frac{f(\capacity)\extForce + \dragForce}{\particleMass}
     \end{align}
-    with $\gravity$ the gravitational acceleration vector. Buoyancy opposes gravity as
+    where $f(\capacity)$ is a hindered-settling factor that reduces the effective body force as the particle's carried sediment approaches its maximum capacity. Following Richardson-Zaki \cite{Richardson1954}, we take
     \begin{align}
-        \buoyancyForce = -\fluidDensity \volume \gravity
+        \label{eq:erosion-Richardson}
+        f(\capacity) = \left(1 - \frac{\capacity}{\maxCapacity}\right)^{n},
     \end{align}
-
-    The net body force is then
+    with exponent $n$ typically in the range $4$-$5.5$, and we set $n=5$, similarly as \cite{Wojtan2007}.
+    
+    The particle position $\p$ evolves as
     \begin{align}
-    \label{eq:erosion-bodyforce}
-        \extForce = \volume \left(\particleDensity - \fluidDensity\right)\gravity
+        \label{eq:erosion-kinematics}
+        \dot{\p} = \particleVelocity
     \end{align}
-
-    In addition, drag relaxes the particle velocity $\particleVelocity$ toward the local fluid velocity $\fluidVelocity$. For small Reynolds numbers we use Stokes' drag formula for spheres in a fluid:
-    \begin{align}
-        \label{eq:erosion-drag}
-        \dragForce = 6\pi \viscosity \particleSize \left(\fluidVelocity - \particleVelocity\right)
-    \end{align}
-    where $\particleSize$ denotes the particle radius.
 }{particle_force.pdf}{Particle's motion in a fluid consist of three forces: gravity, buoyancy, and drag. The later is acting opposite direction to the relative particle velocity in the fluid. }{fig:erosion-forces}
-
-The full equation of motion is therefore
-\begin{align}
-    \label{eq:erosion-ode}
-    \dot{\particleVelocity} = \frac{f(\capacity)\extForce + \dragForce}{\particleMass}
-\end{align}
-where $f(\capacity)$ is a hindered-settling factor that reduces the effective body force as the particle's carried sediment approaches its maximum capacity. Following Richardson-Zaki \cite{Richardson1954}, we take
-\begin{align}
-    \label{eq:erosion-Richardson}
-    f(\capacity) = \left(1 - \frac{\capacity}{\maxCapacity}\right)^{n},
-\end{align}
-with exponent $n$ typically in the range $4$-$5.5$, and we set $n=5$, similarly as \cite{Wojtan2007}.
-
-The particle position $\p$ evolves as
-\begin{align}
-    \label{eq:erosion-kinematics}
-    \dot{\p} = \particleVelocity
-\end{align}
-
+    
 When a particle collides with the ground, its post-impact velocity is modified by a coefficient of restitution $COR$. This value depends on the ground material as it is influenced mainly by the material's particle shape, coefficient of friction and density \cite{Yan2020}. Less bouncy particles lose speed quickly and settle down sooner, forming a steeper pile (\cref{fig:erosion-coefficient of restitution-diagram} blue), or a higher talus angle such as chalk. On the other hand, more bouncy particles disperse more widely upon hitting a surface, resulting in a gentler accumulation such as clay (\cref{fig:erosion-coefficient of restitution-diagram} red). We propose this simple collision response in \cref{alg:erosion-collision}. 
 
 \begin{algorithm}[H]
@@ -715,7 +715,7 @@ We consider two of the voxel grid representations: density-voxel grids and binar
 
 We consider "density-voxel" grids defined on $f: \Z^3 \to [-1, 1]$, for which a voxel is full for $f(\p) = 1$, partially full for $-1 < f(\p) < 1$, or empty for $f(\p) \leq -1$.  
 This definition allows us to erode them smoothly.  
-Since this kind of grid is a discretisation of a scalar function, we could directly use \eqref{eq:erosion-erosionMetaball}, as described previously, but we take advantage of the discrete nature of the representation to avoid expensive computation, illustrated in \cref{alg:erosion-voxels}. 
+Since this kind of grid is a discretisation of a scalar function, we could directly use \eqref{eq:erosion-erosionMetaball}, as described previously, but we take advantage of the discrete nature of the representation to avoid expensive computation. 
 
 We apply the erosion from a particle at position $\center$ on all points $\p$ in the volume, proportionally to the distance from the centre of the sphere $d = ||\p - \center||$, to find an approximation to the real erosion value per voxel $\totalErosion_{approx} = \totalErosion \frac{1 - d}{\particleSize}$.  
 Using their discrete nature, we rectify this value to sum up the total erosion value to $\totalErosion$ by dividing each value by the sum of the distances. We now consider eroding the "empty" voxels since their density can drop to $-1$. We then have for all surrounding voxels 
@@ -726,7 +726,7 @@ Using their discrete nature, we rectify this value to sum up the total erosion v
 \end{align}
 
 The resulting voxel value is computed as $\Tilde{f}(\p) = f(\p) + \Delta f(\p)$.  
-In our implementation, when $f(\p) > 1$, we simply transport the density excess to the voxel above, giving it a very close analogy to height fields as long as $|\Delta f| < 1$. 
+In our implementation, presented in \cref{alg:erosion-voxels}, when $f(\p) > 1$ we simply transport the density excess to the voxel above, giving it a very close analogy to height fields as long as $|\Delta f| < 1$. 
 
 \begin{algorithm}[H]
     \caption{Density-voxel terrain update}
@@ -1129,4 +1129,4 @@ Another possible adaptation of the erosion strategy for material voxels is to ex
 %     \Item{} underwater scenarios fall out naturally from the same equations by changing fluid density/viscosity.
 % \end{Itemize}
 
-This work is not without limits: we deliberately neglect particle-particle interactions and tight two-way coupling to the flow, and heavy SDF scenes can accumulate many primitives without simplification. These trade-offs enable wide applicability and parallel performance today, while suggesting clear extensions.
+% This work is not without limits: we deliberately neglect particle-particle interactions and tight two-way coupling to the flow, and heavy SDF scenes can accumulate many primitives without simplification. These trade-offs enable wide applicability and parallel performance today, while suggesting clear extensions.

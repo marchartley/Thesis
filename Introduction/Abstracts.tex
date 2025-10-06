@@ -1,0 +1,184 @@
+\clearpage
+\pagebreak
+
+
+\section*{Abstract (EN)}
+This thesis explores the procedural generation of 3D underwater environments to provide realistic, controllable, and reproducible testbeds for developing autonomous robots that observe marine fauna and flora. Because sea missions are rare, costly, and hazardous, creating credible virtual seascapes becomes essential for verifying and validating robot behavior—but also for observing and understanding the real world. Such environments must respect geological, biological, and oceanographic constraints while remaining sufficiently controllable to keep the user in charge.
+
+This work presents a methodological framework for the design and modeling of underwater environments, with a focus on coral-reef islands. The manuscript is divided into three parts: large-scale generation of islands and their reefs via digital sketching; ecosystem population with biotic and abiotic elements through multi-scale simulation; and erosion simulation of virtual worlds to enhance realism.
+
+The first contribution introduces a sketch-guided method for generating coral-reef islands. The user draws the plan view and elevation profile to build an initial height map of the island; a vector field representing winds and currents then deforms the landscape to simulate their long-term effects. An analytical model of coral-reef morphology is proposed to produce coherent height maps. We use this generation method to train a conditional generative adversarial network (cGAN), which significantly reduces the constraints placed on the user during landscape design.
+
+The second contribution proposes a multi-level semantic representation for ecosystem population. We describe the landscape using biotic and abiotic environmental objects endowed with attributes and generative rules. Our pipeline places and adapts objects while preserving global coherence and locally modifying the environment, thereby capturing ecological feedback loops between environment and objects without heavy simulation. The output is independent of the terrain representation as well as its resolution.
+
+The third contribution introduces particle-based erosion for aging marine and terrestrial landscapes, applicable to all terrain representations (surface- and volume-based) and able to be coupled with an external fluid simulation. Thanks to their generality, particles can simulate many natural phenomena such as wind, rain, currents, waves, etc. Parallelization and controllability enable interactive use of this method.
+
+Taken together, these three components form a coherent pipeline that links large-scale island design, ecological population, and terrain evolution down to robot-scale details, while keeping the user at the center of the process. The outcomes impact computer graphics, underwater robotics, and ecology.
+
+
+\newpage
+\section*{Résumé (FR)}
+Cette thèse explore la génération procédurale d'environnements sous-marins 3D afin d'offrir des terrains d'essai réalistes, contrôlables et reproductibles pour le développement de robots autonomes d'observation de la faune et de la flore marines. Les missions en mer étant rares, coûteuses et dangereuses, la création de paysages virtuels crédibles devient essentielle pour vérifier et valider le fonctionnement d'un robot, mais aussi pour observer et comprendre le monde réel. Il faut des environnements à la fois fidèles aux contraintes géologiques, biologiques et océanographiques, et suffisamment contrôlables pour que l'utilisateur en garde la maîtrise.
+
+Ce travail présente un cadre méthodologique pour la conception et la modélisation d'environnements sous-marins, en particulier des îles à récifs coralliens. Le manuscrit est divisé en trois parties : la génération à grande échelle d'îles et de leurs récifs par dessin numérique, le peuplement d'éléments biotiques et abiotiques dans le paysage par simulation d'écosystèmes multi-échelles, ainsi que la simulation d'érosion des mondes virtuels afin d'ajouter du réalisme.
+
+La première contribution présente une méthode de génération d'îles coralliennes guidée par l'esquisse. L'utilisateur dessine la forme en plan et le profil altimétrique pour construire une première carte d'altitude de l'île ; un champ vectoriel représentant vents et courants déforme le paysage pour simuler leur effet à long terme. Un modèle analytique de forme de récif corallien est proposé pour produire des cartes d'altitude cohérentes. Nous utilisons cette méthode de génération pour entraîner un réseau génératif antagoniste conditionnel (cGAN), ce qui permet de réduire significativement les contraintes imposées à l'utilisateur lors de la conception de son paysage.
+
+La deuxième contribution propose une représentation sémantique multi-niveaux pour le peuplement d'écosystèmes. Nous décrivons le paysage au moyen d'objets environnementaux biotiques et abiotiques dotés d'attributs et de règles de génération. Notre pipeline place et adapte les objets en respectant la cohérence d'ensemble et modifie localement l'environnement, ce qui permet de capturer des boucles de rétroaction entre l'environnement et les objets sans simulation lourde. La sortie de cette méthode est indépendante de la représentation du terrain, ainsi que de sa résolution.
+
+La troisième contribution introduit une érosion par particules pour le vieillissement de paysages marins et terrestres, applicable à toutes les représentations de terrain (surfaciques et volumiques) et pouvant être couplée à une simulation de fluides externe. Grâce à leur généralité, les particules permettent de simuler de nombreux phénomènes naturels : vent, pluie, courants, vagues, etc. La parallélisation et le contrôle permettent d'utiliser cette méthode de manière interactive.
+
+Ce travail en trois parties compose une chaîne cohérente qui relie la conception à grande échelle des îles, le peuplement écologique et l'évolution des terrains jusqu'aux détails perceptibles à l'échelle du robot, tout en conservant l'utilisateur au cœur du processus. Les retombées touchent l'informatique graphique, la robotique sous-marine, et l'écologie.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \section*{Abstract}
+% % This thesis titled \emph{"Procedural terrain generation for underwater environments"} investigates algorithmic creation of 3D worlds specifically designed for underwater landscapes. At the crossroads of computer graphics, marine ecology, and robotics, it addresses a growing need: plausible, controllable, and multiscale virtual environments for designing, testing, and validating underwater observation and exploration systems. Recent advances in simulation, rendering, and interaction have intensified collaborations with terrain specialists (geologists, oceanographers, biologists), yet coral reefs still pose unique challenges: porosity and overhangs, hydro-bio-sedimentary couplings, and the scarcity of high-resolution volumetric data.
+
+% % The thesis keeps the user at the center of generation. Rather than fully automating the process, it proposes fast, interpretable algorithms in which intentions (shapes, constraints, rules) are prescribed and the machine produces credible variants. The goal is twofold: (i) to build virtual test fields tailored to robotics (navigation, perception, planning) and (ii) to provide modular tools useful for digital ecology and visual creation.
+
+% This thesis, entitled \textit{"Procedural terrain generation for underwater environments"}, explores the specialised area of procedural terrain generation, specifically targeting underwater settings. Procedural terrain generation remains a vibrant research area within computer graphics, particularly as advancements in simulation, rendering, and interaction techniques have fostered increased collaboration with terrain experts across various disciplines.
+
+% Virtualising the physical world enables users to observe and interact with it in ways that enhance understanding and break down the boundaries between scientific fields. Terrain science, by its nature, brings together a diverse range of experts, including geologists, oceanologists, physicists, meteorologists, biologists, roboticists, computer scientists, and 3D artists. This thesis focuses on involving users in the creation of virtual worlds through fast and controllable algorithms, with a particular emphasis on underwater environments.
+
+% The manuscript is organized into three parts that form a complete pipeline from semantic design to physical refinement. The first part introduces a formal approach to terrain design: environments are first specified in semantic terms (objects and ecological/physical relations), abstracting away geometric complexity. This hierarchical representation enables fine control of intent (zoning, habitat types, exposure constraints) and prepares 3D instantiation.
+
+% The second part details the translation of these descriptions into geometry. We present new models for generating and modeling coral reef islands and karst networks. The method combines user sketching (plan and profile), guiding fields (winds/currents), and rules inspired by coral biology to produce coherent morphologies (fringing reef, lagoon, passes). A conditional generative adversarial network (cGAN) amplifies the diversity of shapes while respecting user-imposed constraints, enabling rapid creation of varied yet plausible environment series.
+
+% The third part focuses on physical realism via erosion simulation. We propose a particle-based, flexible, and controllable method that reproduces long-term processes (transport/deposition, abrasion) in marine and terrestrial settings. Independent of the underlying representation (heightfields, voxels, implicit surfaces) and compatible with different flow solvers, it adds credible geomorphological aging without sacrificing the performance needed for interactive iteration.
+
+% Taken together, these contributions form an interactive, modular toolkit for generating underwater environments. They connect semantic intent, multiscale modeling, and simplified physical constraints while maintaining strong traceability of choices and explicit user control. Beyond robotics (reproducible testbeds, rare scenarios, controlled perturbations), the approach opens perspectives for ecology (exploring hypotheses when data are incomplete) and for computer graphics (credible underwater worlds for games, film, and virtual reality).
+
+
+
+
+
+% \section*{Résumé}
+% Cette thèse, intitulée Génération procédurale de terrains pour les environnements sous-marins, s'intéresse à la création algorithmique d'univers 3D spécifiquement dédiés aux milieux subaquatiques. À la croisée de l'informatique graphique, de l'écologie marine et de la robotique, elle répond à un besoin croissant : disposer d'environnements virtuels plausibles, contrôlables et multi-échelles pour concevoir, tester et valider des systèmes d'observation et d'exploration sous-marins. Les avancées récentes en simulation, rendu et interaction ont intensifié les collaborations avec les spécialistes des terrains (géologues, océanographes, biologistes), mais les récifs coralliens posent encore des défis uniques : porosité et surplombs, couplages hydro-bio-sédimentaires, et rareté de données volumétriques à haute résolution.
+
+% La thèse place l'utilisateur au cœur de la génération : plutôt que d'automatiser intégralement, elle propose des algorithmes rapides et interprétables, où l'on prescrit les intentions (formes, contraintes, règles) et où la machine décline des variantes crédibles. L'objectif est double : (i) permettre la fabrication d'aires d'essais virtuelles adaptées aux besoins de la robotique (navigation, perception, planification) et (ii) fournir des outils modulaires utiles à l'écologie numérique et à la création visuelle.
+
+% Le manuscrit s'organise en trois volets qui jalonnent un pipeline complet, de la conception sémantique à l'affinage physique. Le premier volet introduit une approche formelle de design de terrains : les environnements sont d'abord décrits en termes sémantiques (objets et relations écologiques/physiques) afin d'abstraire la complexité géométrique. Cette représentation hiérarchique autorise un contrôle fin des intentions (zonage, types d'habitats, contraintes d'exposition) et prépare l'instanciation 3D.
+
+% Le deuxième volet détaille la traduction en géométrie de ces descriptions. Nous présentons de nouveaux modèles pour générer et modéliser des îles récifales coralliennes et des réseaux karstiques. La méthode combine esquisse utilisateur (plan et profil), champs directeurs (vents/courants) et règles inspirées de la biologie des coraux pour produire des morphologies cohérentes (récif frangeant, lagon, passes). Un réseau génératif conditionnel (cGAN) amplifie la diversité des formes tout en respectant les contraintes imposées par l'utilisateur, ce qui permet de créer rapidement des séries d'environnements variés mais plausibles.
+
+% Le troisième volet porte sur le réalisme physique via la simulation d'érosion. Nous proposons une méthode par particules, flexible et contrôlable, qui reproduit des processus de long terme (transport/dépôt, abrasion) sur milieux marins et terrestres. Indépendante de la représentation sous-jacente (hauteurs, voxels, surfaces implicites) et compatible avec différents solveurs d'écoulement, elle permet d'ajouter un vieillissement géomorphologique crédible sans sacrifier les performances nécessaires à l'itération interactive.
+
+% Pris ensemble, ces apports constituent un ensemble d'outils interactifs et modulaires pour la génération d'environnements sous-marins. Ils relient intention sémantique, modélisation multi-échelles et contraintes physiques simplifiées, tout en conservant une forte traçabilité des choix et un contrôle utilisateur explicite. Au-delà des applications en robotique (bancs d'essais reproductibles, scénarios rares, perturbations contrôlées), la démarche ouvre des perspectives pour l'écologie (exploration d'hypothèses en l'absence de données complètes) et l'informatique graphique (mondes sous-marins crédibles pour le jeu, le cinéma ou la réalité virtuelle).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \section*{Abstract (old)}
+
+% This thesis, entitled \textit{"Procedural terrain generation for underwater environments"}, explores the specialised area of procedural terrain generation, specifically targeting underwater settings. Procedural terrain generation remains a vibrant research area within computer graphics, particularly as advancements in simulation, rendering, and interaction techniques have fostered increased collaboration with terrain experts across various disciplines.
+
+% Virtualising the physical world enables users to observe and interact with it in ways that enhance understanding and break down the boundaries between scientific fields. Terrain science, by its nature, brings together a diverse range of experts, including geologists, oceanologists, physicists, meteorologists, biologists, roboticists, computer scientists, and 3D artists. This thesis focuses on involving users in the creation of virtual worlds through fast and controllable algorithms, with a particular emphasis on underwater environments.
+
+% The thesis is structured into three parts, guiding the reader from the initial design of a landscape through to its 3D modelling and final refinement.
+
+% In the first part, we introduce a formal approach to terrain design, allowing environments to be conceived in semantic terms, abstracting away from the complexities of 3D geometry and data structures.
+
+% The second part focuses on translating these conceptual environments into 3D form. We present new models for generating and modelling coral reef islands and karst networks.
+
+% Finally, in the third part, we concentrate on enhancing the realism of these 3D terrains through physical simulations of erosion processes. We demonstrate a flexible and controllable method for simulating the long-term effects of water and wind on both terrestrial and marine landscapes.
+
+
+
+
+
+
+
+% % This thesis, entitled \textit{"Procedural terrain generation for underwater environments"}, as its name suggests, focuses on the topic of procedural terrain generation with the specificity to tackle the tackle underwater environments. Terrain generation is still an open research area in computer graphics as, with the emergence of simulation, rendering, and interaction techniques, the entire field is experiencing increased collaboration with terrain experts. 
+% % Virtualization of the physical world helps users to see and manipulate it, allowing for a better understanding of it and bringing together numerous experts, gradually breaking down the boundaries of scientific disciplines. 
+% % Terrain science brings together, in almost a direct manner, geologists, oceanologists, physicists, meteorologists, biologists, roboticists, computer scientists, 3D artists, and more. We focused our work on the inclusion of the user in the generation process of virtual worlds through fast and controlable algorithms, with the possibility to dive underwater.
+
+% % This thesis is divided into three parts, guiding the user from the design of a landscape, its 3D modeling, until its finalization, step by step.
+% % Firstly, we will propose a formalization of terrain designing, allowing for the conception of environments in a semantic sense, abstracting away from 3D geometry and data structures.
+
+% % Secondly, we will see how to give 3D form to these environments. We will propose new models for the generation and modeling of coral reef islands and karst networks.
+
+% % In the third part, we will focus on adding realism to 3D terrains through physical simulations of erosion processes. We will demonstrate a flexible and controllable method to imitate the long-term effects of water and wind on both terrestrial and marine landscapes.
+
+% Keywords:} terrain representation, procedural generation, physical simulations, user interaction
+
+% \section*{Résumé (old)}
+% Cette thèse porte sur le thème de la génération procédurale de terrains en milieux sous-marins. La génération de terrain est un domaine de recherche encore ouvert en informatique graphique car, avec l'emergence des techniques de simulation, de rendu et d'interaction, le domaine entier connait un accroissement de collaboration avec les experts terrains. Amener le monde physique dans un ordinateur et permettre à son utilisateur de voir et manipuler ce monde virtuel permet de mieux le comprendre et de réunir de nombreuses experts ensemble, brisant petit à petit les frontières des disciplines scientifiques. La science des terrains rassemble, de manière presque directe, géologues, oceanologues, physiciens, météorologues, biologistes, roboticiens, informaticiens, artistes, etc... 
+
+% Cette thèse se divise en trois parties amenant l'utilisateur de la conception d'un paysage jusqu'à sa finalisation, étape par étape, en gardant le control en tout point. 
+% Premièrement, nous proposerons une formalisation d'esquissage de terrains, permettant la conception d'environnements dans un sens sémantique, permettant de s'abstraire de la géometrie et de structures de données. 
+
+% Secondement, nous verrons comment donner forme 3D à ces esquisses. Nous proposerons de nouveaux algorithmes pour la génération et modélisation d'iles coralliennes et de réseaux karstiques.
+
+% En troisième partie, nous nous interesserons à l'ajout de réalisme sur terrains existants au travers de simulations physiques de processus d'érosion. Nous montrerons une méthode flexible et controlable pour imiter les effets de l'eau et du vents à très long terme sur un paysage terrestre et marin.
+
+% Mots-clés :} représentation de terrain, génération procédurale, simulations physiques, interaction utilisateur
+
+
+
+
+
+
+
+
+
+
+
+
+% % \newpage 
+% % \section*{Lay summary}
+% % This thesis contributes to the development of underwater robots for studying marine ecosystems. Since field missions are costly and difficult to organize, it proposes the creation of realistic virtual environments to test and validate these robots before deployment. The work explores the procedural generation of underwater worlds inspired by coral reefs, combining digital sketching, machine learning, and biological knowledge. It introduces methods to build large-scale coral landscapes, simulate the living organisms that inhabit them, and reproduce erosion and aging processes of marine terrains. These interactive and modular tools keep the user at the center of creation while integrating geological, biological, and oceanographic constraints. By bridging robotics, ecology, and computer graphics, this research opens new perspectives for virtual underwater exploration and robotic validation.
+
+
+
+% % \section*{Résumé vulgarisé}
+% % Cette thèse s'inscrit dans le développement de robots sous-marins pour l'étude des écosystèmes marins. Comme les missions en mer sont coûteuses et difficiles à organiser, elle propose de créer des environnements virtuels réalistes pour tester et valider ces robots avant leur déploiement. Le travail explore la génération procédurale d'univers sous-marins inspirés des récifs coralliens, en combinant dessin numérique, apprentissage automatique et connaissances biologiques. Il introduit des méthodes pour construire de vastes paysages coralliens, simuler la vie qui les peuple et reproduire l'érosion et le vieillissement des fonds marins. Ces outils interactifs et modulaires placent l'utilisateur au centre du processus tout en intégrant les contraintes géologiques, biologiques et océanographiques. En réunissant robotique, écologie et informatique graphique, cette recherche ouvre de nouvelles perspectives pour l'exploration sous-marine virtuelle et la validation robotique.

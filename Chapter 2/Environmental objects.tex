@@ -16,9 +16,9 @@ This chapter introduces a novel method for procedural terrain generation, which 
 \minitoc
 
 \section{Introduction}
-While the previous chapter focused on generating the macroscale geomorphology of coral reef islands through sketch-based procedural rules and learning-based refinement, these terrains remain purely geometric. In practice, convincing seascapes require not only landforms but also the biotic and abiotic elements that populate them (coral colonies, algae, sediments, rivers, and other ecological features that interact across scales). Addressing this broader challenge calls for a representation that integrates semantic structure, ecological constraints, and user control. To address this broader challenge, this chapter turns to ecosystem generation, introducing a semantic framework that unifies terrain and ecology through symbolic primitives and steady-state environmental fields.
+While the previous chapter focused on generating the large-scale geomorphology of coral reef islands through sketch-based procedural rules and learning-based generation, these terrains remain purely geometric. In practice, convincing seascapes require not only landforms but also the biotic and abiotic elements that populate them (coral colonies, algae, sediments, rivers, and other ecological features that interact across scales). Addressing this broader challenge calls for a representation that integrates semantic structure, ecological constraints, and user control. To address this challenge, this chapter turns to ecosystem generation, introducing a semantic framework that unifies terrain and ecology through symbolic primitives and environmental fields.
 
-Procedural ecosystem generation in computer graphics remains largely bifurcated: classical terrain algorithms produce heightfields or meshes without semantic structure, and plant-placement systems adopt fixed-radius or zone-of-influence rules for foliage alone. Meanwhile, full ecosystem simulators, though rich in biotic and abiotic processes, are too costly for real-time or interactive content creation. Consequently, no prior work combines sparse, semantic primitives for both living and non-living features, multi-material field coupling driven to steady state, and multi-scale, user-interactive authoring into a single, lightweight ecosystem generator.
+Procedural ecosystem generation in computer graphics remains largely bifurcated: classical terrain algorithms produce heightfields or meshes without semantic structure, and plant-placement systems adopt fixed-radius or zone-of-influence rules for foliage alone; full ecosystem simulators, though rich in biotic and abiotic processes, are too costly for real-time or interactive content creation. Consequently, no prior work combines sparse, semantic primitives for both living and non-living features, multi-material field coupling driven to steady state, and multi-scale, user-interactive authoring into a single, lightweight ecosystem generator.
 
 To fill this gap, we introduce a pipeline that constructs both biotic (corals, algae, trees) and abiotic (islands, rivers, canyons) elements by instantiating \glosses{EnvObj} (points, curves, regions) which read from and write to continuous environmental fields (elevation, water flow, resource stocks) in an iterative, steady-state diffusion loop. At each step, \glosses{EnvObj} candidates spawn or die via expert-tuned generation and fitness rules, and users can inject global geomorphological events or manually refine any primitive, all while maintaining interactive performance for thousands of objects.
 
@@ -102,7 +102,7 @@ Tessellation models generalise the idea of grid-based approaches by partitioning
 
 Voronoi diagrams partition a plane based on a set of points (e.g., tree positions, animal territories, or resource centres). Each region in a Voronoi diagram is defined as the set of all points closer to a specific focal point (seed) than to any other point. Formally, given a set of points ${p_1, p_2, ..., p_n}$, the Voronoi region $V_i$ associated with the point $p_i$ is defined as
 \begin{align}
-    V_i = { x \in \R^2 : d(x, p_i) \leq d(x, p_j), \forall j \neq i }
+    V_i = { x \in \R^2: d(x, p_i) \leq d(x, p_j), \forall j \neq i }
 \end{align}
 with $d(x, p_i)$ the distance between the point $x$ and the seed $p_i$.
 
@@ -282,7 +282,7 @@ While EFMs provide a biologically grounded approach to modelling spatial interac
 
 An ecological field represents a spatially varying environmental property across a landscape. Mathematically, we can define an $n$-dimensional ecological field as a scalar field $F$ for each point $\p \in \R^n$:
 \begin{align}
-    F(\p) : \R^n \to \R
+    F(\p): \R^n \to \R
 \end{align}
 
 Any organism $i$ in the scene has an influence on the ecological fields through an influence kernel $K_i$. These functions describe how an organism's presence affects its surroundings. We can then evaluate the ecological field with $N$ entities:
@@ -639,7 +639,7 @@ For objects whose skeleton reduces to a single point (boulders, individual coral
 \subsubsection{Curve-based \gloss{Skeleton}}
 
 The skeleton of a curve-based \gloss{EnvObj} is determined by the shape that fits best given the environment it is added to.
-Using an Active-Contour ("snake") formulation \cite{Kass1988}, we seek a parametric curve $\curve(s) : [0,1] \to \R^{2}$ that minimises the composite energy:
+Using an Active-Contour ("snake") formulation \cite{Kass1988}, we seek a parametric curve $\curve(s): [0,1] \to \R^{2}$ that minimises the composite energy:
 \begin{align}
     \energy(\curve) = \Einternal + \Eexternal + \Eshape + \Egradient
 \end{align}
@@ -1187,9 +1187,9 @@ Integrating environmental properties in the \gloss{FitnessFunc} of \glosses{EnvO
 
 We limited our work to the use of 2D scalar fields as they are more easily differentiable, interpretable and lighter than volumetric representations. However, future works include using 3D representations of the terrain and the environment to generate 3D terrains, including cavities, sub-terrestrial areas and the interior of coral structures.
 
-While our semantic \gloss{EnvObj} framework introduced sparse, interactive primitives for ecosystem generation, it remained constrained to 2D scalar fields. This simplification ensured efficiency and interpretability, but it prevented the representation of intrinsically three-dimensional features such as overhangs, caves, and porous reef structures. Moreover, terrains in the real world are rarely static: they evolve continuously under the action of water, wind, and other erosive agents. Extending procedural methods toward volumetric models and terrain-altering processes is therefore essential to reach higher realism, especially in underwater environments where bioerosion and hydrodynamics shape the seascape.
+While our semantic \gloss{EnvObj} framework introduced sparse, interactive primitives for ecosystem generation without restraining to a unique terrain representation, the underlying environmental fields remain constrained to 2D scalar fields. This simplification ensured efficiency and interpretability, but it prevents the representation of intrinsically three-dimensional features such as overhangs, caves, and porous reef structures. Moreover, terrains in the real world are rarely static: they evolve continuously under the action of water, wind, and other erosive agents. Extending procedural methods toward volumetric models and terrain-altering processes is therefore essential to reach higher realism, especially in underwater environments where bioerosion and hydrodynamics shape the seascape.
 
-The following chapter tackles this challenge by focusing on erosion simulation. We present a particle-based method that generalises detachment, transport, and deposition processes across both surface and volumetric representations, offering a flexible and efficient framework for integrating erosion into procedural terrain generation.
+The following chapter tackles this challenge by focusing on erosion simulation. We present a particle-based method that generalises detachment, transport, and deposition processes across both surfacic and volumetric representations, offering a flexible and efficient framework for integrating erosion into procedural terrain generation.
 
 \begin{figure}[H]
     \autofitgraphics{multiScene1 v2 final 1.png}
