@@ -244,7 +244,7 @@ We evaluate each operator by chaining it over $n$ inputs drawn randomly from $[0
 
 \begin{figure}
     \autofitgraphics{compare_chaining.pdf}
-    \caption{Mean absolute error as more values are chained together ($k = 5$).}
+    \caption[Mean absolute error as more values are chained together ($k = 5$)]{Mean absolute error as more values are chained together ($k = 5$).}
     \label{fig:smoothmax-chained-error}
 \end{figure}
 
@@ -273,7 +273,7 @@ We also test how each function converges to $\max(a, b)$ as sharpness $k$ increa
     \autofitgraphics{compare_sharpness_diff_0-01.pdf}
     \autofitgraphics{compare_sharpness_diff_1-0.pdf}
     % \autofitgraphics{compare_sharpness_diff_100-0.pdf}
-    \caption{Approximation error as a function of $k$ for different values of $a$ and $b$ compared to $\max(a, b)$. Error is greater for smaller differences between $a$ and $b$. Left shows that the operator is comparable to all other operators for sharpness values below 100; right show that for large sharpness values, the \texttt{Smoothmax} operator behave similarly as \texttt{LogSumExp}, while the \texttt{Smooth Absolute Maximum} operator stagnate with a lower accuracy than the others (error of \texttt{Smooth Absolute Maximum} is too large to be displayed when the difference between $a$ and $b$ exceeds 0.001). }
+    \caption[Approximation error with the max operator]{Approximation error as a function of $k$ for different values of $a$ and $b$ compared to $\max(a, b)$. Error is greater for smaller differences between $a$ and $b$. Left shows that the operator is comparable to all other operators for sharpness values below 100; right show that for large sharpness values, the \texttt{Smoothmax} operator behave similarly as \texttt{LogSumExp}, while the \texttt{Smooth Absolute Maximum} operator stagnate with a lower accuracy than the others (error of \texttt{Smooth Absolute Maximum} is too large to be displayed when the difference between $a$ and $b$ exceeds 0.001). }
     \label{fig:smoothmax-sharpness}
 \end{figure}
 
@@ -304,7 +304,7 @@ Fixing $k = 2.0$, $a = 0.0$ and limiting data type to 4 bytes floating points re
     % \autofitgraphics[width=.7\linewidth]{compare_accuracy_with_floating-point-precision_k_50.pdf}
     \autofitgraphics[]{compare_accuracy_with_floating-point-precision_k_5-10-50.pdf}
     \autofitgraphics[]{compare_accuracy_with_floating-point-precision_k_50_max-values_1000.pdf}
-    \caption{Top: Comparison of error between the \texttt{LogSumExp}, Smooth \texttt{AbsMax} and the \texttt{Smoothmax} operators when chaining the operators on data between 0 and 100 while restricting the floating point precision, with from left to right respectively $k=5$, $k=10$, and $k=50$. Bottom: We chained the operators for values between 0 and 1000, which raise overflows for \texttt{LogSumExp} (thus the data not displayed for 'float64' and 'float16'). }
+    \caption[Approximation error with different floating-point precisions]{Top: Comparison of error between the \texttt{LogSumExp}, Smooth \texttt{AbsMax} and the \texttt{Smoothmax} operators when chaining the operators on data between 0 and 100 while restricting the floating point precision, with from left to right respectively $k=5$, $k=10$, and $k=50$. Bottom: We chained the operators for values between 0 and 1000, which raise overflows for \texttt{LogSumExp} (thus the data not displayed for 'float64' and 'float16'). }
     \label{fig:smoothmax-precision-per-floating-point}
 \end{figure}
 \midConclusion
