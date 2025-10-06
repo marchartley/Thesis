@@ -329,8 +329,8 @@
 \ExplSyntaxOff
 
 \ExplSyntaxOn
-% \AltTextImageR{item_content}{placeholder.pdf}{caption}{label}
-\zzcommand{\AltTextImageR}[4]{% 
+% \AltTextImageR{item_content}{placeholder.pdf}{caption}{label}{alt_caption}
+\zzcommand{\AltTextImageR}[5]{% 
   \setcounter{AltTextImageCurrentSide}{1}
   \setlength{\currentparindent}{\parindent}%
   \setlength{\currentparskip}{\parskip}%
@@ -363,7 +363,7 @@
       \ifblank{#3}{}{
         \captionsetup{width=\linewidth}
         \captionsetup{justification=RaggedRight}
-        \captionof{figure}{#3}
+        \captionof{figure}[#5]{#3}
       }
       % \end{mdframed}
       \label{#4}
@@ -372,8 +372,8 @@
   \captionsetup{width=\linewidth}
   \smallskip
 }
-% \AltTextImageL{item_content}{placeholder.pdf}{caption}{label}
-\zzcommand{\AltTextImageL}[4]{%
+% \AltTextImageL{item_content}{placeholder.pdf}{caption}{label}{alt_caption}
+\zzcommand{\AltTextImageL}[5]{%
   \setcounter{AltTextImageCurrentSide}{0}
   \setlength{\currentparindent}{\parindent}%
   \setlength{\currentparskip}{\parskip}%
@@ -409,7 +409,7 @@
         % \captionsetup{font=footnotesize}
         \captionsetup{width=\linewidth}
         \captionsetup{justification=RaggedRight}
-        \captionof{figure}{#3}
+        \captionof{figure}[#5]{#3}
       }
       % \end{mdframed}
       \label{#4}
@@ -426,53 +426,53 @@
   \smallskip
 }
 \ExplSyntaxOff
-% \AltTextImage{item_content}{placeholder.pdf}{caption}{label}
-\zzcommand{\AltTextImage}[4]
+% \AltTextImage{item_content}{placeholder.pdf}{caption}{label}{alt_caption}
+\zzcommand{\AltTextImage}[5]
 {
   \stepcounter{AltTextImageCurrentSide}  % Increment the counter
   \ifodd\value{AltTextImageCurrentSide}  % Check if the counter is odd
-      \AltTextImageR{#1}{#2}{#3}{#4}
+      \AltTextImageR{#1}{#2}{#3}{#4}{#5}
   \else%
-      \AltTextImageL{#1}{#2}{#3}{#4}
+      \AltTextImageL{#1}{#2}{#3}{#4}{#5}
   \fi
 }
 \ExplSyntaxOff
 
-% \AltTextImage{item_content}{placeholder.pdf}{caption}{label}
-\zzcommand{\AltTextImage}[4]
+% \AltTextImage{item_content}{placeholder.pdf}{caption}{label}{alt_caption}
+\zzcommand{\AltTextImage}[5]
 {
   \stepcounter{AltTextImageCurrentSide}  % Increment the counter
   \ifodd\value{AltTextImageCurrentSide}  % Check if the counter is odd
-      \AltTextImageR{#1}{#2}{#3}{#4}
+      \AltTextImageR{#1}{#2}{#3}{#4}{#5}
   \else%
-      \AltTextImageL{#1}{#2}{#3}{#4}
+      \AltTextImageL{#1}{#2}{#3}{#4}{#5}
   \fi
 }
 
-% \AltTextImageCancelled{item_content}{placeholder.pdf}{caption}{label}
-\zzcommand{\AltTextImageCancelled}[4] {
+% \AltTextImageCancelled{item_content}{placeholder.pdf}{caption}{label}{alt_caption}
+\zzcommand{\AltTextImageCancelled}[5] {
   \begin{figure}
     \autofitgraphics[]{#2}
-    \caption{#3}
+    \caption[#5]{#3}
     \label{#4}
   \end{figure}
   #1
 }
-% \AltTextImageTop{item_content}{placeholder.pdf}{caption}{label}
-\zzcommand{\AltTextImageTop}[4] {
+% \AltTextImageTop{item_content}{placeholder.pdf}{caption}{label}{alt_caption}
+\zzcommand{\AltTextImageTop}[5] {
   \begin{figure}[H]
     \autofitgraphics[]{#2}
-    \caption{#3}
+    \caption[#5]{#3}
     \label{#4}
   \end{figure}
   #1
 }
-% \AltTextImageBottom{item_content}{placeholder.pdf}{caption}{label}
-\zzcommand{\AltTextImageBottom}[4] {
+% \AltTextImageBottom{item_content}{placeholder.pdf}{caption}{label}{alt_caption}
+\zzcommand{\AltTextImageBottom}[5] {
   #1
   \begin{figure}[H]
     \autofitgraphics[]{#2}
-    \caption{#3}
+    \caption{#5}{#3}
     \label{#4}
   \end{figure}
 }

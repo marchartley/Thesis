@@ -52,7 +52,7 @@ Numerical characteristics of solvers critically influence the realism, stability
     \begin{align}
         C = \Delta t \left( \sum_{i=1}^{n}{\frac{u_i}{\Delta x_i}} \right) \leq C_{max} \nonumber
     \end{align}
-}{delta-time-Lu2023.jpg}{Results of a fluid simulation after 5$\mu s$, 10$\mu s$ and 15$\mu s$ with different spatial resolutions (from left to right: 0.14mm, 0.07mm, 0.05mm and 0.04mm) shows large discrepancies. }{fig:erosion-sota-dt}
+}{delta-time-Lu2023.jpg}{Results of a fluid simulation after 5$\mu s$, 10$\mu s$ and 15$\mu s$ with different spatial resolutions (from left to right: 0.14mm, 0.07mm, 0.05mm and 0.04mm) shows large discrepancies. }{fig:erosion-sota-dt}{Importance of spatial resolution in fluid simulations}
 
 Thus, when looking at 2D and 3D explicit methods, the main constraint is finding a valid time-step $\Delta t$:
 \begin{align}
@@ -76,13 +76,13 @@ Numerical dissipation and detail preservation influence the visual richness of s
 
 \AltTextImage{
     Recent advances in fluid simulation increasingly integrate machine learning techniques to accelerate or augment traditional numerical methods. Surveys of machine learning applications in computational fluid dynamics identify roles for data-driven methods, physics-informed models, and ML-assisted numerical solvers that improve convergence or predict intermediate quantities such as pressure fields and subgrid turbulence closures \cite{Huang2022NN}. 
-}{smoke-control-Tang2021.png}{An incompressible force field is computed to guide the smoke simulation from a user-defined shape to another \cite{Tang2021}.}{fig:erosion-artistic-fluid-Tang2021}
+}{smoke-control-Tang2021.png}{An incompressible force field is computed to guide the smoke simulation from a user-defined shape to another \cite{Tang2021}.}{fig:erosion-artistic-fluid-Tang2021}{An incompressible force field computed to guide a smoke simulation}
     
 Neural surrogates have been proposed to approximate costly components of the solver, yielding substantial speed-ups while maintaining acceptable fidelity in graphics contexts; such approaches often leverage convolutional networks for pressure projection or learn residual corrections to coarse simulations \cite{Tompson2017,Sousa2024}. Physics-informed neural networks and related frameworks enable embedding governing equations into the learning process, facilitating generalisation and adherence to conservation laws, though their applicability to large-scale, real-time graphics remains an active research area \cite{Brunton2025}.
 
 \AltTextImage{
     Procedural or artistic fluid control has been an emerging topic for the last few decades, striking a balance between user interaction and plausibility of the fluid behaviour without full PDE solving. \cref{chap:semantic-representation} used the Kelvinlet paradigm \cite{DeGoes2017}, an analytic formulation for material deformation derived from Kelvin's state using Green's function of linear elasticity of material, providing more control types than the fluid-specific Stokelets \cite{Chwang1976}. \cite{Wejchert1991} shows that these analytic fluid primitives are an efficient and lightweight approximation of highly controlled fluid simulations. Stroke-based fluid models are closer to the storyboard design of animation artists, making them intuitive to use, but are usually for subsets of frames of an animation, which become time-consuming for the price of high-level control \cite{Xing2016,Patel2005,Yan2020b,Pan2013}. 
-}{fluid-control-Lu2019.png}{\cite{Lu2019} uses fluid rigging-skinning on water particle to guide the animation of particles. }{fig:erosion-artistic-Lu2019}
+}{fluid-control-Lu2019.png}{\cite{Lu2019} uses fluid rigging-skinning on water particles to guide the animation of particles. }{fig:erosion-artistic-Lu2019}{Water particles animated by rigging-skinning}
 
 Procedural fluids are usually defined by noise functions to artificially introduce motion \cite{Bridson2007c}, but may also be added after computing an accurate fluid simulation to introduce more vortices \cite{Wang2025}. Vortices are usually too small for Eulerian simulations as the grid's cell width used may be larger than a vortex, and the dissipation removes their presence. Editing velocity fields procedurally may also come through the use of frequency-domain editing of forces as used in \cref{fig:erosion-artistic-fluid-Tang2021} \cite{Forootaninia2020, Tang2021}, blending and interpolation techniques to merge a predefined fluid with another \cite{Raveendran2014}, or even morphing techniques to deform a velocity or force field as shown in \cref{fig:erosion-artistic-Lu2019} \cite{Lu2019,Raveendran2012,Flynn2019}.
 

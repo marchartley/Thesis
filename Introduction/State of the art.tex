@@ -41,11 +41,11 @@ Procedural generation consist of algorithmically creating content based on prede
 
 \AltTextImage{
 The conceptual roots of procedural techniques in graphics trace back to fractal geometry (see \cref{fig:intro-fractal}) and noise functions (see \cref{fig:intro-noises}). Mandelbrot's work on fractals demonstrated how complex, self-similar structures can arise from simple rules and randomness, influencing landscape modelling approaches that mimic natural roughness and multi-scale detail \cite{Mandelbrot1983}. Perlin's introduction of gradient noise provided a practical mechanism to generate coherent pseudo-random patterns for textures and terrain features \cite{Perlin1985}. These foundational ideas underpin many terrain algorithms, where noise at multiple scales produces hills, valleys, and finer details.
-}{Snowflake5-Siertriangle11.jpg}{Fractal geometry: Sierpinski Triangle in Koch Snowflake, from Larry Riddle}{fig:intro-fractal}
+}{Snowflake5-Siertriangle11.jpg}{Fractal geometry: Sierpinski Triangle in Koch Snowflake, from Larry Riddle}{fig:intro-fractal}{Fractal geometry}
 
 \AltTextImage{
     Procedural paradigms are often categorised as deterministic (repeatable given fixed inputs), stochastic (introducing randomness for variation), or hybrid (structure defined by deterministic rules, with randomness filling details). Rule-based systems, where content emerges via iterative application of predefined rules or grammars, play a central role in procedural generation, particularly in generating structured features (e.g., river networks, vegetation patterns). In terrain generation, deterministic components ensure global coherence (e.g., major landmass shapes), while stochastic elements add natural variability (e.g., subtle elevation perturbations). Methods proposed in later chapters leverage these paradigms: for instance, the sketch-based island method, combined with noise and data-driven augmentation from \cref{chap:coral-island} yields varied yet controlled outputs, and our ecosystem generator presented \cref{chap:semantic-representation} is governed by rule-based systems with stochastic sampling.
-}{noises.pdf}{Example of procedural noises}{fig:intro-noises}
+}{noises.pdf}{Example of procedural noises}{fig:intro-noises}{Example of procedural noises}
     
 Recent advances have started integrating machine learning to learn distributions of terrain patches or entire landscapes from data, enabling synthesis of realistic terrain patterns beyond hand-tuned noise parameters, using especially generative models such as GANs or autoencoders. In \cref{chap:coral-island} we use a conditional GAN to diversify coral reef island heightmaps. However, a detailed description of learning-based terrain methods appears in that chapter's State-of-the-Art.
 
@@ -61,7 +61,7 @@ Terrain refers to the physical features and configuration of a specific area of 
 
     In addition to "terrain generation", other terms such as "landscape generation", "world generation", and "environment generation" can be used to describe the creation of virtual landscapes. These terms are interchangeable and all refer to the process of generating physical terrain along with natural and artificial elements. However, by convention and for simplicity, the term "terrain generation" is most commonly used in the Computer Graphics field. Despite its original focus on the physical features of the land, "terrain generation" has evolved to encompass a broader range of environmental elements, making it a convenient and widely accepted term for describing the comprehensive process of creating virtual environments.
 
-}{Multi-representations-at-once-heightmap.png, Multi-representations-at-once-divided.png}{An initial height map (top) can be converted into multiple terrain representations (bottom, from left to right): discrete height field, layered model, density-voxel model (rendered with Marching Cubes), binary-voxel model}{fig:intro-multiple-representations}
+}{Multi-representations-at-once-heightmap.png, Multi-representations-at-once-divided.png}{An initial height map (top) can be converted into multiple terrain representations (bottom, from left to right): discrete height field, layered model, density-voxel model (rendered with Marching Cubes), binary-voxel model}{fig:intro-multiple-representations}{Multiple terrain representations from a single terrain}
 
 The terrain shown in \cref{fig:intro-multiple-representations} has been converted into different representations we used in our works; next section presents these representations with their main advantages and inconvenients.
 
@@ -79,7 +79,7 @@ For completeness, we note that several families do not appear in our later chapt
 
 \begin{figure}
   \includegraphics[width=.8\linewidth]{elevation_representation.png}
-  \caption{Elevation models can be (left) implicit functions evaluated at any point, or (right) discrete samples augmented with interpolation to recover a continuous surface \cite{Galin2019}}
+  \caption[Implicit and discrete elevation models]{Elevation models can be (left) implicit functions evaluated at any point, or (right) discrete samples augmented with interpolation to recover a continuous surface \cite{Galin2019}}
   \label{fig:erosion-elevation-representation}
 \end{figure}
 
@@ -88,7 +88,7 @@ Elevation models describe the terrain by a height field $h: \R^{2}  \to  \R$, as
 \begin{figure}
     \autofitgraphics[width=.5\linewidth]{Terrain_representations/heightmap_high-res_628x628.png}
     \autofitgraphics{Terrain_representations/heightmap_all-at-once.png}
-    \caption{Top: an implicit height field can be ray-traced at any resolution. Bottom: discrete height fields (samples of the top
+    \caption[Comparison of an implicit representation with discrete representations at different resolutions]{Top: an implicit height field can be ray-traced at any resolution. Bottom: discrete height fields (samples of the top
     function) have fixed resolution: finer meshes approach the implicit surface, whereas down-sampling inevitably loses detail.}
     \label{fig:sota-representations-heights-resolutions}
 \end{figure}
@@ -105,7 +105,7 @@ Discrete height fields, often called "heightmaps", store sampled elevations on a
 \AltTextImage{
     An implicit height field represents the terrain by a closed-form or procedural function $h_{ \text{i}}: \R^{2} \to \R$ that can be evaluated at any $(x,y)$ (\cref{fig:erosion-elevation-representation}, left). Because no samples are stored, the representation is compact and inherently multi-scale (in opposition of discrete height fields, as visible in \cref{fig:sota-representations-heights-resolutions}), and it supports analytic operations. % (derivatives, spectral synthesis, Booleans). 
     These properties make it the backbone of the semantic terrain synthesis developed in \cref{chap:semantic-representation}. The drawback is runtime cost: densely evaluating a complex function over a large domain is computationally expensive, but allow "on-demand" evaluation.
-}{primitives_representation.png}{Primitives composition \cite{Genevaux2015}}{fig:erosion-primitives-representation}
+}{primitives_representation.png}{Primitives composition \cite{Genevaux2015}}{fig:erosion-primitives-representation}{Primitives composition}
 
 Beyond the construction-tree model of \cite{Genevaux2015} (\cref{fig:erosion-primitives-representation}), several other implicit 2.5D terrain representations are commonly employed: gradient-noise fractals (e.g., Perlin, Simplex or FBM) provide fast, tileable, and stochastic detail; spectral or analytic formulas (e.g., ridge-noise, domain warps or erosion kernels) enable semantically tuned landforms; feature-curve diffusion techniques allow users to define ridges and rivers via polylines which are then diffused into the height field; vector-primitive models blend geometric shapes like ellipsoids or plates directly into the terrain surface; and radial-basis-function (RBF) implicits fit a sparse set of control points with smooth Hermite interpolants for interactive editing .
 
@@ -122,7 +122,7 @@ We organise them into three families: implicit fields, discrete voxel grids, and
 %.....................................................................
 \AltTextImageR{
     An implicit model defines a signed or unsigned scalar field $f_{ \text{i}}: \R^{3} \to \R$; the terrain surface is the isosurface $f_{ \text{i}}(\mathbf x)=0$. Positive values typically denote solid matter, negative values air. Because the field is continuous, implicit models enable smooth blends, Constructive Solid Geometry (CSG) operations (\cref{fig:intro-CSG}), and multi-scale detail synthesis \cite{Paris2019a}. Their main drawbacks are the cost of dense evaluation and the need to polygonise (e.g.\ Marching Cubes) for rasterisation \cite{Araujo2015}.
-}{Csg_tree.png}{CSG tree combining implicit primitives with intersection (left), unions (right) and difference (top) operations.}{fig:intro-CSG}
+}{Csg_tree.png}{CSG tree combining implicit primitives with intersection (left), unions (right) and difference (top) operations.}{fig:intro-CSG}{CSG tree}
     
 Signed-distance fields (SDFs) store the shortest distance to the surface and are widely used for real-time deformation and global illumination. Adaptively-sampled distance fields (ADF) \cite{Frisken2000} refine the grid where detail is needed, while sparse voxel SDFs such as OpenVDB scale to billions of voxels. Radial-basis implicit volumes offer smooth interpolation from scattered samples.
 
@@ -139,7 +139,7 @@ Voxel grids support boolean set operations, distance transforms, morphological f
     \subsubsubsection{Binary voxel grids}
     %=====================================================================
     Binary voxel grids record pure occupancy, defined as $o: \mathbb Z^{3} \to \{0,1\}$. Their single-bit payload makes them the lightest form of volumetric storage, and simple bit-packing enables SIMD flood-fills or cellular automata. When combined with Sparse Voxel Octrees or voxel DAGs they scale to scenes containing $10^{12}$ voxels while keeping GPU residency practical \cite{Laine2010,Villanueva2017}. The downside is blocky surfaces: without post-processing, silhouettes follow axis-aligned voxel faces (see \cref{fig:intro-voxels-binary-density}, left). Smoothing kernels or surface nets can mitigate this at the cost of losing exact occupancy.
-}{voxels-binary-density.png}{Binary surface (left) vs.\ density-grid isosurface (right). Density grids preserve curved boundaries without refining the lattice.}{fig:intro-voxels-binary-density}
+}{voxels-binary-density.png}{Binary surface (left) vs.\ density-grid isosurface (right). Density grids preserve curved boundaries without refining the lattice.}{fig:intro-voxels-binary-density}{Binary- and density-voxels grids of a sphere}
 
 
 \AltTextImage{
@@ -147,7 +147,7 @@ Voxel grids support boolean set operations, distance transforms, morphological f
     \subsubsubsection{Material voxel grids}
     %=====================================================================
     Material grids extend binary occupancy with categorical information (stone, sand, water, ...) with $\mu: \mathbb Z^{3} \to \mathcal M$ (with $\mathcal M$ a material from a finite material set). They are the volumetric analogue of indexed images and form the basis of block-based worlds such as \citeProgram{Minecraft2011} (\cref{fig:intro-material-voxels-minecraft}). Each update affects exactly one cell, making editing and cellular-automata simulation intuitive. The obvious limitation is abrupt boundaries: transitions remain voxel-aligned.
-}{material-voxels-minecraft.png}{Each cell of the voxel grid is encoded with a material, visible by different textures. }{fig:intro-material-voxels-minecraft}
+}{material-voxels-minecraft.png}{Each cell of the voxel grid is encoded with a material, visible by different textures. }{fig:intro-material-voxels-minecraft}{Example of a material voxel grid}
 
 %=====================================================================
 \subsubsubsection{Density voxel grids}
@@ -161,10 +161,11 @@ Storing a real-valued scalar per voxel enables implicit isosurfaces inside the g
 %.....................................................................
 \AltTextImage{
     \cite{Benes2001} introduced a layered-based terrain representation in which the landscape is discretized as a 2D grid of vertical material stacks, each composed of horizontal strata representing a single homogeneous material (e.g., water, sand, bedrock, ... presented in \cref{fig:intro-layers}). The terrain surface is given by the height of the top layer in each stack. 
-}{Layer-representation.png}{Layer representation as described in \cite{Benes2001}. \cite{Peytavie2009b} allows air and water strata to be inserted between solid material strata. }{fig:intro-layers}
+}{Layer-representation.png}{Layer representation as described in \cite{Benes2001}. \cite{Peytavie2009b} allows air and water strata to be inserted between solid material strata. }{fig:intro-layers}{Layered terrain representation}
+
 \AltTextImage{
     \cite{Peytavie2009b} improved the structure in two critical ways. First, they introduce an explicit air layer that may be inserted between solid strata to allow true 3D features such as caves, overhangs, and arches. Second, they couple this discrete stack data with a convolution-based implicit surface field $f(\p)$, defined as the normalised local volume fraction of solid material $\mathcal{V}_\mathcal{M}$ within a cubic kernel $\mathcal{V}_\Omega$. The zero-level set $\mathcal{V}_\mathcal{M} = \frac{1}{2} \mathcal{V}_\Omega$ is polygonized to form a smooth, editable surface mesh (see \cref{fig:intro-layers-hybrid}, using the empty volume $\mathcal{V}_\emptyset = \mathcal{V}_\Omega - \mathcal{V}_\mathcal{M}$). 
-}{Terrain_representations/Layer-representation-implicit.png}{The implicit volume (right, red) computed from layers-based terrain (left) is obtain by computing all points $\p$ for which a cubic kernel support (middle) contains more solid material $\mathcal{V}_\mathcal{M}$ than fluid material $\mathcal{V}_\emptyset$ in \cite{Peytavie2009b}}{fig:intro-layers-hybrid}
+}{Terrain_representations/Layer-representation-implicit.png}{The implicit volume (right, red) computed from layers-based terrain (left) is obtain by computing all points $\p$ for which a cubic kernel support (middle) contains more solid material $\mathcal{V}_\mathcal{M}$ than fluid material $\mathcal{V}_\emptyset$ in \cite{Peytavie2009b}}{fig:intro-layers-hybrid}{Hybrid layered and implicit volumic representation}
 
 
 
@@ -226,23 +227,23 @@ Coral colonies adopt varied growth forms adapted to local conditions (light, wat
 \begin{Itemize}
     \AltTextImage{
         \Item{Massive:} These corals form large boulder-like shapes that can reach several metres in diameter under calm conditions (\cref{fig:intro-Porite}). Found on reef slopes and back-reefs in low to moderate energy, up to about 30 m depth, tolerating moderate to low light, their slow growth persists over centuries in stable conditions \cite{Coward2020}. They are foundational reef-builders of the reef, providing long-term structural stability and substrate for other organisms to settle, while hosting diverse fishes in their crevices. Their bulk buffers wave energy, alters flow to form sediment-depositing lee zones, stabilises the substrate, and produces oxygen over large surfaces \cite{Baldock2014}.
-    }{graphics-oceanus_corals-_MG_9848_LuisLamar.jpg}{Large \textit{Porite lobata} - Photo credit: Luis Lamar}{fig:intro-Porite}
+    }{graphics-oceanus_corals-_MG_9848_LuisLamar.jpg}{Large \textit{Porite lobata} - Photo credit: Luis Lamar}{fig:intro-Porite}{Large \textit{Porite lobata}}
 
     \AltTextImage{
         \Item{Branching:} These corals exhibit tree-like branches with lengths often exceeding 1-2 m (\cref{fig:intro-Staghorn}). They occupy shallow reef surfaces, up to 20 m deep in high-light, high-energy environments. Fast-growing, they rapidly deposit carbonate, create 3D nurseries for juvenile fish, and support biodiversity. Their high rugosity increases turbulence and drag, altering currents, trapping sediment, and producing oxygen \cite{Baldock2014, Oh2025}. Fragile branches break in storms, aiding dispersal via fragmentation \cite{Muko2013}
-    }{staghorn-coral-large.jpg}{A field of staghorn coral - Photo credit: NOAA}{fig:intro-Staghorn}
+    }{staghorn-coral-large.jpg}{A field of staghorn coral - Photo credit: NOAA}{fig:intro-Staghorn}{A field of staghorn coral}
 
     \AltTextImage{
         \Item{Foliose:} These corals form leaf-like laminae often spanning over a metre wide (\cref{fig:intro-Pavona}). They inhabit back-reefs and reef flats between 2 to 20 m depth with moderate flow and light. They provide microhabitats, surface for symbionts, trap sediment, and contribute moderate carbonate. 
-    }{Pavona_cactus_colonia_in_situ.jpg}{\textit{Pavona cactus} - Photo credit: Benzoni, F.}{fig:intro-Pavona}
+    }{Pavona_cactus_colonia_in_situ.jpg}{\textit{Pavona cactus} - Photo credit: Benzoni, F.}{fig:intro-Pavona}{\textit{Pavona cactus}}
 
     \AltTextImage{
         \Item{Table/Plate:} These corals develop broad plates up to 3 m wide in shallow, well-lit reef crest and upper fore-reef zones above 15 m deep (\cref{fig:intro-Acropora}). They maximise photosynthesis and carbonate production, offer horizontal habitats and shaded refuges, and support encrusting life beneath which alters water flow by causing divergence above and shadows below, redistributing sediment, and producing oxygen. Fragile in storms, they form rubble that aids colonisation when fragmented.
-    }{Acropora_pulchra.jpg}{Example of an \textit{Acropora pulchra}, forming a large table - Photo credit: Albert Kok}{fig:intro-Acropora}
+    }{Acropora_pulchra.jpg}{Example of an \textit{Acropora pulchra}, forming a large table - Photo credit: Albert Kok}{fig:intro-Acropora}{Example of an \textit{Acropora pulchra}}
 
     \AltTextImage{
         \Item{Encrusting:} These corals grow as thin mats tightly adhering to substrate for about a metre wide and up to 40 m deep, tolerating various flow regimes. By resisting breakage and binding rubbles, they stabilise the substrate and cohesion, reducing erosion. \textit{Psammocora}, displayed in \cref{fig:intro-Psammocora}, spans over a part of massive coral and the soil surface, protecting the covered coral from erosion and stabilising the colony, but blocking the sunlight from reaching it.
-    }{Psammocora.jpg}{\textit{Psammocora} - Photo credit: Michael Paletta}{fig:intro-Psammocora}
+    }{Psammocora.jpg}{\textit{Psammocora} - Photo credit: Michael Paletta}{fig:intro-Psammocora}{\textit{Psammocora}}
 
 \end{Itemize}
 
@@ -254,14 +255,14 @@ Coral dispersal and colonisation occurs at multiple scales through budding (loca
 \AltTextImage{
     % [CORAL IS INFLUENCED BY THE ENVIRONMENT]
     This diffusion is balanced with their mortality and environmental factors limiting their spread. The most notable factors taken into account are elevation of temperature and \ch{CO_2} concentration, visible through the increase in their bleaching frequency and reduction of resilience, as well as pollution, which favours algal blooms, overcoming and shading polyps \cite{McCook2001,Cornwall2021}. Another key factor is sea-level changes, in response to which reefs' vertical accretion may "keep up" (the coral reef stays in the sunlight, just below water), "catch up" (growth slower but eventually matches sea level), or "give up" (cannot match water level and cannot receive enough sunlight) \cite{Kindler2011, Ramalho2013}. \cref{fig:intro-coral-bleaching} displays a field of staghorn coral in healthy shape, during bleaching, and finally dead, in which case the chances for the regrowth of the reef are almost null.
-}{Coral_bleaching.png}{Coral bleaching in the National Marine Sanctuary of American Samoa between 2014 and 2015 - Photo credit: NOAA/ XL Catlin Seaview Survey}{fig:intro-coral-bleaching}
+}{Coral_bleaching.png}{Coral bleaching in the National Marine Sanctuary of American Samoa between 2014 and 2015 - Photo credit: NOAA/ XL Catlin Seaview Survey}{fig:intro-coral-bleaching}{Coral bleaching in the National Marine Sanctuary of American Samoa between 2014 and 2015}
 
 \AltTextImage{
     % [CORAL COMPETE IN THE ENVIRONMENT]
     Coral and algae both compete for sunlight, substrate, and nutrients. However, algae grow faster, especially under elevated nutrients or reduced herbivory, leading to algal overgrowth that smothers coral, flattens reef topography, and reduces habitat complexity and biodiversity. An overwhelmed massive coral by algae, blocking access to light, is shown in \cref{fig:intro-coral-algae}.
     % In ecosystem simulations, this behaviour includes competitive interactions or state transitions where algae can overtake coral patches under certain field conditions (nutrient/light/herbivore proxies). Terrain impact: algal-dominated zones may be represented by lower-relief substrate without reef elevation.
     On a small-scale level, other organisms such as parrotfish and certain invertebrates consume algae and break down dead coral, producing sediment that can fill gaps and support new settlement for polyps \cite{McCauley2014}. % This introduces occasional sediment deposition events in erosion models; balance between accretion and bioerosion influences net morphology over time.
-}{Coral_Algae_competition.png}{Algae colonising massive coral}{fig:intro-coral-algae}
+}{Coral_Algae_competition.png}{Algae colonising massive coral}{fig:intro-coral-algae}{Algae colonising massive coral}
 
 \AltTextImage{
     % [CORAL INFLUENCE THE ENVIRONMENT]
@@ -270,7 +271,7 @@ Coral dispersal and colonisation occurs at multiple scales through budding (loca
 
     These fine-scale properties have influence on the large-scale environment as they introduce turbulences and drag in the water flow \cite{Sous2020}, and produce sediment deposition at small and large distances \cite{Ramalho2013,Krempf1927}. % In fluid or movement simulations, incorporate rugosity/resistance parameters derived from morphology type rather than resolving every crevice. In EFT, these fields influence distribution and behaviour of reef-dependent agents.
 
-}{Coral_shelter.jpg}{Coral reefs are porous, resulting in biodiversity shelter, but also complex hydrodynamics}{fig:intro-coral-shelter}
+}{Coral_shelter.jpg}{Coral reefs are porous, resulting in biodiversity shelter, but also complex hydrodynamics}{fig:intro-coral-shelter}{Coral reefs are porous, resulting in biodiversity shelter, but also complex hydrodynamics}
 
 For the same reasons, reef crests break incoming waves; morphological complexity (e.g., branching structures) slows water and reduces energy reaching shore, mitigating erosion \cite{Woodroffe2003}.
 
@@ -290,7 +291,7 @@ Fringing reefs are the most common and widespread coral reefs. They form narrow 
 
     Fringing reefs grow in clear, shallow waters with high light, warmth, and moderate waves. Coastal currents bring nutrients, helping coral growth. Yet, their location makes them prone to sedimentation, runoff, and pollution \cite{Nicholls2008}. Sediment can smother corals and block sunlight. Runoff adds nutrients, causing algal blooms that compete with corals (possibly causing some of the "holes" in the reef in \cref{fig:intro-fringing-reef-Moorea}).
 
-}{Moorea_fringing.jpg}{Fringing reef around Mo'orea island.}{fig:intro-fringing-reef-Moorea}
+}{Moorea_fringing.jpg}{Fringing reef around Mo'orea island.}{fig:intro-fringing-reef-Moorea}{Fringing reef around Mo'orea island}
 
 Zonation defines coral distribution across the reef. On the flat, corals handle temperature shifts and sediment. On the crest, species tolerate waves and low-tide exposure. The slope supports more diverse corals, often forming large structures that shelter marine life.
 
@@ -299,7 +300,7 @@ Zonation defines coral distribution across the reef. On the flat, corals handle 
     These reefs typically develop from fringing reefs that have grown over long periods, during which the coastline has either subsided or sea levels have risen. As the land subsides or the sea level rises, the original fringing reef is gradually separated from the shore, forming a lagoon between the reef and the coastline (the lagoon in \cref{fig:intro-barrier-reef-Providencia} is visible as a deep blue band between the clear blue back reef and the abovewater island).
     
     The depth and size of the lagoon, as well as the height of the reef crest, are influenced by multiple factors such as wave action, currents, and the rate of coral growth. The lagoon often contains patch reefs (clear blue spots in the lagoon of \cref{fig:intro-barrier-reef-Providencia}), seagrass beds, and sandy areas. The zonation within barrier reefs creates distinct ecological niches, with different species of corals, fish, and invertebrates adapted to the specific conditions found in each zone. The fore reef slope, with its high-energy environment, supports species that are resilient to strong waves and currents. In contrast, the more sheltered back reef and lagoon provide habitats for species that prefer calmer waters and stable conditions.
-}{Divine_Providencia_barrier_reef.jpg}{Aerial image of Providencia Island, surrounded by a large barrier reef}{fig:intro-barrier-reef-Providencia}
+}{Divine_Providencia_barrier_reef.jpg}{Aerial image of Providencia Island, surrounded by a large barrier reef.}{fig:intro-barrier-reef-Providencia}{Aerial image of Providencia Island, surrounded by a large barrier reef}
 
 Barrier reefs also play a role in the connectivity between marine ecosystems. They act as a bridge between the open ocean and the coastal environments, facilitating the movement of marine species across different habitats. Many species of fish and invertebrates migrate between the reef and the lagoon during different life stages, using the barrier reef as a nursery or feeding ground.
 
@@ -308,7 +309,7 @@ The formation of atolls is a process that unfolds over millions of years. As the
 
 \AltTextImage{
     The lagoon varies greatly in depth, ranging from shallow areas with sandy bottoms to deeper sections where patch reefs and seagrass beds may develop \cite{Goldberg2016}. The sheltered waters of the lagoon provide a calmer environment compared to the outer reef slope, allowing a different community of marine species to develop. These species often include a mix of corals, fish, and invertebrates that are weakly tolerant of the high-energy conditions. The lagoon may also contain small coral reef islands, known as motus, which form from the accumulation of coral debris and sand.
-}{Tetiaroa_from_sky.jpeg}{Aerial view of Tetiaroa Atoll, French Polynesia}{fig:intro-atoll-Tetiaroa}
+}{Tetiaroa_from_sky.jpeg}{Aerial view of Tetiaroa Atoll, French Polynesia.}{fig:intro-atoll-Tetiaroa}{Aerial view of Tetiaroa Atoll, French Polynesia}
 
 
 
