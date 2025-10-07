@@ -175,21 +175,21 @@ Procedural algorithms are designed to find a balance between three main objectiv
 
 Procedural terrain generation algorithms typically rely on user-defined parameters to produce results that meet specific needs. To effectively involve users in the creation process, it is essential to provide tools that allow intuitive interaction with these parameters. These parameters vary widely in nature, and each type benefits from different kinds of interaction tools. While prior surveys have discussed categories of procedural methods \cite{Smelik2009,Smelik2014,Galin2019}, we propose to broadly classify interactive tools for procedural terrain generation along a global-to-local spectrum: 
 \begin{Itemize}
-    \Item{Global procedural parameters:} Values that reshape the whole terrain field at once. \\
+    \Item{} \textbf{Global procedural parameters:} Values that reshape the whole terrain field at once. \\
     This category groups together:
         \begin{Itemize}
-            \Item{Noise parameters} (e.g., frequency, amplitude, octaves) that drive the terrain base-shape variation \cite{Perlin1985,Fournier1982}.
-            \Item{Physical constants} (e.g., erosion sediment capacity, wind strength) used by simulation passes \cite{Benes2001a,Paris2019b}.
+            \Item{} \textbf{Noise parameters} (e.g., frequency, amplitude, octaves) that drive the terrain base-shape variation \cite{Perlin1985,Fournier1982}.
+            \Item{} \textbf{Physical constants} (e.g., erosion sediment capacity, wind strength) used by simulation passes \cite{Benes2001a,Paris2019b}.
         \end{Itemize}
         These numbers are usually exposed through spinboxes, sliders, or configuration files.
 
-    \Item{Regional controls (masks and density maps):} Greyscale or weighted maps that localise subsequent generators, telling them where to act and with what intensity \cite{DeCarpentier2009,Stachniak2005}. \\
+    \Item{} \textbf{Regional controls (masks and density maps):} Greyscale or weighted maps that localise subsequent generators, telling them where to act and with what intensity \cite{DeCarpentier2009,Stachniak2005}. \\
     Users paint or import these masks with brush tools, which are often using weighted values to avoid the hard edges of binary masks.
 
-    \Item{Assets and features placement:} Interactive positioning (or scattering) of discrete assets such as rock arches, buildings, or river splines \cite{Becher2017,Grosbellet2016}. \\  
+    \Item{} \textbf{Assets and features placement:} Interactive positioning (or scattering) of discrete assets such as rock arches, buildings, or river splines \cite{Becher2017,Grosbellet2016}. \\  
     Users click to set an initial $xyz$ location, then translate, rotate, or duplicate as needed.
 
-    \Item{Surface sculpting (manual and procedural brushes):} Point-level edits that raise, lower, smooth, or terrace the height field \cite{Galyean1991,Gain2005,Chen2021}. \\
+    \Item{} \textbf{Surface sculpting (manual and procedural brushes):} Point-level edits that raise, lower, smooth, or terrace the height field \cite{Galyean1991,Gain2005,Chen2021}. \\
     Users control the brush effect through parameters like radius, intensity, and falloff shape.
 \end{Itemize}
 
@@ -199,10 +199,10 @@ Realism refers to the extent to which generated content accurately represents re
 
 On the other hand, speed is about the efficiency of content generation within acceptable time constraints. While no official categorisation has been set, we propose to describe levels of speed based on response time:
 \begin{Itemize}
-    \Item{Real-time:} generation in less than 30 milliseconds, essential for interactive applications such as VR environments.
-    \Item{Interactive:} generation in under 3 seconds, suitable for user-driven customisation in games and simulations.
-    \Item{Near-interactive:} generation in less than 5 minutes, applicable for larger-scale simulations where some delay is acceptable.
-    \Item{Offline:} generation that takes longer, often used for precomputed content or offline rendering.
+    \Item{} \textbf{Real-time:} generation in less than 30 milliseconds, essential for interactive applications such as VR environments.
+    \Item{} \textbf{Interactive:} generation in under 3 seconds, suitable for user-driven customisation in games and simulations.
+    \Item{} \textbf{Near-interactive:} generation in less than 5 minutes, applicable for larger-scale simulations where some delay is acceptable.
+    \Item{} \textbf{Offline:} generation that takes longer, often used for precomputed content or offline rendering.
 \end{Itemize}
 
 The execution speed of a procedural algorithm is crucial as the user will fine-tune the parameters before being satisfied \cite{Smelik2014}.
@@ -226,23 +226,23 @@ Coral colonies adopt varied growth forms adapted to local conditions (light, wat
 
 \begin{Itemize}
     \AltTextImage{
-        \Item{Massive:} These corals form large boulder-like shapes that can reach several metres in diameter under calm conditions (\cref{fig:intro-Porite}). Found on reef slopes and back-reefs in low to moderate energy, up to about 30 m depth, tolerating moderate to low light, their slow growth persists over centuries in stable conditions \cite{Coward2020}. They are foundational reef-builders of the reef, providing long-term structural stability and substrate for other organisms to settle, while hosting diverse fishes in their crevices. Their bulk buffers wave energy, alters flow to form sediment-depositing lee zones, stabilises the substrate, and produces oxygen over large surfaces \cite{Baldock2014}.
+        \Item{} \textbf{Massive:} These corals form large boulder-like shapes that can reach several metres in diameter under calm conditions (\cref{fig:intro-Porite}). Found on reef slopes and back-reefs in low to moderate energy, up to about 30 m depth, tolerating moderate to low light, their slow growth persists over centuries in stable conditions \cite{Coward2020}. They are foundational reef-builders of the reef, providing long-term structural stability and substrate for other organisms to settle, while hosting diverse fishes in their crevices. Their bulk buffers wave energy, alters flow to form sediment-depositing lee zones, stabilises the substrate, and produces oxygen over large surfaces \cite{Baldock2014}.
     }{graphics-oceanus_corals-_MG_9848_LuisLamar.jpg}{Large \textit{Porite lobata} - Photo credit: Luis Lamar}{fig:intro-Porite}{Large \textit{Porite lobata}}
 
     \AltTextImage{
-        \Item{Branching:} These corals exhibit tree-like branches with lengths often exceeding 1-2 m (\cref{fig:intro-Staghorn}). They occupy shallow reef surfaces, up to 20 m deep in high-light, high-energy environments. Fast-growing, they rapidly deposit carbonate, create 3D nurseries for juvenile fish, and support biodiversity. Their high rugosity increases turbulence and drag, altering currents, trapping sediment, and producing oxygen \cite{Baldock2014, Oh2025}. Fragile branches break in storms, aiding dispersal via fragmentation \cite{Muko2013}
+        \Item{} \textbf{Branching:} These corals exhibit tree-like branches with lengths often exceeding 1-2 m (\cref{fig:intro-Staghorn}). They occupy shallow reef surfaces, up to 20 m deep in high-light, high-energy environments. Fast-growing, they rapidly deposit carbonate, create 3D nurseries for juvenile fish, and support biodiversity. Their high rugosity increases turbulence and drag, altering currents, trapping sediment, and producing oxygen \cite{Baldock2014, Oh2025}. Fragile branches break in storms, aiding dispersal via fragmentation \cite{Muko2013}
     }{staghorn-coral-large.jpg}{A field of staghorn coral - Photo credit: NOAA}{fig:intro-Staghorn}{A field of staghorn coral}
 
     \AltTextImage{
-        \Item{Foliose:} These corals form leaf-like laminae often spanning over a metre wide (\cref{fig:intro-Pavona}). They inhabit back-reefs and reef flats between 2 to 20 m depth with moderate flow and light. They provide microhabitats, surface for symbionts, trap sediment, and contribute moderate carbonate. 
+        \Item{} \textbf{Foliose:} These corals form leaf-like laminae often spanning over a metre wide (\cref{fig:intro-Pavona}). They inhabit back-reefs and reef flats between 2 to 20 m depth with moderate flow and light. They provide microhabitats, surface for symbionts, trap sediment, and contribute moderate carbonate. 
     }{Pavona_cactus_colonia_in_situ.jpg}{\textit{Pavona cactus} - Photo credit: Benzoni, F.}{fig:intro-Pavona}{\textit{Pavona cactus}}
 
     \AltTextImage{
-        \Item{Table/Plate:} These corals develop broad plates up to 3 m wide in shallow, well-lit reef crest and upper fore-reef zones above 15 m deep (\cref{fig:intro-Acropora}). They maximise photosynthesis and carbonate production, offer horizontal habitats and shaded refuges, and support encrusting life beneath which alters water flow by causing divergence above and shadows below, redistributing sediment, and producing oxygen. Fragile in storms, they form rubble that aids colonisation when fragmented.
+        \Item{} \textbf{Table/Plate:} These corals develop broad plates up to 3 m wide in shallow, well-lit reef crest and upper fore-reef zones above 15 m deep (\cref{fig:intro-Acropora}). They maximise photosynthesis and carbonate production, offer horizontal habitats and shaded refuges, and support encrusting life beneath which alters water flow by causing divergence above and shadows below, redistributing sediment, and producing oxygen. Fragile in storms, they form rubble that aids colonisation when fragmented.
     }{Acropora_pulchra.jpg}{Example of an \textit{Acropora pulchra}, forming a large table - Photo credit: Albert Kok}{fig:intro-Acropora}{Example of an \textit{Acropora pulchra}}
 
     \AltTextImage{
-        \Item{Encrusting:} These corals grow as thin mats tightly adhering to substrate for about a metre wide and up to 40 m deep, tolerating various flow regimes. By resisting breakage and binding rubbles, they stabilise the substrate and cohesion, reducing erosion. \textit{Psammocora}, displayed in \cref{fig:intro-Psammocora}, spans over a part of massive coral and the soil surface, protecting the covered coral from erosion and stabilising the colony, but blocking the sunlight from reaching it.
+        \Item{} \textbf{Encrusting:} These corals grow as thin mats tightly adhering to substrate for about a metre wide and up to 40 m deep, tolerating various flow regimes. By resisting breakage and binding rubbles, they stabilise the substrate and cohesion, reducing erosion. \textit{Psammocora}, displayed in \cref{fig:intro-Psammocora}, spans over a part of massive coral and the soil surface, protecting the covered coral from erosion and stabilising the colony, but blocking the sunlight from reaching it.
     }{Psammocora.jpg}{\textit{Psammocora} - Photo credit: Michael Paletta}{fig:intro-Psammocora}{\textit{Psammocora}}
 
 \end{Itemize}
@@ -358,7 +358,7 @@ The formation of atolls is a process that unfolds over millions of years. As the
 
 % Unlike aerial landscapes' height fields, reef environments contain overhangs, cavities, and porous frameworks created by biological accretion and bioerosion. Procedural methods must therefore synthesise plausible volumetric geometry rather than relying solely on 2.5D surfaces. This could be achieved through combinations of multiple surface and volume representations, the introduction of rule-based solid modelling such as the use of L-systems for branching coral forms \cite{Prusinkiewicz1992, Abela2015}, and the stochastic placement of "voids" to mimic bioerosion. A procedural pipeline may first establish a coarse reef framework from depth-dependent envelope shapes and then instantiate volumetric modules representing coral colonies and cavities according to ecological rules or bioerosion simulations. The main challenge for such method is to integrate ecological rules and maintain computational tractability.
 
-% Physical processes such as hydrodynamic forces and sediment transport impose constraints on feasible reef morphologies. While full computational fluid dynamics (CFD) coupling for procedural generation is typically impractical at large scales, hybrid approaches could incorporate simplified physics-based rules. For example, a priori knowledge of relationships between reef shape and prevailing wave energy informs the geometry of grooves-and-spurs. Sediment deposition rules from in situ observation can guide the formation of lagoon floors or backreef accumulations. Such hybrid modelling ensures that generated forms remain within plausible physical bounds.
+% Physical processes such as hydrodynamic forces and sediment transport impose constraints on feasible reef morphologies. While full Computational Fluid Dynamics (CFD) coupling for procedural generation is typically impractical at large scales, hybrid approaches could incorporate simplified physics-based rules. For example, a priori knowledge of relationships between reef shape and prevailing wave energy informs the geometry of grooves-and-spurs. Sediment deposition rules from in situ observation can guide the formation of lagoon floors or backreef accumulations. Such hybrid modelling ensures that generated forms remain within plausible physical bounds.
 
 % Process-informed generation relies on encoding ecological constraints and interactions. Coral growth algorithms may simulate accretion under light-dependent rules according to environmental parameters. Agent-based models can represent competition for space, where faster-growing but fragile forms may dominate in sheltered zones, whereas robust morphologies persist in high-energy areas \cite{Anthony2000}. Simulated bioerosion events introduce heterogeneity and temporal variability. Although full temporal simulation may be computationally expensive, stochastic modelling or staged synthesis (e.g., iterative growth phases punctuated by disturbance events) may yield realistic geometry.
 
@@ -392,11 +392,11 @@ The formation of atolls is a process that unfolds over millions of years. As the
 
 % Several physical and ecological factors distinguish underwater terrains from terrestrial ones:
 % \begin{Itemize}
-%     \Item{Hydrodynamics instead of gravity as dominant force} While gravity drives sediment transport and slope stability, buoyancy reduces its apparent strength. At small and intermediate scales, currents and waves dominate the redistribution of sediments, carving reef edges, channels, and lagoons.
+%     \Item{} \textbf{Hydrodynamics instead of gravity as dominant force} While gravity drives sediment transport and slope stability, buoyancy reduces its apparent strength. At small and intermediate scales, currents and waves dominate the redistribution of sediments, carving reef edges, channels, and lagoons.
 
-%     \Item{Light attenuation and growth constraints} Photosynthetic symbionts make corals highly dependent on light, restricting reef-building to shallow and clear waters. Depth and turbidity directly bound vertical growth and define ecological zonation.
+%     \Item{} \textbf{Light attenuation and growth constraints} Photosynthetic symbionts make corals highly dependent on light, restricting reef-building to shallow and clear waters. Depth and turbidity directly bound vertical growth and define ecological zonation.
 
-%     \Item{Biological construction and destruction} Reef-building corals continuously accrete calcium carbonate, while other organisms (e.g. parrotfish, sponges, urchins) erode and remodel the substrate. This dual process produces porous, heterogeneous, and dynamic terrain.
+%     \Item{} \textbf{Biological construction and destruction} Reef-building corals continuously accrete calcium carbonate, while other organisms (e.g. parrotfish, sponges, urchins) erode and remodel the substrate. This dual process produces porous, heterogeneous, and dynamic terrain.
 % \end{Itemize}
 
 % Underwater terrains require representations that capture volumetric features beyond heightmaps, growth rules conditioned on depth and light, and hybrid processes where biological accretion and erosion interact with hydrodynamics.
@@ -414,11 +414,11 @@ The formation of atolls is a process that unfolds over millions of years. As the
 % Reef landscapes evolve under the coupled influence of geology, hydrodynamics, and biology:
 
 % \begin{Itemize}
-%     \Item{Geological context} (tectonic uplift, subsidence, sediment supply) defines the long-term framework in which reefs develop.
+%     \Item{} \textbf{Geological context} (tectonic uplift, subsidence, sediment supply) defines the long-term framework in which reefs develop.
 
-%     \Item{Hydrodynamic regimes} (currents, waves, storm events) redistribute sediments, apply mechanical stress, and periodically reshape reef morphology.
+%     \Item{} \textbf{Hydrodynamic regimes} (currents, waves, storm events) redistribute sediments, apply mechanical stress, and periodically reshape reef morphology.
 
-%     \Item{Ecological processes} (species-specific growth, competition with algae, bioerosion) continuously remodel terrain over years to centuries.
+%     \Item{} \textbf{Ecological processes} (species-specific growth, competition with algae, bioerosion) continuously remodel terrain over years to centuries.
 % \end{Itemize}
 
 % These processes interact in feedback loops: reef morphology modifies flow, which alters sedimentation patterns, which in turn affect coral colonisation and survival. Such couplings make seascapes dynamic and scale-dependent, and cannot be adequately captured by static terrain templates.
@@ -429,11 +429,11 @@ The formation of atolls is a process that unfolds over millions of years. As the
 
 % From a graphics perspective, seascapes also raise challenges that are directly procedural in nature:
 % \begin{Itemize}
-%     \Item{Multi-scale structure} Reef systems exhibit features across orders of magnitude: from millimetre-scale coral branches to kilometre-scale reef rims. Procedural frameworks must therefore handle hierarchical detail and level-of-detail transitions.
+%     \Item{} \textbf{Multi-scale structure} Reef systems exhibit features across orders of magnitude: from millimetre-scale coral branches to kilometre-scale reef rims. Procedural frameworks must therefore handle hierarchical detail and level-of-detail transitions.
 
-%     \Item{Volumetric complexity} Overhangs, porous frameworks, and internal cavities exceed the capabilities of 2.5D height fields, motivating the use of voxel, layered, or implicit volumetric models.
+%     \Item{} \textbf{Volumetric complexity} Overhangs, porous frameworks, and internal cavities exceed the capabilities of 2.5D height fields, motivating the use of voxel, layered, or implicit volumetric models.
 
-%     \Item{Hybrid physics and ecology} Full physical simulation is computationally prohibitive, yet omitting environmental constraints leads to implausible outputs. Hybrid strategies (simplified hydrodynamic rules, stochastic ecological agents, or erosion-inspired operators) are needed to balance realism, speed, and controllability.
+%     \Item{} \textbf{Hybrid physics and ecology} Full physical simulation is computationally prohibitive, yet omitting environmental constraints leads to implausible outputs. Hybrid strategies (simplified hydrodynamic rules, stochastic ecological agents, or erosion-inspired operators) are needed to balance realism, speed, and controllability.
 % \end{Itemize}
 
 % Achieving plausible seascapes requires combining multiple representations and levels of abstraction, while ensuring computational tractability.
@@ -462,12 +462,12 @@ The formation of atolls is a process that unfolds over millions of years. As the
 
 % % 5.2 Generating full 3D structures beyond surface terrain Unlike aerial landscapes' height fields, reef environments contain overhangs, cavities, and porous frameworks created by biological accretion and bioerosion. Procedural methods must therefore synthesise plausible volumetric geometry rather than relying solely on 2.5D surfaces. This could be achieved through combinations of multiple surface and volume representations, the introduction of rule-based solid modelling such as the use of L-systems for branching coral forms \cite{Prusinkiewicz1992,Abela2015}, and the stochastic placement of "voids" to mimic bioerosion. A procedural pipeline may first establish a coarse reef framework from depth-dependent envelope shapes and then instantiate volumetric modules representing coral colonies and cavities according to ecological rules or bioerosion simulations. The main challenge for such method is to integrate ecological rules and maintain computational tractability.
 
-% % 5.4 Physics-informed constraints and hybrid modeling Physical processes of hydrodynamic forces and sediment transport impose constraints on feasible reef morphologies. While full computational fluid dynamics (CFD) coupling for procedural generation is typically impractical at large scales, hybrid approaches could incorporate simplified physics-based rules. For instance, a priori knowledge of relationships between reef shape and prevailing wave energy informs the geometry of grooves-and-spurs. Sediment deposition rules from in situ observation can guide the formation of lagoon floors or backreef accumulations. Such hybrid modelling ensures that generated forms remain within plausible physical bounds. % Where higher fidelity is required, procedural output can feed into targeted CFD simulations for faster convergence, and results can then refine procedural parameters in an iterative workflow.
+% % 5.4 Physics-informed constraints and hybrid modeling Physical processes of hydrodynamic forces and sediment transport impose constraints on feasible reef morphologies. While full Computational Fluid Dynamics (CFD) coupling for procedural generation is typically impractical at large scales, hybrid approaches could incorporate simplified physics-based rules. For instance, a priori knowledge of relationships between reef shape and prevailing wave energy informs the geometry of grooves-and-spurs. Sediment deposition rules from in situ observation can guide the formation of lagoon floors or backreef accumulations. Such hybrid modelling ensures that generated forms remain within plausible physical bounds. % Where higher fidelity is required, procedural output can feed into targeted CFD simulations for faster convergence, and results can then refine procedural parameters in an iterative workflow.
 
 % 5.3 Ecologically informed growth and degradation Process-informed generation relies on encoding ecological constraints and interactions. Coral growth algorithms may simulate accretion under light-dependent rules according to environmental parameters. Agent-based models can represent competition for space, where faster-growing but fragile forms may dominate in sheltered zones, whereas robust morphologies persist in high-energy areas \cite{Anthony2000}. Simulated bioerosion events introduce heterogeneity and temporal variability. Although full temporal simulation may be computationally expensive, stochastic modelling or staged synthesis (e.g., iterative growth phases punctuated by disturbance routines) may yield realistic geometry. % Embedding simplified feedback could capture essential eco-physical coupling without full hydrodynamic simulation.
 
 % % 5.5 Data-driven synthesis and machine learning considerations
-% Although example-based interpolation is unsuitable given sparse reef data, machine learning techniques may assist in learning statistical distributions of morphological features from available datasets. For instance, generative adversarial networks (GANs) or variational autoencoders could be trained on limited high-resolution reef scans to produce textures or small-scale patterns; however, without ecological constraints, such outputs risk implausibility. A prudent approach integrates ML-derived statistical priors into rule-based frameworks, using learned distributions for parameter sampling (e.g., colony size or spacing distributions) but entrusting structural coherence to process-informed algorithms. Careful validation against known empirical metrics is essential to avoid artifacts, and uncertainty in learned models must be acknowledged through ensemble generation or probabilistic parameter ranges.
+% Although example-based interpolation is unsuitable given sparse reef data, machine learning techniques may assist in learning statistical distributions of morphological features from available datasets. For instance, Generative Adversarial Networks (GANs) or variational autoencoders could be trained on limited high-resolution reef scans to produce textures or small-scale patterns; however, without ecological constraints, such outputs risk implausibility. A prudent approach integrates ML-derived statistical priors into rule-based frameworks, using learned distributions for parameter sampling (e.g., colony size or spacing distributions) but entrusting structural coherence to process-informed algorithms. Careful validation against known empirical metrics is essential to avoid artifacts, and uncertainty in learned models must be acknowledged through ensemble generation or probabilistic parameter ranges.
 
 % % 5.6 Validation, uncertainty, and expert review
 % Procedural outputs cannot rely on dense ground-truth; instead, validation must reference general empirical observations and expert judgement. Typical zonation profiles, cross-sectional reef morphologies documented in the literature, and known ranges of accretion or erosion rates serve as anchors for assessing plausibility. Uncertainty-aware generation involves producing ensembles of variants under different parameter sets (e.g., varying growth rate or disturbance frequency) and examining their consistency with observed reef patterns. Expert review by marine ecologists or geomorphologists can identify unrealistic artifacts. Documentation of assumptions and parameter choices is critical to ensure transparency in the procedural modelling process.

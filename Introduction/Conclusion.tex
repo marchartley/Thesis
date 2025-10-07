@@ -6,7 +6,7 @@
 
 This thesis has explored the procedural generation of underwater environments, focusing particularly on coral reef islands. By situating our work at the intersection of computer graphics and marine biology, we addressed the unique challenges posed by seascapes: sparse and incomplete data, multi-scale structural complexity, dynamic biological and hydrodynamic processes, and the tension between automation and user control.
 
-Our first contribution introduced a user-guided procedural framework for coral reef island generation (\cref{chap:coral-island}). The method begins with sketch-based input, where the user provides two orthogonal projections defining the island's outline and elevation. A long-term environmental deformation field representing factors like prevailing wind or current is then applied to shape the coarse geometry realistically over time. The resulting heightmaps serve as training data for a conditional generative adversarial network (cGAN), which learns to produce diversified yet controllable variations of reef islands. This hybrid approach leverages both deterministic user input and stochastic neural synthesis, ensuring that the generated terrains remain ecologically plausible while enabling rapid, large-scale seascape generation.
+Our first contribution introduced a user-guided procedural framework for coral reef island generation (\cref{chap:coral-island}). The method begins with sketch-based input, where the user provides two orthogonal projections defining the island's outline and elevation. A long-term environmental deformation field representing factors like prevailing wind or current is then applied to shape the coarse geometry realistically over time. The resulting heightmaps serve as training data for a conditional Generative Adversarial Network (cGAN), which learns to produce diversified yet controllable variations of reef islands. This hybrid approach leverages both deterministic user input and stochastic neural synthesis, ensuring that the generated terrains remain ecologically plausible while enabling rapid, large-scale seascape generation.
 
 The second contribution proposed a semantic representation of terrains using environmental objects (\cref{chap:semantic-representation}). Here, underwater features such as canyons, coral colonies, or rocky outcrops are abstracted into symbolic entities governed by rule-based interactions. Instead of simulating full multiphysics processes, these semantic objects encode simplified ecological and geological relationships. By decoupling terrain structure from heavy physical simulations, this representation enables interactive editing: users can rearrange symbolic layouts or modify ecosystem composition without committing to a specific geometric representation. The result is a fast, low-cost synthesis pipeline that preserves expert knowledge and bridges the gap between domain specialists and procedural modelling tools.
 
@@ -23,7 +23,7 @@ Beyond the specific methods presented, this work underscores a broader insight: 
 
 % Procedural generation of virtual terrains has matured over decades, yet user control remains a central challenge. This thesis has addressed this challenge in the context of underwater environments, with particular attention to coral reef islands and broader implications for biology, geology and graphics. The guiding question has been how to support the user in the creation process rather than replace creative intent, while ensuring flexibility, interactivity and modularity.
 
-% \paragraph{User-guided learning-based approach} We introduced in \cref{chap:coral-island} a user-guided procedural method for coral reef island generation that combines sketch-based specification of island shape with wind-driven deformation and a conditional generative adversarial network for diversity. This approach avoids reliance on large real-world elevation datasets, achieves training in approximately one hour on procedurally generated data, and enables inference in milliseconds. This method demonstrates how neural expressivity can be harnessed to lift procedural constraints and present a more flexible interface for designers. It is important to note that the use case was simple enough for a neural network as the generation rules are distance-based, meaning that the network may simply learn to create distance maps; more complex scenarios are possibly not as fast to learn.
+% \paragraph{User-guided learning-based approach} We introduced in \cref{chap:coral-island} a user-guided procedural method for coral reef island generation that combines sketch-based specification of island shape with wind-driven deformation and a conditional Generative Adversarial Network for diversity. This approach avoids reliance on large real-world elevation datasets, achieves training in approximately one hour on procedurally generated data, and enables inference in milliseconds. This method demonstrates how neural expressivity can be harnessed to lift procedural constraints and present a more flexible interface for designers. It is important to note that the use case was simple enough for a neural network as the generation rules are distance-based, meaning that the network may simply learn to create distance maps; more complex scenarios are possibly not as fast to learn.
 
 % \paragraph{Semantic ecosystem modelling} \cref{chap:semantic-representation} proposed a semantic, entity-based ecosystem modelling framework based on phenomenological principles. By representing biotic and abiotic elements as symbolic objects with user-definable interactions, this work trades physics and biological fidelity for computation speed. The abstraction permits rule definitions informed by domain insights without committing to heavy simulation, thereby offering a lightweight yet extensible means for environment design across multiple representations. The quality and fidelity of the generation is directly dependent on rule definitions, shifting the responsibility into the user's hands, which is far from ideal in a user-oriented application.
 
@@ -68,16 +68,16 @@ Works presented in this thesis have been material for a journal article:
 
 These works have also been presented at multiple occasions:
 \begin{Itemize}
-    \Item{International conferences:}
+    \Item{} \textbf{International conferences:}
     \Item{} M. Hartley, N. Mellado, C. Fiorio, N. Faraj. Flexible Terrain Erosion. \ul{Computer Graphics International}, Geneva, Switzerland, 2024.
 \end{Itemize}
 \begin{Itemize}
-    \Item{National conferences:}
+    \Item{} \textbf{National conferences:}
     \Item{} M. Hartley, N. Mellado, C. Fiorio, N. Faraj. Algorithmes d'érosion pour la génération de terrains 3D. \ul{Journées Françaises d'Informatique Graphique}, Bordeaux, France, 2022.
     \Item{} M. Hartley, L. Barthe, B. Benes, O. Deussen, C. Fiorio, N. Faraj, K. Godary-Dejean. Génération de terrains par processus itératif: application à la génération d'îles coralliennes. \ul{Journées Françaises d'Informatique Graphique}, Montpellier, France, 2023.
 \end{Itemize}
 \begin{Itemize}
-    \Item{Workshops:}
+    \Item{} \textbf{Workshops:}
     \Item{} M. Hartley. Procedural Generation of 3D Underwater Environments. \ul{Computer science and Robotic's tools for 3D marine underwater environment monitoring and modelling}, Montpellier, France, 2022.
     \Item{} M. Hartley. Procedural Generation of 3D Underwater Environments. \ul{Workshop on underwater environment monitoring and modelling}, Montpellier, France, 2024.
 \end{Itemize}

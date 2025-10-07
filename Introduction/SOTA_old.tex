@@ -100,11 +100,11 @@ Beyond the construction-tree model of \cite{Genevaux2015} (\cref{fig:erosion-pri
 
 % Beyond the construction-tree model of \cite{Genevaux2015} (\cref{fig:erosion-primitives-representation}), five families are common:
 % \begin{Itemize}
-%     \Item{Gradient-noise fractals (Perlin, Simplex, FBM)}: fast, tile-able, stochastic detail.
-%     \Item{Spectral or analytic formulas:} (ridge noise, warps, erosion kernels) for hand-tuned landforms.
-%     \Item{Feature-curve diffusion:} ridges/rivers defined as polylines then diffused to a height field.
-%     \Item{Vector-based / primitive sets:} ellipsoids or plates blended into a surface.
-%     \Item{RBF implicits:} sparse control points fitted with Hermite radial basis functions for interactive editing.
+%     \Item{} \textbf{Gradient-noise fractals (Perlin, Simplex, FBM)}: fast, tile-able, stochastic detail.
+%     \Item{} \textbf{Spectral or analytic formulas:} (ridge noise, warps, erosion kernels) for hand-tuned landforms.
+%     \Item{} \textbf{Feature-curve diffusion:} ridges/rivers defined as polylines then diffused to a height field.
+%     \Item{} \textbf{Vector-based / primitive sets:} ellipsoids or plates blended into a surface.
+%     \Item{} \textbf{RBF implicits:} sparse control points fitted with Hermite radial basis functions for interactive editing.
 % \end{Itemize}
 
 These alternatives are surveyed in depth in \cref{chap:coral-island}' State-of-the-Art.
@@ -294,21 +294,21 @@ Procedural algorithms are designed to find a balance between three main objectiv
 
 Procedural terrain generation algorithms typically rely on user-defined parameters to produce results that meet specific needs. To effectively involve users in the creation process, it is essential to provide tools that allow intuitive interaction with these parameters. These parameters vary widely in nature, and each type benefits from different kinds of interaction tools. While prior surveys have discussed categories of procedural methods \cite{Smelik2009,Smelik2014,Galin2019}, we propose to broadly classify interactive tools for procedural terrain generation along a global-to-local spectrum: 
 \begin{Itemize}
-    \Item{Global procedural parameters:} Values that reshape the whole terrain field at once. \\
+    \Item{} \textbf{Global procedural parameters:} Values that reshape the whole terrain field at once. \\
     This category groups together:
         \begin{Itemize}
-            \Item{Noise parameters} (e.g., frequency, amplitude, octaves) that drive the terrain base-shape variation \cite{Perlin1985,Fournier1982}.
-            \Item{Physical constants} (e.g., erosion sediment capacity, wind strength) used by simulation passes \cite{Benes2001a,Paris2019b}.
+            \Item{} \textbf{Noise parameters} (e.g., frequency, amplitude, octaves) that drive the terrain base-shape variation \cite{Perlin1985,Fournier1982}.
+            \Item{} \textbf{Physical constants} (e.g., erosion sediment capacity, wind strength) used by simulation passes \cite{Benes2001a,Paris2019b}.
         \end{Itemize}
         These numbers are usually exposed through spinboxes, sliders, or configuration files.
 
-    \Item{Regional controls (masks and density maps):} Greyscale or weighted maps that localise subsequent generators, telling them where to act and with what intensity \cite{DeCarpentier2009,Stachniak2005}. \\
+    \Item{} \textbf{Regional controls (masks and density maps):} Greyscale or weighted maps that localise subsequent generators, telling them where to act and with what intensity \cite{DeCarpentier2009,Stachniak2005}. \\
     Users paint or import these masks with brush tools, which are often using weighted values to avoid the hard edges of binary masks.
 
-    \Item{Assets and features placement:} Interactive positioning (or scattering) of discrete assets such as rock arches, buildings, or river splines \cite{Becher2017,Grosbellet2016}. \\  
+    \Item{} \textbf{Assets and features placement:} Interactive positioning (or scattering) of discrete assets such as rock arches, buildings, or river splines \cite{Becher2017,Grosbellet2016}. \\  
     Users click to set an initial $xyz$ location, then translate, rotate, or duplicate as needed.
 
-    \Item{Surface sculpting (manual and procedural brushes):} Point-level edits that raise, lower, smooth, or terrace the height field \cite{Galyean1991,Gain2005,Chen2021}. \\
+    \Item{} \textbf{Surface sculpting (manual and procedural brushes):} Point-level edits that raise, lower, smooth, or terrace the height field \cite{Galyean1991,Gain2005,Chen2021}. \\
     Users control the brush effect through parameters like radius, intensity, and falloff shape.
 \end{Itemize}
 
@@ -318,10 +318,10 @@ Realism refers to the extent to which generated content accurately represents re
 
 On the other hand, speed is about the efficiency of content generation within acceptable time constraints. While no official categorisation has been set, we propose to describe levels of speed based on response time:
 \begin{Itemize}
-    \Item{Real-time:} generation in less than 30 milliseconds, essential for interactive applications such as VR environments.
-    \Item{Interactive:} generation in under 3 seconds, suitable for user-driven customisation in games and simulations.
-    \Item{Near-interactive:} generation in less than 5 minutes, applicable for larger-scale simulations where some delay is acceptable.
-    \Item{Offline:} generation that takes longer, often used for precomputed content or offline rendering.
+    \Item{} \textbf{Real-time:} generation in less than 30 milliseconds, essential for interactive applications such as VR environments.
+    \Item{} \textbf{Interactive:} generation in under 3 seconds, suitable for user-driven customisation in games and simulations.
+    \Item{} \textbf{Near-interactive:} generation in less than 5 minutes, applicable for larger-scale simulations where some delay is acceptable.
+    \Item{} \textbf{Offline:} generation that takes longer, often used for precomputed content or offline rendering.
 \end{Itemize}
 
 The execution speed of a procedural algorithm is crucial as the user will fine-tune the parameters before being satisfied \cite{Smelik2014}.
@@ -349,23 +349,23 @@ Coral colonies adopt varied growth forms adapted to local conditions (light, wat
 
 \begin{Itemize}
     \AltTextImage{
-        \Item{Massive:} These corals form large boulder-like shapes that can reach several metres in diameter under calm conditions (\cref{fig:intro-Porite}). Found on reef slopes and back-reefs in low to moderate energy, up to about 30 m depth, tolerating moderate to low light, their slow growth persists over centuries in stable conditions \cite{Coward2020}. They are foundational reef-builders of the reef, providing long-term structural stability and substrate for other organisms to settle, while hosting diverse fishes in their crevices. Their bulk buffers wave energy, alters flow to form sediment-depositing lee zones, stabilises the substrate, and produces oxygen over large surfaces \cite{Baldock2014}.
+        \Item{} \textbf{Massive:} These corals form large boulder-like shapes that can reach several metres in diameter under calm conditions (\cref{fig:intro-Porite}). Found on reef slopes and back-reefs in low to moderate energy, up to about 30 m depth, tolerating moderate to low light, their slow growth persists over centuries in stable conditions \cite{Coward2020}. They are foundational reef-builders of the reef, providing long-term structural stability and substrate for other organisms to settle, while hosting diverse fishes in their crevices. Their bulk buffers wave energy, alters flow to form sediment-depositing lee zones, stabilises the substrate, and produces oxygen over large surfaces \cite{Baldock2014}.
     }{graphics-oceanus_corals-_MG_9848_LuisLamar.jpg}{Large \textit{Porite lobata} - Photo credit: Luis Lamar}{fig:intro-Porite}
 
     \AltTextImage{
-        \Item{Branching:} These corals exhibit tree-like branches with lengths often exceeding 1-2 m (\cref{fig:intro-Staghorn}). They occupy shallow reef surfaces, up to 20 m deep in high-light, high-energy environments. Fast-growing, they rapidly deposit carbonate, create 3D nurseries for juvenile fish, and support biodiversity. Their high rugosity increases turbulence and drag, altering currents, trapping sediment, and producing oxygen \cite{Baldock2014, Oh2025}. Fragile branches break in storms, aiding dispersal via fragmentation \cite{Muko2013}
+        \Item{} \textbf{Branching:} These corals exhibit tree-like branches with lengths often exceeding 1-2 m (\cref{fig:intro-Staghorn}). They occupy shallow reef surfaces, up to 20 m deep in high-light, high-energy environments. Fast-growing, they rapidly deposit carbonate, create 3D nurseries for juvenile fish, and support biodiversity. Their high rugosity increases turbulence and drag, altering currents, trapping sediment, and producing oxygen \cite{Baldock2014, Oh2025}. Fragile branches break in storms, aiding dispersal via fragmentation \cite{Muko2013}
     }{staghorn-coral-large.jpg}{A field of staghorn coral - Photo credit: NOAA}{fig:intro-Staghorn}
 
     \AltTextImage{
-        \Item{Foliose:} These corals form leaf-like laminae often spanning over a metre wide (\cref{fig:intro-Pavona}). They inhabit back-reefs and reef flats between 2 to 20 m depth with moderate flow and light. They provide microhabitats, surface for symbionts, trap sediment, and contribute moderate carbonate. 
+        \Item{} \textbf{Foliose:} These corals form leaf-like laminae often spanning over a metre wide (\cref{fig:intro-Pavona}). They inhabit back-reefs and reef flats between 2 to 20 m depth with moderate flow and light. They provide microhabitats, surface for symbionts, trap sediment, and contribute moderate carbonate. 
     }{Pavona_cactus_colonia_in_situ.jpg}{\textit{Pavona cactus} - Photo credit: Benzoni, F.}{fig:intro-Pavona}
 
     \AltTextImage{
-        \Item{Table/Plate:} These corals develop broad plates up to 3 m wide in shallow, well-lit reef crest and upper fore-reef zones above 15 m deep (\cref{fig:intro-Acropora}). They maximise photosynthesis and carbonate production, offer horizontal habitats and shaded refuges, and support encrusting life beneath which alters water flow by causing divergence above and shadows below, redistributing sediment, and producing oxygen. Fragile in storms, they form rubble that aids colonisation when fragmented.
+        \Item{} \textbf{Table/Plate:} These corals develop broad plates up to 3 m wide in shallow, well-lit reef crest and upper fore-reef zones above 15 m deep (\cref{fig:intro-Acropora}). They maximise photosynthesis and carbonate production, offer horizontal habitats and shaded refuges, and support encrusting life beneath which alters water flow by causing divergence above and shadows below, redistributing sediment, and producing oxygen. Fragile in storms, they form rubble that aids colonisation when fragmented.
     }{Acropora_pulchra.jpg}{Example of an \textit{Acropora pulchra}, forming a large table - Photo credit: Albert Kok}{fig:intro-Acropora}
 
     \AltTextImage{
-        \Item{Encrusting:} These corals grow as thin mats tightly adhering to substrate for about a metre wide and up to 40 m deep, tolerating various flow regimes. By resisting breakage and binding rubbles, they stabilise the substrate and cohesion, reducing erosion. \textit{Psammocora}, displayed in \cref{fig:intro-Psammocora}, spans over a part of massive coral and the soil surface, protecting the covered coral from erosion and stabilising the colony, but blocking the sunlight from reaching it.
+        \Item{} \textbf{Encrusting:} These corals grow as thin mats tightly adhering to substrate for about a metre wide and up to 40 m deep, tolerating various flow regimes. By resisting breakage and binding rubbles, they stabilise the substrate and cohesion, reducing erosion. \textit{Psammocora}, displayed in \cref{fig:intro-Psammocora}, spans over a part of massive coral and the soil surface, protecting the covered coral from erosion and stabilising the colony, but blocking the sunlight from reaching it.
     }{Psammocora.jpg}{\textit{Psammocora} - Photo credit: Michael Paletta}{fig:intro-Psammocora}
 
 \end{Itemize}
@@ -394,11 +394,11 @@ Coral dispersal and colonisation occurs at multiple scales through budding (loca
 % Coral dispersal and colonisation combine sexual and asexual modes, spreading their offspring very locally or extremely far depending on the process. From the closest to the farthest, we can note:
 
 % \begin{Itemize}
-%     \Item{Budding:} produces local expansion on the existing colony (fine-scale growth rule).
-%     \Item{Brooding:} internal fertilisation, larvae released when more developed, settling close to parent, promoting clustered growth.
-%     \Item{Polyp bail-out:} happens occasionally when individual polyps detach under stress and resettle; short-range dispersal under adverse conditions.
-%     \Item{Fragmentation:} occurs when broken fragments reattach elsewhere, enabling medium-range spread and recovery after disturbance.
-%     \Item{Broadcast spawning:} mass synchronous release of eggs and sperm; external fertilisation yields larvae (planulae) that drift with currents, allowing long-range dispersal of a few kilometres.
+%     \Item{} \textbf{Budding:} produces local expansion on the existing colony (fine-scale growth rule).
+%     \Item{} \textbf{Brooding:} internal fertilisation, larvae released when more developed, settling close to parent, promoting clustered growth.
+%     \Item{} \textbf{Polyp bail-out:} happens occasionally when individual polyps detach under stress and resettle; short-range dispersal under adverse conditions.
+%     \Item{} \textbf{Fragmentation:} occurs when broken fragments reattach elsewhere, enabling medium-range spread and recovery after disturbance.
+%     \Item{} \textbf{Broadcast spawning:} mass synchronous release of eggs and sperm; external fertilisation yields larvae (planulae) that drift with currents, allowing long-range dispersal of a few kilometres.
 % \end{Itemize}
 
 % These modes show a clear capacity of corals to diffuse in their environment by emitting sexual and asexual parts locally that drift with the water currents.
@@ -540,12 +540,12 @@ Nutrient concentrations from terrestrial runoff can shift community composition 
 
 % % 5.2 Generating full 3D structures beyond surface terrain Unlike aerial landscapes' height fields, reef environments contain overhangs, cavities, and porous frameworks created by biological accretion and bioerosion. Procedural methods must therefore synthesise plausible volumetric geometry rather than relying solely on 2.5D surfaces. This could be achieved through combinations of multiple surface and volume representations, the introduction of rule-based solid modelling such as the use of L-systems for branching coral forms \cite{Prusinkiewicz1992,Abela2015}, and the stochastic placement of "voids" to mimic bioerosion. A procedural pipeline may first establish a coarse reef framework from depth-dependent envelope shapes and then instantiate volumetric modules representing coral colonies and cavities according to ecological rules or bioerosion simulations. The main challenge for such method is to integrate ecological rules and maintain computational tractability.
 
-% % 5.4 Physics-informed constraints and hybrid modeling Physical processes of hydrodynamic forces and sediment transport impose constraints on feasible reef morphologies. While full computational fluid dynamics (CFD) coupling for procedural generation is typically impractical at large scales, hybrid approaches could incorporate simplified physics-based rules. For instance, a priori knowledge of relationships between reef shape and prevailing wave energy informs the geometry of grooves-and-spurs. Sediment deposition rules from in situ observation can guide the formation of lagoon floors or backreef accumulations. Such hybrid modelling ensures that generated forms remain within plausible physical bounds. % Where higher fidelity is required, procedural output can feed into targeted CFD simulations for faster convergence, and results can then refine procedural parameters in an iterative workflow.
+% % 5.4 Physics-informed constraints and hybrid modeling Physical processes of hydrodynamic forces and sediment transport impose constraints on feasible reef morphologies. While full Computational Fluid Dynamics (CFD) coupling for procedural generation is typically impractical at large scales, hybrid approaches could incorporate simplified physics-based rules. For instance, a priori knowledge of relationships between reef shape and prevailing wave energy informs the geometry of grooves-and-spurs. Sediment deposition rules from in situ observation can guide the formation of lagoon floors or backreef accumulations. Such hybrid modelling ensures that generated forms remain within plausible physical bounds. % Where higher fidelity is required, procedural output can feed into targeted CFD simulations for faster convergence, and results can then refine procedural parameters in an iterative workflow.
 
 % 5.3 Ecologically informed growth and degradation Process-informed generation relies on encoding ecological constraints and interactions. Coral growth algorithms may simulate accretion under light-dependent rules according to environmental parameters. Agent-based models can represent competition for space, where faster-growing but fragile forms may dominate in sheltered zones, whereas robust morphologies persist in high-energy areas \cite{Anthony2000}. Simulated bioerosion events introduce heterogeneity and temporal variability. Although full temporal simulation may be computationally expensive, stochastic modelling or staged synthesis (e.g., iterative growth phases punctuated by disturbance routines) may yield realistic geometry. % Embedding simplified feedback could capture essential eco-physical coupling without full hydrodynamic simulation.
 
 % % 5.5 Data-driven synthesis and machine learning considerations
-% Although example-based interpolation is unsuitable given sparse reef data, machine learning techniques may assist in learning statistical distributions of morphological features from available datasets. For instance, generative adversarial networks (GANs) or variational autoencoders could be trained on limited high-resolution reef scans to produce textures or small-scale patterns; however, without ecological constraints, such outputs risk implausibility. A prudent approach integrates ML-derived statistical priors into rule-based frameworks, using learned distributions for parameter sampling (e.g., colony size or spacing distributions) but entrusting structural coherence to process-informed algorithms. Careful validation against known empirical metrics is essential to avoid artifacts, and uncertainty in learned models must be acknowledged through ensemble generation or probabilistic parameter ranges.
+% Although example-based interpolation is unsuitable given sparse reef data, machine learning techniques may assist in learning statistical distributions of morphological features from available datasets. For instance, Generative Adversarial Networks (GANs) or variational autoencoders could be trained on limited high-resolution reef scans to produce textures or small-scale patterns; however, without ecological constraints, such outputs risk implausibility. A prudent approach integrates ML-derived statistical priors into rule-based frameworks, using learned distributions for parameter sampling (e.g., colony size or spacing distributions) but entrusting structural coherence to process-informed algorithms. Careful validation against known empirical metrics is essential to avoid artifacts, and uncertainty in learned models must be acknowledged through ensemble generation or probabilistic parameter ranges.
 
 % % 5.6 Validation, uncertainty, and expert review
 % Procedural outputs cannot rely on dense ground-truth; instead, validation must reference general empirical observations and expert judgement. Typical zonation profiles, cross-sectional reef morphologies documented in the literature, and known ranges of accretion or erosion rates serve as anchors for assessing plausibility. Uncertainty-aware generation involves producing ensembles of variants under different parameter sets (e.g., varying growth rate or disturbance frequency) and examining their consistency with observed reef patterns. Expert review by marine ecologists or geomorphologists can identify unrealistic artifacts. Documentation of assumptions and parameter choices is critical to ensure transparency in the procedural modelling process.

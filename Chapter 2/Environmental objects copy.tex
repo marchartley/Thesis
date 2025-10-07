@@ -371,8 +371,8 @@ From a computer graphics perspective, EFMs share similarities with Signed Distan
 
 EFMs are based on the fundamental idea that organisms are not isolated agents but rather integral components of their environment, influencing and being influenced by it in a spatially explicit manner (\cref{fig:env-obj-ecological-field-models} shows the effect of multiple vegetation entities on the humidity, shade, and nutrient fields of the environment). The core ecological principles behind EFMs include two key points:
 \begin{Itemize}
-    \Item{Continuous organism-environment interactions:} Organisms modify their surroundings beyond their immediate location. Environmental factors such as soil nutrients, water availability, light exposure, and chemical signals influence other species gradually across space.
-    \Item{Environmental feedback:} Species respond to spatially varying gradients rather than direct neighbour-based interactions, as seen in phototropism (guiding growth toward light) \cite{Pirk2012} or root development towards nutrient-rich soils \cite{Li2023}.
+    \Item{} \textbf{Continuous organism-environment interactions:} Organisms modify their surroundings beyond their immediate location. Environmental factors such as soil nutrients, water availability, light exposure, and chemical signals influence other species gradually across space.
+    \Item{} \textbf{Environmental feedback:} Species respond to spatially varying gradients rather than direct neighbour-based interactions, as seen in phototropism (guiding growth toward light) \cite{Pirk2012} or root development towards nutrient-rich soils \cite{Li2023}.
 \end{Itemize}
 
 The combination of these two principles creates natural feedback loops that are explicitly modelled, allowing a more realistic representation of ecological interactions compared to static environmental assumptions in traditional models.
@@ -493,8 +493,8 @@ In graphics, diffusion has long been exploited for mesh smoothing and fairing \c
 \subsubsubsection{Reaction}
 The reaction term governs local dynamics:
 \begin{Itemize}
-    \Item{Linear reaction:} $R(u) = \lambda u$, describing exponential growth ($\lambda > 0$) or decay ($\lambda < 0$).
-    \Item{Nonlinear reaction:} logistic growth, predator-prey interactions, or Lotka-Volterra competition terms capture resource limitation or trophic interactions \cite{Brauer2012,Verhulst1844}.
+    \Item{} \textbf{Linear reaction:} $R(u) = \lambda u$, describing exponential growth ($\lambda > 0$) or decay ($\lambda < 0$).
+    \Item{} \textbf{Nonlinear reaction:} logistic growth, predator-prey interactions, or Lotka-Volterra competition terms capture resource limitation or trophic interactions \cite{Brauer2012,Verhulst1844}.
 \end{Itemize}
 In our framework, the reaction term corresponds directly to the production or consumption of \glosses{EnvMat} by \glosses{EnvObj}. For example, a coral colony deposits calcium carbonate ($\lambda > 0$), while erosion removes sediment ($\lambda < 0$).  
 In graphics, reaction-diffusion systems have been widely used for texture and pattern synthesis, where extending $u(x,t)$ to multiple interacting fields enables the emergence of Turing-like patterns such as stripes or spots \cite{Turk1991, Witkin1991,Sanderson2006}.
@@ -732,9 +732,9 @@ A geographical feature, also called object or entity, is defined as a discrete p
 \AltTextImage{
 Each \gloss{EnvObj} is anchored by a skeleton (a point, curve, or region in the cartographic sense) which captures its footprint while postponing heavy geometry generation (\cref{fig:env-objs_example-scheme1}).
 \begin{Itemize}
-    \Item{Point-based}: isolated boulders, individual trees, individual corals, ...
-    \Item{Curve-based}: river, coral reefs, fault scarps, ...
-    \Item{Region-based}: islands, forests, sediment patches, ...
+    \Item{} \textbf{Point-based}: isolated boulders, individual trees, individual corals, ...
+    \Item{} \textbf{Curve-based}: river, coral reefs, fault scarps, ...
+    \Item{} \textbf{Region-based}: islands, forests, sediment patches, ...
 \end{Itemize}
 }{Env-obj-scheme1.png}{Environmental objects, from 2D (top) to their 3D geometry (bottom)}{fig:env-objs_example-scheme1}
 
@@ -1037,9 +1037,9 @@ Terrain elevation is updated by blending the \gloss{CoarseHeight} functions of a
 
 To preserve ordering constraints, we partition objects into three mutually exclusive groups:
 \begin{Itemize}
-    \Item{$\groundedHeight$} grounded data (e.g.\ islands) defined from the absolute zero level,
-    \Item{$\altitudeHeight$} altitude-relative shapes (depth-constrained corals, tidal flats),
-    \Item{$\surfaceHeight$} fine surface details that sit on the current terrain, which can be seen as bumps or carves from an aerial view.
+    \Item{} \textbf{$\groundedHeight$} grounded data (e.g.\ islands) defined from the absolute zero level,
+    \Item{} \textbf{$\altitudeHeight$} altitude-relative shapes (depth-constrained corals, tidal flats),
+    \Item{} \textbf{$\surfaceHeight$} fine surface details that sit on the current terrain, which can be seen as bumps or carves from an aerial view.
 \end{Itemize}
 
 \AltTextImage{
