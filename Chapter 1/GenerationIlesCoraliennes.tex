@@ -4,6 +4,8 @@
 \appendtographicspath{{./Chapter 1/islands/} }
 \appendtographicspath{{./Chapter 1/Results/} }
 \appendtographicspath{{./Chapter 1/Results/Procedural/} }
+\appendtographicspath{{./Chapter 1/Results/Reproduction/} }
+\appendtographicspath{{./Chapter 1/Results/volcanic/} }
 \appendtographicspath{{./Chapter 1/figures/Smoothmax/} }
 \appendtographicspath{{./Chapter 1/figures/vector_field/} }
 \appendtographicspath{{./Chapter 1/figures/SOTA/coral theories/} }
@@ -1024,16 +1026,86 @@ The resulting model for coral reef island generation enables a high level of use
     \autofitgraphics[]{DinoIsland_features.png, DinoIsland_heightmaps.png, DinoIsland_results.png}
     \autofitcaptions{Input sketches, Output height field, Result}
     \caption[Output of the cGAN with new colors in the input]{Without constraints on the generation, the user may use unrealistic layout and the neural network will however output a plausible result. Here new colours have been added (pistachio), but the network naturally considers it as a transition from mountain to beach.}
-    \label{fig:coral-island-results_dino}
+    \label{fig:coral-island-results-dino}
+\end{figure}
+
+\begin{figure}
+    \autofitgraphics[]{volcanic_islands_inputs.pdf}
+    \autofitgraphics[]{volcanic-render-1-labels.png, volcanic-render-1-out.png, volcanic-render-1-neutral.png, volcanic-render-1-render.png}
+    \autofitgraphics[]{volcanic-render-2-labels.png, volcanic-render-2-out.png, volcanic-render-2-neutral.png, volcanic-render-2-render.png}
+    \autofitgraphics[]{volcanic-render-3-labels.png, volcanic-render-3-out.png, volcanic-render-3-neutral.png, volcanic-render-3-render.png}
+    \autofitgraphics[]{volcanic-render-4-labels.png, volcanic-render-4-out.png, volcanic-render-4-neutral.png, volcanic-render-4-render.png}
+    \autofitgraphics[]{volcanic-render-5-labels.png, volcanic-render-5-out.png, volcanic-render-5-neutral.png, volcanic-render-5-render.png}
+    \autofitcaptions{Input sketches, Output height field, Neutral result, Shaded result}
+    \caption[cGAN outputs trained on volcanic dataset]{Top row: user input used to generate the "volcanic" dataset. Bottom: User sketches creates various islands, following the initial user inputs. }
+    \label{fig:coral-island-results-volcanic-training}
+\end{figure}
+
+% \begin{figure}
+%     % \autofitgraphics[]{volcanic_islands_inputs.pdf}
+%     % \autofitgraphics[]{Kauai_island.png, Tuvuca_island.png, Mascarene_island.png, Cocos_island.png}
+%     \autofitgraphics[]{Kauai_island.png, island-1-labels.png, island-1-out.png, island-1-neutral.png, island-1-render.png}
+%     \autofitgraphics[]{Tuvuca_island.png, island-2-labels.png, island-2-out.png, island-2-neutral.png, island-2-render.png}
+%     \autofitgraphics[]{Mascarene_island.png, island-3-labels.png, island-3-out.png, island-3-neutral.png, island-3-render.png}
+%     \autofitgraphics[]{Cocos_island.png, island-4-labels.png, island-4-out.png, island-4-neutral.png, island-4-render.png}
+%     \autofitcaptions{Input sketches, Output height field, Neutral result, Shaded result}
+%     \caption[Outputs of the cGAN with volcanic dataset]{Top row: user input used to generate the "volcanic" dataset. Bottom: User sketches creates various islands, following the initial user inputs. }
+%     \label{fig:coral-island-results-reproductions}
+% \end{figure}
+
+\begin{figure}
+    % \autofitgraphics[]{volcanic_islands_inputs.pdf}
+    \setfitratios{1, 1, 1, 1}
+    \autofitcaptions{Kauai Island, Tuvuca Island, Mascarene Island, Cocos Island}
+    \autofitgraphics{Kauai_island-square.png, Tuvuca_island-square.png, Mascarene_island-square.png, Cocos_island-square.png}
+    \autofitgraphics[]{island-1-labels.png, island-2-labels.png, island-3-labels.png, island-4-labels.png}
+    \autofitgraphics[]{island-1-out.png, island-2-out.png, island-3-out.png, island-4-out.png}
+    \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-neutral.png, island-2-neutral.png, island-3-neutral.png, island-4-neutral.png}
+    \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-render.png, island-2-render.png, island-3-render.png, island-4-render.png}
+    % \autofitgraphics[]{island-1-volcano-out.png, island-2-volcano-out.png, island-3-volcano-out.png, island-4-volcano-out.png}
+    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-volcano-neutral.png, island-2-volcano-neutral.png, island-3-volcano-neutral.png, island-4-volcano-neutral.png}
+    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-volcano-render.png, island-2-volcano-render.png, island-3-volcano-render.png, island-4-volcano-render.png}
+    % \autofitcaptions{Input sketches, Output height field, Neutral result, Shaded result}
+    \caption[Reproduction of islands from \cref{fig:coral-island-island-examples}]{Reproduction of islands from \cref{fig:coral-island-island-examples}. }
+    \label{fig:coral-island-results-reproductions}
+\end{figure}
+
+\begin{figure}
+    % \autofitgraphics[]{island-1-out.png, island-2-out.png, island-3-out.png, island-4-out.png}
+    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-neutral.png, island-2-neutral.png, island-3-neutral.png, island-4-neutral.png}
+    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-render.png, island-2-render.png, island-3-render.png, island-4-render.png}
+
+    % \autofitgraphics[]{island-1-volcano-out.png, island-2-volcano-out.png, island-3-volcano-out.png, island-4-volcano-out.png}
+    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-volcano-neutral.png, island-2-volcano-neutral.png, island-3-volcano-neutral.png, island-4-volcano-neutral.png}
+    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-volcano-render.png, island-2-volcano-render.png, island-3-volcano-render.png, island-4-volcano-render.png}
+
+    % \autofitgraphics[]{island-1-out.png,island-1-volcano-out.png , island-2-out.png,island-2-volcano-out.png , island-3-out.png,island-3-volcano-out.png , island-4-out.png,island-4-volcano-out.png }
+    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-neutral.png, island-1-volcano-neutral.png, island-2-neutral.png, island-2-volcano-neutral.png, island-3-neutral.png, island-3-volcano-neutral.png, island-4-neutral.png, island-4-volcano-neutral.png}
+    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-render.png, island-1-volcano-render.png, island-2-render.png, island-2-volcano-render.png, island-3-render.png, island-3-volcano-render.png, island-4-render.png, island-4-volcano-render.png}
+
+    \autofitgraphics[]{island-1-out.png,island-1-volcano-out.png, small-white.png, island-2-out.png,island-2-volcano-out.png}
+    \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-neutral.png, island-1-volcano-neutral.png, small-white.png, island-2-neutral.png, island-2-volcano-neutral.png}
+    \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-render.png, island-1-volcano-render.png, small-white.png, island-2-render.png, island-2-volcano-render.png}
+    \autofitcaptions[]{"initial", "volcanic", ~, "initial", "volcanic"}
+    
+    \autofitgraphics[]{island-3-out.png,island-3-volcano-out.png, small-white.png, island-4-out.png,island-4-volcano-out.png }
+    \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-3-neutral.png, island-3-volcano-neutral.png, small-white.png, island-4-neutral.png, island-4-volcano-neutral.png}
+    \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-3-render.png, island-3-volcano-render.png, small-white.png, island-4-render.png, island-4-volcano-render.png}
+    \autofitcaptions[]{"initial", "volcanic", ~, "initial", "volcanic"}
+
+    \caption[Comparison of cGAN trained models]{Comparison between the "initial" cGAN trained model (dataset generated from parameters visible in \cref{fig:coral-island-wind-effect-result}) and the "volcanic" cGAN (\cref{fig:coral-island-results-volcanic-training}, top). The input label maps are identical as \cref{fig:coral-island-results-reproductions}}
+    \label{fig:coral-island-results-reproductions-with-volcano}
 \end{figure}
 
 By using deep-learning-based models, most initial constraints are removed (radial layout, isolated islands, ...). The control over the overall shapes of the island regions is given through digital painting, here using GIMP. Each pixel of the image is encoded in HSV, with the region identifier encoded in the Hue channel. The user may increase or decrease the subsidence level of the island by modifying the Value channel over the whole image (see \cref{fig:coral-island-results-subsidence}).
 
 Since the model relies on pixel-level statistics rather than strict class values, it is robust to noise caused by compression, anti-aliasing from brush tools, or resizing artefacts introduced by image editors. The example displayed in \cref{fig:coral-island-results-fuzzy} (top) displays a sketch with blurry outlines and unexpected layouts (see the small red regions inside the southern lagoon region or the adjacency of beach regions directly with the abyssal region). The learned model does not include inconsistencies and results in plausible 3D models. We can note that the input label map isn't required to be hand-drawn, as a simple Perlin noise can produce it randomly, as shown in the examples of \cref{fig:coral-island-perlin-examples}. \cref{fig:coral-island-results-fuzzy} (bottom) shows highlight clipping (white pixels due to artificial oversaturation, losing the Hue value) that is not interpretable by the model and resulting in black patches in the result. 
 
-The tolerance to input values enables more control about the transitions between two regions than the procedural module. \cref{fig:coral-island-results_dino} shows an example of input map with regions that are leaking over neighbouring regions, and the introduction of new hue values nonexistent in the dataset (light green and dark green) but are the interpolated hue values of mountain regions and beach regions.
+The tolerance to input values enables more control about the transitions between two regions than the procedural module. \cref{fig:coral-island-results-dino} shows an example of input map with regions that are leaking over neighbouring regions, and the introduction of new hue values nonexistent in the dataset (light green and dark green) but are the interpolated hue values of mountain regions and beach regions.
 
-Because our curve-based procedural phase included low randomness, the output of the cGAN is limiting its unpredictability, meaning that small input changes result only in minor changes on the output, preventing unexpected results. \cref{fig:coral-island-results-subsidence} shows the result of an input map with only a variation on the subsidence level, the resulting height fields are very similar. Adding the real-time computation of outputs, it becomes possible to construct progressively a landscape and correct small mistakes to intuitively design islands inspired by real-world regions. A creation of an island similar to Mayotte, presented in \cref{fig:coral-island-example-Mayotte} was hand-made in just a few minutes.
+Because our curve-based procedural phase included low randomness, the output of the cGAN is limiting its unpredictability, meaning that small input changes result only in minor changes on the output, preventing unexpected results. \cref{fig:coral-island-results-subsidence} shows the result of an input map with only a variation on the subsidence level, the resulting height fields are very similar. Adding the real-time computation of outputs, it becomes possible to construct progressively a landscape and correct small mistakes to intuitively design islands inspired by real-world regions. A creation of an island similar to Mayotte, presented in \cref{fig:coral-island-example-Mayotte} was hand-made in just a few minutes. The islands presented at the beginning of the chapter in \cref{fig:coral-island-island-examples} are reproduced in \cref{fig:coral-island-results-reproductions} with different subsidence rates.
+
+\cref{fig:coral-island-results-volcanic-training} presents results of a second cGAN training for which the procedural parameters used for the generation of the training dataset. The $\heightProfile$ function include a hole at the center of the island to emulate a volcaninc crater, which we can see strongly in the first and last examples, and more slightly in the second example; the resistance function $\resistance$ is lowered on the reefs, creating visible dents in the reef and dendritic patterns on the island sides.
 
 \begin{figure}
     \autofitgraphics[]{Mayotte-example.png, 5_features.png, 5_results.png}
