@@ -83,26 +83,26 @@ Building on these observations, this chapter contributes:
 % The use of parametric lines representing coasts of islands or continents is common because it is intuitive to understand the concept of interaction using curves. It also shows an easy way to present the evolution of this interaction with respect to time, as the continuous change of shape can be interpreted by our mind as a moving shape, providing a sense of velocity of change (\cref{fig:env-obj-topo-coasts}). While real coastlines are fractal, a representation using a continuous line is sufficient to be able to imagine the real scene. A more detailed representation would however be harder to read, without any significant improvement in interpretability, and would age quickly as the coast evolves.
 
 % Any element, such as a coastline, then has an organic evolution over time, just like biological elements that can grow, shrink, and morph continuously. We see that one of the main differences between the evolution of organic elements, such as the borders of a forest, and non-organic elements, such as the borders of an island, lies in the time scale.
-% }{./CliffErosionBidefordAndScalby.jpg}{Evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}}{fig:env-obj-topo-coasts}
+% }{./CliffErosionBidefordAndScalby.jpg}{Evolution of coastlines at Bideford, UK and Scalby, UK over the last 6000 years and 2000 years respectively (BP = Before Present) \cite{Shadrick2022}.}{fig:env-obj-topo-coasts}
 
 % %--- AltTextImage L (Madagascar soils) --------------------------------
 % \AltTextImageL{%
 % Symbology can be used to represent simultaneously large elements such as regions with a specific type of soil, and very small and sparse elements such as volcanic peaks or buildings from \cref{fig:env-obj-topo-madagascar}. We can find, on a single map, elements represented in 0D (sparse points, such as volcanoes and buildings), 1D (curves such as plate boundaries and shear zones) and 2D (regions such as the sedimentary cover and tectonic plates).
 
 % The geometric shape used to describe an element may vary depending on the scale at which the cartographer wishes to represent it, or depending on the focus of the map. Observatories are presented as single points (0D) in an island-scale map, but could appear as regions (2D) on city-scale maps. Beaches may be represented as curves, points or regions if the objective is to present their distribution, position, or shapes.
-% }{./geologyMadagascar.jpeg}{Sedimentary distribution over Madagascar island \cite{Pratt2017}}{fig:env-obj-topo-madagascar}
+% }{./geologyMadagascar.jpeg}{Sedimentary distribution over Madagascar island \cite{Pratt2017}.}{fig:env-obj-topo-madagascar}
 
 % %--- AltTextImage R (karst) -------------------------------------------
 % \AltTextImageR{%
 % A combination of multiple disciplines can be represented in a single topographic map to provide context about an area. We can find examples of representations with urbanism, geology, hydrology, and topography mixed together. Every discipline is linked with all others with relative strength. Urban regions are strongly affected by geology and topography, while hydrology is directly impacted by topography. In this example, the karst geology is influenced by hydrology and geology, because karst features develop where limestone and underground drainage coincide. This also means that the presence of karst features can imply the presence (or a high probability of presence) of limestone and underground water flows, without the need to display them on a map.
 
 % Without its 3D representation, a karst expert may be able to deduce a possible 3D structure around dolines and lapies from \cref{fig:env-obj-topo-karst} without additional information.
-% }{./QasrLibya.jpg}{Geological features distribution of karstic landscape at Qasr Libya, Libya \cite{ElAmawy2009}}{fig:env-obj-topo-karst}
+% }{./QasrLibya.jpg}{Geological features distribution of karstic landscape at Qasr Libya, Libya \cite{ElAmawy2009}.}{fig:env-obj-topo-karst}
 
 % %--- AltTextImage L (canyon) ------------------------------------------
 % \AltTextImageL{%
 % The presence of symbols in a topographic map does not imply the presence of an element in the real world. We often encounter indicative symbols such as the head and foot of a canyon, or the area affected by an element, which have no real geometry. However, the presence of these symbols brings useful information. The head buffer displayed in \cref{fig:env-obj-topo-canyon} helps explain the deformation of the shelf break line. Looking from the other side, the deformation on the shelf break implies the presence of a canyon head.
-% }{./PerthCanyon.jpg}{Localisation of key parameters of Perth Submarine Canyon, Australia \cite{Huang2014}}{fig:env-obj-topo-canyon}
+% }{./PerthCanyon.jpg}{Localisation of key parameters of Perth Submarine Canyon, Australia \cite{Huang2014}.}{fig:env-obj-topo-canyon}
 
 % In the artistic or entertainment domain, terrain designers typically sketch the global shape of the terrain they will model beforehand, such that they can check the consistency and plausibility of the terrain before the modelling stage. Looking at a simplified map before starting the modelling step allows the designer to modify the overall shape of the terrain at a large scale, before the 3D geometry comes into play, generating too many control points or vertices to deal with. Our goal is to offer that same "sketch-first, refine-later" experience in a procedural setting: users should be able to draft a coarse landscape, evaluate its plausibility, then zoom in and iteratively refine features, from a mountain ridge down to an individual boulder, without ever losing global coherence.
 
@@ -367,7 +367,7 @@ While the site-based and individual-based approaches have been successfully used
 
 To address these challenges, Ecological Field Models (EFMs) provide an alternative framework where environmental properties are represented as continuous, spatially explicit fields \cite{Wu1985}. Rather than defining interactions through direct contact (as in IBMs) or discrete adjacency (as in SBMs), EFMs describe how organisms modify and respond to smooth environmental gradients \cite{Chng2011b,Seidl2012}.
 
-From a computer graphics perspective, EFMs share similarities with Signed Distance Fields (SDFs). Just as SDFs represent geometry through continuous distance fields, EFMs represent organism-environment interactions through continuous ecological fields, allowing interactions to be modelled as smooth gradients rather than discrete neighbour effects.
+From a computer graphics perspective, EFMs share similarities with Signed-Distance Fields (SDFs). Just as SDFs represent geometry through continuous distance fields, EFMs represent organism-environment interactions through continuous ecological fields, allowing interactions to be modelled as smooth gradients rather than discrete neighbour effects.
 
 EFMs are based on the fundamental idea that organisms are not isolated agents but rather integral components of their environment, influencing and being influenced by it in a spatially explicit manner (\cref{fig:env-obj-ecological-field-models} shows the effect of multiple vegetation entities on the humidity, shade, and nutrient fields of the environment). The core ecological principles behind EFMs include two key points:
 \begin{Itemize}
@@ -401,7 +401,7 @@ with $F_0(\p)$ the baseline environmental state.
 % \begin{Itemize}
 %     \Item{} A common approach is to discretise the environment into a regular 2D or 3D grid, where each cell stores a value corresponding to an ecological property (e.g., soil moisture, nutrient concentration, or shading intensity). This approach has the advantage of efficient lookup and updates, and GPU compatibility at the cost of memory usage and precision loss.
 
-%     \Item{} Rather than storing explicit values at discrete locations, ecological fields can be defined using procedural functions that are evaluated dynamically. This approach is particularly relevant in procedural terrain and vegetation generation, where continuous field functions determine environmental parameters. A Signed Distance Field (SDF), frequently used in raymarching and volumetric rendering, can be adapted for EFMs by encoding environmental influence functions. This approach enables a theoretically infinite precision for a compact memory footprint at the expense of high computational demand.
+%     \Item{} Rather than storing explicit values at discrete locations, ecological fields can be defined using procedural functions that are evaluated dynamically. This approach is particularly relevant in procedural terrain and vegetation generation, where continuous field functions determine environmental parameters. A Signed-Distance Field (SDF), frequently used in raymarching and volumetric rendering, can be adapted for EFMs by encoding environmental influence functions. This approach enables a theoretically infinite precision for a compact memory footprint at the expense of high computational demand.
 % \end{Itemize}
 
 The primary challenge in computer graphics is how to efficiently store, sample, and modify continuous environmental fields. Since EFMs define spatially varying properties, they require a structured representation that balances accuracy, efficiency, and scalability.
@@ -622,7 +622,7 @@ These mechanisms are the backbone of how we model the interaction between discre
 %             f(u, v) & \text{(Activator)} \\
 %             g(u, v) & \text{(Inhibitor)}
 %         \end{dcases}$$
-%     }{turing_patterns.png}{Turing patterns on animals}{fig:env-obj-turing-pattern}
+%     }{turing_patterns.png}{Turing patterns on animals.}{fig:env-obj-turing-pattern}
 % \end{Itemize}
 
 % On the other hand, in ecology, the reaction term models population growth, competition, predation, and ecosystem interactions \cite{Brauer2012}. Some of the most important ecological reaction terms are:

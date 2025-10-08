@@ -243,13 +243,39 @@
 {\multicitedelim}%
 {\usebibmacro{postnote}}
 
+\DeclareNameFormat{onlyfamily}{%
+  % include the prefix (von/de/van…) if present
+  \ifblank{\namepartprefix}{}{\namepartprefix\space}%
+  \namepartfamily
+}
+
+% Cite command that prints just the (first) author's last name in plain text
+\DeclareCiteCommand{\citeName}
+  {\usebibmacro{prenote}%
+  \AtNextCite{\defcounter{maxnames}{1}}% only the first author
+  }
+  {%
+    \usebibmacro{citeindex}%
+    \printnames[onlyfamily]{author}%
+  }
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+% \DeclareCiteCommand{\citeName}
+% {\usebibmacro{prenote}}%
+% {\AtNextCite{\defcounter{maxnames}{2}}\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}%
+% \printtext[bibhyperref]{\printlastnames{author} vucvzutczc}}%
+% {\multicitedelim}%
+% {\usebibmacro{postnote}}
+
 % \zzcommand{\citeProgram}[1]{
 %   \footcite{#1}
 % }
 \DeclareCiteCommand{\citeProgram}[]
   {\usebibmacro{prenote}}
   % {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}\printtext[bibhyperref]{\mkbibemph{\printfield{title}},~\printdate}}
-  {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}\printtext[bibhyperref]{\printfield{title}~(\printdate)}}
+  {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}
+  \printtext[bibhyperref]{\printfield{title}~(\printdate)}}
   {\multicitedelim}
   {\usebibmacro{postnote}}
 

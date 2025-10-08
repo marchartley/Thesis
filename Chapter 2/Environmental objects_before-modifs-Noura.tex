@@ -168,7 +168,7 @@ In the Fixed-Radius Neighbourhood (FRN) method, the first appearance of a distan
 
     In this framework, competition between adjacent trees is quantified by calculating the fractional overlap between their influence zones (visible in \cref{fig:env-obj-zoi-scheme}). 
 
-}{ZOI-Peters2020.png}{ZOI is represented by regions around entities. The intersection area between two discs defines the competition between the two entities. Top: Symmetric competition (equal resource sharing, with the competition at the intersection divided equally); bottom: Asymmetric competition (larger entity captures more resources, such as light) \cite{Peters2020}}{fig:env-obj-zoi-scheme}
+}{ZOI-Peters2020.png}{ZOI is represented by regions around entities. The intersection area between two discs defines the competition between the two entities. Top: Symmetric competition (equal resource sharing, with the competition at the intersection divided equally); bottom: Asymmetric competition (larger entity captures more resources, such as light) \cite{Peters2020}.}{fig:env-obj-zoi-scheme}
 
 Mathematically, the intensity of competition $C_{ij}$ exerted by a neighbouring tree $j$ on a focal tree $i$ is expressed as:
 \begin{align}
@@ -205,7 +205,7 @@ Empirical studies across diverse forest ecosystems have demonstrated that the ZO
     The Field of Neighbourhood (FON) approach provides an alternative method to quantify tree competition by explicitly incorporating distance-dependent and size-dependent effects of neighbouring trees on a focal tree's growth or survival (the tree being evaluated) \cite{Berger2000}. Unlike the ZOI model, which uses circular zones and geometric overlaps, FON models typically rely on explicit indices that incorporate both the distance and the relative sizes of neighbouring trees, without necessarily defining explicit geometric overlap areas.
 
     In the FON approach, competition intensity affecting a given focal tree is calculated by summing the competitive effects of neighbouring trees, typically as a weighted function of their size and distance (\cref{fig:env-obj-fon-scheme}). 
-}{FON-Peters2020.png}{The FON model proposes a smoother version of the ZOI, where the intersection between two radii also accounts for the distance from the tree trunk \cite{Peters2020}}{fig:env-obj-fon-scheme}
+}{FON-Peters2020.png}{The FON model proposes a smoother version of the ZOI, where the intersection between two radii also accounts for the distance from the tree trunk \cite{Peters2020}.}{fig:env-obj-fon-scheme}
 
 \AltTextImage{
     A commonly used formulation of competition intensity $FON_i$ for a tree $i$ at distance $\radius$ from the trunk is expressed as
@@ -228,7 +228,7 @@ Empirical studies across diverse forest ecosystems have demonstrated that the ZO
     \begin{align}
         F_A^i = \frac{1}{A} \sum_{j \neq i}{ \int_{\Area_{\text{overlap}, ij}}{FON_j(x, y) \, da} }
     \end{align}
-}{FON-scheme-Berger2000.png}{The evaluation of the FON value at any point is done by accumulating all individual fields \cite{Berger2000}}{fig:env-obj-fon-compute-scheme}
+}{FON-scheme-Berger2000.png}{The evaluation of the FON value at any point is done by accumulating all individual fields \cite{Berger2000}.}{fig:env-obj-fon-compute-scheme}
 
 Unlike the ZOI method, the FON model does not assume a hard boundary around each tree, instead explicitly capturing a smooth decline in competitive impact with increasing distance. It also inherently accommodates asymmetric competition, since larger and closer neighbours exert stronger competitive influences than smaller or more distant trees (\cref{fig:env-obj-fon-compute-scheme}).
 
@@ -236,7 +236,7 @@ The FON method does not rely explicitly on geometric overlap and is thus flexibl
 
 \AltTextImage{
     By designing non-monotonic field functions around trees, emergent behaviours can appear. \cite{Lane2002} proposed to apply what they call a deformation kernel on the distance function, resulting in a larger variety of patterns, such as the clustering of bushes and the competition of larger trees (\cref{fig:env-obj-kernels-Lane2002}, top left). Building on this idea, defining deformation kernels for each pair of species (\cref{fig:env-obj-kernels-Lane2002}, top right, presents a kernel matrix for two species) allows the system to include ecological interactions between different species in the terrain. As a result, the simulation can introduce intra-species clumping while maintaining inter-species segregation.
-}{kernel-matrices-Lane2002.png}{The deformation of neighbourhood kernels enables modelling of different behaviours for species and their interactions. Top-left: different kernels generate different layouts; Top-right: a matrix $M$ encodes a distance kernel for each pair of species; Bottom: using a single matrix provides a way to control the interaction of two species in a scene \cite{Lane2002}}{fig:env-obj-kernels-Lane2002}
+}{kernel-matrices-Lane2002.png}{The deformation of neighbourhood kernels enables modelling of different behaviours for species and their interactions. Top-left: different kernels generate different layouts; Top-right: a matrix $M$ encodes a distance kernel for each pair of species; Bottom: using a single matrix provides a way to control the interaction of two species in a scene \cite{Lane2002}.}{fig:env-obj-kernels-Lane2002}
 
 \AltTextImage{
     Alternatively, learning the spatial distribution of distances between individuals from examples can be used as a statistical metric to introduce interactive tools for ecosystem generation \cite{Emilien2015a} (\cref{fig:env-obj-worldbrush-Emilien2015}). In this work, a user-provided patch serves as an example: the system extracts descriptors such as histograms of inter- and intra-species distances, or correlations with environmental variables like slope, and reproduces these distributions in other regions. Unlike kernel-based models, which require explicit design of influence functions, this approach learns statistical descriptors directly from data.
@@ -262,7 +262,7 @@ While the site-based and individual-based approaches have been successfully used
 
 To address these challenges, Ecological Field Models (EFMs) provide an alternative framework where environmental properties are represented as continuous, spatially explicit fields \cite{Wu1985}. Rather than defining interactions through direct contact (as in IBMs) or discrete adjacency (as in SBMs), EFMs describe how organisms modify and respond to smooth environmental gradients \cite{Chng2011b,Seidl2012}.
 
-From a computer graphics perspective, EFMs share similarities with Signed Distance Fields (SDFs). Just as SDFs represent geometry through continuous distance fields, EFMs represent organism-environment interactions through continuous ecological fields, allowing interactions to be modelled as smooth gradients rather than discrete neighbour effects.
+From a computer graphics perspective, EFMs share similarities with Signed-Distance Fields (SDFs). Just as SDFs represent geometry through continuous distance fields, EFMs represent organism-environment interactions through continuous ecological fields, allowing interactions to be modelled as smooth gradients rather than discrete neighbour effects.
 
 EFMs are based on the fundamental idea that organisms are not isolated agents but rather integral components of their environment, influencing and being influenced by it in a spatially explicit manner (\cref{fig:env-obj-ecological-field-models} shows the effect of multiple vegetation entities on the humidity, shade, and nutrient fields of the environment). The core ecological principles behind EFMs include two key points:
 \begin{Itemize}
@@ -296,7 +296,7 @@ with $F_0(\p)$ the baseline environmental state.
 % \begin{Itemize}
 %     \Item{} A common approach is to discretise the environment into a regular 2D or 3D grid, where each cell stores a value corresponding to an ecological property (e.g., soil moisture, nutrient concentration, or shading intensity). This approach has the advantage of efficient lookup and updates, and GPU compatibility at the cost of memory usage and precision loss.
 
-%     \Item{} Rather than storing explicit values at discrete locations, ecological fields can be defined using procedural functions that are evaluated dynamically. This approach is particularly relevant in procedural terrain and vegetation generation, where continuous field functions determine environmental parameters. A Signed Distance Field (SDF), frequently used in raymarching and volumetric rendering, can be adapted for EFMs by encoding environmental influence functions. This approach enables a theoretically infinite precision for a compact memory footprint at the expense of high computational demand.
+%     \Item{} Rather than storing explicit values at discrete locations, ecological fields can be defined using procedural functions that are evaluated dynamically. This approach is particularly relevant in procedural terrain and vegetation generation, where continuous field functions determine environmental parameters. A Signed-Distance Field (SDF), frequently used in raymarching and volumetric rendering, can be adapted for EFMs by encoding environmental influence functions. This approach enables a theoretically infinite precision for a compact memory footprint at the expense of high computational demand.
 % \end{Itemize}
 
 The primary challenge in computer graphics is how to efficiently store, sample, and modify continuous environmental fields. Since EFMs define spatially varying properties, they require a structured representation that balances accuracy, efficiency, and scalability.
