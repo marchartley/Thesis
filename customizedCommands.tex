@@ -243,23 +243,41 @@
 {\multicitedelim}%
 {\usebibmacro{postnote}}
 
+
+% Only print prefix (von/de/van…) + family; enable "et al."
 \DeclareNameFormat{onlyfamily}{%
-  % include the prefix (von/de/van…) if present
-  \ifblank{\namepartprefix}{}{\namepartprefix\space}%
-  \namepartfamily
+  \nameparts{#1}%
+  % ← This is the crucial line: allow biblatex to insert name list delimiters
+  \usebibmacro{name:delim}{\namepartfamily}%
+  % print prefix (if any) and family
+  \ifdefvoid{\namepartprefix}{}{\namepartprefix\space}%
+  \namepartfamily%
+  % allow truncation to print "et al."
+  \usebibmacro{name:andothers}%
 }
 
-% Cite command that prints just the (first) author's last name in plain text
+% Use that format for the labelname list (author or editor fallback)
+\DeclareNameAlias{labelname}{onlyfamily}
+
+% Delimiters BETWEEN names (global)
+\DeclareDelimFormat{finalnamedelim}{\addspace\bibstring{and}\space}
+\DeclareDelimFormat{multinamedelim}{\addcomma\space}
+\DeclareDelimFormat{andothersdelim}{\addspace}
+
+% Plain-text cite command
 \DeclareCiteCommand{\citeName}
-  {\usebibmacro{prenote}%
-  \AtNextCite{\defcounter{maxnames}{1}}% only the first author
+  {%
+    \usebibmacro{prenote}%
+    \defcounter{minnames}{1}%
+    \defcounter{maxnames}{2}% 1 author → 1; 2 authors → both; ≥3 → "et al."
   }
   {%
     \usebibmacro{citeindex}%
-    \printnames[onlyfamily]{author}%
+    \printnames{labelname}%
   }
   {\multicitedelim}
   {\usebibmacro{postnote}}
+
 
 % \DeclareCiteCommand{\citeName}
 % {\usebibmacro{prenote}}%
@@ -275,7 +293,8 @@
   {\usebibmacro{prenote}}
   % {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}\printtext[bibhyperref]{\mkbibemph{\printfield{title}},~\printdate}}
   {\usebibmacro{citeindex}\usebibmacro{countcite}{\thefield{entrykey}}
-  \printtext[bibhyperref]{\printfield{title}~(\printdate)}}
+  % \printtext[bibhyperref]{\printfield{title}~(\printdate)}}
+  \printtext[bibhyperref]{\printfield{title}}}
   {\multicitedelim}
   {\usebibmacro{postnote}}
 
@@ -608,7 +627,9 @@
   
 \zzcommand{\midConclusion}
 {
-  \bigskip\bigskip\bigskip
+  \par\bigskip
+  \begin{center}\emph{***}\end{center}
+  \bigskip\par
 }
 
 \ExplSyntaxOn
@@ -884,7 +905,7 @@
 %   \end{adjustbox}%
 %   \vspace{-\fitraiseamount}%
 % }
-% Key–value options for \autofitcaptions
+% Key-value options for \autofitcaptions
 \pgfkeys{
   /autofitcaptions/.is family, /autofitcaptions,
   raise/.store in=\fitraiseamount,
@@ -955,3 +976,25 @@
   \fi
   \input{#1}
 }
+
+
+\newcommand{\listequationsname}{List of Equations}
+\newlistof{myequations}{equ}{\listequationsname}
+% \pretocmd{\equation}{\addcontentsline{equ}{myequations}{Equation~\theequation}}{}{}
+% \pretocmd{\align}{\addcontentsline{equ}{myequations}{Equation~\theequation}}{}{}
+\zzcommand{\eqlabel}[2]{
+  \label{#1}%
+  \addcontentsline{equ}{myequations}{\cref{#1}: #2}
+}
+
+
+% \let\cftmyequationstitlefont\cftloftitlefont
+% \renewcommand{\cftmyequationstitlefont}{\normalfont}
+
+% \let\cftmyequationsfont\cftfigurefont
+% \let\cftmyequationspagefont\cftfigurepagefont
+% \let\cftmyequationsleader\cftfigureleader
+% \let\cftmyequationspresnum\cftfigurepresnum
+% \let\cftmyequationsaftersnum\cftfigureaftersnum
+% \setlength{\cftmyequationsindent}{\cftfigindent}
+% \setlength{\cftmyequationsnumwidth}{\cftfignumwidth}

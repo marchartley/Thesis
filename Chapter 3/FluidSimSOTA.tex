@@ -7,21 +7,21 @@ Fluid simulation constitutes an important aspect in Computer Graphics and in ter
 The governing equations for fluid simulation are rooted in the conservation laws of mass and momentum for an incompressible Newtonian fluid. In three dimensions, these are expressed by the incompressible Navier-Stokes equations, which consist of the momentum equation:
 
 \begin{align}
-    \rho \left(\frac{\partial \mathbf{u}}{\partial t} + \mathbf{u}\cdot\nabla\mathbf{u}\right) = -\nabla p + \mu \nabla^2 \mathbf{u} + \rho \mathbf{g}
+    \rho \left(\frac{\partial \mathbf{u}}{\partial t} + \mathbf{u}\cdot\nabla\mathbf{u}\right) = -\nabla p + \mu \nabla^2 \mathbf{u} + \rho \mathbf{g},
 \end{align}
 
 and the incompressibility constraint:
 
 \begin{align}
-    \nabla\cdot\mathbf{u} = 0
+    \nabla\cdot\mathbf{u} = 0.
 \end{align}
 
 Here $\mathbf{u}(\mathbf{x},t)$ denotes the velocity field, $p(\mathbf{x},t)$ the pressure field, $\rho$ the fluid density, $\mu$ the dynamic viscosity, and $\mathbf{g}$ the gravitational acceleration vector. The momentum equation enforces conservation of momentum under advective transport, pressure gradient forces, viscous diffusion, and body forces; the divergence-free condition enforces mass conservation by ensuring volume preservation of fluid elements. In computer graphics contexts, these equations form the basis for physically grounded fluid behaviour, although various approximations or discretisation strategies are typically applied to achieve stability, efficiency, or control in practice.
 
-When altitude variations are negligible compared to horizontal scales, a depth-averaged approximation known as the Shallow Water Equations (SWE) is often employed \cite{Parna2019}. Under the assumption that the fluid column height $\eta(x,y,t)$ varies slowly in the vertical direction, the (non-conservative) SWE are expressed as
+When altitude variations are negligible compared to horizontal scales, a depth-averaged approximation known as the Shallow Water Equations (SWE) is often employed \cite{Parna2019}. Under the assumption that the fluid column height $\eta(x,y,t)$ varies slowly in the vertical direction, the (non-conservative) SWE are expressed as:
 \begin{align}
-    \frac{\partial \mathbf{u}}{\partial t} + \mathbf{u} \cdot \nabla \mathbf{u} = - \tensor{g} \nabla \eta \\
-    \frac{\partial \eta}{\partial t} + \nabla\cdot(\eta \mathbf{u}) = 0
+    \frac{\partial \mathbf{u}}{\partial t} + \mathbf{u} \cdot \nabla \mathbf{u} = - \tensor{g} \nabla \eta, \\
+    \frac{\partial \eta}{\partial t} + \nabla\cdot(\eta \mathbf{u}) = 0,
 \end{align}
 
 where $\mathbf{u}(x,y,t)$ is the horizontal velocity at the surface, and $\tensor{g}$ denotes gravitational acceleration.
@@ -50,15 +50,15 @@ Numerical characteristics of solvers critically influence the realism, stability
 \AltTextImage{
     Time integration schemes must balance stability and accuracy. Explicit methods compute updates directly from known states but impose restrictive time-step limits proportional to grid spacing ($\Delta x, \Delta y, \Delta z$) or particle spacing in relation with the computed velocity, rendering fine resolutions costly. The CFL condition states that the dimensionless Courant number $C$ should not exceed a maximal value $C_{max}$ given depending on the PDE to solve (typically $C_{max} = 1$ for explicit integrations):
     \begin{align}
-        C = \Delta t \left( \sum_{i=1}^{n}{\frac{u_i}{\Delta x_i}} \right) \leq C_{max} \nonumber
+        C = \Delta t \left( \sum_{i=1}^{n}{\frac{u_i}{\Delta x_i}} \right) \leq C_{max}. \nonumber
     \end{align}
 }{delta-time-Lu2023.jpg}{Results of a fluid simulation after 5$\mu s$, 10$\mu s$ and 15$\mu s$ with different spatial resolutions (from left to right: 0.14mm, 0.07mm, 0.05mm and 0.04mm) shows large discrepancies. }{fig:erosion-sota-dt}{Importance of spatial resolution in fluid simulations}
 
 Thus, when looking at 2D and 3D explicit methods, the main constraint is finding a valid time-step $\Delta t$:
 \begin{align}
-    \Delta t_{\text{2D}} \leq \left( \frac{\Delta x}{u_x} + \frac{\Delta y}{u_y} \right) C_{max}
+    \Delta t_{\text{2D}} \leq \left( \frac{\Delta x}{u_x} + \frac{\Delta y}{u_y} \right) C_{max},
     \quad
-    \Delta t_{\text{3D}} \leq \left( \frac{\Delta x}{u_x} + \frac{\Delta y}{u_y} + \frac{\Delta z}{u_z} \right) C_{max}
+    \Delta t_{\text{3D}} \leq \left( \frac{\Delta x}{u_x} + \frac{\Delta y}{u_y} + \frac{\Delta z}{u_z} \right) C_{max}.
 \end{align}
 
 Implicit or semi-implicit treatments of diffusion or pressure terms allow larger time steps by solving linear or nonlinear systems ($C_{max} > 1$), as exemplified by semi-Lagrangian advection with implicit viscosity in \cite{Stam1999}. Pressure projection typically entails solving a Poisson equation, for which direct solvers offer accuracy but scale poorly to large grids, while iterative solvers (e.g., conjugate gradient, multigrid) afford scalability at the expense of convergence concerns that must be managed via preconditioning or adaptive tolerance. Time-stepping strategies may incorporate adaptive substepping or projection frequency adjustments to maintain stability without excessive computation.

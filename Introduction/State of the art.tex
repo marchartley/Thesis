@@ -49,7 +49,7 @@ The conceptual roots of procedural techniques in graphics trace back to fractal 
 
 Methods proposed in later chapters leverage these paradigms: for instance, the sketch-based island method, combined with noise and data-driven augmentation from \cref{chap:coral-island} yields varied yet controlled outputs, and our ecosystem generator presented \cref{chap:semantic-representation} is governed by rule-based systems with stochastic sampling.
     
-Recent advances have started integrating machine learning to learn distributions of terrain patches or entire landscapes from data, enabling synthesis of realistic terrain patterns beyond hand-tuned noise parameters, using especially generative models such as GANs or autoencoders. In \cref{chap:coral-island} we use a conditional GAN to diversify coral reef island heightmaps. Hence, a detailed description of learning-based terrain methods appears in that chapter's State-of-the-Art.
+Recent advances integrate machine learning to learn distributions of terrain patches or entire landscapes from data, enabling synthesis of realistic terrain patterns beyond hand-tuned noise parameters, using especially generative models such as GANs or autoencoders. In \cref{chap:coral-island} we use a conditional GAN to diversify coral reef island heightmaps. Hence, a detailed description of learning-based terrain methods appears in that chapter's State-of-the-Art.
 
 In interactive and production pipelines, procedural systems must balance realism, speed, and user control. Fast evaluation (often parallelised and/or using GPU) supports real-time or near-interactive feedback for artist-driven editing. Parameter design and UI tools (e.g., sketching, semantic objects, masking) are critical to let users influence generation intuitively. The semantic \glosses{EnvObj} framework proposed in \cref{chap:semantic-representation} exemplifies user-centric design, enabling multi-scale editing and expert knowledge integration.
 
@@ -120,7 +120,7 @@ These alternatives are surveyed in depth in \cref{chap:coral-island}' State-of-t
 %---------------------------------------------------------------------
 \subsection{3D representations (Volumetric models)}
 %---------------------------------------------------------------------
-Volumetric models encode not only the terrain surface but also its interior, making it possible to represent overhangs, caves, voids, and material heterogeneity that 2.5D elevation models cannot capture.
+Volumetric models encode not only the terrain surface but also its inside and outside, making it possible to represent overhangs, caves, voids, and material heterogeneity that 2.5D elevation models cannot capture.
 We organise them into three families: implicit fields, discrete voxel grids, and layered models.
 
 %.....................................................................
@@ -317,6 +317,15 @@ The formation of atolls is a process that unfolds over millions of years. As the
 }{Tetiaroa_from_sky.jpeg}{Aerial view of Tetiaroa Atoll, French Polynesia.}{fig:intro-atoll-Tetiaroa}{Aerial view of Tetiaroa Atoll, French Polynesia}
 
 
+\midConclusion
+
+Understanding the biological mechanisms that shape coral reef morphologies underpins procedural methods for generating and simulating reef island environments across multiple scales. At large scales, 2.5D elevation models for representing coral reefs suffice because cavities and overhangs can be neglected; at smaller scales, 3D representations are essential to capture erosive processes that evolve in all three dimensions.
+
+Crucially, our aim is not only realism but controllable authoring. These environments are defined by surface geometry, material heterogeneity, and living components, so we combine intuitive controls with models that remain responsive for iterative design. In the speed-realism-control trade-off, we privilege representations and algorithms that preserve key biological and physical constraints while enabling interactive, multi-scale editing.
+
+Because growth, sedimentation, erosion, and bioerosion act at distinct spatial and temporal scales, the computational representation must match the phenomenon and the intended authoring operations. This perspective motivates the multi-scale, multi-representation framework developed in the following chapters: automatic, user-guided generation of large-scale coral reef islands (\cref{chap:coral-island}), authorable ecosystem simulation with biologically informed rules (\cref{chap:semantic-representation}), and erosion modelling across terrain representations (\cref{chap:erosion}).
+
+% Understanding the underlying biology behind the formation of the different coral reef shapes allows to create procedural methods to create and simulate coral reef island environments from large-scale (complete reefs) to small-scale (individual corals). At a large-scale, the choice of a 2.5D terrain representation is relevant given that cavities and overhang could be neglected. However, at smaller-scale, the choice of volumic terrain representations becomes more important as the erosive and bio-erosiove agents evolve in the 3D space, reducing the 2D projection paradigm instaured by gravity on aerial landscapes. Moreover, these natural environments are not solely defined by their surface geometry, but also by the different soil types, materials, and biotic material, which should be taken into account to accurately generate them. Fauna and flora have significant impact on the island geometries, notably by the presence of the large structures that are coral colonies. The evolving ecosystem paradigm implies that we take into account the biological rules of each individual and the interactions between each actor of the environment to model it efficiently.
 
 
 % \section{Underwater landscape modelling challenges}

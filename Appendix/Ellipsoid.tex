@@ -12,8 +12,8 @@
 We start from a representation that already contains the ellipsoid's orientation, so that subsequent steps only query a single object. Let $\vec r=[x,y,z]^\top \in\mathbb{R}^3$ be global coordinates. In the local (unrotated) frame, an ellipsoid with semi-axes $a,b,c>0$ satisfies
 \begin{align}
     \label{eq:app-canonical-ellipsoid}
-    \vec r'^\top  A \vec r' = 1 \\
-    A=\operatorname{diag}\!\left(1/a^2, 1/b^2, 1/c^2\right)
+    \vec r'^\top  A \vec r' = 1, \\
+    A=\operatorname{diag}\!\left(1/a^2, 1/b^2, 1/c^2\right),
 \end{align}
 
 with local coordinates $\vec r'=[x',y',z']^\top $. If $R\in \mathrm{SO}(3)$ maps global to local coordinates, i.e.\ $\vec r'=R^\top \vec r$, then substituting into \cref{eq:app-canonical-ellipsoid} and setting $Q=RAR^\top $ gives a single symmetric matrix that describes the rotated ellipsoid in global coordinates:
@@ -25,7 +25,7 @@ with local coordinates $\vec r'=[x',y',z']^\top $. If $R\in \mathrm{SO}(3)$ maps
         Q_{11} & Q_{12} & Q_{13}\\
         Q_{12} & Q_{22} & Q_{23}\\
         Q_{13} & Q_{23} & Q_{33}
-    \end{bmatrix}
+    \end{bmatrix}.
 \end{align}
 
 Expanding the scalar form,
@@ -47,19 +47,15 @@ A height field asks for $z$ at a given $(x,y)$. We therefore isolate $z$ in \cre
 Writing $\Delta(x,y)=B'^2-4A'C'$ for the discriminant, the surface exists where $\Delta\ge 0$ and the two shells are
 \begin{align}
     \label{eq:app-upper}
-    \text{upper:}\quad z = f(x,y) = \frac{-B' + \sqrt{ \Delta }}{ 2A' } \\
+    \text{upper:}\quad z = f(x,y) = \frac{-B' + \sqrt{ \Delta }}{ 2A' }, \\
     \label{eq:app-lower}
-    \text{lower:}\quad z = \frac{-B' - \sqrt{\Delta}}{2A'}
+    \text{lower:}\quad z = \frac{-B' - \sqrt{\Delta}}{2A'}.
 \end{align}
 
 Substituting the coefficients yields a compact expression that depends only on the six independent entries of $Q$:
 \begin{align}
     \label{eq:app-upper-final}
-    f(x,y)=
-    \frac{
-    -(Q_{13}x+Q_{23}y)
-    +\sqrt{(Q_{13}x+Q_{23}y)^2 - Q_{33} \left(Q_{11}x^2 + 2Q_{12}xy + Q_{22}y^2 - 1\right)}
-    }{Q_{33}}
+    f(x,y) = \frac{-(Q_{13}x+Q_{23}y) + \sqrt{(Q_{13}x+Q_{23}y)^2 - Q_{33} \left(Q_{11}x^2 + 2Q_{12}xy + Q_{22}y^2 - 1\right)} }{Q_{33}}.
     % \qquad \Delta\ge 0.
 \end{align}
 
@@ -89,10 +85,10 @@ This ellipse in $(x,y)$ is exactly equivalent to $\Delta(x,y)\ge 0$ and provides
 For terrain applications, the ellipsoid should "follow" the local slope. We orient it by the terrain normal at a query point $(x_0,y_0)$, with
 \begin{align}
     \label{eq:app-terrain-normal}
-    \vec n=\operatorname{normalise} [-\partial_x H, -\partial_y H, 1]^\top
+    \vec n=\operatorname{normalise} [-\partial_x H, -\partial_y H, 1]^\top.
 \end{align}
 
-We build the local frame as
+We build the local frame as:
 \begin{align}
     \vec e_z'=\vec n,
     \qquad
@@ -107,7 +103,7 @@ and set
     R=[ \vec e_x'\ \ \vec e_y'\ \ \vec e_z' ],
 \end{align}
 
-which feeds back into \cref{eq:app-global-implicit} and therefore into \cref{eq:app-quadratic-coeffs}–\cref{eq:app-upper-final}. This alignment changes both the footprint and the height response in a way that is consistent with the local terrain.
+which feeds back into \cref{eq:app-global-implicit} and therefore into \cref{eq:app-quadratic-coeffs}-\cref{eq:app-upper-final}. This alignment changes both the footprint and the height response in a way that is consistent with the local terrain.
 
 A rotated upper shell can lie above the ground on one side and below on the other; height fields cannot represent overhangs. To keep a single, consistent cap, we clip in the local frame by the plane $z'=0$. Writing $\vec r_0=[x_0,y_0,H(x_0,y_0)]^\top $, the plane in global coordinates is $\vec n^\top (\vec r-\vec r_0)=0$, since $\vec n$ is the third column of $R$. Admissible points then satisfy
 \begin{align}
@@ -120,8 +116,8 @@ which enforces compatibility with a single-valued height field. With $z'=0$ thro
 
 Turning the cap into an update of the terrain is then a direct comparison between the cap height and the current surface. Let $f_{+}(x,y)$ denote the clipped upper shell height and set $H_0=H(x_0,y_0)$. We use
 \begin{align}
-    \text{deposition:} \quad H_{\text{new}}(x,y)=\max\left(H(x,y), f_{+}(x,y)+H_0\right) \\
-    \text{erosion:}\quad H_{\text{new}}(x,y)=\min\left(H(x,y), f_{+}(x,y)+H_0\right)
+    \text{deposition:} \quad H_{\text{new}}(x,y)=\max\left(H(x,y), f_{+}(x,y)+H_0\right), \\
+    \text{erosion:}\quad H_{\text{new}}(x,y)=\min\left(H(x,y), f_{+}(x,y)+H_0\right),
 \end{align}
 which preserves the single-valued surface and avoids undercuts.
 
@@ -145,9 +141,9 @@ so that
 
 \begin{align}
     \label{eq:app-fx}
-    f_x = -\frac{Q_{13}f + Q_{11}x + Q_{12}y}{Q_{33}f + Q_{13}x + Q_{23}y} \\
+    f_x = -\frac{Q_{13}f + Q_{11}x + Q_{12}y}{Q_{33}f + Q_{13}x + Q_{23}y}, \\
     \label{eq:app-fy}
-    f_y = -\frac{Q_{23}f + Q_{12}x + Q_{22}y}{Q_{33}f + Q_{13}x + Q_{23}y}
+    f_y = -\frac{Q_{23}f + Q_{12}x + Q_{22}y}{Q_{33}f + Q_{13}x + Q_{23}y}.
 \end{align}
 
 In practice, for a fixed ellipsoid $(a,b,c)$ at $(x_0,y_0)$, one computes $R$ from the terrain normal by \cref{eq:app-terrain-normal}-\cref{eq:app-rotation-from-normal}, forms $Q=RAR^\top $ and the footprint matrix $M$, and then, for each $(x,y)$ in a stencil around $(x_0,y_0)$, skips points with $[x\ \ y] M [x\ \ y]^\top >1$, evaluates $f$ by \cref{eq:app-quadratic-coeffs}-\cref{eq:app-upper-final} (upper root), and applies the deposition/erosion rule above. Caching the six independent entries of $Q$ (and $M$) makes the loop entirely local and $O(1)$ per sample. 
@@ -175,7 +171,7 @@ This expression is strictly decreasing in $z_0\in[0,c)$ since $V'(z_0)=-\pi a b\
 For implementation on a height field, it is convenient to separate the cap into a \emph{plane} and a \emph{thickness}. With $\vec r_0=[x_0,y_0,H(x_0,y_0)]^\top$, terrain normal $\vec n=[n_x,n_y,n_z]^\top$ as in \cref{eq:app-terrain-normal}, and the local offset $z_0\ge 0$, the clipping plane in global coordinates is
 \begin{align}
     \label{eq:app-cap-plane}
-    \vec n^\top(\vec r-\vec r_0)=z_0
+    \vec n^\top(\vec r-\vec r_0)=z_0,
     \ \Longleftrightarrow\
     z_{\text{plane}}(x,y)=H_0+\frac{z_0-n_x(x-x_0)-n_y(y-y_0)}{n_z},\quad H_0=H(x_0,y_0).
 \end{align}
@@ -216,7 +212,7 @@ Change the vertical semi-axis to $c'$ so that the geometric half-cap volume equa
 \end{align}
 then recompute \cref{eq:app-upper-final} to \cref{eq:app-fy} and use
 \begin{align}
-    f_B(x,y)=z_{\text{plane}}(x,y)+g_{0}(x,y)\quad\text{with $c$ replaced by $c'$ and $z_0=0$}
+    f_B(x,y)=z_{\text{plane}}(x,y)+g_{0}(x,y)\quad\text{with $c$ replaced by $c'$ and $z_0=0$}.
 \end{align}
 This exactly normalises the half-volume. Note that changing $c$ modifies $Q$ and therefore the projected footprint $M$ via the Schur complement.
 
@@ -371,7 +367,7 @@ This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifti
 %     \int_{x_{\text{min}}}^{x_{\text{max}}} f(x)  dx = \frac{\pi a b}{2}
 % \end{align}
 
-% Finally, we consider the ground locally linear with a rotation $\angl$ such that the ground surface is defined as $g(x) = x \tan(\angl)$. So the amount of material that is being added as such can be computed as 
+% Finally, we consider the ground locally linear with a rotation $\angl$ such that the ground surface is defined as $g(x) = x \tan(\angl)$. So the amount of material that is being added as such can be computed as:
 % \begin{align}
 %     \text{Area} = \int \max \left( f(x) - g(x), 0 \right)   dx
 % \end{align}
@@ -438,7 +434,7 @@ This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifti
 
 % [TO BE CONTINUED...?]
 
-% % Finally, we consider the ground locally linear with a rotation $\angl$ such that the ground surface is defined as $g(x) = x \tan(\angl)$. So the amount of material that is being added as such can be computed as 
+% % Finally, we consider the ground locally linear with a rotation $\angl$ such that the ground surface is defined as $g(x) = x \tan(\angl)$. So the amount of material that is being added as such can be computed as:
 % % \begin{align}
 % %     \text{Area} = \int \max \left( f(x) - g(x), 0 \right)   dx
 % % \end{align}
@@ -570,7 +566,7 @@ This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifti
 %     \left[ -\partial_x H,\; -\partial_y H,\; 1 \right]^\top .
 % \end{equation}
 
-% We choose the ellipsoid's local $z'$-axis to coincide with $\vec n$ so that the body "hugs" the terrain.  An orthonormal basis $\{ \vec e_x',\vec e_y',\vec e_z' \}$ is built as
+% We choose the ellipsoid's local $z'$-axis to coincide with $\vec n$ so that the body "hugs" the terrain.  An orthonormal basis $\{ \vec e_x',\vec e_y',\vec e_z' \}$ is built as:
 
 % \begin{equation}
 %     \vec e_z' = \vec n,
