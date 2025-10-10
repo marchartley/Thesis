@@ -54,7 +54,7 @@ Building on these observations, this chapter contributes:
 \section{State of the art}
 \label{sec:env-obj-related-works}
 
-Simulating ecosystems involves a range of modelling approaches, each balancing biological realism and computational efficiency. Broadly, biological models can treat populations as continuous fields using reaction-diffusion equations, or model each organism individually through agent-based methods. For clarity, we classify existing work in three categories: site-based (grid or tessellation) models, individual-based models, and continuous field models, each emphasising a different balance between local details and scalability. Site-based models discretise space to model local interactions efficiently. In contrast, individual-based models (IBMs) capture fine-scale behaviours and heterogeneity, often using spatial interaction rules (fixed-radius, zone-of-influence, or field of neighborhood methods). Ecological Field Models (EFMs) bridge these approaches by representing environmental properties as continuous fields influenced by organisms, enabling dynamic feedback between species and their surroundings. These diverse frameworks provide flexible tools for capturing complex ecological processes at varying scales and resolutions.
+Simulating ecosystems involves a range of modelling approaches, each balancing biological realism and computational efficiency. Broadly, biological models can treat populations as continuous fields using reaction-diffusion equations, or model each organism individually through agent-based methods. For clarity, we classify existing work in three categories: site-based (grid or tessellation) models, individual-based models, and continuous field models, each emphasising a different balance between local details and scalability. Site-based models discretise space to model local interactions efficiently. In contrast, individual-based models (IBMs) capture fine-scale behaviours and heterogeneity, often using spatial interaction rules (fixed-radius, zone-of-influence, or field of neighborhood methods). Ecological Field Models (EFMs) bridge these paradigms by representing environmental properties as continuous fields influenced by organisms, enabling dynamic feedback between species and their surroundings. These diverse frameworks provide flexible tools for capturing complex ecological processes at varying scales and resolutions.
 
 % --------------------------------------------------------------------
 % \subsection{Ecosystem simulation}
@@ -85,9 +85,9 @@ Site-based models represent the environment as discrete regions with uniform pro
 Grid-based models represent ecosystems by discretising continuous space into a regular arrangement of cells, typically squares or rectangles, each containing uniform environmental properties and ecological conditions (\cref{fig:env-obj-grid-based-models}, left). In this approach, each cell represents a spatially explicit patch hosting one or multiple populations, with interactions primarily occurring between neighbouring cells. The central ecological rationale for employing grid-based models is their conceptual simplicity, computational efficiency, and ease of representing spatial processes such as diffusion, dispersal, competition, or predation \cite{Grimm2005,Cantrell2010,Nelson2012}.
 
 Mathematically, grid-based ecological dynamics are commonly described using discrete-time state equations that represent how the state of a cell (e.g., population density, biomass, or nutrient availability) changes according to its local interactions. A general formulation of these dynamics can be expressed as:
-\begin{align}
+\begin{align*}
     N_{t+1}(x,y) = f(N_t(x,y), \Bar{N_t}(x, y), E_t(x, y)),
-\end{align}
+\end{align*}
 where $N_t(x, y)$ is the state variable at cell coordinates $(x, y)$ at time $t$, $\Bar{N_t}(x, y)$ is the neighbourhood of the cell at coordinates $(x, y)$, $E_t(x, y)$ is the explicit environmental factors (e.g., precipitation and soil nutrients), and $f$ is the update function that describes the biological changes given the current state, the neighbourhood and the environmental factors around a cell.
 
 Grid-based models are particularly suited for simulations involving diffusion-like processes or phenomena with clear spatial boundaries. Classic examples in ecology include modelling vegetation dynamics in arid ecosystems, spatially explicit predator-prey interactions, forest-fire spread, and habitat fragmentation effects. Additionally, grid-based representations form the basis for Cellular Automata models, where cells exhibit discrete states (e.g., occupied, empty, burning), updated synchronously according to predefined state-transition rules.
@@ -98,12 +98,12 @@ However, significant limitations exist, as ecological processes may differ drast
 
 \subsubsection{Tessellation models}
 
-Tessellation models generalise the idea of grid-based approaches by partitioning continuous ecological space into discrete regions based on proximity rather than regular shapes (\cref{fig:env-obj-grid-based-models}, centre). Among these methods, Voronoi diagrams (also known as Thiessen polygons in ecological studies) and their dual, Delaunay triangulations, are particularly relevant and widely applied \cite{Lemiere2023,Foltete2019,Minor2008}.
+Tessellation models generalise the idea of grid-based methods by partitioning continuous ecological space into discrete regions based on proximity rather than regular shapes (\cref{fig:env-obj-grid-based-models}, centre). Among these methods, Voronoi diagrams (also known as Thiessen polygons in ecological studies) and their dual, Delaunay triangulations, are particularly relevant and widely applied \cite{Lemiere2023,Foltete2019,Minor2008}.
 
 Voronoi diagrams partition a plane based on a set of points (e.g., tree positions, animal territories, or resource centres). Each region in a Voronoi diagram is defined as the set of all points closer to a specific focal point (seed) than to any other point. Formally, given a set of points ${p_1, p_2, ..., p_n}$, the Voronoi region $V_i$ associated with the point $p_i$ is defined as:
-\begin{align}
+\begin{align*}
     V_i = { x \in \R^2: d(x, p_i) \leq d(x, p_j), \forall j \neq i },
-\end{align}
+\end{align*}
 with $d(x, p_i)$ the distance between the point $x$ and the seed $p_i$.
 
 Conversely, the Delaunay triangulation is the dual graph structure of a Voronoi diagram. It connects points whose Voronoi regions share a common boundary, thereby explicitly defining neighbourhoods among entities (e.g., individuals or resource patches). This duality between Voronoi and Delaunay representations provides two complementary perspectives: territorial partitioning (Voronoi) and direct adjacency or connectivity (Delaunay).
@@ -170,34 +170,34 @@ In the Fixed-Radius Neighbourhood (FRN) method, the first appearance of a distan
 }{ZOI-Peters2020.png}{ZOI is represented by regions around entities. The intersection area between two discs defines the competition between the two entities. Top: Symmetric competition (equal resource sharing, with the competition at the intersection divided equally); bottom: Asymmetric competition (larger entity captures more resources, such as light) \cite{Peters2020}.}{fig:env-obj-zoi-scheme}{Symmetric and asymmetric resource competition in ZOI}
 
 Mathematically, the intensity of competition $C_{ij}$ exerted by a neighbouring tree $j$ on a focal tree $i$ is expressed as:
-\begin{align}
+\begin{align*}
     C_{ij} = \frac{ \Area_{\text{overlap}, ij} }{ \Area_{\text{ZOI}, i} },
-\end{align}
+\end{align*}
 where $\Area_{\text{overlap}, ij}$ is the area of overlap between the radii of trees $i$ and $j$, and $\Area_{\text{ZOI}, i}$ is the total area of the influence zone of tree $i$. This intersection area can be computed directly with
-\begin{align}
+\begin{align*}
     \Area_{\text{overlap}, ij} = &r_i^2 \cos^{-1}\left( \frac{d^2 + r_i^2 - r_j^2}{2 d r_i} \right) + r_j^2 \cos^{-1} \left(\frac{d^2 + r_j^2 - r_i^2}{2 d r_j} \right) \nonumber \\
     & - \frac{1}{2} \sqrt{(-d + r_i + r_j)(d + r_i - r_j)(d - r_i + r_j)(d + r_i + r_j)},
-\end{align}
+\end{align*}
 assuming $r_i$ and $r_j$ are the radii of trees $i$ and $j$ respectively, and $d$ the distance between the two centres.
 
 The biological consequences of competition quantified by ZOI, such as reduced growth or increased mortality risk, can be represented through growth-response equations. For instance, tree growth under competition might be modelled as in \cite{Das2012,Uriarte2004}:
-\begin{align}
+\begin{align*}
     G_i = G_{\text{max}, i} \left(1 - \alpha \sum_{j} {C_{ij}} \right),
-\end{align}
+\end{align*}
 with $G_i \in [0, 1]$ the growth of the tree, $G_{\text{max}, i}$ the maximal potential growth if no competition affects it, and $\alpha$ a sensitivity parameter determining how competition impacts growth.
 
 \AltTextImage{
     The ZOI model typically assumes symmetric (isotropic) competition, meaning all trees compete equally in every direction, and the competition effect between two trees is reciprocal if their zones and dimensions are similar. However, ecological realism can be increased by adopting an asymmetric (anisotropic) version of the model, which acknowledges that competition is often directionally biased or size-dependent (\cref{fig:env-obj-zoi-scheme}). For asymmetric competition, the equation is modified by introducing weighting based on differences in tree size or dominance, for example:
-    \begin{align}
+    \begin{align*}
         C_{ij} = \frac{ \Area_{\text{overlap}, ij} }{ \Area_{\text{ZOI}, i} } f(DBH_i, DBH_j),
-    \end{align}
+    \end{align*}
     with $f: \R^2 \to [0, 1]$ weighting function that introduces asymmetry between individuals based on size or dominance traits. For example, $f(\text{DBH}_i, \text{DBH}_j)$ can bias competition towards larger trees by giving them a higher share of contested resources, while $f(h_i, h_j)$ with tree heights $h_i$ and $h_j$ can represent light competition by favouring taller individuals. The exact form of $f$ depends on the ecological process of interest (e.g., size dominance, shading, or nutrient uptake). %a function that introduces asymmetry due to differences in diameter at breast height (DBH), modelling stronger resource capture by larger trees, or using $f(h_i, h_j)$ to model light competition between trees of different heights $h_i$ and $h_j$.
 }{FON-asymmetric-field-Peters2020-s.png}{A common simplification is isotropy; real stands often show directional effects (slope, wind, light). Left: competition in classical FON models is identical for each entity; right: a flow direction (black arrows) induce a deformed competition for resources. Asymmetric interaction area is much more complex to compute \cite{Peters2020}. }{fig:env-obj-fon-asymmetric-scheme}{Deformed competiton for resources}
 
 
 The ZOI model is theoretically rooted in the understanding that trees compete gradually and continuously, rather than abruptly. However, it does rely on simplifying assumptions (circular, isotropic zones, homogeneous environmental conditions, and static radii within measurement intervals) which can limit its applicability to ecological scenarios involving directional resource gradients or heterogeneous environments (\cref{fig:env-obj-fon-asymmetric-scheme}).
 
-Empirical studies across diverse forest ecosystems have demonstrated that the ZOI approach significantly improves predictions of tree growth, survival, and mortality compared to simpler binary models such as FRN. The nuanced representation of competition offered by ZOI models better captures complex ecological dynamics, particularly in mixed-species stands, uneven-aged forests, or structurally diverse ecosystems \cite{Bella1972,Biging1992}.
+Empirical studies across diverse forest ecosystems have demonstrated that the ZOI model significantly improves predictions of tree growth, survival, and mortality compared to simpler binary models such as FRN. The nuanced representation of competition offered by ZOI models better captures complex ecological dynamics, particularly in mixed-species stands, uneven-aged forests, or structurally diverse ecosystems \cite{Bella1972,Biging1992}.
 
 \AltTextImage{
     \subsubsection{Field of Neighbourhood}
@@ -208,25 +208,25 @@ Empirical studies across diverse forest ecosystems have demonstrated that the ZO
 
 \AltTextImage{
     A commonly used formulation of competition intensity $FON_i$ for a tree $i$ at distance $\radius$ from the trunk is expressed as:
-    \begin{align}
+    \begin{align*}
         FON_i(\radius) = \begin{dcases}
             1 & \text{for } 0 \leq \radius < \text{RBH}, \\
             e^{-C(r - \text{RBH})} & \text{for } \text{RBH} \leq \radius \leq R, \\
             0 & \text{otherwise}
         \end{dcases}
-    \end{align},
+    \end{align*},
     with RBH the radius at breast height ($\text{RBH} = \frac{1}{2} \text{DBH}$), $\Radius$ the radius of influence of the tree (usually proposed as $\Radius = a \sqrt{\text{RBH}}$ with a scaling parameter $a$), and $C$ an attenuation coefficient, defined for each species.
 }{DBH-measure.png}{DBH (and RBH) is measured at 1.3 m above ground level.}{fig:env-obj-dbh}{Diameter and Radius at Breast Height}
 
 \AltTextImage{
     The overall competition at any point in space can now be described as:
-    \begin{align}
+    \begin{align*}
         F(x, y) = \sum_{i} {FON_i(x, y)}.
-    \end{align}
+    \end{align*}
     The competition perceived by a tree $i$ is the average of all $FON$ values intersecting its area $A$:
-    \begin{align}
+    \begin{align*}
         F_A^i = \frac{1}{A} \sum_{j \neq i}{ \int_{\Area_{\text{overlap}, ij}}{FON_j(x, y) \, da} }.
-    \end{align}
+    \end{align*}
 }{FON-scheme-Berger2000.png}{The evaluation of the FON value at any point is done by accumulating all individual fields \cite{Berger2000}.}{fig:env-obj-fon-compute-scheme}{Evaluation of the FON value at any point by accumulating all individual fields}
 
 Unlike the ZOI method, the FON model does not assume a hard boundary around each tree, instead explicitly capturing a smooth decline in competitive impact with increasing distance. It also inherently accommodates asymmetric competition, since larger and closer neighbours exert stronger competitive influences than smaller or more distant trees (\cref{fig:env-obj-fon-compute-scheme}).
@@ -240,7 +240,7 @@ The FON method does not rely explicitly on geometric overlap and is thus flexibl
 \AltTextImage{
     Alternatively, learning the spatial distribution of distances between individuals from examples can be used as a statistical metric to introduce interactive tools for ecosystem generation \cite{Emilien2015a} (\cref{fig:env-obj-worldbrush-Emilien2015}). In this work, a user-provided patch serves as an example: the system extracts descriptors such as histograms of inter- and intra-species distances, or correlations with environmental variables such as slope, and reproduces these distributions in other regions. Unlike kernel-based models, which require explicit design of influence functions, this approach learns statistical descriptors directly from data.
 
-    This method is not limited to vegetation but generalises to any scene elements (e.g., houses, rocks, roads), making it highly flexible for procedural content generation. From an ecological standpoint, it resonates with point-process modelling, where distributions of distances or clustering statistics are fitted to observed spatial patterns \cite{BenSaid2021,Baddeley2010}. For computer graphics, the strength of this approach is interactivity and scalability: complex, realistic layouts can be synthesised quickly without costly simulation, while retaining ecological plausibility through statistical consistency.
+    This method is not limited to vegetation but generalises to any scene elements (e.g., houses, rocks, roads), making it highly flexible for procedural content generation. From an ecological standpoint, it resonates with point-process modelling, where distributions of distances or clustering statistics are fitted to observed spatial patterns \cite{BenSaid2021,Baddeley2010}. For computer graphics, the strengths of this method are interactivity and scalability: complex, realistic layouts can be synthesised quickly without costly simulation, while retaining ecological plausibility through statistical consistency.
 }{worldbrush-Emilien2015.png}{Using statistical distribution from an input terrain, \cite{Emilien2015a} synthesise a different terrain with similar distributions. Two examples are given (delimited by blue rectangular boundaries): uniform distribution (top) and clustered distribution (bottom). Differences in distribution arise from the voids in the regions of interest.}{fig:env-obj-worldbrush-Emilien2015}{\cite{Emilien2015}'s ecosystem simulation by statistic analysis and distribution}
 
 While the FON model provides a biologically detailed representation of competition, its computational complexity makes it significantly more challenging to implement in large-scale simulations. Unlike the ZOI model, which relies on predefined geometric overlaps that can be calculated efficiently, the FON approach requires integrating a continuously decaying competition function over an arbitrary area of influence. This necessitates evaluating the function at multiple points across overlapping zones, increasing computational demand. Moreover, the additive nature of FON, where each tree contributes to the total competition field at every spatial point, further exacerbates the computational cost, scaling poorly in dense forest stands. The need for numerical integration or spatial discretisation makes FON computationally expensive compared to ZOI, which only requires simple geometric calculations. Consequently, while FON is useful for small-scale or highly detailed ecological studies, it is generally impractical for large-scale forest simulations.
@@ -280,13 +280,13 @@ While EFMs provide a biologically grounded approach to modelling spatial interac
 
 
 An ecological field represents a spatially varying environmental property across a landscape. Mathematically, we can define an $n$-dimensional ecological field as a scalar field $F$ for each point $\p \in \R^n$:
-\begin{align}
+\begin{align*}
     F(\p): \R^n \to \R.
-\end{align}
+\end{align*}
 
 Any organism $i$ in the scene has an influence on the ecological fields through an influence kernel $K_i$. These functions describe how an organism's presence affects its surroundings. We can then evaluate the ecological field with $N$ entities:
 \begin{align}
-    \label{eq:env-obj-eco-field-computation}
+    \eqlabel{eq:env-obj-eco-field-computation}{Ecological field evaluation expression}
     F(\p) = F_0(\p) + \sum_{i=0}^{N}{K_i(\p)},
 \end{align}
 with $F_0(\p)$ the baseline environmental state.
@@ -322,15 +322,15 @@ By employing implicit primitives (to define the environmental fields) and proced
 
 In this method, each 3D model can be associated with "procedural effects", which regroup scalar fields representing changes in the environment (\cref{fig:env-obj-teaser-grosbellet2016}, left). These fields are defined using implicit primitives (point-, spline-, surface- or volume-based) allowing the environment properties to be changed along a path, a surface or a volume, instead of only using points as in the initial EFM. This enables the system to represent, for example, the diffusion of heat around a pipe, which is not possible with the latter. The computation of an environment property is then an agglomeration of all the scalar fields associated with the given property (\cref{fig:env-obj-teaser-grosbellet2016}, middle). The authors propose computing all scalar fields, such as the heat field $\theta$, at any position $\p$ by the accumulation of objects' fields, in a similar manner as \cref{eq:env-obj-eco-field-computation}:
 
-\begin{align}
+\begin{align*}
     \theta(\p) = \theta_0(\p) + \sum_{i=1}^{n}{ \theta_i(\p)},
-\end{align}
+\end{align*}
 
 and the occlusion field $\alpha$ as the product of all objects' occlusion fields:
 
-\begin{align}
+\begin{align*}
     \alpha(\p) = \alpha_0(\p) \prod_{i=1}^{n}{\alpha_i(\p)},
-\end{align}
+\end{align*}
 assuming $\theta_0$ and $\alpha_0$ to be global scalar fields for temperature and shade, symbolising the baseline environmental state in the ecological domain.
 
 \AltTextImage{
@@ -339,9 +339,9 @@ assuming $\theta_0$ and $\alpha_0$ to be global scalar fields for temperature an
 
 \AltTextImage{
     On the other hand, the geometry of large objects can be altered using the scalar fields. The authors present a simulation of snow deposition on the objects by displacing the vertices $i$ in the direction of the original surface normals $\vec n_i$ by an amount depending on the environment (\cref{fig:env-obj-snow-Grosbellet2016}):
-    \begin{align}
+    \begin{align*}
         \p_i' = \p_i + \left( \alpha(\p_i) s(\p_i) g(d(\p_i)) - \theta(\p_i) \right) \vec n_i,
-    \end{align}
+    \end{align*}
     with $s$ the snow field, and $g$ a snow elevation function based on the distance between the original vertex and the border of the mesh.
 }{EnvObjs-snow-Grosbellet2016.png}{Snow deposition is a displacement of vertices along the surface normals of the mesh (left), modulated by the value of fields such as occlusion (middle) and heat (right) \cite{Grosbellet2016}. }{fig:env-obj-snow-Grosbellet2016}{Snow deposition and the effects of occlusion and heat fields in \cite{Grosbellet2016}}
 
@@ -367,7 +367,7 @@ However, classical EFMs assume static fields, whereas many ecological processes 
 
 Reaction-diffusion models describe how a quantity $u(x,t)$ (e.g., population density, nutrient concentration, sediment stock) evolves under two coupled processes: local reactions and spatial diffusion. In its classical isotropic form \cite{Turing1952,Okubo2001}:
 \begin{align}
-    \label{eq:reaction-diffusion-classic}
+    \eqlabel{eq:reaction-diffusion-classic}{Classical reaction-diffusion formulation}
     \frac{\partial u}{\partial t} = D \nabla^2 u + R(u),
 \end{align}
 where $D$ is the diffusion coefficient and $R(u)$ encodes local growth, decay, or interactions. Adding transport by external flows yields the full advection-reaction-diffusion formulation.
@@ -375,6 +375,7 @@ where $D$ is the diffusion coefficient and $R(u)$ encodes local growth, decay, o
 \subsubsubsection{Diffusion}
 Diffusion models the random spread of material, following Fick's law:
 \begin{align}
+    \eqlabel{eq:reaction-diffusion-diffusion-term}{Diffusion term of ARD}
     \text{Flux} = -D \nabla u.
 \end{align}
 This produces isotropic spreading, equivalent to convolving point inputs with a Gaussian kernel. In heterogeneous environments, anisotropic diffusion generalises $D$ to a tensor $\tensor{D}$ \cite{Ramos2024}, introducing directional bias (e.g., slope-driven seepage, anisotropic dispersal in currents).  
@@ -392,7 +393,7 @@ In graphics, reaction-diffusion systems have been widely used for texture and pa
 \subsubsubsection{Advection}
 Advection introduces directed transport under an external velocity field $\field{v}(x)$ (e.g., currents, wind, gravity-driven runoff):
 \begin{align}
-    \label{eq:reaction-diffusion-advection}
+    \eqlabel{eq:reaction-diffusion-advection}{Advection-Reaction-Diffusion (ARD) equation}
     \frac{\partial u}{\partial t} + \field{v}\cdot \nabla u = D \nabla^2 u + R(u).
 \end{align}
 Unlike diffusion's random spread, advection shifts material coherently along streamlines, aligning with our treatment of water currents as vector fields \cite{Burger2020,Ogden2017}.  
@@ -401,7 +402,7 @@ In graphics, this formulation underpins fluid solvers such as Stam's "stable flu
 \subsubsubsection{Decay and steady state}
 To avoid indefinite accumulation, a decay term $-\decay u$ is added:
 \begin{align}
-    \label{eq:reaction-diffusion-advection-decay}
+    \eqlabel{eq:reaction-diffusion-advection-decay}{ARD with linear decay}
     \frac{\partial u}{\partial t} + \field{v}\cdot \nabla u = D \nabla^2 u + R(u) - \decay u.
 \end{align}
 The decay term $\decay > 0$ guarantees that even with continuous deposition, the system relaxes toward a steady state where inputs balance dispersal and losses. This makes advection-reaction-diffusion models particularly suitable for efficient simulations of \glosses{EnvMat}, where explicit time-stepping can be replaced by directly solving for equilibrium.  
@@ -410,12 +411,14 @@ In graphics, decay is often added for numerical stability and realism: without i
 \subsubsubsection{Green's function solutions}
 For point sources, the advection-reaction-diffusion equation admits analytic solutions via Green's functions. For example, in 2D with isotropic diffusion, constant advection $\field{v}$, and decay $\decay$, the fundamental solution is a shifted, damped Gaussian:
 \begin{align}
+    \eqlabel{eq:reaction-diffusion-diffusion-green-point-source}{Green's function for a single point source in diffusion-decay setup}
     G(x,t) = \frac{1}{4\pi D t} \exp \left( -\frac{\|x - \field{v}t\|^2}{4Dt} - \decay t \right).
 \end{align}
 This solution represents a spreading plume: diffused by $D$, advected along $\field{v}$, and exponentially damped by $\decay$.  
 
 For extended sources such as curves ($\Gamma$) or regions ($\Omega$), the solution is the convolution of the point-source Green's function with the source geometry:
 \begin{align}
+    \eqlabel{eq:reaction-diffusion-diffusion-green-curves}{Extended-source solution with convolution}
     u(x,t) &= \int_\Gamma G(x-y,t)\,dy, \\
     u(x,t) &= \int_\Omega G(x-y,t)\,dy.
 \end{align}
@@ -640,17 +643,18 @@ For objects whose skeleton reduces to a single point (boulders, individual coral
 The skeleton of a curve-based \gloss{EnvObj} is determined by the shape that fits best given the environment it is added to.
 Using an Active-Contour ("snake") formulation \cite{Kass1988}, we seek a parametric curve $\curve(s): [0,1] \to \R^{2}$ that minimises the composite energy:
 \begin{align}
+    \eqlabel{eq:env-obj-snake}{Modified Snake energy}
     \energy(\curve) = \Einternal + \Eexternal + \Eshape + \Egradient,
 \end{align}
 with
 \begin{align}
-    \label{eq:env-obj-snake-energy-equation-internal}
+    \eqlabel{eq:env-obj-snake-energy-equation-internal}{Modified Snake internal component}
     \Einternal &= \Ainternal \left( \int_{\curve}{ \norm{\curve'(s)}^2 \, ds} + \int_{\curve}{ \norm{\curve''(s)}^2 \, ds} \right), \\
-    \label{eq:env-obj-snake-energy-equation-external}
+    \eqlabel{eq:env-obj-snake-energy-equation-external}{Modified Snake external component}
     \Eexternal &= -\Aexternal \int_{\curve}{ \fittingFunc(\curve(s)) \, ds }, \\
-    \label{eq:env-obj-snake-energy-equation-shape}
+    \eqlabel{eq:env-obj-snake-energy-equation-shape}{Modified Snake shape component}
     \Eshape &= \Ashape \left( \Length - \int_{\curve}{ \, ds } \right)^2, \\
-    \label{eq:env-obj-snake-energy-equation-gradient}
+    \eqlabel{eq:env-obj-snake-energy-equation-gradient}{Modified Snake gradient-alignment component}
     \Egradient &= \Agradient \int_{\curve}{-\dotProd{\curve'(s)}{\nabla\fittingFunc\left(\curve(s)\right)}^2 ds}.
 \end{align}
 
@@ -663,9 +667,9 @@ If a steep coast can be found where the terrain slope is significant near the wa
 
 \AltTextImage{
     \subsubsubsection{Internal energy}
-    \begin{align}
+    \begin{align*}
         \Einternal &= \Ainternal \left( \int_{\curve}{ \norm{\curve'(s)}^2 \, ds} + \int_{\curve}{ \norm{\curve''(s)}^2 \, ds} \right) \nonumber
-    \end{align}
+    \end{align*}
     The internal energy introduced in \cite{Kass1988} is composed of two components imposing penalties on the local properties of the points of the curve. The first derivative forces the points along the curve to be evenly spaced by minimising the curve tension, while the second derivative restricts it from forming sharp corners, increasing the rigidity of the curve. As our aim is to represent natural elements, we rarely find sharp features and thus we use the original definition from the Snake formulation.
 }{snake_algorithm_internal.pdf}{Internal energy minimisation for one vertex is done by reducing the difference of length with the next and with the previous vertices (tension), while reducing the curvature at this point (rigidity).}{fig:env-obj-snake-internal}{Snake algorithm - Internal energy}
 
@@ -673,9 +677,9 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
 
 \AltTextImage{
     \subsubsubsection{External energy}
-    \begin{align}
+    \begin{align*}
         \Eexternal &= -\Aexternal \int_{\curve}{ \fittingFunc(\curve(s)) \, ds } \nonumber
-    \end{align}
+    \end{align*}
     The external energy is also present in the original work. Using an external scalar field, each point of the curve is forced to follow the steepest slope of the field. The external field can be seen as an attractor for the curve (\cref{fig:env-obj-snake-external}).
 
     The energy is minimised when the vertex is positioned at the global maximum of the scalar field.
@@ -684,9 +688,9 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
 
 \AltTextImage{
     \subsubsubsection{Shape energy}
-    \begin{align}
+    \begin{align*}
         \Eshape &= \Ashape \left( \Length - \int_{\curve}{\|\curve'\| \, ds } \right)^2 \nonumber
-    \end{align}
+    \end{align*}
     We introduce the shape energy, an energy defined on the whole curve to apply constraints on its final shape. As natural features often have a given dimension, we propose to add a constraint on the length of the \gloss{Skeleton} (\cref{fig:env-obj-snake-shape}).
 
     The original Snake algorithm is biased, forcing the curve to shrink as the internal forces attract the vertices towards their neighbours. The introduction of a target length cancels this effect.
@@ -695,9 +699,9 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
 
 \AltTextImage{
     \subsubsubsection{Gradient energy}
-    \begin{align}
+    \begin{align*}
         \Egradient &= \Agradient \int_{\curve}{-\dotProd{\curve'(s)}{\nabla\fittingFunc\left(\curve(s)\right)}^2 ds} \nonumber
-    \end{align}
+    \end{align*}
     In our application, having information about the orientation of \glosses{EnvObj} may be essential. For this purpose, we introduced a gradient energy component in the formulation. The equation imposes that the direction of the curve at any point should be directed towards the gradient of the scalar field (\cref{fig:env-obj-snake-gradient}). As the external energy pushes points towards the lowest point of the scalar field, the gradient field restricts the gradient descent for the global curve into a specific way, which may feel more natural. \cref{fig:env-obj-snake-gradient-example} presents the effect of gradient energy with three identical initial curves: a strong gradient energy factor (top) drives the curve uphill while a negative coefficient (bottom) forces the curve to avoid steep slopes. 
     }{snake_algorithm_gradient.pdf}{The gradient energy is minimised when the curve crosses perpendicularly the isolines of the function. Black: the initial curve, Blue: a possible curve crossing the gradient obtained by displacing the vertices. % The scalar field is stylised to display isolines that the optimal curve has to cross.
 }{fig:env-obj-snake-gradient}{Snake algorithm - Gradient energy}
@@ -719,15 +723,16 @@ The resulting energy $\energy$ to minimise for a closed region whose borders are
 
 The internal energy is expressed identically as for curve-based \glosses{EnvObj}. The external energy, however, is modified to take into account the interior of the region instead of only the borders. We use the idea of the Chan-Vese algorithm, separating the energy value for the inside $\domain$ and the borders $\curve$ of the region \cite{Chan2001, Getreuer2012}:
 \begin{align}
+    \eqlabel{eq:env-obj-snake-external-on-shapes}{Chan-Vese region snake external energy}
     \Eexternal = \lambda_1 \int_{\domain}{ \fittingFunc(s) \, ds } + \lambda_2 \int_{\curve}{ \fittingFunc(\curve(s)) \, ds }.
 \end{align}
 
 $\lambda_1$ emphasises interior homogeneity (e.g.\ constant humidity for a forest), while $\lambda_2$ attracts the boundary to strong gradients (reef rim at the lagoon edge).
 
 Finally, the shape constraint energy $\Eshape$ can target an area $\Area$, for example:
-\begin{align}
+\begin{align*}
     \Eshape = \left( \Area - \int_{\domain}{1 \, ds } \right)^2.
-\end{align}
+\end{align*}
 
 In our implementation, each \gloss{EnvObj}'s \gloss{Skeleton} is a connected component, as we define the boundaries by the connected curve $\curve$, but it can be convex or concave. An infinite penalty is added for the curve's self-intersection.
 
@@ -739,6 +744,7 @@ At every global iteration, each object re-evaluates $\fitnessFunc(\curve, \envir
 
 Every instantiated \gloss{EnvObj} contributes a local \gloss{EnvModif} tuple $\environmentModif_o=(\heightModif_o, \;\waterModif_o, \;\materialModif_o)$, affecting elevation, flow, and resource fields respectively. At the end of each iteration we assemble the provisional environment:
 \begin{align}
+    \eqlabel{eq:env-obj-environment-update}{Environment evaluation from \glosses{EnvModif}}
     \environment^{\star} = \environment + {\sum_{\oneObject\in\objects}}\environmentModif_o,
 \end{align}
 before advection-diffusion relaxation and viability tests.
@@ -751,18 +757,20 @@ Each material has four transport parameters $(\mass_\oneMaterial, \velFactor_\on
 
 In our method, we consider that living or abiotic objects deposits (positive source) or absorbs (negative source) material, thereby mediating indirect interaction with its neighbours. For object $\oneObject$ deposing or absorbing the material $\oneMaterial$, we denote the net source term $S_{\oneMaterial,\oneObject}(\p)$ at a given point $\p$:
 \begin{align}
+    \eqlabel{eq:env-obj-deposition-absorption-per-object}{Per-object absorption-deposition}
     S_{\oneMaterial,\oneObject}(\p) = \left(\deposition_{\oneMaterial,\oneObject} - \absorption_{\oneMaterial,\oneObject}\right) G(d(\p)),
 \end{align}
 where $G$ is a Gaussian kernel centred on the skeleton, $d(\p)$ is the shortest distance of $\p$ to the skeleton, and $\deposition_{\oneMaterial,\oneObject}$ and $\absorption_{\oneMaterial,\oneObject}$ are the deposition and absorption rates.
 
 Material advection combines gravity-driven downslope drift and water-borne transport. We approximate the velocity field:
 \begin{align}
+    \eqlabel{eq:env-obj-material-advection}{Material transport velocity}
     \warp(\p, t) = \mass_\oneMaterial \nabla \height(\p, t) + \velFactor_\oneMaterial \Water(\p, t).
 \end{align}
 
 The \glosses{EnvMat} are also dispersed at a diffusion rate $\diffusion_\oneMaterial$, for which we can use the advection-diffusion-reaction equation to evaluate the distribution over time $t$:
 \begin{align}
-    \label{eq:material-displacement-equation}
+    \eqlabel{eq:material-displacement-equation}{Advection-Reaction-Diffusion for \glosses{EnvMat}}
     \frac{\partial \concentration_\oneMaterial}{\partial t}
     + \warp \cdot \nabla \concentration_\oneMaterial
     = \diffusion_\oneMaterial \nabla^2 \concentration_\oneMaterial
@@ -772,7 +780,7 @@ The \glosses{EnvMat} are also dispersed at a diffusion rate $\diffusion_\oneMate
 
 We solve \eqref{eq:material-displacement-equation} numerically using an Euler integration:
 \begin{align}
-    \label{eq:material-displacement-Euler}
+    \eqlabel{eq:material-displacement-Euler}{Forward-Euler iteration for ARD}
     \concentration_\oneMaterial(\p, t + dt) &= \max \big(0, \concentration_\oneMaterial(\p, t) \\
     &\quad + dt \big( \diffusion_\oneMaterial \nabla^2 \concentration_\oneMaterial(\p, t)
     - \decay_\oneMaterial \concentration_\oneMaterial(\p, t)
@@ -835,6 +843,7 @@ The use of \glosses{EnvMat} provides an efficient, on-demand approximation of th
 
 Let $\Gamma$ denote the \gloss{Skeleton} of all objects of a given type and $d = \|\p - \q\|$ with $\q \in \Gamma$ the closest skeleton point to $\p$. The diffusion-reaction field is updated using forward Euler steps of \eqref{eq:material-displacement-Euler}:
 \begin{align}
+    \eqlabel{eq:env-obj-reaction-diffusion-for-distances}{Screened diffusion for distance approximation}
     \concentration_\text{object}(\mathbf x,t+\Delta t)
     &=\concentration_\text{object}(\mathbf x,t)
       + \Delta t \left(\diffusion\nabla^2 \concentration_\text{object}(\mathbf x,t)
@@ -844,9 +853,9 @@ Let $\Gamma$ denote the \gloss{Skeleton} of all objects of a given type and $d =
 \end{align}
 
 To approximate the distance from a query point $\p_0$ to the nearest object, we perform gradient ascent on the concentration field: starting at $\p_0$, we follow the discrete gradient $\nabla \concentration_\text{object}$ until reaching a location $\p$ where $\concentration_\text{object}(\p)=C_s$. The distance estimate is then
-\begin{align}
+\begin{align*}
     d \approx \|\p-\p_0\|.
-\end{align}
+\end{align*}
 % Because the diffusion-reaction field is harmonic (or screened harmonic) with no interior maxima, gradient ascent is guaranteed to terminate on some skeleton point. In regions where multiple skeleton components compete, the ascent path may occasionally terminate on a non-nearest component, but in practice this effect is rare and does not materially affect the general applicability of the method.
 
 This setup allows direct queries for the distance to any specific type without additional preprocessing on the complete terrain, while alternative strategies such as using Euclidean distance transforms could also be applied to avoid the gradient ascent with a single lookup at the cost of heavier computation. The complete distance-query procedure is given in \cref{alg:env-obj-distance-estimation}.
@@ -886,6 +895,7 @@ To preserve ordering constraints, we partition objects into three mutually exclu
 \AltTextImage{
     Groups $\groundedHeight$ and $\altitudeHeight$ are combined with our smooth maximum/minimum operators as presented in the previous chapter to avoid $C^{0}$ discontinuities, while surface details in $\surfaceHeight$ are simply summed:
     \begin{align}
+        \eqlabel{eq:env-obj-coarse-heights-computations}{Coarse height aggregation by group}
         \heightModif_{\groundedHeight}(\p) &=
         \smoothmax_{\oneObject\in\groundedHeight}\heightModif_o(\p), \\
         \heightModif_{\altitudeHeight}(\p) &=
@@ -896,6 +906,7 @@ To preserve ordering constraints, we partition objects into three mutually exclu
 
     The final coarse elevation and its analytic gradient (for slope queries) are then given by the smooth maximum between $\heightModif_{\groundedHeight}$ and $\heightModif_{\altitudeHeight}$, and the addition of $\heightModif_{\surfaceHeight}$ (\cref{fig:env-obj-height-modif}):
     \begin{align}
+        \eqlabel{eq:env-obj-coarse-height}{Final coarse elevation}
         \height^{\star}(\p)=
         \smoothmax \left(\heightModif_{\groundedHeight},\;\heightModif_{\altitudeHeight}\right) + \heightModif_{\surfaceHeight}.
     \end{align}
@@ -908,24 +919,28 @@ To preserve ordering constraints, we partition objects into three mutually exclu
 
 We define the global water current as a vector field composed of three components:
 \begin{align}
+    \eqlabel{eq:env-obj-water-flow-expression}{Water velocity field decomposition}
     \Water(\p) = \Wuser(\p) + \Wsimu(\p) + \Wobj(\p).
 \end{align}
 
 Here, $\Wuser(\p)$ is a user-defined vector field that provides direct control over the flow direction and intensity using stroke paths, as presented in the previous chapter. The term $\Wsimu(\p)$ is an analytically defined component inspired by the terrain-aware wind simulation approach introduced in \cite{Paris2019b}, which we use for large water body fluid simulation. Finally, $\Wobj(\p)$ represents the deformation introduced by environment objects.
 
-The simulated component $\Wsimu$ captures how water flow is diverted and shaped by the underlying terrain. It starts from a uniform flow direction $a$ and introduces warping based on the terrain gradient evaluated at multiple spatial scales. The resulting vector field is expressed as:
+The simulated component $\Wsimu$ captures how water flow is diverted and shaped by the underlying terrain. It starts from a uniform flow direction $a$ and introduces warping based on the terrain gradient evaluated at multiple spatial scales (\cref{eq:env-obj-water-simulation-warping}). The resulting vector field is expressed as:
 \begin{align}
+    \eqlabel{eq:env-obj-water-simulation-main}{Terrain-aware analytic flow}
     \Wsimu(\p) = \sum_{i=0}^{n}{c_i \warp_i \cdot v}.
 \end{align}
 
 In this formulation, $v$ is a base velocity vector adjusted according to the terrain elevation:
 \begin{align}
+    \eqlabel{eq:env-obj-water-simulation-venturi}{Venturi-style velocity scaling for \cref{eq:env-obj-water-simulation-main}}
     v = a \left(1 + k_w \abs{\height(\p)} \right),
 \end{align}
 where $a$ is the global flow direction and velocity, $\abs{\height(\p)}$ is the vertical distance from the terrain to the water level at point $\p$, and $k_w$ is a scaling factor simulating the Venturi effect, which increases velocity in regions of compression.
 
 Each $\warp_i \cdot v$ term represents the warping of $v$ at scale $i$, defined as:
 \begin{align}
+    \eqlabel{eq:env-obj-water-simulation-warping}{Gradient-based flow warping}
     \warp_i \cdot v = (1 - \alpha) v + \alpha k_i \nabla \Tilde{\height_i}^{\perp}(\p) \quad \text{with} \quad \alpha = \norm{ \nabla \Tilde{\height_i}(\p) }.
 \end{align}
 Here, $\Tilde{\height_i}$ denotes the smoothed terrain elevation at scale $i$, and $\nabla \Tilde{\height_i}^{\perp}(\p)$ is the vector orthogonal to the terrain gradient, directing flow along paths that curve around elevation changes. The blending coefficient $\alpha$ controls the interpolation between the original flow and the deviated flow, based on the steepness of the terrain. The deviation coefficient $k_i$ determines the strength of the flow deflection at each scale.
@@ -954,28 +969,30 @@ While the model assumes steady-state flow and does not simulate dynamic phenomen
 Kelvinlets were introduced to computer graphics as an efficient means of producing physically plausible and interactive deformations \cite{DeGoes2017}. In our context, they provide a smooth and compact representation of flow alterations, ideal for integrating environmental features into vector field modelling.
 
 Kelvinlets are based on the Kelvin solution, which is the Green's function of the Navier-Cauchy equations of linear elasticity. It describes the displacement $\tensor{u}(\p)$ at a point $\p \in \R^3$ caused by a force applied at $\q$, in an isotropic, homogeneous elastic material:
-\begin{align}
-    \decay \nabla^2 \tensor{u} + (\lambda + \decay) \nabla(\nabla \cdot \tensor{u}) + \delta(\p - \q) \force = 0,
-\end{align}
-where $\lambda$ and $\decay$ are the Lamé parameters, with $\decay$ also known as the shear modulus, and $\force$ is the force vector applied at a single point $\q$ via the Dirac delta function $\delta(\p - \q)$.
+\begin{align*}
+    \mu \nabla^2 \tensor{u} + (\lambda + \mu) \nabla(\nabla \cdot \tensor{u}) + \delta(\p - \q) \force = 0,
+\end{align*}
+where $\lambda$ and $\mu$ are the Lamé parameters, with $\mu$ also known as the shear modulus, and $\force$ is the force vector applied at a single point $\q$ via the Dirac delta function $\delta(\p - \q)$.
 
 \AltTextImage{
     To regularise the singularity at $\p = \q$, \cite{DeGoes2017} introduced a smoothed form known as the regularised Kelvinlets, which allow deformation effects to fall off smoothly with distance, and prevent numerical instabilities.
     Given a centre $\q$, an evaluation point $\p$, and a regularisation $\eps$, we define $\tensor{r} = \p - \q$ and the regularised distance $r_{\eps} = \sqrt{\|\tensor{r}\|^2 + \eps^2}$.
 
     We use the scale and grab formulations of the regularised Kelvinlets brushes (\cref{fig:env-obj-kelvinlets-demo}), denoted as $s_\eps(\tensor{r})$ and $g_\eps(\tensor{r})$ respectively, to simulate obstruction and diversion, and define them as:
-    \begin{align*}
-        s_\eps(\tensor{r}) &= (2b - a) \left( \frac{1}{r_\eps^3} + \frac{1}{2r_\eps^5} \right)(s \tensor{r}), \\
+    \begin{align}
+        \eqlabel{eq:env-obj-kelvinlet-scale-grab-expressions}{Regularised Kelvinlets scale and grab operators}
+        s_\eps(\tensor{r}) &= (2b - a) \left( \frac{1}{r_\eps^3} + \frac{1}{2r_\eps^5} \right)(s \tensor{r}), \nonumber \\
         g_\eps(\tensor{r}) &= \left[ \frac{a - b}{r_\eps} \identity + \frac{b}{r_\eps^3} \tensor{r} \tensor{r}^t + 
     \frac{a \eps^2}{2 r_\eps^3} \identity \right] \force,
-    \end{align*}
-    with $a = \frac{1}{4 \pi \decay}$ and $b = \frac{a}{4 (1 - \upsilon)}$, provided $\decay$ is a shear modulus and $\upsilon$ a Poisson ratio specified for each Kelvinlet, $s$ a scaling factor, and $\force$ the force vector of the grab operation. These values are tunable per object to simulate different material or flow resistance behaviours.
+    \end{align}
+    with $a = \frac{1}{4 \pi \mu}$ and $b = \frac{a}{4 (1 - \upsilon)}$, provided $\mu$ is a shear modulus and $\upsilon$ a Poisson ratio specified for each Kelvinlet, $s$ a scaling factor, and $\force$ the force vector of the grab operation. These values are tunable per object to simulate different material or flow resistance behaviours.
 }{kelvinlets-grab-demo-DeGoes2017.png, kelvinlets-demo-DeGoes2017.png}{\cite{DeGoes2017} presents four types of deformations using Kelvinlets, resulting in organic pinch-like interaction with the original field. Top: a grab on a \textcopyright Disney/Pixar character. Bottom, from left to right: a twist, a scale, and a pinch operation.}{fig:env-obj-kelvinlets-demo}{\cite{DeGoes2017}'s Kelvinlet deformations}
 
 Deformations defined on curves use $\q = \closestCp$ with $\closestCp$ the closest point on the curve from the point $\p$ and $\force = \curve'(\p)$. We can then define $\tensor{u}_\oneObject(\p) = s_\eps(\q - \p) + g_\eps(\p - \q)$.
 
 Finally, we retrieve the velocity field from the objects, with a per-object coefficient $\lambda_o$ for the strength of its flow effects (due to its size, porosity, surface roughness, etc.):
 \begin{align}
+    \eqlabel{eq:env-obj-water-object-expression}{Object-induced flow contribution}
     \Wobj(\p) = \sum_{\oneObject \in \objects}^{}{\lambda_\oneObject \tensor{u}_\oneObject(\p)}.
 \end{align}
 
@@ -1051,6 +1068,7 @@ We define \glosses{GeoEvent} with a starting point and an ending point, such tha
 \subsubsection{Water level events}
 Water level changes are key \glosses{GeoEvent} that shape underwater landscapes. As previously submerged \glosses{EnvObj} become elevated above the water level, flora and fauna terrain features dry and die. Deprived of the living part of the features, everything is more affected by terrestrial erosion. By updating the value of the depth $\depth$ evaluated in the \glosses{FitnessFunc}, any \gloss{EnvObj} that is sensitive to depth and altitude will be impacted automatically, which may cause death (\cref{fig:env-obj-water-event}). The modification of the water level is defined as:
 \begin{align}
+    \eqlabel{eq:env-obj-event-depth-changes}{Depth update under water-level events}
     \depth(\p) = \depth_0(\p) + \sum_{e \in \events} \Delta \depth_e \tEvent,
 \end{align}
 with $\Delta \depth_e$ the amount of water rising or lowering during a \gloss{GeoEvent}. We assume a linear evolution of the water level during a \gloss{GeoEvent}. This allows the evaluation of depth at any point in space and time.
@@ -1063,13 +1081,14 @@ with $\Delta \depth_e$ the amount of water rising or lowering during a \gloss{Ge
 
 \subsubsection{Subsidence and uplift events}
 Subsidence and uplift are the main \glosses{GeoEvent} that create or destroy islands in the long term, as presented in \cref{chap:coral-island}. These \glosses{GeoEvent} are simulated as a simple factor on the height field of the generated terrain (\cref{fig:env-obj-subsidence-event}). Subsidence is not always uniform across the terrain. As such, the user can provide a position $\q$ at which the subsidence is strongest, the amount of subsidence applied $\Delta \height_e$ and a standard deviation $\std$, from which we can then compute, at any point in space and time of the simulation, the height of the terrain:
-\begin{align*}
-    \height(\p) = \height_0(\p) \cdot \sum_{e \in \events}{G(\norm{\p - \q})} \Delta \height_e \tEvent,
-\end{align*}
-with $G_{\std}(x)$ the Gaussian function:
 \begin{align}
-    G_{\std}(x) = \frac{1}{\std \sqrt{2\pi}} \exp \left(-\frac {x^{2}}{2 \std ^{2}}\right).
+    \eqlabel{eq:env-obj-event-heightchanges}{Height update under subsidence/uplift}
+    \height(\p) = \height_0(\p) \cdot \sum_{e \in \events}{G(\norm{\p - \q})} \Delta \height_e \tEvent,
 \end{align}
+with $G_{\std}(x)$ the Gaussian function:
+\begin{align*}
+    G_{\std}(x) = \frac{1}{\std \sqrt{2\pi}} \exp \left(-\frac {x^{2}}{2 \std ^{2}}\right).
+\end{align*}
 The Gaussian analytic formulation guarantees continuity of the changes on the \glosses{EnvVal}, with smooth transitions from the epicentre of the \glosses{GeoEvent} as the distance increases. Any other analytical formulation could be used, but we chose the Gaussian formulation for its simplicity of use as the only parameter needing parametrisation from the user is the standard deviation $\std$.
 
 \begin{figure}
@@ -1080,9 +1099,10 @@ The Gaussian analytic formulation guarantees continuity of the changes on the \g
 
 \subsubsection{Storm events}
 Storms are significant factors in the geomorphology of coral reefs \cite{VilaConcejo2016, Oron2023} and coasts \cite{Dominguez2005, Cowart2010}. Due to the extreme wind and wave velocities, coasts are highly eroded in a short time period and the more fragile corals near the water surface are broken, possibly causing breaches in the reefs and spreading polyps in the current's direction. While there are many factors at play to understand the appearance of storms and the hydrodynamics affecting them, we simplified the model of storms for the user to a single epicentre $\q$ with a wind velocity $\windVelocity$ and a standard deviation $\std$ representing the spread around the epicentre (\cref{fig:env-obj-storm-event}). The computation of water currents is then given as:
-\begin{align*}
+\begin{align}
+    \eqlabel{eq:env-obj-events-water-changes}{Flow field with storm events}
     \Wuser(\p) = \Wuser^*(\p) + \sum_{e \in \events} {\windVelocity G(\norm{\p - \q})}.
-\end{align*}
+\end{align}
 In this case, we did not include the linear factor $\tEvent$ as storms are usually conserving a constant force for the time of the few weeks or months of their occurrence. 
 
 \begin{figure}

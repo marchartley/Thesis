@@ -304,7 +304,7 @@ The shear rate $\shearRate$ is approximated by the relative velocity of the flui
 We approximate the shear stress $\shearStress$ at the solid boundary by a power law:
 
 \begin{align}
-    \label{eq:erosion-shearStress}
+    \eqlabel{eq:erosion-shearStress}{Power-law shear stress (pseudoplastic model)}
     \shearStress = \shearStressConstant \shearRate^n,
 \end{align}
 
@@ -313,7 +313,7 @@ where $\shearRate = \particleVelocity_{rel}/l$, $\shearStressConstant$ is the sh
 We can then compute the erosion rate $\erosionRate$ at any contact point between a fluid and a solid boundary using \eqref{eq:erosion-shearStress} by 
 
 \begin{align}
-    \label{eq:erosion-erosionRate}
+    \eqlabel{eq:erosion-erosionRate}{Erosion rate law}
     \erosionRate = \erosionStrength (\shearStress - \criticalShearStress)^a,
 \end{align}
 
@@ -322,7 +322,7 @@ with $\erosionStrength \in [0,1]$ a user-defined erosion constant, $\criticalShe
 In our method, the eroded quantity is approximated as the material contained in the hemisphere of radius $\particleSize$, in the normal opposite direction at the particle impact point (\cref{fig:erosion-erosion-heightfield}). We then use \eqref{eq:erosion-erosionRate} to get the final eroded amount $\erosionAmount$: 
 
 \begin{align}
-    \label{eq:erosion-erosionAmount} 
+    \eqlabel{eq:erosion-erosionAmount}{Eroded volume per impact}
     \erosionAmount = \erosionRate \frac{ 2 \pi \particleSize^3 }{ 3 }.
 \end{align}
 
@@ -332,12 +332,12 @@ The particle is also defined by a maximal amount of sediment that can be contain
 The eroded sediment is considered to be in suspension in a fluid and is affected by its velocity. A fluid particle then transports the sediment in its flow until gravity settles it onto the ground again. The effect of gravity is modelled by a settling velocity $\settlingVelocity$:
 
 \begin{align} 
-    \label{eq:erosion-initialSettlingVelocity}
+    \eqlabel{eq:erosion-initialSettlingVelocity}{Hindered Stokes settling velocity}
     \settlingVelocity = \frac{ 2 }{ 9 }  \gravity \particleSize^2 \frac{(\particleDensity - \fluidDensity)}{\viscosity } f(\capacity),
 \end{align} 
 where $f(\capacity)$ is a hindered-settling factor that reduces the effective body force as the particle's carried sediment approaches its maximum capacity. Following Richardson-Zaki \cite{Richardson1954}, we take
 \begin{align}
-    \label{eq:erosion-Richardson}
+    \eqlabel{eq:erosion-Richardson}{Richardson-Zaki hindered-settling factor}
     f(\capacity) = \left(1 - \frac{\capacity}{\maxCapacity}\right)^{n},
 \end{align}
 with exponent $n$ typically in the range $4$-$5.5$, and we set $n=5$, similarly as \cite{Wojtan2007}.
@@ -345,7 +345,7 @@ with exponent $n$ typically in the range $4$-$5.5$, and we set $n=5$, similarly 
 We consider that the amount of sediment settled is proportional to the norm of the settling velocity as proposed in \cite{Wojtan2007}, with $\depositionRate \in [0,1]$: 
 
 \begin{align}
-    \label{eq:erosion-deltaDepositon}
+    \eqlabel{eq:erosion-deltaDepositon}{Deposited volume per contact}
     \depositAmount = \depositionRate \|\settlingVelocity\|.
 \end{align}
 % The corrosion simulation can be performed by setting $\lambda_{deposit} = 0$.
@@ -361,23 +361,23 @@ We first present how to compute the particle speed using particle physics, then 
 Due to their independence from other particles, we consider each particle to follow Newton's laws of motion. Each particle has a volume $\volume$, an effective density $\particleDensity$ (which may depend on the amount of carried sediment), and thus a mass $\particleMass = \particleDensity \volume$. The surrounding medium has density $\fluidDensity$, viscosity $\viscosity$, and velocity field $\fluidVelocity(\p,t)$.
 
 The exerced forces applied to a particle consist of external forces $\extForce$ (gravity and buoyancy), and drag force $\dragForce$ (\cref{fig:erosion-forces}). Gravity acts as:
-\begin{align}
+\begin{align*}
     \gravityForce = \particleMass \gravity,
-\end{align}
+\end{align*}
 with $\gravity$ the gravitational acceleration vector. Buoyancy opposes gravity as:
-\begin{align}
+\begin{align*}
     \buoyancyForce = -\fluidDensity \volume \gravity.
-\end{align}
+\end{align*}
 
 The net body external force is then
 \begin{align}
-\label{eq:erosion-bodyforce}
+    \eqlabel{eq:erosion-bodyforce}{External forces on a particle}
     \extForce = \volume \left(\particleDensity - \fluidDensity\right)\gravity.
 \end{align}
 
 In addition, drag relaxes the particle velocity $\particleVelocity$ toward the local fluid velocity $\fluidVelocity$. For small Reynolds numbers we use Stokes' drag formula for spheres in a fluid:
 \begin{align}
-    \label{eq:erosion-drag}
+    \eqlabel{eq:erosion-drag}{Stokes drag on a sphere}
     \dragForce = 6\pi \viscosity \particleSize \left(\fluidVelocity - \particleVelocity\right),
 \end{align}
 where $\particleSize$ denotes the particle radius.
@@ -385,14 +385,14 @@ where $\particleSize$ denotes the particle radius.
 \AltTextImage{
     The full equation of motion is therefore
     \begin{align}
-        \label{eq:erosion-ode}
+        \eqlabel{eq:erosion-ode}{Particle equation of motion in a fluid}
         \dot{\particleVelocity} = \frac{f(\capacity)\extForce + \dragForce}{\particleMass},
     \end{align}
     with $f(\capacity)$ resulting from \cref{eq:erosion-Richardson}.
     
     The particle position $\p$ evolves as:
     \begin{align}
-        \label{eq:erosion-kinematics}
+        \eqlabel{eq:erosion-kinematics}{Kinematic update for particle position}
         \dot{\p} = \particleVelocity.
     \end{align}
 }{particle_force.pdf}{Particle's motion in a fluid consist of three forces: gravity, buoyancy, and drag. The later is acting opposite direction to the relative particle velocity in the fluid. }{fig:erosion-forces}{Forces applied to a particle in the equation of motion}
@@ -412,13 +412,13 @@ When a particle collides with the ground, its post-impact velocity is modified b
     % $v_t \gets \particleVelocity - v_n$\;
     % $v'_n \gets -COR \cdot v_n$ \tcp*{Apply restitution on normal}
     % $\particleVelocity \gets v_t + v'_n$ \tcp*{Final velocity after collision}
-    $\particleVelocity \gets COR \left(\particleVelocity - 2 \dotProd{\particleVelocity}{\normal} \normal\right)$ \;
+    $\particleVelocity \gets COR \left(\particleVelocity - 2\,\dotProd{\particleVelocity}{\normal}\,\normal\right)$ \;
 
     \tcp{Update sediment capacity at this point}
-    compute $\erosionAmount, \depositAmount$ \tcp*{\cref{eq:erosion-erosionAmount,eq:erosion-deltaDepositon}}
+    compute $\erosionAmount, \, \depositAmount$ \tcp*{\cref{eq:erosion-erosionAmount,eq:erosion-deltaDepositon}}
     $\capacity \gets \capacity + \erosionAmount - \depositAmount$\;
 
-    \Return{$(\particleVelocity,\capacity)$}
+    \Return{$(\particleVelocity,\, \capacity)$}
 \end{algorithm}
 
 
@@ -533,7 +533,7 @@ When a particle collides with the ground, its post-impact velocity is modified b
 
 % with $\fluidVelocity$ the medium velocity field modulated by $\alpha \in [0,1]$. 
 
-With our particle system, we propose to model intricate scenarios, such as the erosion caused by water currents on the seabed or aeolian erosion. The velocity field remains static during the erosion, which may cause inconsistencies in the fluid velocity field. However, minor changes can be overlooked to maintain a balance between realism and computational efficiency \cite{Tychonievich2010}. We note several velocity improvement methods: 
+With our particle system, we propose to model intricate scenarios, such as the erosion caused by water currents on the seabed or aeolian erosion. The velocity field remains static during the erosion, which may cause inconsistencies in the fluid velocity field. However, minor changes can be overlooked to maintain a balance between realism and computational efficiency \cite{Tychonievich2010}. We suggest three velocity improvement methods: 
 \begin{Itemize}
     \Item{} \textbf{Fluid simulation refinement:} Many erosion systems incorporate fluid simulation, requiring regular updates for erosion and velocity \cite{Kristof2009, Wojtan2007}. Our method can use fluid simulations with multi-resolution refinement, with the possibility to focus the velocity field adjustments near the updated boundaries of the surface \cite{Roose2011}. 
     
@@ -584,7 +584,7 @@ For this representation, the half-sphere is scaled in the $z$ direction to fit $
 This change of height can be sampled at all points of the 2D grid by reducing the height by 
 
 \begin{align} 
-    \label{eq:erosion-erosionHeightfield}
+    \eqlabel{eq:erosion-erosionHeightfield}{Height field update kernel}
     \Delta h(\p) &= \frac{\sqrt{\particleSize^2 - d^2}}{\alpha} = \frac{\totalErosion}{\frac{2}{3} \pi \particleSize^3} \sqrt{\particleSize^2 - d^2}.
 \end{align}
 
@@ -617,7 +617,7 @@ When intersecting the terrain, the amount eroded for each material stack should 
 At a distance $d$ from the particle, the height is defined as:
 
 \begin{align}
-    \label{eq:erosion-erosionLayers}
+    \eqlabel{eq:erosion-erosionLayers}{Layered terrain update kernel}
     H(d) = \frac{|\totalErosion|}{\frac{2}{3} \pi \particleSize^3} \sqrt{\particleSize^2 - d^2}.
 \end{align}
 
@@ -630,7 +630,7 @@ Implicit terrains are defined using a function $f(\p)$ and its variation resulti
 We propose a strategy to compute $\Delta f(\p)$ at any point of the sphere surrounding the erosion point based on metaball primitives. At each contact point, a metaball is added to create a hole or a bump in the terrain. A metaball is defined as:
 
 \begin{align}
-    \label{eq:erosion-erosionMetaball}
+    \eqlabel{eq:erosion-erosionMetaball}{Linear metaball kernel}
     \Delta f(\p) = \frac{3 \totalErosion}{\pi \particleSize^3} \frac{(1 - d)}{\particleSize},
 \end{align}
 
@@ -649,8 +649,8 @@ The particle erosion applies at impact points at discrete positions, so we propo
 Now the eroded terrain function $\Tilde{f}(\p)$ will be evaluated at each point $\p$ from the initial terrain value $f(\p)$, the erosion function $metaball(\p)$ and the composition function $g(f_1, f_2)$:
 
 \begin{align}
-    % \label{eq:erosion-final-metaball}
-    \Tilde{f}(\p) = g(f(\p), metaball(\p)). \nonumber
+    \eqlabel{eq:erosion-final-metaball}{SDF update via metaball composition}
+    \Tilde{f}(\p) = g(f(\p), metaball(\p)).
 \end{align}
 
 As a metaball is added for each particle bounce on the terrain, space partitioning optimisation algorithms such as k-d trees, BSP trees or BVH can easily be used to improve performance.
@@ -680,7 +680,7 @@ Other implicit terrain models are present in the literature, notably a 2.5D repr
 In the case of gradient-based representation, we propose to use the partial derivative from the equation of the 2D scalar fields \eqref{eq:erosion-erosionHeightfield}, which gives, for $d \leq \particleSize$,
 
 \begin{align}
-    \label{eq:erosion-erosion-gradients}
+    \eqlabel{eq:erosion-erosion-gradients}{Gradient-based terrain update kernel (with discontinuity)}
     \nabla h' = - \frac{\totalErosion}{\frac{2}{3} \pi \particleSize^3} \frac{1}{\sqrt{\particleSize^2 - d^2} } \vec{CP},
 \end{align}
 
@@ -689,7 +689,7 @@ with $\vec{CP}$ the vector from the centre of the erosion point $\Center$ to eva
 Avoiding the blow up for $\particleSize = d$ can be done using a regularisation by introducing $\eps \ll \particleSize$ in \cref{eq:erosion-erosion-gradients}:
 
 \begin{align}
-    \label{eq:erosion-erosion-gradients-corrected}
+    \eqlabel{eq:erosion-erosion-gradients-corrected}{Gradient-based terrain update kernel (no discontinuity)}
     \nabla h' = - \frac{\totalErosion}{\frac{2}{3} \pi \particleSize^3} \frac{1}{\sqrt{\particleSize^2 - d^2 + \eps^2} } \vec{CP}.
 \end{align}
 
@@ -722,7 +722,7 @@ We apply the erosion from a particle at position $\Center$ on all points $\p$ in
 Using their discrete nature, we rectify this value to sum up the total erosion value to $\totalErosion$ by dividing each value by the sum of the distances. We now consider eroding the "empty" voxels since their density can drop to $-1$. We then have for all surrounding voxels 
 
 \begin{align}
-    \label{eq:erosion-erosionVoxels}
+    \eqlabel{eq:erosion-erosionVoxels}{Density-voxel grid update kernel}
     \Delta f(\p) = \totalErosion \frac{ (1 - \frac{d}{\particleSize} )}{ \sum {(1 - \frac{d}{\particleSize})}}.
 \end{align}
 
@@ -758,7 +758,7 @@ We propose to apply particle erosion by assigning voxels a number of hits, and t
 On a hit, all voxels in a radius $\particleSize$ receive a hit number 
 
 \begin{align}
-    \label{eq:erosion-erosionDiscreteVoxels}
+    \eqlabel{eq:erosion-erosionDiscreteVoxels}{Binary-voxel grid update kernel}
     \Delta hits = \lfloor \alpha \Delta f \rfloor,
 \end{align}
 

@@ -1,3 +1,4 @@
+\makeatletter
 \hbadness = 99999
 \binoppenalty=10000 
 \relpenalty=10000 
@@ -20,7 +21,7 @@
 
 
 % % \IfPackageLoadedTF{refcheck}{
-%   \makeatletter
+%   
 %   \newcommand{\refcheckize}[1]{%
 %     \expandafter\let\csname rc@orig@\string#1\endcsname#1%
 %     \expandafter\DeclareRobustCommand\csname rc@wrap@\string#1\endcsname[1]{%
@@ -37,7 +38,7 @@
 %     }%
 %     \expandafter\let\expandafter#1\csname rc@wrap@\string#1\endcsname
 %   }
-%   \makeatother
+%   
 %   \refcheckize{\cref}
 %   \refcheckize{\Cref}
 %   \refcheckizetwo{\crefrange}
@@ -54,14 +55,14 @@
 \zzcommand{\currentsubsection}{}
 % \currentsubsubsection
 \zzcommand{\currentsubsubsection}{}
-\makeatletter
+
 
 % Save original commands
 \let\oldsection\section
 \let\oldsubsection\subsection
 \let\oldsubsubsection\subsubsection
 
-\makeatletter
+
 \gdef\currentsection{}
 \gdef\currentsubsection{}
 \gdef\currentsubsubsection{}
@@ -111,7 +112,7 @@
   \gdef\currentsubsubsection{#1}%
   \oldsubsubsection*{#1}%
 }
-\makeatother
+
 
 % \tensor{expression}
 \zzcommand{\tensor}[1]{\mathbf{#1}}
@@ -184,7 +185,7 @@
 	\localtableofcontents
 	\noindent\textbf{\hyperlink{tocpage}{$\uparrow$ Back to summary}}
 }
-% \makeatletter\@addtoreset{chapter}{part}\makeatother%
+% \@addtoreset{chapter}{part}%
 
 \sisetup{product-units=repeat}
 
@@ -351,6 +352,31 @@
   \ifthenelse{\value{ItemizeDepthCounter} > 0}{}{\bigbreak}
 }
 
+
+\newcounter{alttextimage@saved@equation}
+\newcommand{\ATI@suspend}{%
+  % save equation counter
+  \setcounter{alttextimage@saved@equation}{\value{equation}}%
+  % (optional) silence labels during the dry run to avoid aux churn
+  \let\ATI@orig@label\label
+  \let\label\@gobble
+  % (optional) if you have a custom \eqlabel, silence it too
+  \@ifundefined{eqlabel}{}{%
+    \let\ATI@orig@eqlabel\eqlabel
+    \renewcommand{\eqlabel}[2]{##2}% just typeset title text if any
+  }%
+}
+\newcommand{\ATI@resume}{%
+  % restore equation counter
+  \setcounter{equation}{\value{alttextimage@saved@equation}}%
+  % restore labeling
+  \let\label\ATI@orig@label
+  \@ifundefined{ATI@orig@eqlabel}{}{%
+    \let\eqlabel\ATI@orig@eqlabel
+  }%
+}
+
+
 % Define new command \Itemthat applies italics to the title only
 % \Item{} \textbf{text}
 \zzcommand{\Item}[1]{%
@@ -376,13 +402,15 @@
 \ExplSyntaxOn
 % \AltTextImageR{item_content}{placeholder.pdf}{caption}{label}{alt_caption}
 \zzcommand{\AltTextImageR}[5]{% 
-  \setcounter{AltTextImageCurrentSide}{1}
+  \ATI@suspend%
+  \setcounter{AltTextImageCurrentSide}{1}%
   \setlength{\currentparindent}{\parindent}%
   \setlength{\currentparskip}{\parskip}%
   \sbox{\alttextbox}{\vbox{\hsize=\dimexpr 0.55\linewidth\relax #1}}%
   \setlength{\contentheightofalttextimage}{\ht\alttextbox}%
   \sbox{\alttextbox}{\vbox{\hsize=\dimexpr 0.4\linewidth\relax #3\quad}}%
   \setlength{\contentheightofalttextimagecaption}{\ht\alttextbox}%
+  \ATI@resume%
   \noindent
   \begin{minipage}[]{0.55\linewidth}
     \setlength{\parindent}{\currentparindent}
@@ -419,6 +447,7 @@
 }
 % \AltTextImageL{item_content}{placeholder.pdf}{caption}{label}{alt_caption}
 \zzcommand{\AltTextImageL}[5]{%
+  \ATI@suspend%
   \setcounter{AltTextImageCurrentSide}{0}
   \setlength{\currentparindent}{\parindent}%
   \setlength{\currentparskip}{\parskip}%
@@ -427,6 +456,7 @@
 
     \sbox{\alttextbox}{\vbox{\hsize=\dimexpr 0.4\linewidth\relax #3\quad}}%
     \setlength{\contentheightofalttextimagecaption}{\ht\alttextbox}%
+  \ATI@resume%
   \noindent
   \begin{minipage}[]{0.40\linewidth}
     % \begin{adjustbox}{max height=\contentheightofalttextimagecaption}
@@ -620,15 +650,28 @@
   \bigskip
 }
 
+\zzcommand{\bridge}[1]
+{
+  \subsubsubsection{#1}
+}
 \zzcommand{\smallConclusion}
 {
+  \bigskip
   \bigskip
 }
   
 \zzcommand{\midConclusion}
 {
+  % \bigskip
+  % \noindent\textit{Conclusion}
+  % \smallskip
+  \subsubsection*{Conclusion}
+}
+  
+\zzcommand{\bigConclusion}
+{
   \par\bigskip
-  \begin{center}\emph{***}\end{center}
+  \begin{center}\rule{0.4\linewidth}{0.4pt}\end{center}
   \bigskip\par
 }
 
@@ -756,7 +799,7 @@
 \newcommand{\fitimageoptions}{}
 
 % autofitgraphics with [options]{img1,img2,...}
-\makeatletter
+
 \NewDocumentCommand{\autofitgraphics}{O{} m}{%
   \renewcommand{\fitrowwidth}{\linewidth}%
   \def\fitimageoptions{}%
@@ -944,7 +987,7 @@
   \end{adjustbox}%
   \vspace{-\fitraiseamount}%
 }
-\makeatother
+
 
 % \citet{ref}
 \zzcommand{\citet}[1]{\citep{#1}}
@@ -980,21 +1023,10 @@
 
 \newcommand{\listequationsname}{List of Equations}
 \newlistof{myequations}{equ}{\listequationsname}
-% \pretocmd{\equation}{\addcontentsline{equ}{myequations}{Equation~\theequation}}{}{}
-% \pretocmd{\align}{\addcontentsline{equ}{myequations}{Equation~\theequation}}{}{}
+% \AtEndEnvironment{equation}{\addcontentsline{equ}{myequations}{Equation~\theequation: NO NAME}}
+% \AtEndEnvironment{align}{\addcontentsline{equ}{myequations}{Equation~\theequation: NO NAME}}
 \zzcommand{\eqlabel}[2]{
   \label{#1}%
-  \addcontentsline{equ}{myequations}{\cref{#1}: #2}
+  \ifblank{#2}{}{\addcontentsline{equ}{myequations}{\cref{#1}: #2}}
 }
-
-
-% \let\cftmyequationstitlefont\cftloftitlefont
-% \renewcommand{\cftmyequationstitlefont}{\normalfont}
-
-% \let\cftmyequationsfont\cftfigurefont
-% \let\cftmyequationspagefont\cftfigurepagefont
-% \let\cftmyequationsleader\cftfigureleader
-% \let\cftmyequationspresnum\cftfigurepresnum
-% \let\cftmyequationsaftersnum\cftfigureaftersnum
-% \setlength{\cftmyequationsindent}{\cftfigindent}
-% \setlength{\cftmyequationsnumwidth}{\cftfignumwidth}
+\makeatother

@@ -457,26 +457,26 @@ This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifti
 % \section{Implicit equation in global coordinates}
 % Let the global position be the column vector $ \vec{r} = [ x,\;y,\;z ]^\top \in\mathbb R^{3}$. An ellipsoid of semi-axes $a,b,c>0$, expressed in its local (unrotated) frame, satisfies the implicit equation
 
-% \begin{equation}
+% \begin{align}
 %     \label{eq:app-canonical-ellipsoid}
 %     \vec{r'}^\top  A \vec{r'} = 1
 %     \quad\text{with}\quad 
 %     A = \operatorname{diag}\!\left(1/a^{2}, 1/b^{2}, 1/c^{2}\right),
-% \end{equation}
+% \end{align}
 % where $\vec{r'} = [x',y',z']^\top $ are local coordinates.
 
 % Let $R$ be the rotation matrix that takes global coordinates into the ellipsoid frame; hence
 
-% \begin{equation}
+% \begin{align}
 %     \label{eq:app-rprime}
 %     \vec{r'} \;=\; R^\top   \vec{r}.
-% \end{equation}
+% \end{align}
 % Substituting~\ref{eq:app-rprime} into \ref{eq:app-canonical-ellipsoid} and defining $Q \;=\; R A R^\top $, we obtain the ellipsoid in global coordinates:
 
-% \begin{equation}
+% \begin{align}
 %     \label{eq:app-global-implicit}
 %      \vec{r}^\top  Q  \vec{r} \;=\; 1.
-% \end{equation}
+% \end{align}
 % Because $A$ is diagonal and $R$ orthogonal, $Q$ is symmetric ($Q^\top =Q$).  Write
 
 % \begin{align}
@@ -490,11 +490,11 @@ This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifti
 
 % Expanding \cref{eq:app-global-implicit} gives the familiar quadratic form
 
-% \begin{equation}
+% \begin{align}
 %     \label{eq:app-expanded}
 %     Q_{11}x^{2} + Q_{22}y^{2} + Q_{33}z^{2}
 %     + 2Q_{12}xy + 2Q_{13}xz + 2Q_{23}yz \;=\; 1.
-% \end{equation}
+% \end{align}
 
 % %-----------------------------------------------------------------
 % \section{Solving for the height field $z=f(x,y)$}
@@ -559,32 +559,32 @@ This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifti
 
 % A convenient unit normal of that plane is
 
-% \begin{equation}
+% \begin{align}
 %     \label{eq:app-terrain-normal}
 %     \vec n \;=\; 
 %     \operatorname{normalise}
 %     \left[ -\partial_x H,\; -\partial_y H,\; 1 \right]^\top .
-% \end{equation}
+% \end{align}
 
 % We choose the ellipsoid's local $z'$-axis to coincide with $\vec n$ so that the body "hugs" the terrain.  An orthonormal basis $\{ \vec e_x',\vec e_y',\vec e_z' \}$ is built as:
 
-% \begin{equation}
+% \begin{align}
 %     \vec e_z' = \vec n,
 %     \quad
 %     \vec e_x' = 
 %     \operatorname{normalise}\!\left[ 1,0,-\partial_x H \right]^\top ,
 %     \quad
 %     \vec e_y' = \vec e_z' \times \vec e_x'.
-% \end{equation}
+% \end{align}
 
 % Finally the rotation matrix that maps global coordinates into the ellipsoid frame is
 
-% \begin{equation}
+% \begin{align}
 %     \label{eq:app-rotation-from-normal} R \;=\;
 %     \left[ 
 %     \vec e_x' \;\; \vec e_y' \;\; \vec e_z'
 %     \right].
-% \end{equation}
+% \end{align}
 
 % Note that $R$ varies per impact point and must be recomputed whenever the ellipsoid moves across the height field.
 
@@ -629,18 +629,18 @@ This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifti
 % \subsection*{Deposition.} 
 % Material is added wherever the ellipsoid cap sits above the terrain:
 
-% \begin{equation} 
+% \begin{align} 
 %     H_{\text{new}}(x,y) \;=\;
 %     \max\left( H(x,y),\; f_{+}(x,y)+H(x_0,y_0) \right).
-% \end{equation}
+% \end{align}
 
 % \subsection*{Erosion.} 
 % Material is removed wherever the terrain rises into the cap's volume:
 
-% \begin{equation} 
+% \begin{align} 
 %     H_{\text{new}}(x,y) \;=\;
 %     \min\left( H(x,y),\; f_{+}(x,y)+H(x_0,y_0) \right).
-% \end{equation}
+% \end{align}
 
 % These max/min updates preserve the single-valued nature of the height field, avoid undercuts, and guarantee that the modified surface never falls below (deposition) nor rises above (erosion) the contact cap defined by the clipped ellipsoid. A full implementation simply queries $f_{+}(x,y)$ on a stencil around
 % $(x_0,y_0)$ and applies the above formula, giving physically plausible addition or removal of material with $O(N)$ complexity for an $N$-cell stencil.
@@ -656,7 +656,7 @@ This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifti
 
 % With the abbreviations of \cref{eq:app-quadratic-coeffs}, insert $A'=Q_{33}$, $B'=2(Q_{13}x+Q_{23}y)$ and $C'=Q_{11}x^{2}+2Q_{12}xy+Q_{22}y^{2}-1$ directly into \cref{eq:app-upper}.  Dividing numerator and denominator by 2 yields a compact expression that involves only the six independent entries of $Q$:
 
-% \begin{equation}
+% \begin{align}
 %     \label{eq:app-upper-final}
 %     f(x,y)\;=\;
 %     \frac{
@@ -668,7 +668,7 @@ This strategy keeps local curvature (via $(a,b,c)$) but reduces support by lifti
 %     }{Q_{33}},
 %     \qquad
 %     \Delta(x,y)\ge 0.
-% \end{equation}
+% \end{align}
 
 % \cref{eq:app-upper-final} is the final, rotation-agnostic formula for the height of the upper ellipsoid shell measured above the $(x,y)$-plane.
 

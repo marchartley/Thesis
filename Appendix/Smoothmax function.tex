@@ -21,6 +21,7 @@
 In \cref{subsubsec:height-functions-blending}, we introduced the \texttt{Smoothmax} operator $\smoothmax: \R^2 \to \R$ as a smooth approximation of the $\max$ operator, defined with the sharpness parameter $k > 0$ as:
 
 \begin{align}
+    \eqlabel{eq:smoothmax-equation}{Definition of the Smoothmax operator}
     \smoothmax(a, b) = a + \frac{1}{2} \cdot \frac{b - a}{1 + e^{-k(b - a)}} + \frac{1}{2} \cdot \frac{b - a}{1 - e^{-k(b - a)}}.
 \end{align}
 
@@ -31,13 +32,14 @@ It is evident that the only potentially problematic term in $\smoothmax$ is $\fr
 To simplify our analysis, define the auxiliary function:
 
 \begin{align}
+    \eqlabel{eq:smoothmax-f-function}{Auxiliary function for Smoothmax analysis}
     f(x) = \frac{x}{1 - e^{-kx}}.
 \end{align}
 
 Then we express
-\begin{align}
+\begin{align*}
     \smoothmax(a, b) = a + \frac{1}{2} \cdot \frac{b - a}{1 + e^{-k(b - a)}} + \frac{1}{2} f(b - a).
-\end{align}
+\end{align*}
 
 To assess the continuity and differentiability of $\smoothmax$, it suffices to analyze $f$ in a neighborhood of $x = 0$, where the apparent singularity arises.
 
@@ -51,41 +53,46 @@ To assess the continuity and differentiability of $\smoothmax$, it suffices to a
 
 From \cref{fig:smoothmax-f-plot}, we observe that $f$ appears continuous at $x = 0$. However, directly evaluating $f(0)$ yields the indeterminate form $\frac{0}{0}$. To resolve this, we apply L'Hôpital's Rule:
 
-\begin{align}
+\begin{align*}
     \lim_{x \to 0} f(x) = \lim_{x \to 0} \frac{x}{1 - e^{-kx}} = \frac{g'(x)}{h'(x)},
-\end{align}
+\end{align*}
 where
-\begin{align}
+\begin{align*}
     g(x) = x, \quad & \quad g'(x) = 1, \\
     h(x) = 1 - e^{-kx}, \quad & \quad h'(x) = k e^{-kx}.
-\end{align}
+\end{align*}
 
 Thus,
 \begin{align}
+    \eqlabel{eq:smoothmax-hopital-singularity}{L'Hôpital's rule at $x=0$ for the auxiliary function}
     \lim_{x \to 0} \frac{g'(x)}{h'(x)} = \lim_{x \to 0} \frac{1}{k e^{-kx}} = \frac{1}{k}.
 \end{align}
 
 Since the limit exists and equals $\frac{1}{k}$, we define
 \begin{align}
+    \eqlabel{eq:smoothmax-f-limit}{Limit of the auxiliary function at $x=0$}
     f(0) := \frac{1}{k}.
 \end{align}
 
 This definition removes the singularity and ensures that $f$ is continuous on $\R$. For the case $a = b$, we then have
 \begin{align}
+    \eqlabel{eq:smoothmax-a-equals-b}{Smoothmax limit for $a = b$}
     \smoothmax(a, b) = a + \frac{1}{2k}.
 \end{align}
 
-The complete definitions of the functions are
-\begin{align}
+The complete definitions of the functions using \cref{eq:smoothmax-f-function,eq:smoothmax-f-limit} and \cref{eq:smoothmax-equation,eq:smoothmax-a-equals-b} are:
+\begin{align*}
+    % \eqlabel{eq:smoothmax-f-complete}{Final auxilary function $f$}
     f(x) &= \begin{dcases}
         \frac{x}{1 - e^{-kx}} &, x \neq 0 \\
         \frac{1}{k} &, x = 0
-    \end{dcases} \\
+    \end{dcases}, \\
+    % \eqlabel{eq:smoothmax-equation-complete}{Final Smoothmax function}
     \smoothmax(a, b) &= \begin{dcases}
         a + \frac{1}{2} \cdot \frac{b - a}{1 + e^{-k(b - a)}} + \frac{1}{2} \cdot \frac{b - a}{1 - e^{-k(b - a)}} &, a \neq b \\
         a + \frac{1}{2k} &, a = b
     \end{dcases}.
-\end{align}
+\end{align*}
 
 We have shown that $f$ is continuous on $\R$, and thus $\smoothmax$ is continuous on $\R^2$, meaning $\smoothmax \in C^0$.
 \section{Smoothness: $C^\infty$}
@@ -98,9 +105,9 @@ We prove this by induction on the number of derivatives of $f$.
     \Item{} \textbf{Base case:} As shown earlier, $f$ is continuous on $\R$ with the singularity at $x = 0$ removed by defining $f(0) := \frac{1}{k}$. Hence, $f \in C^0$.
 
     \Item{} \textbf{Inductive step:} Assume that $f^{(n)}$ exists, is continuous on $\R$, and is expressible in the form
-    \begin{align}
+    \begin{align*}
         f^{(n)}(x) = \frac{P_n(x, e^{-kx})}{(1 - e^{-kx})^{n+1}},
-    \end{align}
+    \end{align*}
     where $P_n$ is a smooth function of $x$ and $e^{-kx}$. This form arises naturally from repeated applications of the quotient and chain rules:
     
     \begin{itemize}
@@ -109,19 +116,19 @@ We prove this by induction on the number of derivatives of $f$.
     \end{itemize}
     
     Differentiating $f^{(n)}$ using the quotient rule $\left(\frac{u}{v}\right)' = \frac{u' v - u v'}{v^2}$, we get
-    \begin{align}
+    \begin{align*}
         f^{(n+1)}(x) = \frac{d}{dx} \left( \frac{P_n(x, e^{-kx})}{(1 - e^{-kx})^{n+1}} \right), 
-    \end{align}
+    \end{align*}
     which results in a new expression:
-    \begin{align}
+    \begin{align*}
         f^{(n+1)}(x) = \frac{P_{n+1}(x, e^{-kx})}{(1 - e^{-kx})^{n+2}},
-    \end{align}
+    \end{align*}
     where $P_{n+1}$ is again a smooth function of $x$ and $e^{-kx}$, obtained via product, chain, and sum rules. Importantly, we do not need the explicit form of $P_{n+1}$, it suffices to know it is smooth.
 
     At $x = 0$, both numerator and denominator vanish, but to the same order. The denominator vanishes to order $n+2$ due to the Taylor expansion:
-    \begin{align}
+    \begin{align*}
         1 - e^{-kx} = kx - \frac{k^2 x^2}{2} + \frac{k^3 x^3}{6} - \frac{k^4 x^4}{24} + \frac{k^5 x^5}{120} + O(x^6), 
-    \end{align}
+    \end{align*}
     and $P_{n+1}(x, e^{-kx})$ also vanishes to order at least $n+2$ due to the construction. Thus, any singularity at $x = 0$ is removable, and $f^{(n+1)}$ can be continuously extended there.
 \end{Itemize}
 
@@ -136,28 +143,27 @@ We will briefly prove the symmetry of $\smoothmax$ by showing that $\smoothmax(a
 
 Let's note $x = b - a$, and decompose $\smoothmax(a, b) = a + g(x)$. We want to show that for all $a, b$ we have
 \begin{align}
-    & \smoothmax(a, b) = \smoothmax(b, a) \\
-    \iff& a + g(x) = (a + x) + g(-x) \\
+    \eqlabel{eq:smoothmax-symmetry-check}{Symmetry condition for Smoothmax}
+    & \smoothmax(a, b) = \smoothmax(b, a) \nonumber \\
+    \iff& a + g(x) = (a + x) + g(-x) \nonumber \\
     \iff& g(x) - g(-x) = x.
 \end{align}
 
 By rearranging the function $g$, we obtain 
 \begin{align}
-    g(x) &= \frac{x}{2} \left( \frac{1}{1 - e^{-kx}} + \frac{1}{1 + e^{-kx}} \right) \\
-    &= \frac{x}{2} \left( \frac{1 - e^{-kx}}{(1 + e^{-kx})(1 - e^{-kx})} + \frac{1 + e^{-kx}}{(1 + e^{-kx})(1 - e^{-kx})} \right) \\
-    &= \frac{x}{2} \cdot \frac{2}{1 - e^{-2kx}} \\
+    \eqlabel{eq:smoothmax-symmetry-auxilary}{Algebraic form used in the symmetry proof}
+    g(x) &= \frac{x}{2} \left( \frac{1}{1 - e^{-kx}} + \frac{1}{1 + e^{-kx}} \right) \nonumber \\
+    &= \frac{x}{2} \left( \frac{1 - e^{-kx}}{(1 + e^{-kx})(1 - e^{-kx})} + \frac{1 + e^{-kx}}{(1 + e^{-kx})(1 - e^{-kx})} \right) \nonumber \\
+    &= \frac{x}{2} \cdot \frac{2}{1 - e^{-2kx}} \nonumber \\
     &= \frac{x}{1 - e^{-2kx}}.
 \end{align}
 
 
-Developing:
+Developing \cref{eq:smoothmax-symmetry-check} and let $r = e^{2kx} > 0$:
 \begin{align}
-    g(x) - g(-x) = \frac{x}{1 - e^{-2kx}} - \frac{-x}{1 - e^{2kx}}.
-\end{align}
-
-Let $r = e^{2kx} > 0$:
-\begin{align}
-    g(x) - g(-x) &= \frac{x}{(1 - e^{-2kx})} \cdot \frac{e^{2kx}}{e^{2kx}} + \frac{x}{1 - r} \\
+    \eqlabel{eq:smoothmax-symmetry-final}{Identity completing the symmetry proof}
+    g(x) - g(-x) &= \frac{x}{1 - e^{-2kx}} - \frac{-x}{1 - e^{2kx}}  \\
+    &= \frac{x}{(1 - e^{-2kx})} \cdot \frac{e^{2kx}}{e^{2kx}} + \frac{x}{1 - r} \\
     &= x \left( \frac{r}{r - 1} + \frac{1}{1 - r} \right) \\
     &= x \left( \frac{1 - r}{1 - r} \right) = x.
 \end{align}
@@ -171,6 +177,7 @@ In applications such as shading, soft blending, and physical simulation, efficie
 
 \subsection*{Function value}
 \begin{align}
+    \eqlabel{eq:smoothmax-equation-complete}{Piecewise definition of Smoothmax}
     \smoothmax(a, b) &= \begin{cases}
         a + \frac{(b - a)}{2} \left( \frac{1}{1 + e^{-k(b-a)}} + \frac{1}{1 - e^{-k(b-a)}} \right) &\text{if } a \neq b \\
         a + \frac{1}{2k} &\text{if } a = b
@@ -179,31 +186,33 @@ In applications such as shading, soft blending, and physical simulation, efficie
 
 \subsection*{First derivatives}
 \begin{align}
+    \eqlabel{eq:smoothmax-first-derivatives}{First derivatives of Smoothmax}
     \frac{\partial}{\partial a} \smoothmax(a, b) &= - g_1(a, b) \\
     \frac{\partial}{\partial b} \smoothmax(a, b) &= g_1(a, b)
 \end{align}
 
 with 
-\begin{align}
+\begin{align*}
     g_1(a, b) = \begin{cases}
         \frac{e^{2k(b-a)}\left(e^{2k(b-a)} - 1\right)}{\left(e^{2k(b-a)}-1\right)^2} &\text{if } a \neq b \\
         \frac{1}{2} &\text{if } a = b
     \end{cases}
-\end{align}
+\end{align*}
 
 \subsection*{Second derivatives}
 \begin{align}
+    \eqlabel{eq:smoothmax-second-derivatives}{Second derivatives of Smoothmax}
     \frac{\partial^2}{\partial a^2} \smoothmax(a, b) = \frac{\partial^2}{\partial b^2} \smoothmax(a, b) = - g_2(a, b) \\
     \frac{\partial^2}{\partial a \partial b} \smoothmax(a, b) = \frac{\partial^2}{\partial b \partial a} \smoothmax(a, b) = g_2(a, b)
 \end{align}
 
 where the second derivative of the core function is given by
-\begin{align}
+\begin{align*}
     g_2(a, b) = \begin{cases}
         \frac{4ke^{2ka}e^{2kb} \left( e^{2ka} (ka-kb-1) + e^{2kb}(ka - kb + 1) \right)}{\left(e^{2kb}-e^{2ka} \right)^3} &\text{if } a \neq b \\
         0  &\text{if } a = b
     \end{cases}.
-\end{align}
+\end{align*}
 
 The expression is algebraically heavy, but all terms are composed of simple exponentials, products, and powers, making it fast and safe to compute in practice, and the redundant components can be cached (in particular $e^{2ka}$ and $e^{2kb}$). At $x = 0$, we have $g_2(0) = 0$ by symmetry and smoothness of the underlying expression.
 
@@ -219,20 +228,25 @@ To evaluate the practical performance of the \texttt{Smoothmax} operator, we com
 \begin{itemize}
     \item \texttt{LogSumExp}:
     \begin{align}
+        \eqlabel{eq:smoothmax-LSE-formula}{Definition of LogSumExp (LSE)}
         \mathrm{\texttt{LSE}}(a, b) = \frac{1}{k} \log\left(e^{k a} + e^{k b}\right)
     \end{align}
     This is a popular smooth approximation to $\max(a, b)$, widely used in machine learning.
 
     \item \texttt{Smooth Absolute Max:}
     \begin{align}
+        \eqlabel{eq:smoothmax-AbsMax-formula}{Definition of Smooth Absolute Max (AbsMax)}
         \mathrm{\texttt{AbsMax}}(a, b) = \frac{a + b}{2} + \frac{1}{2k} \log\left(1 + e^{-k|a - b|}\right)
     \end{align}
     A symmetric blend of the average and the absolute difference.
 
     \item \texttt{Smoothmax}:
-    \begin{align}
-        \smoothmax(a, b) = a + \frac{b - a}{2} \left( \frac{1}{1 + e^{-k(b - a)}} + \frac{1}{1 - e^{-k(b - a)}} \right)
-    \end{align}
+    \begin{align*}
+        \smoothmax(a, b) &= \begin{cases}
+            a + \frac{(b - a)}{2} \left( \frac{1}{1 + e^{-k(b-a)}} + \frac{1}{1 - e^{-k(b-a)}} \right) &\text{if } a \neq b \\
+            a + \frac{1}{2k} &\text{if } a = b
+        \end{cases}
+    \end{align*}
     Our symmetric and infinitely differentiable approximation, designed to behave well under chaining and small sharpness variations.
 \end{itemize}
 
@@ -307,7 +321,8 @@ Fixing $k = 2.0$, $a = 0.0$ and limiting data type to 4 bytes floating points re
     \caption[Approximation error with different floating-point precisions]{Top: Comparison of error between the \texttt{LogSumExp}, Smooth \texttt{AbsMax} and the \texttt{Smoothmax} operators when chaining the operators on data between 0 and 100 while restricting the floating point precision, with from left to right respectively $k=5$, $k=10$, and $k=50$. Bottom: We chained the operators for values between 0 and 1000, which raise overflows for \texttt{LogSumExp} (thus the data not displayed for 'float64' and 'float16'). }
     \label{fig:smoothmax-precision-per-floating-point}
 \end{figure}
-\midConclusion
+
+\bigConclusion
 
 Overall, \texttt{Smoothmax} performs best across the board:
 \begin{itemize}
@@ -320,8 +335,8 @@ This makes it a practical and robust replacement for $\max(a, b)$ in simulation 
 
 \section{Relationship to prior work}
 
-After deriving the formula
-\begin{align}
+After deriving the formula in \cref{eq:smoothmax-symmetry-auxilary}:
+\begin{align*}
     \smoothmax(a,b) = a + \frac{b - a}{1-e^{-2k(b - a)}},
-\end{align}
+\end{align*}
 we found it is algebraically equivalent to Quílez's "sigmoid" smooth-min function \cite{Quilez2013} under the standard transformation $\smoothmax(a,b; k) = -\smoothmin(-a,-b;k_\text{Quilez})$ with the parameter mapping $k_\text{Quilez} = \frac{1}{2k}$. Accordingly, we do not claim novelty for the functional form. Our contributions are the rigorous smoothness/analyticity proofs, closed-form derivatives with $a = b$ limits, and numerically stable implementations and benchmarks.
