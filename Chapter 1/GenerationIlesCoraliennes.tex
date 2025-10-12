@@ -170,7 +170,7 @@ However, coral reef islands present unique challenges due to the combination of 
 
 \begin{figure}
     \includegraphics[width = \linewidth]{noise_examples3.pdf}
-    \caption[Islands generation using fBm noise and falloff masks]{Three different results of an island generated from noise functions. In each case, the initial height field is the same, computed through flow noise. The falloff masks are also generated with a combination of fBm noise mitigated by the Euclidean distance from the image centre, warp noise and gamma correction. The only parameter modified for each example is the gamma correction. The results are very different, and hardly controllable. It is also difficult to represent lagoons and reefs using this method.}
+    \caption[Islands generation using fBm noise and falloff masks]{Three different results of an island generated from noise functions. In each case, the initial height field is identical, computed using flow noise. The falloff masks are created by combining fBm noise, modulated by the Euclidean distance from the image centre, and further shaped through domain warping and power-law remapping of the mask values. The only parameter modified between the three examples is the exponent used in this remapping. The resulting islands differ significantly in shape and scale, and the method offers limited control over specific coastal features such as lagoons and reefs.}
     \label{fig:coral-island-noise-example}
 \end{figure}
 
@@ -287,7 +287,7 @@ Beyond geometric sketching and low-level constraints, a third class of methods e
 
 \AltTextImage{
     In this vein, \citeName{Genevaux2015} propose a method for representing terrains as sparse combinations of procedural primitives, referred to as "terrain atoms" \cite{Genevaux2015}. These atoms are stored in a dictionary and are either extracted from real-world data or generated synthetically. The terrain is modelled as a linear combination of these features, forming a Sparse Construction Tree that blends primitives in a compact and expressive form (\cref{fig:coral-island-Genevaux2015}). This representation facilitates terrain editing, amplification, and reconstruction from coarse user input.
-While this work introduces a symbolic representation of terrain via atoms, it is not reused in our method, which instead relies on semantic label maps.
+% While this work introduces a symbolic representation of terrain via atoms, it is not used in our method, which instead relies on semantic label maps.
 }{sketching-Genevaux2015-1.png,sketching-Genevaux2015-2.png}{\citeName{Genevaux2015} symbolically define a terrain by an aggregation of patches with real-world meaning \cite{Genevaux2015}.}{fig:coral-island-Genevaux2015}{\cite{Genevaux2015} sparse terrain representation}
 
 \AltTextImage{
@@ -367,7 +367,7 @@ Despite these advances, no standard pipeline exists for generating detailed terr
 
 \midConclusion
 
-In our method, we address this gap by training a pix2pix cGAN to transform label maps (semantic region maps produced by procedural sketch-based modelling) into plausible coral reef island height fields. Each input map encodes key zones of an island (e.g., lagoon, reef crest, beach, island core) using categorical labels, serving as semantic constraints for terrain synthesis. The cGAN generator learns to condition elevation details on both the global layout and the implicit patterns encoded in the training data. By generating our own synthetic dataset with procedurally modelled coral reef islands (see \cref{fig:coral-island-difficulties-dataset}), we overcome the shortage of labelled elevation data and enforce geological coherence via data generation design. The choice of the pix2pix architecture is tailored by its short training and inference time and code availability by the authors, but any other conditional architecture could be substitued such as pix2pixHD or BicycleGAN \cite{Wang2018,Zhu2018NN}.
+In our method, we address this gap by training a pix2pix cGAN to transform label maps (semantic region maps produced by procedural sketch-based modelling) into plausible coral reef island height fields. Each input map encodes key zones of an island (e.g., lagoon, reef crest, beach, island core) using categorical labels, serving as semantic constraints for terrain synthesis. The cGAN generator learns to condition elevation details on both the global layout and the implicit patterns encoded in the training data. By generating our own synthetic dataset with procedurally modelled coral reef islands (see \cref{fig:coral-island-difficulties-dataset}), we overcome the shortage of labelled elevation data and enforce geological coherence via data generation design. The choice of the pix2pix architecture is tailored by its short training and inference time and the availability of well-maintained implementations that support reproducibility, but any other conditional architecture could be substitued such as pix2pixHD or BicycleGAN \cite{Wang2018,Zhu2018NN}.
 
 This setup offers several key advantages: 
 \begin{Itemize}
@@ -565,10 +565,14 @@ Once the strokes are applied to the velocity field, we displace each points of t
         % 1o_2.png, 
         1o_3-s.png}
     \autofitcaptions[]{Top view, Side view, Output height field, Result}
-    \autofitgraphics[width=.6\linewidth]{3i-s.pdf, 3o_1.png, 3o_3-s.png}
-    \autofitgraphics[width=.6\linewidth]{5i-s.pdf, 5o_1.png, 5o_3-s.png}
-    \autofitgraphics[width=.6\linewidth]{7i-s.pdf, 7o_1.png, 7o_3-s.png}
-    \autofitcaptions[fontscale=1.5]{Deformation, Output height field, Result}
+    \autofitgraphics[]{big-white.png, 3i-s.pdf, 3o_1.png, 3o_3-s.png}
+    \autofitgraphics[]{big-white.png, 5i-s.pdf, 5o_1.png, 5o_3-s.png}
+    \autofitgraphics[]{big-white.png, 7i-s.pdf, 7o_1.png, 7o_3-s.png}
+    \autofitcaptions[]{~, Deformation, Output height field, Result}
+    % \autofitgraphics[width=.6\linewidth]{3i-s.pdf, 3o_1.png, 3o_3-s.png}
+    % \autofitgraphics[width=.6\linewidth]{5i-s.pdf, 5o_1.png, 5o_3-s.png}
+    % \autofitgraphics[width=.6\linewidth]{7i-s.pdf, 7o_1.png, 7o_3-s.png}
+    % \autofitcaptions[fontscale=1.5]{Deformation, Output height field, Result}
     % \autofitgraphics[width=.6\linewidth]{1i-init.pdf}
     % \autofitgraphics[trim={0 0 0 0.5cm}, clip]{
     %     1i-s.pdf, 
@@ -701,6 +705,7 @@ The deformation vector previously described is then scaled by the resistance fun
 
 \begin{figure}
     \autofitgraphics[]{result_low_resistance.png, result_high_resistance.png}
+    \autofitcaptions[]{Low resistance on reefs, High resistance on reefs}
     \caption[An island deformed with and without resistance]{(Left) Given a uniform velocity field and a resistance function similar to \cref{fig:coral-island-resistance-function}, the coasts are smoothly eroded while the interior of the island is almost unaffected. (Right) Modifying the resistance function to affect a strong resistance to borders emulates the effect of coast reinforcements.}
     \label{fig:coral-island-strong-low-resistance}
 \end{figure}
@@ -807,13 +812,7 @@ The complete coral height field, as displayed in \cref{fig:coral-island-reef-fun
 \subsubsection{Blending height fields}
 \label{subsubsec:height-functions-blending}
 
-\begin{figure}[H]
-    \autofitgraphics[]{smoothmax_all-k_large.png, smoothmax_all-k_short.png}
-    \caption[Effect of $k$ on the $\smoothmax$ operator]{Blending two functions $f: \R \to \R$ (black, dotted) and $g: \R \to \R$ (blue, dotted) with the $\max$ operator (red curve), causing discontinuities when $f(x)=g(x)$, and with the $\smoothmax$ operator (green curves) with various sharpness values $k$, resolving the issue at the cost of slight overestimations with low values of $k$. Right presents a zoom on the domain $x \in [0.5, 1.3]$. }
-    \label{fig:coral-island-blend-function-island}
-\end{figure}
-
-\begin{figure}[H]
+\begin{figure}
     \includegraphics[width=.45\linewidth]{smoothmax_min-max_k-5_large.png}
     \includegraphics[width=.45\linewidth]{smoothmax_min-max_k-50_large.png} \\
     \includegraphics[width=.45\linewidth]{smoothmax_min-max_k-5_short.png}
@@ -822,6 +821,12 @@ The complete coral height field, as displayed in \cref{fig:coral-island-reef-fun
     \autofitcaptions[]{$k=5$, $k=50$}
     \caption[Definition of $\smoothmax$ as the average of $\smoothmax^+$ and $\smoothmax^-$]{The $\smoothmax^+$ operator (orange curve) is a function that is used to overestimate the maximum value of two input functions (dotted curves), especially when the difference between the two functions is small, while the $\smoothmax^-$ function (blue curve) tends to underestimate the $\max$ operator. Taking $\smoothmax$ (green curve) as the average of $\smoothmax^-$ and $\smoothmax^+$ creates a smooth function closely approximating the $\max$ operator, even with low values of sharpness $k$ (Left: $k=5$, right: $k=50$). Bottom graphs show a zoom on the domain $x \in [0.5, 1.3]$.}
     \label{fig:coral-island-blend-function-island-with-upper}
+\end{figure}
+
+\begin{figure}
+    \autofitgraphics[]{smoothmax_all-k_large.png, smoothmax_all-k_short.png}
+    \caption[Effect of $k$ on the $\smoothmax$ operator]{Blending two functions $f: \R \to \R$ (black, dotted) and $g: \R \to \R$ (blue, dotted) with the $\max$ operator (red curve), causing discontinuities when $f(x)=g(x)$, and with the $\smoothmax$ operator (green curves) with various sharpness values $k$, resolving the issue at the cost of slight overestimations with low values of $k$. Right presents a zoom on the domain $x \in [0.5, 1.3]$. }
+    \label{fig:coral-island-blend-function-island}
 \end{figure}
 
 The final step is to blend the subsided height field $\heightSubsid(\p)$ with the coral feature height field $\heightCoral(\p)$ to produce the final terrain. The goal is to ensure that coral features remain near the water surface while allowing the rest of the island to subside.
@@ -900,22 +905,25 @@ One of the key strengths of this method is its flexibility, as the subsidence an
 
 The creation of the dataset is done through the use of the procedural algorithm for which we alter the input parameters.
 
-For each generation, the top-view and profile-view sketches use an initial layout. Each outline of the top-view sketch is defined as a centred circle of random radius $\radius_\text{min} \leq \radius^* \leq \radius_\text{max}$. We add another deformation based on Perlin noise such that the final contour is defined as:
+For each generation, the top-view and profile-view sketches use the user-given layout. Each outline of the top-view sketch $\radius^*$ is modified by adding values of Perlin noise $\noise$, giving the final outlines:
 \begin{align*}
-    \radius(\angl) = \radius^* + \noise(\angl).
+    \radius(\angl) = \radius^* + \noise_\text{outlines}(\angl).
 \end{align*}
 
-On the other hand, we define an initial profile-view sketch by defining $\heightProfile^*(\distRegions_\p)$, the initial height function, for which fBm noise is applied to obtain
+On the other hand, we define an initial profile-view sketch by defining $\heightProfile^*(\distRegions_\p)$, the initial height function, for which fBm noise $\noise_\text{height}$ ($\abs{\noise_\text{height}} \leq 0.2$ in the examples) is applied to obtain
 \begin{align*}
-    \heightProfile(\distRegions_\p) = \heightProfile^*(\distRegions_\p) \cdot \noise(\distRegions_\p).
+    \heightProfile(\distRegions_\p) = \heightProfile^*(\distRegions_\p) \cdot \noise_\text{height}(\distRegions_\p).
 \end{align*}
 
 An identical process is done for the resistance function:
 \begin{align*}
-    \resistance(\distRegions_\p) = \resistance^*(\distRegions_\p) \cdot \noise(\distRegions_\p).
+    \resistance(\distRegions_\p) = \resistance^*(\distRegions_\p) \cdot \noise_\text{resistance}(\distRegions_\p).
 \end{align*}
 
-Next, we generate a random deformation field. We do not target realism in stroke generation. Instead we generate a random number $n$ of strokes and their path by uniformly sampling a random number $m$ of points. The spread and intensity of each stroke is also randomised, providing complexity and variety in the results.
+In the examples below, all terrains are defined in normalized coordinates $(x, y) \in [-1, 1]^2$ and $z \in [0, 1]$. Noise amplitudes used are bounded by $\abs{\noise_\text{outlines}} \leq 0.2$, $0.8 \leq \noise_\text{height} \leq 1.2$, $0.8 \leq \noise_\text{resistance} \leq 1.2$.
+
+Next, we generate a random deformation field. We do not target realism in stroke generation. Instead we generate a random number $n$ of strokes with random paths. Spread and intensity of each stroke is also randomised, providing complexity and variety in the results. The results presented in this chapter uses between 2 to 6 random wind strokes. Our random wind stroke paths are smooth, simplex noise-driven trajectories biased toward the island's center, ensuring that distortions remain mainly around the main landmass, with uniform sampling of spread $0.1 \leq \std \leq 0.3$ and strength $0.05 \leq S_\curve \leq 0.3$.
+
 Finally, to further enrich the dataset with erosion-like structures, we add a set of radial strokes of small width and low strength, extending between the island centre and the exterior of the canvas, oriented alternately landward and seaward. This produces simple radial drainage patterns illustrated in \cref{fig:coral-island-radial-pattern-example}.
 
 \begin{figure}
@@ -1056,11 +1064,11 @@ The resulting model for coral reef island generation enables a high level of use
 
 \begin{figure}
     \autofitgraphics[]{volcanic_islands_inputs.pdf}
-    \autofitgraphics[]{volcanic-render-1-labels.png, volcanic-render-1-out.png, volcanic-render-1-neutral.png, volcanic-render-1-render.png}
-    \autofitgraphics[]{volcanic-render-2-labels.png, volcanic-render-2-out.png, volcanic-render-2-neutral.png, volcanic-render-2-render.png}
-    \autofitgraphics[]{volcanic-render-3-labels.png, volcanic-render-3-out.png, volcanic-render-3-neutral.png, volcanic-render-3-render.png}
-    \autofitgraphics[]{volcanic-render-4-labels.png, volcanic-render-4-out.png, volcanic-render-4-neutral.png, volcanic-render-4-render.png}
-    \autofitgraphics[]{volcanic-render-5-labels.png, volcanic-render-5-out.png, volcanic-render-5-neutral.png, volcanic-render-5-render.png}
+    \autofitgraphics[]{volcanic-render-1-labels.png, volcanic-render-1-out.png, volcanic-render-1-neutral-cropped.png, volcanic-render-1-render-cropped.png}
+    \autofitgraphics[]{volcanic-render-2-labels.png, volcanic-render-2-out.png, volcanic-render-2-neutral-cropped.png, volcanic-render-2-render-cropped.png}
+    \autofitgraphics[]{volcanic-render-3-labels.png, volcanic-render-3-out.png, volcanic-render-3-neutral-cropped.png, volcanic-render-3-render-cropped.png}
+    \autofitgraphics[]{volcanic-render-4-labels.png, volcanic-render-4-out.png, volcanic-render-4-neutral-cropped.png, volcanic-render-4-render-cropped.png}
+    \autofitgraphics[]{volcanic-render-5-labels.png, volcanic-render-5-out.png, volcanic-render-5-neutral-cropped.png, volcanic-render-5-render-cropped.png}
     \autofitcaptions{Input sketches, Output height field, Neutral result, Shaded result}
     \caption[cGAN outputs trained on volcanic dataset]{Top row: user input used to generate the "volcanic" dataset. Bottom: User sketches creates various islands, following the initial user inputs. }
     \label{fig:coral-island-results-volcanic-training}
@@ -1085,11 +1093,11 @@ The resulting model for coral reef island generation enables a high level of use
     \autofitgraphics{Kauai_island-square.png, Tuvuca_island-square.png, Mascarene_island-square.png, Cocos_island-square.png}
     \autofitgraphics[]{island-1-labels.png, island-2-labels.png, island-3-labels.png, island-4-labels.png}
     \autofitgraphics[]{island-1-out.png, island-2-out.png, island-3-out.png, island-4-out.png}
-    \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-neutral.png, island-2-neutral.png, island-3-neutral.png, island-4-neutral.png}
-    \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-render.png, island-2-render.png, island-3-render.png, island-4-render.png}
+    \autofitgraphics[]{island-1-neutral-cropped.png, island-2-neutral-cropped.png, island-3-neutral-cropped.png, island-4-neutral-cropped.png}
+    \autofitgraphics[]{island-1-render-cropped.png, island-2-render-cropped.png, island-3-render-cropped.png, island-4-render-cropped.png}
     % \autofitgraphics[]{island-1-volcano-out.png, island-2-volcano-out.png, island-3-volcano-out.png, island-4-volcano-out.png}
-    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-volcano-neutral.png, island-2-volcano-neutral.png, island-3-volcano-neutral.png, island-4-volcano-neutral.png}
-    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-volcano-render.png, island-2-volcano-render.png, island-3-volcano-render.png, island-4-volcano-render.png}
+    % \autofitgraphics[]{island-1-volcano-neutral-cropped.png, island-2-volcano-neutral-cropped.png, island-3-volcano-neutral-cropped.png, island-4-volcano-neutral-cropped.png}
+    % \autofitgraphics[]{island-1-volcano-render-cropped.png, island-2-volcano-render-cropped.png, island-3-volcano-render-cropped.png, island-4-volcano-render-cropped.png}
     % \autofitcaptions{Input sketches, Output height field, Neutral result, Shaded result}
     \caption[Reproduction of islands from \cref{fig:coral-island-island-examples}]{Reproduction of islands from \cref{fig:coral-island-island-examples}. }
     \label{fig:coral-island-results-reproductions}
@@ -1097,28 +1105,26 @@ The resulting model for coral reef island generation enables a high level of use
 
 \begin{figure}
     % \autofitgraphics[]{island-1-out.png, island-2-out.png, island-3-out.png, island-4-out.png}
-    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-neutral.png, island-2-neutral.png, island-3-neutral.png, island-4-neutral.png}
-    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-render.png, island-2-render.png, island-3-render.png, island-4-render.png}
+    % \autofitgraphics[]{island-1-neutral-cropped.png, island-2-neutral-cropped.png, island-3-neutral-cropped.png, island-4-neutral-cropped.png}
+    % \autofitgraphics[]{island-1-render-cropped.png, island-2-render-cropped.png, island-3-render-cropped.png, island-4-render-cropped.png}
 
     % \autofitgraphics[]{island-1-volcano-out.png, island-2-volcano-out.png, island-3-volcano-out.png, island-4-volcano-out.png}
-    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-volcano-neutral.png, island-2-volcano-neutral.png, island-3-volcano-neutral.png, island-4-volcano-neutral.png}
-    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-volcano-render.png, island-2-volcano-render.png, island-3-volcano-render.png, island-4-volcano-render.png}
+    % \autofitgraphics[]{island-1-volcano-neutral-cropped.png, island-2-volcano-neutral-cropped.png, island-3-volcano-neutral-cropped.png, island-4-volcano-neutral-cropped.png}
+    % \autofitgraphics[]{island-1-volcano-render-cropped.png, island-2-volcano-render-cropped.png, island-3-volcano-render-cropped.png, island-4-volcano-render-cropped.png}
 
     % \autofitgraphics[]{island-1-out.png,island-1-volcano-out.png , island-2-out.png,island-2-volcano-out.png , island-3-out.png,island-3-volcano-out.png , island-4-out.png,island-4-volcano-out.png }
-    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-neutral.png, island-1-volcano-neutral.png, island-2-neutral.png, island-2-volcano-neutral.png, island-3-neutral.png, island-3-volcano-neutral.png, island-4-neutral.png, island-4-volcano-neutral.png}
-    % \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-render.png, island-1-volcano-render.png, island-2-render.png, island-2-volcano-render.png, island-3-render.png, island-3-volcano-render.png, island-4-render.png, island-4-volcano-render.png}
+    % \autofitgraphics[]{island-1-neutral-cropped.png, island-1-volcano-neutral-cropped.png, island-2-neutral-cropped.png, island-2-volcano-neutral-cropped.png, island-3-neutral-cropped.png, island-3-volcano-neutral-cropped.png, island-4-neutral-cropped.png, island-4-volcano-neutral-cropped.png}
+    % \autofitgraphics[]{island-1-render-cropped.png, island-1-volcano-render-cropped.png, island-2-render-cropped.png, island-2-volcano-render-cropped.png, island-3-render-cropped.png, island-3-volcano-render-cropped.png, island-4-render-cropped.png, island-4-volcano-render-cropped.png}
 
     \autofitgraphics[]{island-1-out.png,island-1-volcano-out.png, small-white.png, island-2-out.png,island-2-volcano-out.png}
-    \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-neutral.png, island-1-volcano-neutral.png, small-white.png, island-2-neutral.png, island-2-volcano-neutral.png}
-    \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-1-render.png, island-1-volcano-render.png, small-white.png, island-2-render.png, island-2-volcano-render.png}
+    \autofitgraphics[]{island-1-neutral-cropped.png, island-1-volcano-neutral-cropped.png, small-white.png, island-2-neutral-cropped.png, island-2-volcano-neutral-cropped.png}
+    \autofitgraphics[]{island-1-render-cropped.png, island-1-volcano-render-cropped.png, small-white.png, island-2-render-cropped.png, island-2-volcano-render-cropped.png}
     \autofitcaptions[]{"initial", "volcanic", ~, "initial", "volcanic"}
-    
     \autofitgraphics[]{island-3-out.png,island-3-volcano-out.png, small-white.png, island-4-out.png,island-4-volcano-out.png }
-    \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-3-neutral.png, island-3-volcano-neutral.png, small-white.png, island-4-neutral.png, island-4-volcano-neutral.png}
-    \autofitgraphics[trim={7cm 0 7cm 0}, clip]{island-3-render.png, island-3-volcano-render.png, small-white.png, island-4-render.png, island-4-volcano-render.png}
+    \autofitgraphics[]{island-3-neutral-cropped.png, island-3-volcano-neutral-cropped.png, small-white.png, island-4-neutral-cropped.png, island-4-volcano-neutral-cropped.png}
+    \autofitgraphics[]{island-3-render-cropped.png, island-3-volcano-render-cropped.png, small-white.png, island-4-render-cropped.png, island-4-volcano-render-cropped.png}
     \autofitcaptions[]{"initial", "volcanic", ~, "initial", "volcanic"}
-
-    \caption[Comparison of cGAN trained models]{Comparison between the "initial" cGAN trained model (dataset generated from parameters visible in \cref{fig:coral-island-wind-effect-result}) and the "volcanic" cGAN (\cref{fig:coral-island-results-volcanic-training}, top). The input label maps are identical as \cref{fig:coral-island-results-reproductions}}
+    \caption[Comparison of cGAN trained models]{Comparison between the "initial" cGAN trained model (dataset generated from parameters visible in \cref{fig:coral-island-wind-effect-result}) and the "volcanic" cGAN (\cref{fig:coral-island-results-volcanic-training}, top). The input label maps are identical as \cref{fig:coral-island-results-reproductions}.}
     \label{fig:coral-island-results-reproductions-with-volcano}
 \end{figure}
 

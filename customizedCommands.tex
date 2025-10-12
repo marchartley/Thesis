@@ -1,7 +1,7 @@
 \makeatletter
 \hbadness = 99999
-\binoppenalty=10000 
-\relpenalty=10000 
+\binoppenalty=\maxdimen
+\relpenalty=\maxdimen
 
 % \zzcommand{commandName}
 \def\zzcommand#1{\let#1\undefined\newcommand#1}
@@ -804,21 +804,21 @@
   \renewcommand{\fitrowwidth}{\linewidth}%
   \def\fitimageoptions{}%
   \def\cleanopts{}%
-
   \def\tempa{#1}%
   \@for\opt:=\tempa\do{%
     \IfBeginWith{\opt}{width=}%
       {\StrBehind{\opt}{=}[{\tempwidth}]\renewcommand{\fitrowwidth}{\tempwidth}}%
-      {\ifx\cleanopts\@empty
+      {\ifx\cleanopts\@empty%
          \edef\cleanopts{\opt}%
-       \else
+       \else%
          \edef\cleanopts{\cleanopts,\opt}%
-       \fi
+       \fi%
       }%
   }%
   \edef\fitimageoptions{\cleanopts}%
+  % \fbox{%
   \fitNimages{#2}%
-  \addVerticalLabel{}
+  % }%
 }
 
 
@@ -826,21 +826,20 @@
   \renewcommand{\fitrowwidth}{\linewidth}%
   \def\fitimageoptions{}%
   \def\cleanopts{}%
-
   \def\tempa{#1}%
   \@for\opt:=\tempa\do{%
     \IfBeginWith{\opt}{width=}%
       {\StrBehind{\opt}{=}[{\tempwidth}]\renewcommand{\fitrowwidth}{\tempwidth}}%
-      {\ifx\cleanopts\@empty
+      {\ifx\cleanopts\@empty%
          \edef\cleanopts{\opt}%
-       \else
+       \else%
          \edef\cleanopts{\cleanopts,\opt}%
-       \fi
+       \fi%
       }%
   }%
   \edef\fitimageoptions{\cleanopts}%
-  \fitNimages{#3}%
-  \addVerticalLabel{#2}
+  \fitNimagesWithoutPrinting{#3}%
+  \addVerticalLabel{#2}%
 }
 
 \newcounter{fitImgCount}%
@@ -853,21 +852,19 @@
 \newlength{\fitLabelPad}     \setlength{\fitLabelPad}{0mm}     % gap between label and images
 \newcommand{\fitLabelfont}{\footnotesize}    % label font
 
-% --- modified: \fitNimages now caches the row in \fitRowBox instead of printing it ---
+
 \zzcommand{\fitNimages}[1]{%
   \setcounter{fitImgCount}{0}%
   \setcounter{fitImgIndex}{0}%
-  \begingroup
+  \begingroup%
   \def\fitTotalRatio{0}%
-  \global\let\fitWidths\empty
+  \global\let\fitWidths\empty%
   \def\fitImgList{}%
-
   % Copy input to a clean list for repeated processing
   \renewcommand{\do}[1]{%
     \edef\fitImgList{\fitImgList,##1}%
   }%
   \docsvlist{#1}%
-
   % First pass: measure ratios
   \renewcommand{\do}[1]{%
     \stepcounter{fitImgCount}%
@@ -880,7 +877,48 @@
     \expandafter\xdef\csname fitRatio\thefitImgCount\endcsname{\imgRatio}%
   }%
   \docsvlist{#1}%
+  % Second pass: build the row box (width = \fitrowwidth)
+  \setcounter{fitImgIndex}{0}%
+  % \global\setbox\fitRowBox=\hbox{%
+    % \fbox{%
+    \begin{adjustbox}{width=\fitrowwidth}%
+      \renewcommand{\do}[1]{%
+        \stepcounter{fitImgIndex}%
+        \pgfmathsetmacro{\relwidth}{\csname fitRatio\thefitImgIndex\endcsname / \fitTotalRatio}%
+        % \expandafter\fbox{\expandafter\includegraphics\expandafter[\fitimageoptions, width=\relwidth\linewidth]{##1}}%
+        \expandafter\includegraphics\expandafter[\fitimageoptions, width=\relwidth\linewidth]{##1}%
+      }%
+      \docsvlist{#1}%
+    \end{adjustbox}%
+    % }%
+  % }%
+  \endgroup%
+}
 
+\zzcommand{\fitNimagesWithoutPrinting}[1]{%
+  \setcounter{fitImgCount}{0}%
+  \setcounter{fitImgIndex}{0}%
+  \begingroup%
+  \def\fitTotalRatio{0}%
+  \global\let\fitWidths\empty%
+  \def\fitImgList{}%
+  % Copy input to a clean list for repeated processing
+  \renewcommand{\do}[1]{%
+    \edef\fitImgList{\fitImgList,##1}%
+  }%
+  \docsvlist{#1}%
+  % First pass: measure ratios
+  \renewcommand{\do}[1]{%
+    \stepcounter{fitImgCount}%
+    \sbox0{\includegraphics{##1}}%
+    \edef\imgWidth{\the\wd0}%
+    \edef\imgHeight{\the\ht0}%
+    \pgfmathsetmacro{\imgRatio}{\imgWidth/\imgHeight}%
+    \pgfmathparse{\fitTotalRatio + \imgRatio}%
+    \xdef\fitTotalRatio{\pgfmathresult}%
+    \expandafter\xdef\csname fitRatio\thefitImgCount\endcsname{\imgRatio}%
+  }%
+  \docsvlist{#1}%
   % Second pass: build the row box (width = \fitrowwidth)
   \setcounter{fitImgIndex}{0}%
   \global\setbox\fitRowBox=\hbox{%
@@ -893,29 +931,38 @@
       \docsvlist{#1}%
     \end{adjustbox}%
   }%
-  \endgroup
+  \endgroup%
 }
 
 % --- new: output the cached row with a vertical label on the left ---
 \NewDocumentCommand{\addVerticalLabel}{m}{%
   % If someone calls this before \autofitgraphics, we’ll just make an empty box.
-  \ifvoid\fitRowBox\relax \global\setbox\fitRowBox=\hbox{} \fi
-  \par\noindent
+  \ifvoid\fitRowBox\relax \global\setbox\fitRowBox=\hbox{} \fi%
+  \par\noindent%
   % Scale the combined (label + row) to \linewidth so it never overflows.
   \begin{adjustbox}{width=\fitrowwidth}%
-    \hbox{%
-      % Left label column
-      \hbox to \fitLabelWidth{%
-        \hfil
-        \rotatebox{90}{\centering \fitLabelfont #1}%
-        \hfil
-      }%
-      \hspace{\fitLabelPad}%
-      % Right: the previously cached row
-      \usebox{\fitRowBox}%
-    }%
+    % \fbox{%
+      \begingroup
+        \dimen0=\dimexpr\ht\fitRowBox+\dp\fitRowBox\relax
+        % Left label column
+        % \fbox{
+            \vbox to \dimen0{%
+              \vfil
+              \hbox to \fitLabelWidth{%
+                \hfil
+                \rotatebox{90}{\centering \fitLabelfont #1}%
+                \hfil
+              }%
+              \vfil
+            }%
+        % }
+        \hspace{\fitLabelPad}%
+        % Right: the previously cached row
+        \usebox{\fitRowBox}%
+      \endgroup
+    % }%
   \end{adjustbox}%
-  \par\smallskip
+  \par\smallskip%
   % Clear the box so the next call starts fresh
   \global\setbox\fitRowBox=\hbox{}%
 }
@@ -933,21 +980,6 @@
 }
 
 \newcounter{fitCapIndex}
-% \NewDocumentCommand{\autofitcaptions}{O{} m}{%
-%   \ifblank{#1}
-%     {\def\fitraiseamount{2ex}} % default
-%     {\def\fitraiseamount{#1}}  % use passed value
-%   \setcounter{fitCapIndex}{0}%
-%   \begin{adjustbox}{width=\fitrowwidth}%
-%     \renewcommand{\do}[1]{%
-%       \stepcounter{fitCapIndex}%
-%       \pgfmathsetmacro{\relwidth}{\csname fitRatio\thefitCapIndex\endcsname / \fitTotalRatio}%
-%       \raisebox{\fitraiseamount}{\parbox[t]{\relwidth\linewidth}{\centering ##1}}%
-%     }%
-%     \docsvlist{#2}%
-%   \end{adjustbox}%
-%   \vspace{-\fitraiseamount}%
-% }
 % Key-value options for \autofitcaptions
 \pgfkeys{
   /autofitcaptions/.is family, /autofitcaptions,
@@ -963,21 +995,26 @@
 
 \NewDocumentCommand{\autofitcaptions}{O{} m}{%
   % Load defaults, then apply user-specified options (if any)
-  \pgfkeys{/autofitcaptions, raise=0.2em, fontscale=1}%
+  \pgfkeys{/autofitcaptions, raise=1em, fontscale=1}%
   \ifblank{#1}{}{%
     \pgfkeys{/autofitcaptions, #1}%
   }%
   \setcounter{fitCapIndex}{0}%
+  % \smash[]{%
+  \raisebox{\fitraiseamount}{%
   \begin{adjustbox}{width=\fitrowwidth}%
     \renewcommand{\do}[1]{%
       \stepcounter{fitCapIndex}%
       \pgfmathsetmacro{\relwidth}{\csname fitRatio\thefitCapIndex\endcsname / \fitTotalRatio}%
-      \raisebox{\fitraiseamount}{%
+      % \fbox{%
+      % \raisebox{\fitraiseamount}{%
         % \parbox[t]{\relwidth\linewidth}{\centering \scalebox{\fitfontscale}{##1}}%
-        \scalebox{\fitfontscale}{%
-          \parbox[t]{\relwidth\linewidth}{\centering ##1}%
-        }
-      }%
+          \scalebox{\fitfontscale}{%
+            \parbox[t]{\relwidth\linewidth}{\centering ##1}%
+          }%
+        % }%
+      % }%
+      % }%
     }%
     \ifblank{#2}{%
       \docsvlist{~}%
@@ -985,7 +1022,8 @@
       \docsvlist{#2}%
     }%
   \end{adjustbox}%
-  \vspace{-\fitraiseamount}%
+  }%
+  % }%
 }
 
 
