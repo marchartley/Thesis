@@ -437,82 +437,53 @@ These mechanisms are the backbone of how we model the interaction between discre
 
 
 
-\section{Core concepts}
-\label{sec:env-obj-pipeline}
 
-Our approach extends the concept of \glosses{EnvObj}, simplified, scale-agnostic terrain features that interact with their surroundings to simulate complex ecosystem dynamics. These \glosses{EnvObj}, which represent natural features (corals, algae, islands, rocks, ...) influence and are influenced by environmental fields (temperature, humidity, elevation, ...). 
 
-In this section, we present the different related concepts that underpins our method.
-We first introduce the continuous environmental fields (\glosses{EnvVal}), then the discrete actors that perceive and affect these fields (\glosses{EnvObj}), before detailing how they modify the fields (\glosses{EnvModif}) and how the full pipeline orchestrates their interaction.
 
-\subsection{\Glosses{EnvVal}}
-\label{sec:env-obj-communication}
 
-In the field of geography and for EFMs, a "field" is a spatially continuous variable defined at every point of the domain, encompassing scalar fields (elevation, temperature) and vector fields (wind, current). In the following, we name every such quantity an \gloss{EnvVal}.
 
-In an ecosystem simulation, each actor has an impact on all other actors, which results in an exponentially growing computation effort which becomes problematic as the number of elements of the terrain increases. Direct pairwise interaction between $n$ organisms scales as $\mathcal{O}(n^{2})$.
-Instead, we adopt the standard EFM strategy: every \gloss{EnvObj} writes to local \glosses{EnvVal} through its \gloss{EnvModif}.
-Each object then reads them, turning the global complexity into a linear complexity per simulation step and thus remaining interactive even for thousands of objects.
 
-We bundle the currently supported fields under the unified term "environment", denoted as $\environment=(\height,\;\Water,\;\Wlevel,\;\material)$,
-where $\height$ (height) and $\Wlevel$ (water level) are scalars, $\Water$ (water currents) is a 2D vector field, and $\material$ (\glosses{EnvMat}) is a vector of per-point resource stocks (sand, salt, moisture, limestone, ...).
-
-% These \glosses{EnvMat} are conceptual reservoirs used by rule sets. They need not be visualised nor stored as layered textures.
-
-\subsection{\Glosses{EnvObj}}
-\label{sec:env-obj-environmental-objects}
-
-% \begin{figure}
-%     \autofitgraphics{assets-demo.pdf}
-%     \caption[Different \glosses{EnvObj}'s visuals]{\Glosses{EnvObj} can be visualised by 3D triangular meshes. From left to right: rocks, trees, corals, arches.}
-%     \label{fig:env-obj-assets}
-% \end{figure}
-
-A geographical feature, also called object or entity, is defined as a discrete phenomenon located at or near the Earth's surface. It represents geographic information that are depicted in maps, GIS, and other forms of geographic media. This term includes both natural and human-made objects, ranging from tangible items (e.g., buildings or trees) to intangible concepts (e.g., neighbourhoods or savanna). Features are distinct entities with defined boundaries, differentiating them from continuous geographic masses or processes occurring over time. They can be categorised as natural features, such as ecosystems, biomes, water bodies, and landforms, or artificial features (e.g., settlements, administrative regions, and engineered constructs). We use the term \gloss{EnvObj} in this work to avoid the ambiguous term "feature".
-
-\AltTextImage{
-Each \gloss{EnvObj} is anchored by a skeleton (a point, curve, or region in the cartographic sense) which captures its footprint while postponing heavy geometry generation (\cref{fig:env-objs_example-scheme1}). Our objects are:
-\begin{Itemize}
-    \Item{} \textbf{Point-based}: isolated boulders, individual trees, individual corals, ...
-    \Item{} \textbf{Curve-based}: river, coral reefs, fault scarps, ...
-    \Item{} \textbf{Region-based}: islands, forests, sediment patches, ...
-\end{Itemize}
-}{Env-obj-scheme1.png}{Environmental objects, from 2D abstract geometric shapes (top) to a possible 3D geometry (bottom).}{fig:env-objs_example-scheme1}{Illustration of the abstract \glosses{EnvObj} geometry and the 3D translation}
-
-Via its specified \glosses{EnvModif}, an \gloss{EnvObj} locally deposits, removes, or diverts \glosses{EnvMat}, thereby updating the surrounding \glosses{EnvVal}. Conversely, its viability is re-evaluated through a user-defined \gloss{FitnessFunc} that samples those same fields. If viable, a \gloss{FittingFunc} refines the skeleton (e.g., a river streams downhill, and seagrass meadow patches are limited to luminous areas).
-
-\subsection{\Glosses{EnvModif}}
-
-The environment determines if an \gloss{EnvObj} can survive at a certain position.
-When an \gloss{EnvObj} is placed, its surrounding \glosses{EnvVal} are affected through \glosses{EnvModif} $\environmentModif = (\heightModif, \waterModif, \nothing, \materialModif)$ where $\heightModif$ defines a change of height, $\waterModif$ the modifications of the water current field, and $\materialModif$ the \glosses{EnvMat} alterations. The water level~$\Wlevel$ is not modified by an object, hence~$\nothing$.
-
-\Glosses{EnvObj} are subject to altitude constraints.
-However, to maintain a clear distinction between semantic modelling and 3D modelling, we do not compute the exact physical shape or detailed height field of each \gloss{EnvObj}.
-Instead, we define a \gloss{CoarseHeight}~$\heightModif$, a parametric surface derived from the \gloss{Skeleton}, that provides a coarse estimate of local elevation changes. This coarse proxy lets us evaluate altitude-dependent rules without the cost of globally computing the height field.
-
-Altering the vector field~$\Water$ is performed by composing the individual contributions $\waterModif$ of each object at position~$\p$, following \cite{Wejchert1991}. For efficiency we adopt an analytical deformation kernel inspired by Kelvinlet solutions \cite{DeGoes2017} to aggregate these local disturbances.
-
-Each \gloss{EnvObj} possesses intrinsic \glosses{EnvMat} that both spread and are absorbed around its skeleton over time. For example, a coral colony deposits limestone while simultaneously slowing currents; the reef then uptakes that limestone for growth.
-In our model the colony contributes a deposition term $\materialModif_{\text{limestone}}$, and the reef absorbs it. No direct object-object communication is required.
-
-Scalar \glosses{EnvVal} are updated by adding or removing mass around the \gloss{Skeleton} and then diffusing it, biased by $\Water$.
-We assume a \gloss{SteadyState} regime, guaranteed by a decay rate~$\decay \in [0, 1[$ that prevents unbounded accumulation during advection-diffusion.
 
 \section{Our pipeline}
 
-The proposed method is structured into three key phases: 
-\begin{Itemize}
-    \Item{} \textbf{initialization:} sets up the foundational terrain elements and \glosses{EnvObj} definitions; 
-    \Item{} \textbf{iterative generation process:} instantiates \glosses{EnvObj} and updates their surrounding environment; 
-    \Item{} \textbf{output stage:} that yields a sparse representation of the scene's features. 
-\end{Itemize}
-This section details each phase and explains how the system dynamically adapts to user input and environmental changes. \cref{alg:env-obj-pipeline} summarise the overall process of our method.
-
 \begin{figure}[H]
     \autofitgraphics{pipeline.pdf}
-    \caption[\cref{chap:semantic-representation}'s pipeline]{Overview of the pipeline of our method. Three different inputs are required at initialization (left): a base terrain and a water level optionally given by the user for each generated scene, a set of properties for the \glosses{EnvMat} available (\cref{sec:env-obj-pipeline}), and the properties and generation rules of \glosses{EnvObj} available (\cref{sec:env-obj-environmental-objects}), established with experts. The generation process (middle) iteratively proceed in three steps: instantiating new \glosses{EnvObj} (\cref{sec:env-obj-generation-rules}), evaluating the fitness of each entity with respect to user modifications (\cref{sec:env-obj-interaction}), and updating the environment until stabilisation (\cref{sec:env-obj-materials}) with user-defined geomorphological events (\cref{sec:env-obj-events}). When the resulting scene suits the user, the sparse representation of generated \glosses{EnvObj} is returned and can be instantiated and rendered (right). }
+    \caption[\cref{chap:semantic-representation}'s pipeline]{Overview of the pipeline of our method. Three different inputs are required at initialization (left): a base terrain and a water level optionally given by the user for each generated scene, a set of properties for the \glosses{EnvMat} available, and the properties and generation rules of \glosses{EnvObj} available, established with experts (\cref{sec:env-obj-initialisation}). The generation process (middle) iteratively proceed in three steps: instantiating new \glosses{EnvObj}, evaluating the fitness of each entity with respect to user modifications, and updating the environment (\cref{sec:env-obj-generation-process}) until stabilisation with user-defined geomorphological events (\cref{sec:env-obj-events}). When the resulting scene suits the user, the sparse representation of generated \glosses{EnvObj} is returned (\cref{sec:env-obj-output}) and can be instantiated and rendered (right). }
     \label{fig:env-obj-pipeline}
 \end{figure}
+
+\subsection{Overview}
+
+Our method generates plausible, editable environments by coupling discrete semantic primitives with continuous environmental fields. As illustrated in \cref{fig:env-obj-pipeline} and summarised in \cref{alg:env-obj-pipeline}, the system forms a closed feedback loop in which sparse objects (\glosses{EnvObj}) interact with environmental quantities (\glosses{EnvVal}) through local modifiers (\glosses{EnvModif}). This captures how terrain features both depend on and reshape their surroundings.
+
+The framework rests on three complementary abstractions (introduced in \cref{sec:env-obj-core-concepts}): 
+\begin{Itemize}
+    \Item{} \glosses{EnvVal} describe the environment as continuous scalar and vector fields, 
+    \Item{} \glosses{EnvObj} are sparse, scale-independent primitives with a skeleton and per-class rules, 
+    \Item{} and \glosses{EnvModif} mediate their mutual influence by translating object presence into local field updates.
+\end{Itemize}
+
+Generation proceeds iteratively: starting from an initial configuration of terrain, water level, materials, and an object catalogue, the system alternates between object instantiation and environment updates (\cref{sec:env-obj-generation-process}). Users can intervene at any time by editing objects or triggering \glosses{GeoEvent} (\cref{sec:env-obj-interaction}). The process converges to a steady state and yields a sparse semantic scene suitable for meshing or rendering (\cref{sec:env-obj-output}).
+
+% This section introduces the overall architecture of our method before detailing its components and execution. At a high level (\cref{fig:env-obj-pipeline}, \cref{alg:env-obj-pipeline}), we generate plausible, editable environments by instantiating sparse semantic primitives (\glosses{EnvObj}) that \emph{read from} and \emph{write to} continuous environmental fields (\glosses{EnvVal}), iterating to a steady state while allowing multi-scale user control.
+
+% \paragraph{Core components at a glance.}
+% \begin{Itemize}
+%   \Item \textbf{\glosses{EnvVal}}: continuous fields composing the environment $\environment=(\height,\;\Water,\;\Wlevel,\;\material)$. Here, $\height$ is the signed height (relative to $\Wlevel$), $\Water$ is the 2D water-current vector field, $\Wlevel$ the water level, and $\material$ a set of per-point resource stocks (e.g., sand, limestone, shade).
+%   \Item \textbf{\glosses{EnvObj}}: sparse, scale-agnostic primitives (points/curves/regions) that carry a semantic class and a lightweight \emph{skeleton}. Each object queries $\environment$ via a \gloss{FitnessFunc} to assess viability and a \gloss{FittingFunc} to optimise its skeleton (e.g., Snake optimisation for curves/regions).
+%   \Item \textbf{\glosses{EnvModif}}: local write-backs from objects to fields, $\environmentModif=(\heightModif,\;\waterModif,\;\materialModif)$, which update coarse elevation, deform the flow, and deposit/absorb \glosses{EnvMat}.
+% \end{Itemize}
+
+% \paragraph{Generation process (what happens each step).}
+% \begin{Itemize}
+%   \Item \textbf{Initialisation.} From a base height field $h$ and water level $\Wlevel$, we set $\height=h-\Wlevel$, initialise $\material$, and assemble a terrain-aware background flow $\Wsimu$; the global flow is $\Water=\Wuser+\Wsimu+\Wobj$.
+%   \Item \textbf{Iterative loop.} Each iteration proposes new \glosses{EnvObj} at high-fitness locations, refines their skeletons, and applies their \glosses{EnvModif}. Scalars in $\material$ evolve under an advection–diffusion–reaction update with decay (steady-state stabilisation), height is aggregated analytically from object groups, and $\Water$ combines user strokes $\Wuser$, analytic terrain flow $\Wsimu$, and object-induced deformations $\Wobj$ (Kelvinlets). Users may edit objects or trigger \glosses{GeoEvent} (water-level change, subsidence/uplift, storms), which analytically modify the fields.
+%   \Item \textbf{Termination.} The loop stops when a target is reached (e.g., object counts), a maximum iteration is met, or the user approves a steady snapshot.
+% \end{Itemize}
+
+% \paragraph{Output.}
+% The method returns a sparse semantic description of the scene: \glosses{EnvObj} with their 2D skeletons, classes, and modifier parameters. Geometry, meshing, and rendering are deferred to downstream tools; the exported representation preserves multi-scale coherence and supports interactive editing.
+
 
 
 
@@ -536,32 +507,107 @@ This section details each phase and explains how the system dynamically adapts t
     \textbf{Generation loop:}\;
     \While{\text{not stop (max iters / $\targetObjects$ reached / user approval)}}{
         % Instantiation
-        \tcp{(1) Instantiate new objects (\cref{sec:env-obj-generation-rules})}
+        \tcp{(1) Instantiate new objects }
         \ForEach{$\text{class} \in \availableObjects$}{
-            sample position: $\p_s \gets \arg\max_{\p_k}\;\fitnessFunc_{\text{class}}(\p_k,\environment)$ \tcp*{\cref{sec:env-obj-fitness-func}}
+            sample position: $\p_s \gets \arg\max_{\p_k}\;\fitnessFunc_{\text{class}}(\p_k,\environment)$\;
             \If{$\fitnessFunc_{\text{class}}(\p_s,\environment) > threshold_{\text{class}}$}{
-            compute object's \gloss{Skeleton}: $\gloss{Skeleton}_o \gets \fittingFunc_{\text{class}}(\environment)$ \tcp*{\cref{sec:env-obj-fitting-func}}
+            compute object's \gloss{Skeleton}: $\gloss{Skeleton}_o \gets \fittingFunc_{\text{class}}(\environment)$\;
             add new object $o$ to $\objects$\;
             }
         }
 
         % Environment update
-        \tcp{(2) Environment update from \glosses{EnvModif} (\cref{sec:env-obj-materials})}
-        $\height \gets \text{recompute from all objects height modifiers } \heightModif_o$ \tcp*{\cref{sec:env-obj-height-modifiers}}
-        $\Wsimu \gets \text{recompute from } \height$ \tcp*{\cref{sec:env-obj-water-currents}}
+        \tcp{(2) Environment update from \glosses{EnvModif}}
+        $\height \gets \text{recompute from all objects height modifiers } \heightModif_o$\;
+        $\Wsimu \gets \text{recompute from } \height$\;
         $\Wobj \gets \sum_{o \in \objects}\lambda_o\,\tensor{u}_o$\;
         $\Water \gets \Wuser + \Wsimu + \Wobj$\;
-        $\material \gets \text{advection-reaction-diffusion}$ \tcp*{\cref{sec:env-obj-material-modifiers}}
+        $\material \gets \text{advection-reaction-diffusion}$\;
         $\environment \gets (\height,\;\Water,\;\Wlevel,\;\material)$\;
-        apply direct user edits to \gloss{Skeleton} \tcp*{\cref{sec:env-obj-manual-interaction}}
-        apply \glosses{GeoEvent} analytically on $\environment$ \tcp*{\cref{sec:env-obj-events}}
+        apply direct user edits to \gloss{Skeleton}\;
+        apply \glosses{GeoEvent} analytically on $\environment$\;
         $\objects \gets \text{remove unfit objects}$\;
     }
     \Return{$\objects$} \tcp*{sparse \glosses{EnvObj}}
 \end{algorithm}
 
 
-\subsection{Initialization}
+
+
+\subsection{Core concepts}
+\label{sec:env-obj-core-concepts}
+
+Our approach extends the concept of \glosses{EnvObj}, simplified, scale-agnostic terrain features that interact with their surroundings to simulate complex ecosystem dynamics. These \glosses{EnvObj}, which represent natural features (corals, algae, islands, rocks, ...) influence and are influenced by environmental fields (temperature, humidity, elevation, ...). 
+
+In this section, we present the different related concepts that underpins our method.
+We first introduce the continuous environmental fields (\glosses{EnvVal}), then the discrete actors that perceive and affect these fields (\glosses{EnvObj}), before detailing how they modify the fields (\glosses{EnvModif}) and how the full pipeline orchestrates their interaction.
+
+\subsubsection{\Glosses{EnvVal}}
+\label{sec:env-obj-communication}
+
+In the field of geography and for EFMs, a "field" is a spatially continuous variable defined at every point of the domain, encompassing scalar fields (elevation, temperature) and vector fields (wind, current). In the following, we name every such quantity an \gloss{EnvVal}.
+
+In an ecosystem simulation, each actor has an impact on all other actors, which results in an exponentially growing computation effort which becomes problematic as the number of elements of the terrain increases. Direct pairwise interaction between $n$ organisms scales as $\mathcal{O}(n^{2})$.
+Instead, we adopt the standard EFM strategy: every \gloss{EnvObj} writes to local \glosses{EnvVal} through its \gloss{EnvModif}.
+Each object then reads them, turning the global complexity into a linear complexity per simulation step and thus remaining interactive even for thousands of objects.
+
+We bundle the currently supported fields under the unified term "environment", denoted as $\environment=(\height,\;\Water,\;\Wlevel,\;\material)$,
+where $\height$ (height) and $\Wlevel$ (water level) are scalars, $\Water$ (water currents) is a 2D vector field, and $\material$ (\glosses{EnvMat}) is a vector of per-point resource stocks (sand, salt, moisture, limestone, ...).
+
+% These \glosses{EnvMat} are conceptual reservoirs used by rule sets. They need not be visualised nor stored as layered textures.
+
+\subsubsection{\Glosses{EnvObj}}
+\label{sec:env-obj-environmental-objects}
+
+% \begin{figure}
+%     \autofitgraphics{assets-demo.pdf}
+%     \caption[Different \glosses{EnvObj}'s visuals]{\Glosses{EnvObj} can be visualised by 3D triangular meshes. From left to right: rocks, trees, corals, arches.}
+%     \label{fig:env-obj-assets}
+% \end{figure}
+
+A geographical feature, also called object or entity, is defined as a discrete phenomenon located at or near the Earth's surface. It represents geographic information that are depicted in maps, GIS, and other forms of geographic media. This term includes both natural and human-made objects, ranging from tangible items (e.g., buildings or trees) to intangible concepts (e.g., neighbourhoods or savanna). Features are distinct entities with defined boundaries, differentiating them from continuous geographic masses or processes occurring over time. They can be categorised as natural features, such as ecosystems, biomes, water bodies, and landforms, or artificial features (e.g., settlements, administrative regions, and engineered constructs). We use the term \gloss{EnvObj} in this work to avoid the ambiguous term "feature".
+
+\AltTextImage{
+Each \gloss{EnvObj} is anchored by a skeleton (a point, curve, or region in the cartographic sense) which captures its footprint while postponing heavy geometry generation (\cref{fig:env-objs_example-scheme1}). Our objects are:
+\begin{Itemize}
+    \Item{} \textbf{Point-based}: isolated boulders, individual trees, individual corals, ...
+    \Item{} \textbf{Curve-based}: river, coral reefs, fault scarps, ...
+    \Item{} \textbf{Region-based}: islands, forests, sediment patches, ...
+\end{Itemize}
+}{Env-obj-scheme1.png}{Environmental objects, from 2D abstract geometric shapes (top) to a possible 3D geometry (bottom).}{fig:env-objs_example-scheme1}{Illustration of the abstract \glosses{EnvObj} geometry and the 3D translation}
+
+Via its specified \glosses{EnvModif}, an \gloss{EnvObj} locally deposits, removes, or diverts \glosses{EnvMat}, thereby updating the surrounding \glosses{EnvVal}. Conversely, its viability is re-evaluated through a user-defined \gloss{FitnessFunc} that samples those same fields. If viable, a \gloss{FittingFunc} refines the skeleton (e.g., a river streams downhill, and seagrass meadow patches are limited to luminous areas).
+
+\subsubsection{\Glosses{EnvModif}}
+
+The environment determines if an \gloss{EnvObj} can survive at a certain position.
+When an \gloss{EnvObj} is placed, its surrounding \glosses{EnvVal} are affected through \glosses{EnvModif} $\environmentModif = (\heightModif, \waterModif, \nothing, \materialModif)$ where $\heightModif$ defines a change of height, $\waterModif$ the modifications of the water current field, and $\materialModif$ the \glosses{EnvMat} alterations. The water level~$\Wlevel$ is not modified by an object, hence~$\nothing$.
+
+\Glosses{EnvObj} are subject to altitude constraints.
+However, to maintain a clear distinction between semantic modelling and 3D modelling, we do not compute the exact physical shape or detailed height field of each \gloss{EnvObj}.
+Instead, we define a \gloss{CoarseHeight}~$\heightModif$, a parametric surface derived from the \gloss{Skeleton}, that provides a coarse estimate of local elevation changes. This coarse proxy lets us evaluate altitude-dependent rules without the cost of globally computing the height field.
+
+Altering the vector field~$\Water$ is performed by composing the individual contributions $\waterModif$ of each object at position~$\p$, following \cite{Wejchert1991}. For efficiency we adopt an analytical deformation kernel inspired by Kelvinlet solutions \cite{DeGoes2017} to aggregate these local disturbances.
+
+Each \gloss{EnvObj} possesses intrinsic \glosses{EnvMat} that both spread and are absorbed around its skeleton over time. For example, a coral colony deposits limestone while simultaneously slowing currents; the reef then uptakes that limestone for growth.
+In our model the colony contributes a deposition term $\materialModif_{\text{limestone}}$, and the reef absorbs it. No direct object-object communication is required.
+
+Scalar \glosses{EnvVal} are updated by adding or removing mass around the \gloss{Skeleton} and then diffusing it, biased by $\Water$.
+We assume a \gloss{SteadyState} regime, guaranteed by a decay rate~$\decay \in [0, 1[$ that prevents unbounded accumulation during advection-diffusion.
+
+% \section{Our pipeline}
+
+% The proposed method is structured into three key phases: 
+% \begin{Itemize}
+%     \Item{} \textbf{initialization:} sets up the foundational terrain elements and \glosses{EnvObj} definitions; 
+%     \Item{} \textbf{iterative generation process:} instantiates \glosses{EnvObj} and updates their surrounding environment; 
+%     \Item{} \textbf{output stage:} that yields a sparse representation of the scene's features. 
+% \end{Itemize}
+% This section details each phase and explains how the system dynamically adapts to user input and environmental changes. \cref{alg:env-obj-pipeline} summarise the overall process of our method.
+
+
+\subsection{Initialisation}
+\label{sec:env-obj-initialisation}
 
 We initialise the terrain with a height field $h$ and a water level $\Wlevel$. During this chapter we will include many \glosses{EnvObj} depending on altitude or depth, so we will use the shorthand notations $\height = h-\Wlevel$ (signed height above water) and $\depth=-\height$ (signed depth below water). The height field provides variation in altitude, which can influence the generation process of the scene.
 
@@ -574,32 +620,24 @@ An initial environment configuration, resulting from the initial height field $h
 The definition of \glosses{EnvObj} properties and \glosses{EnvVal} is done with field experts, who first decide which \glosses{EnvMat} layers are relevant for the target biome and then anchor the corresponding parameters in the system.
 The generation phase starts from this environment plus an optional seed set of \glosses{EnvObj}.
 
+
+
+
 \subsection{Generation process}
+\label{sec:env-obj-generation-process}
 
-After initialization, the system enters an incremental loop with two stages:
+Once initialization is complete, we enter an iterative generation phase in which objects and environment co-evolve until a steady state is reached. Each iteration alternates between two main stages: 
 \begin{Itemize}
-    \Item{} instantiate candidate \glosses{EnvObj}, then
-    \Item{} update the environment.
+    \Item{} \textbf{object instantiation and shaping}, where new \glosses{EnvObj} are proposed, evaluated, and fitted to their surroundings and
+    \Item{} \textbf{environment update}, where these objects modify the environmental fields through their \glosses{EnvModif}.
 \end{Itemize}
-The loop terminates when user-defined criteria are met (e.g.\ an iteration count threshold, the target set of \glosses{EnvObj} $\targetObjects$, or manual approval).
 
-\subsubsection{Instantiation}
+The iterative loop continues until user-defined termination criteria are met such as a fixed number of iterations, the completion of a target object set $\targetObjects$, or explicit user approval.  
+During this process, users may intervene at any time to steer the generation, either by editing individual \glosses{EnvObj} interactively or by triggering large-scale \glosses{GeoEvent} that globally affect the environmental fields.  
 
-Each iteration proposes new \glosses{EnvObj} at locations sampled stochastically and ranked by their \glosses{GenRule} (\cref{sec:env-obj-generation-rules}).
-Every instantiated object immediately evaluates its own viability through the user-supplied \gloss{FitnessFunc} and adjusts shape and pose with the \gloss{FittingFunc}.
+The following subsections detail these mechanisms: the instantiation of candidate objects and their fitness-based adjustment, the update of height, flow, and material fields via local modifiers, and the interactive and event-driven interventions that allow continuous user control.
 
-\subsubsection{Environment update}
-
-After instantiation, every \gloss{EnvObj} applies its \glosses{EnvModif}: perturbing the flow field $\Water$ (\cref{sec:env-obj-water-currents}), and deforming the coarse height field $\height$, then depositing or absorbing \glosses{EnvMat} $\material$ (\cref{sec:env-obj-materials}) as an advection-diffusion solver relaxes \glosses{EnvMat} under current-driven transport and gravity until a local steady state is reached.
-
-At any iteration, the user may edit individual \glosses{EnvObj} interactively (\cref{sec:env-obj-manual-interaction}) or schedule \glosses{GeoEvent}, such as storms or ground subsidence, that modify \glosses{EnvVal} globally (\cref{sec:env-obj-events}).
-
-\subsection{Output}
-
-The output of our system is a set of \glosses{EnvObj} stored as 2D skeletons in the plane. We deliberately stop at this sparse, symbolic level; meshing, texturing, and final rendering are left to downstream tools chosen by the end-user. For each object, we export its skeleton geometry, semantic class, and environment-modifier parameters, enough to drive terrain synthesis or placement of assets in a game engine or simulator. Figures in this chapter illustrate possible renderings generated with a mix of implicit surfaces and triangular meshes (\cref{fig:env-obj-assets}).
-
-
-\section{Placement of \glosses{EnvObj} in an environment}
+\subsubsection{Placement of \glosses{EnvObj} in an environment}
 \label{sec:env-obj-generation-rules}
 
 At each iteration of our algorithm, we aim to place new \glosses{EnvObj} at plausible locations. Because we do not enforce physical time continuity, our goal is to progressively enrich the scene according to user intent while maintaining ecological and geological plausibility.
@@ -609,7 +647,7 @@ Our placement algorithm proceeds in two steps: first, it identifies the globally
 
 % For notational simplicity, we abbreviate $\fitnessFunc(\environment(\p))$ and $\fittingFunc(\environment(\p))$ as $\fitnessFunc(\p)$ and $\fittingFunc(\p)$, respectively.
 
-\subsection{\Gloss{FitnessFunc}}
+\paragraph{\Gloss{FitnessFunc}}
 \label{sec:env-obj-fitness-func}
 
 \begin{figure}
@@ -628,16 +666,16 @@ In practice, to find suitable locations for an object, we evaluate its $\fitness
 
 The value of the \gloss{FitnessFunc} can be used later on to modify the geometric representation or the appearance of the \gloss{EnvObj} to appear more eroded (\cref{fig:env-obj-procedural-erosion}).
 
-\subsection{\Gloss{FittingFunc}}
+\paragraph{\Gloss{FittingFunc}}
 \label{sec:env-obj-fitting-func}
 
 A candidate object is first seeded at the position $\p_s = \arg \max_\p \fitnessFunc(\p)$, i.e. the global maximum of the fitness map. This seed acts as the initial guess for the subsequent shape optimisation for the \gloss{FittingFunc} $\fittingFunc(\environment): \R^2 \to \R$ described below. Moreover, this two-step optimisation allows a coarse approximation of the global maximum of the \gloss{FitnessFunc} with few samples, reducing its computational demand, as the \gloss{FittingFunc} optimisation is focused on a single seed.
 
-\subsubsection{Point-based \gloss{Skeleton}}
+\subsubsubsection{Point-based \gloss{Skeleton}}
 
 For objects whose skeleton reduces to a single point (boulders, individual corals, etc.), we refine the seed by hill-climbing on a (possibly different) fitting field $\fittingFunc$. In most cases, we simply set $\fittingFunc = \fitnessFunc$, but the user may supply a sharper or multi-objective field when needed. Optimisation proceeds by gradient ascent on $\nabla\fittingFunc$. % with a small step size and terminates when $|\nabla \fittingFunc|<\varepsilon$.
 
-\subsubsection{Curve-based \gloss{Skeleton}}
+\subsubsubsection{Curve-based \gloss{Skeleton}}
 
 The skeleton of a curve-based \gloss{EnvObj} is best fitting shape in the environment it is added to.
 Using an Active-Contour ("snake") formulation \cite{Kass1988}, we seek a parametric curve $\curve$ that minimises the following composite energy:
@@ -645,7 +683,7 @@ Using an Active-Contour ("snake") formulation \cite{Kass1988}, we seek a paramet
     \eqlabel{eq:env-obj-snake}{Modified Snake energy}
     \energy(\curve) = \Einternal + \Eexternal + \Eshape + \Egradient,
 \end{align}
-with
+% with
 % \begin{align}
 %     \eqlabel{eq:env-obj-snake-energy-equation-internal}{Modified Snake internal component}
     % \Einternal &= \Ainternal \left( \int_{\curve}{ \norm{\curve'(s)}^2 \, ds} + \int_{\curve}{ \norm{\curve''(s)}^2 \, ds} \right), \\
@@ -661,27 +699,27 @@ with
 
 In this configuration, $\Einternal$ induces a smooth continuity of the curve by reducing the spacing of each point while reducing the curvature. Another energy, $\Eexternal$, integrates the \gloss{FittingFunc} over the curve, often seen as an attractor of the points, that tries to descend the gradient to find local minima. At the same time, $\Eshape$ applies constraints on the curve shape, which, in this case, is to target a specific length $\Length$. As such, the curve searches for an optimised shape given constraints in $\Eshape$ for minimising $\Eexternal$. We introduce a new term $\Egradient$ in the energy computation that pushes the points of the curve in the direction of the slope of the \gloss{FittingFunc}, also providing an orientation for the curve.
 
-If a steep coast is found where the terrain slope is significant near the water level, we define $\fittingFunc = \abs{\height + 1} / \norm{\Delta \height}$, but no orientation is needed, thus we set $\Agradient = 0$. In this case, the curve will follow a path at the water level and spread its extremities over areas with a steep slope. A river may also be symbolised as a parametric curve, but we need to add information about the direction and magnitude of the slope. As such, we use $\fittingFunc = \height$, which forces the direction of the curve to fit with the terrain slope. The introduction of the gradient component also provides an orientation to shapes.
+% If a steep coast is found where the terrain slope is significant near the water level, we define $\fittingFunc = \abs{\height + 1} / \norm{\Delta \height}$, but no orientation is needed, thus we set $\Agradient = 0$. In this case, the curve will follow a path at the water level and spread its extremities over areas with a steep slope. A river may also be symbolised as a parametric curve, but we need to add information about the direction and magnitude of the slope. As such, we use $\fittingFunc = \height$, which forces the direction of the curve to fit with the terrain slope. The introduction of the gradient component also provides an orientation to shapes.
 
-
+\begin{Itemize}
 \AltTextImage{
-    \subsubsubsection{Internal energy}
+    \Item{} Internal energy: \\
     The internal energy introduced in \cite{Kass1988} is composed of two components imposing penalties on the local properties of the points of the curve. The first derivative forces the points along the curve to be evenly spaced by minimising the curve tension, while the second derivative restricts it from forming sharp corners, increasing the rigidity of the curve. As our aim is to represent natural elements, we rarely find sharp features and thus we use the original definition from the Snake formulation:
     }{snake_algorithm_internal.pdf}{Internal energy minimisation for one vertex is done by reducing the difference of length with the next and with the previous vertices (tension, left), while reducing the curvature at this point (rigidity, right).}{fig:env-obj-snake-internal}{Snake algorithm - Internal energy}
     
 \begin{align}
-\eqlabel{eq:env-obj-snake-energy-equation-internal}{Modified Snake internal component}
+    \eqlabel{eq:env-obj-snake-energy-equation-internal}{Modified Snake internal component}
     \Einternal &= \Ainternal \left( \int_{\curve}{ \norm{\curve'(s)}^2 \, ds} + \int_{\curve}{ \norm{\curve''(s)}^2 \, ds} \right).
 \end{align}
 
 In \cref{fig:env-obj-snake-internal} we see the two different components of this energy minimisation: averaging the vector formed by the previous segment with the vector formed by the next segment, we move the vertex to a position for which the two new segments are equal in length. On the other hand, translating the vertex towards its projection minimises the curvature at this vertex.
 
 \AltTextImage{
-    \subsubsubsection{External energy}
+    \Item{} External energy: \\
     The external energy is also present in the original work. Using an external scalar field, each point of the curve is forced to follow the steepest slope of the field. The external field can be seen as an attractor for the curve (\cref{fig:env-obj-snake-external}).
 
     \begin{align}
-    \eqlabel{eq:env-obj-snake-energy-equation-external}{Modified Snake external component}
+        \eqlabel{eq:env-obj-snake-energy-equation-external}{Modified Snake external component}
         \Eexternal &= -\Aexternal \int_{\curve}{ \fittingFunc(\curve(s)) \, ds }
     \end{align}
 
@@ -690,11 +728,11 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
 }{snake_algorithm_external.pdf}{The central vertex external energy is optimised by translating in the same direction as the function's gradient $\nabla \fitnessFunc$.}{fig:env-obj-snake-external}{Snake algorithm - External energy}
 
 \AltTextImage{
-    \subsubsubsection{Shape energy}
+    \Item{} Shape energy: \\
     We introduce the shape energy, an energy defined on the whole curve to apply constraints on its final shape. As natural features often have a given dimension, we propose to add a constraint on the length of the \gloss{Skeleton} (\cref{fig:env-obj-snake-shape}):
     
     \begin{align}
-        eqlabel{eq:env-obj-snake-energy-equation-shape}{Modified Snake shape component}
+        \eqlabel{eq:env-obj-snake-energy-equation-shape}{Modified Snake shape component}
         \Eshape &= \Ashape \left( \Length - \int_{\curve}{\|\curve'\| \, ds } \right)^2.
     \end{align}
 
@@ -703,7 +741,7 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
 }{snake_algorithm_shape.pdf}{The shape energy is minimised when the arc length of the curve $\curve$ is equal to a parameter $\Length$, obtainable by moving towards or in opposition to its neighbours.}{fig:env-obj-snake-shape}{Snake algorithm - Shape energy}
 
 \AltTextImage{
-    \subsubsubsection{Gradient energy}
+    \Item{} Gradient energy: \\
     In our application, having information about the orientation of \glosses{EnvObj} may be essential, such as guiding a river in the direction of the slope. For this purpose, we introduced a gradient energy component in the formulation. The equation imposes that the direction of the curve at any point should be directed towards the gradient of the scalar field (\cref{fig:env-obj-snake-gradient}): 
     
     \begin{align}
@@ -715,6 +753,7 @@ In \cref{fig:env-obj-snake-internal} we see the two different components of this
     }{snake_algorithm_gradient.pdf}{The gradient energy is minimised when the curve crosses perpendicularly the isolines of the function. Black: the initial curve, Blue: a possible curve crossing the gradient obtained by displacing the vertices. % The scalar field is stylised to display isolines that the optimal curve has to cross.
 }{fig:env-obj-snake-gradient}{Snake algorithm - Gradient energy}
 During the optimisation process, the gradient of the scalar field is already evaluated by the external energy optimisation, so the addition of the gradient component comes without additional cost.
+\end{Itemize}
 
 \begin{figure}
     \labelledautofitgraphics[]{$\Agradient > 0$}{snake1.png, snake2.png, snake3.png}
@@ -726,7 +765,7 @@ During the optimisation process, the gradient of the scalar field is already eva
     \label{fig:env-obj-snake-gradient-example}
 \end{figure}
 
-\subsubsection{Region-based \gloss{Skeleton}}
+\subsubsubsection{Region-based \gloss{Skeleton}}
 
 When the skeleton is a closed boundary (island, forest patch, lagoon), we adapt Chan-Vese segmentation \cite{Chan2001}: the gradient term vanishes and the external energy integrates over the enclosed domain.
 
@@ -742,7 +781,7 @@ $\lambda_1$ emphasises interior homogeneity (e.g.\ constant humidity for a fores
 
 Finally, the shape constraint energy $\Eshape$ targets an area $\Area$:
 \begin{align*}
-    \Eshape = \left( \Area - \int_{\domain}{1 \, ds } \right)^2.
+    \Eshape = \Ashape \left( \Area - \int_{\domain}{1 \, ds } \right)^2.
 \end{align*}
 
 In our implementation, each \gloss{EnvObj}'s \gloss{Skeleton} is a connected component, as we define the boundaries by the connected curve $\curve$, but it can be convex or concave. An infinite penalty is added for the curve's self-intersection.
@@ -750,7 +789,9 @@ In our implementation, each \gloss{EnvObj}'s \gloss{Skeleton} is a connected com
 At every global iteration, each object re-evaluates $\fitnessFunc(\curve, \environment) < T_{\text{fit}}$ with $T_{\text{fit}}$ a threshold for which the object is removed, fixed for each object class; otherwise we take advantage of the iterative nature of the Snake algorithm and improve the shape of the \gloss{Skeleton} by optimising their \gloss{FittingFunc} again. If the user fixed the position of vertices, we simply set $\nabla \energy = \vec{0}$ at the given vertices. %, multiple global iterations after their instantiation. As the number of \glosses{EnvObj} becomes large, readjusting all \glosses{Skeleton} becomes time-consuming, so we can use this process for the $n$ most recent \glosses{EnvObj} in the scene.
 
 % ---------- Environment modifiers -------------------------------------------
-\section{\Glosses{EnvModif}}
+% \subsubsection{\Glosses{EnvModif}}
+\subsubsection{\Gloss{EnvMat} modifiers}
+\label{sec:env-obj-material-modifiers}
 \label{sec:env-obj-materials}
 
 Every instantiated \gloss{EnvObj} contributes a local \gloss{EnvModif} tuple $\environmentModif_o=(\heightModif_o, \;\waterModif_o, \;\materialModif_o)$, affecting elevation, flow, and resource fields respectively. At the end of each iteration we assemble the provisional environment:
@@ -760,8 +801,6 @@ Every instantiated \gloss{EnvObj} contributes a local \gloss{EnvModif} tuple $\e
 \end{align}
 before advection-diffusion relaxation and viability tests.
 
-\subsection{\Gloss{EnvMat} modifiers}
-\label{sec:env-obj-material-modifiers}
 For every material layer $\oneMaterial \in \material$ (sand, limestone, nutrients, ...), we store a scalar availability field $\concentration_\oneMaterial(\p,t)$ defined on the plane. %This is not a volumetric thickness, merely a stock or probability used by the placement rules (Sec.~\ref{sec:env-obj-communication}).
 
 Each material has four transport parameters $(\mass_\oneMaterial, \velFactor_\oneMaterial, \diffusion_\oneMaterial, \decay_\oneMaterial)$: mass density $\mass_\oneMaterial$, flow-coupling factor $\velFactor_\oneMaterial$, molecular diffusivity $\diffusion_\oneMaterial$, and first-order decay rate $\decay_\oneMaterial$.
@@ -844,12 +883,12 @@ The effects of varying the different material properties of sand spread from roc
     \autofitcaptions[]{}
     \labelledautofitgraphics[]{With advection}{diffusion_no_decay_circular_wind.pdf, diffusion_decay_0-05_circular_wind.pdf}
     \autofitcaptions[]{No decay, With decay $\decay=0.05$}
-    \caption[Effect of decay on advection-diffusion-reaction simulations]{With the addition of a decay term in the advection-diffusion-reaction equation, the spread of the \glosses{EnvMat} tends towards stability after a few iterations (right), whereas the total mass would otherwise increase indefinitely (left). Concentration values are clamped to 1 for visualization. This behavior also holds in the presence of a flow field (bottom), here with bounded diagonal vector field oriented along $x=y$. Moreover, decay reduces boundary-related instabilities; bottom left uses a zero-gradient boundary condition, which leads to a blow-up from the borders.}
+    \caption[Effect of decay on advection-diffusion-reaction simulations]{With the addition of a decay term in the advection-diffusion-reaction equation, the spread of the \glosses{EnvMat} tends towards stability after a few iterations (right), whereas the total mass would otherwise increase indefinitely (left). Concentration values are clamped to 1 for visualization. This behavior also holds in the presence of a flow field (bottom), here with bounded diagonal vector field oriented along $x=y$. Moreover, decay reduces boundary-related instabilities; bottom left uses a zero-gradient boundary condition, which leads to unstability from the borders.}
     \label{fig:env-obj-stability-examples}
 \end{figure}
 
-% \subsubsection{Approximation of distances from \glosses{EnvMat}}
-\paragraph{Approximation of distances from \glosses{EnvMat}.}
+% \subsubsubsubsection{Approximation of distances from \glosses{EnvMat}}
+\subsubsubsection{Approximation of distances from \glosses{EnvMat}.}
 
 The use of \glosses{EnvMat} provides an efficient, on-demand approximation of the distance to the closest instance of an object type $\objects$, with computational complexity linear in the number of objects in the scene. For each object type (e.g., coral, rock, reef, island, ...), we maintain a separate \gloss{EnvMat} field $\material_\text{object}$ that evolves under diffusion-reaction only (advection disabled by setting $\velFactor = 0$ and $\mass = 0$). The object's skeleton acts as a Dirichlet boundary: for every skeleton point $\q$, the concentration is fixed to a constant value $\concentration_\text{object}(\q) = C_s$ with $C_s > 0$. 
 
@@ -892,7 +931,7 @@ This setup allows direct queries for the distance to any specific type without a
 
 
 
-\subsection{Height modifiers}
+\subsubsection{Height modifiers}
 \label{sec:env-obj-height-modifiers}
 
 Terrain elevation is updated by blending the \gloss{CoarseHeight} functions of all objects that overlap a query point $\p$. We simplify the shape of \glosses{EnvObj} to analytical functions such as a mountain to a cone, a reef as a curved cylinder, or a coral boulder as a sphere, enabling fast, on-demand, and multi-scale computation of the altitude at any point. Because we work with a DEM, overhangs are ignored.
@@ -926,7 +965,7 @@ To preserve ordering constraints, we partition objects into three mutually exclu
 
 }{height_modif.png}{The final \gloss{CoarseHeight} is a combination of the three groups of \glosses{EnvObj}: grounded data $\groundedHeight$ (red) and altitude-relative shapes $\altitudeHeight$ (orange) are aggregated by the $\smoothmax$ operator, then the surface elements $\surfaceHeight$ (green) are added.}{fig:env-obj-height-modif}{Combination of grounded, altitude-relative, and surface \glosses{EnvObj} in coarse elevation computation}
 
-\subsection{Influence on water currents}
+\subsubsection{Influence on water currents}
 \label{sec:env-obj-water-currents}
 
 We define the global water current as a vector field composed of three components:
@@ -967,9 +1006,10 @@ Unlike physics-based solvers (discussed further in \cref{chap:erosion}), the ana
 
 While the model assumes steady-state flow and does not simulate dynamic phenomena such as rainfall, flooding, or erosion, these effects can be layered atop the static flow if needed, preserving a lightweight design that still conveys physically plausible behaviour. Finally, our system is purposefully modular: $\Wsimu$ addresses large-scale flow patterns, while small-scale variations (turbulence, vortices, and flow deviations caused by small-scale features) are handled separately by the $\Wobj$ term, allowing each component to specialise in its relevant spatial scale.
 
-\subsubsection{Vector field deformation through Kelvinlets}
 
 \AltTextImage{
+    \subsubsubsection{Vector field deformation through Kelvinlets}
+
     $\Wobj$ is a deformation field defined as the accumulation of flow primitives. The use of analytical primitives to represent localised variations within large-scale scenes has been explored in various contexts through the edition of wind fields (\cref{fig:env-obj-wejchert-flow}) \cite{Wejchert1991} and authoring of rivers' water surface geometry (\cref{fig:env-obj-peytavie-river-primitives}) \cite{Peytavie2019}. In the latter, flow primitives are primarily used to generate the geometry of the water surface, but the same primitives are also reused to produce a flow field, enabling effects such as floating debris or leaves drifting along the surface. Because geometry is sensitive to overlapping influences, the authors organise primitives into a blending tree, where merge and replace operations control how individual contributions interact.
 }{riverscape-primitives-Peytavie2019.png, riverscape-result-Peytavie2019.png}{\citeName{Peytavie2019} uses a sparse representation of a river surface to include details at the water surface that are aggregated in a construction tree \cite{Peytavie2019}.}{fig:env-obj-peytavie-river-primitives}{\cite{Peytavie2019}'s sparse representation of river surface}
 
@@ -984,24 +1024,26 @@ Kelvinlets are based on the Kelvin solution, which is the Green's function of th
 \begin{align*}
     \mu \nabla^2 \tensor{u} + (\lambda + \mu) \nabla(\nabla \cdot \tensor{u}) + \delta(\p - \q) \force = 0,
 \end{align*}
+
 where $\lambda$ and $\mu$ are the Lamé parameters, with $\mu$ also known as the shear modulus, and $\force$ is the force vector applied at a single point $\q$ via the Dirac delta function $\delta(\p - \q)$.
 
+To regularise the singularity at $\p = \q$, \citeName{DeGoes2017} introduced a smoothed form known as the regularised Kelvinlets, which allow deformation effects to fall off smoothly with distance, and prevent numerical instabilities \cite{DeGoes2017}.
+
+Given a centre $\q$, an evaluation point $\p$, and a regularisation $\eps$, we define $\tensor{r} = \p - \q$ and the regularised distance $r_{\eps} = \sqrt{\|\tensor{r}\|^2 + \eps^2}$.
+
 \AltTextImage{
-    To regularise the singularity at $\p = \q$, \citeName{DeGoes2017} introduced a smoothed form known as the regularised Kelvinlets, which allow deformation effects to fall off smoothly with distance, and prevent numerical instabilities \cite{DeGoes2017}.
-
-    Given a centre $\q$, an evaluation point $\p$, and a regularisation $\eps$, we define $\tensor{r} = \p - \q$ and the regularised distance $r_{\eps} = \sqrt{\|\tensor{r}\|^2 + \eps^2}$.
-
-    We use the scale and grab formulations of the regularised Kelvinlets brushes (\cref{fig:env-obj-kelvinlets-demo}), denoted as $s_\eps(\tensor{r})$ and $g_\eps(\tensor{r})$ respectively, to simulate obstruction and diversion, and define them as:
+    We use the scale, grab, and twist formulations of the regularised Kelvinlets brushes (\cref{fig:env-obj-kelvinlets-demo}), denoted as $s_\eps(\tensor{r})$, $g_\eps(\tensor{r})$, and $t_\eps(\tensor{r})$ respectively, to simulate obstruction, diversion, and vortex formation. Each \gloss{EnvObj} may combine several instances of these primitives at different positions and orientations.:
     \begin{align}
         \eqlabel{eq:env-obj-kelvinlet-scale-grab-expressions}{Regularised Kelvinlets scale and grab operators}
         s_\eps(\tensor{r}) &= (2b - a) \left( \frac{1}{r_\eps^3} + \frac{1}{2r_\eps^5} \right)(s \tensor{r}), \nonumber \\
         g_\eps(\tensor{r}) &= \left[ \frac{a - b}{r_\eps} \identity + \frac{b}{r_\eps^3} \tensor{r} \tensor{r}^t + 
-    \frac{a \eps^2}{2 r_\eps^3} \identity \right] \force,
+    \frac{a \eps^2}{2 r_\eps^3} \identity \right] \force, \nonumber \\
+        t_\eps(\tensor{r}) &= -a\left(\frac{1}{r_\eps^3} + \frac{3 \eps^2}{2 r_\eps^5} \right) \q \times \tensor{r},
     \end{align}
     with $a = \frac{1}{4 \pi \mu}$ and $b = \frac{a}{4 (1 - \upsilon)}$, provided $\mu$ is a shear modulus and $\upsilon$ a Poisson ratio specified for each Kelvinlet, $s$ a scaling factor, and $\force$ the force vector of the grab operation. These values are tunable per object to simulate different material or flow resistance behaviours.
 }{kelvinlets-grab-demo-DeGoes2017.png, kelvinlets-demo-DeGoes2017.png}{\citeName{DeGoes2017} presents four types of deformations using Kelvinlets, resulting in organic pinch-like interaction with the original field. Top: a grab on a \textcopyright Disney/Pixar character. Bottom, from left to right: a twist, a scale, and a pinch operation \cite{DeGoes2017}.}{fig:env-obj-kelvinlets-demo}{\cite{DeGoes2017}'s Kelvinlet deformations}
 
-Deformations defined on curves use $\q = \closestCp$ with $\closestCp$ the closest point on the curve from the point $\p$ and $\force = \curve'(\p)$. We then define $\tensor{u}_\oneObject(\p) = s_\eps(\q - \p) + g_\eps(\p - \q)$.
+Deformations defined on curves use $\q = \closestCp$ with $\closestCp$ the closest point on the curve from the point $\p$ and $\force = \curve'(\p)$. We then obtain each \gloss{EnvObj}'s flow field as the sum of all its Kelvinlet primitives distributed according to the \gloss{EnvObj}s shape and influence: $\tensor{u}_\oneObject(\p) = \sum{s_\eps} + \sum{g_\eps} + \sum{t_\eps}$.
 
 Finally, we retrieve the velocity field from the objects, with a per-object coefficient $\lambda_o$ for the strength of its flow effects (due to its size, porosity, surface roughness, etc.):
 \begin{align}
@@ -1009,15 +1051,29 @@ Finally, we retrieve the velocity field from the objects, with a per-object coef
     \Wobj(\p) = \sum_{\oneObject \in \objects}^{}{\lambda_\oneObject \tensor{u}_\oneObject(\p)}.
 \end{align}
 
+The different configurations of Kelvinlet compositions used for point-, curve-, and region-based objects are illustrated in \cref{fig:env-obj-objects-and-kelvinlets}, showing how each \gloss{EnvObj} modifies the base flow according to its geometry and role in the environment.
+
 The use of regularised Kelvinlets is well-suited to our model. They offer a compact representation thanks to their closed-form definition, which allows each deformation to be described analytically without the need for precomputed data or large simulation grids. They maintain continuity, ensuring that the resulting vector field is smooth and free of visual or numerical artefacts, which is crucial when blending influences from multiple environment objects. Their behaviour is physically plausible, as they are derived from fundamental solutions to elasticity equations, and can convincingly simulate natural flow behaviours such as deflection around obstacles or local flow obstruction. They are also computationally efficient, since their evaluation is lightweight and independent of the size or complexity of the terrain, making them particularly suitable for integration into large-scale procedural generation pipelines and real-time interactive applications.
 
-\cref{fig:env-obj-rock-with-kelvinlets} presents a rock acting as an obstacle to the incoming water flow, which guides the flow, and more importantly the \glosses{EnvMat}, in a plausible direction on the side of the obstacle, with the introduction of artificial vortices at its back. A curve-based water influence is presented in \cref{fig:env-obj-canyon-flow} and \cref{fig:env-obj-canyon-inside-with-arch}, which is a unique "grab Kelvinlet" in the direction of the curve skeleton of the canyon, and thus inserting new \glosses{EnvObj} downstream, where the \glosses{EnvMat} are transported.
+\cref{fig:env-obj-rock-with-kelvinlets} presents a rock acting as an obstacle to the incoming water flow, which guides the flow, and more importantly the \glosses{EnvMat}, in a plausible direction on the side of the obstacle, with the introduction of artificial vortices at its back. At a larger scale, the same additive formulation extends to multiple interacting environment objects. \cref{fig:env-obj-island-flowfield} shows how islands, reefs, and coastal structures jointly reshape the flow, their individual Kelvinlet-based influences blending into a coherent global current pattern. A curve-based water influence is presented in \cref{fig:env-obj-canyon-flow} and \cref{fig:env-obj-canyon-inside-with-arch}, which is a unique "grab Kelvinlet" in the direction of the curve skeleton of the canyon, and thus inserting new \glosses{EnvObj} downstream, where the \glosses{EnvMat} are transported.
 
-Unfortunately, the Kelvinlet paradigm is not applicable to region-based \glosses{EnvObj}. In this case, the water influence is given using the vector towards the closest point on the outline, scaled by the distance between the evaluation point and the curve, as presented in \cref{fig:env-obj-island-flowfield}. Note that the vector field produced by the islands is directly computed by the distance field of its region's boundaries and is independent of the generated geometry, explaining the discrepancy between the emerged surface and the resulting flow field in \cref{fig:env-obj-island-flowfield}.
+To assess the plausibility of our analytical formulation, \cref{fig:env-obj-barrier-flowfield} compares our 2D projection of the velocity field around a reef with a full 3D CFD simulation, showing that the principal flow deflections and side vortices are well reproduced.
+
+Finally, \cref{fig:env-obj-archipelago-flowfield} demonstrates the scalability of the approach to larger scenes such as an archipelago. Each island and reef acts as an independent Kelvinlet composition, collectively producing a plausible large-scale oceanic flow without requiring full-domain simulation.
+
 
 \begin{figure}
-    \autofitgraphics[]{2025-06-21__12-53-48_render_top_view-with-sand.png, 2025-06-21__12-53-48_render_top_view-with-flow-with-sand.png, 2025-06-21__12-53-48_render_top_view-with-flow-with-sand-with-annotations.png}
-    \caption[Visualisation of water currents deviated by a rock]{A strong current is affected by a rock, visible by the deviation of sand (green) produced by smaller rocks. The flow is directly computed by the composition of three Kelvinlet objects assigned to the rock: a "scale Kelvinlet" (yellow) deflects the materials as an obstacle would; and two "twist Kelvinlets" (cyan) approximate the vortices of the flow, pushing the sand back behind the rock.}
+    \autofitgraphics[]{objects-kelvinlets.pdf}
+    \label{fig:env-obj-objects-and-kelvinlets}
+    \caption[Examples of \glosses{EnvObj}' Kelvinlet composition]{Examples of point-, curve- and region-based \glosses{EnvObj}' Kelvinlet operators composition. The $\Wobj$ field modifies the initial water flow. Final water flow is reprented by streamlines (dashed grey arrows).}
+\end{figure}
+
+\begin{figure}
+    \autofitgraphics[]{2025-06-21__12-53-48_render_top_view-with-sand.png, 2025-06-21__12-53-48_render_top_view-with-flow-with-sand-with-annotations.png, simu-cylinder.png}
+    \autofitcaptions[]{Materials steady state, Kelvinlets used, Ground truth}
+    % \autofitgraphics[]{2025-06-21__12-53-48_render_top_view-with-sand.png, 2025-06-21__12-53-48_render_top_view-with-flow-with-sand.png, 2025-06-21__12-53-48_render_top_view-with-flow-with-sand-with-annotations.png, simu-cylinder.png}
+    % \autofitcaptions[]{Materials steady state, Rock velocity field, Kelvinlets used, Ground truth}
+    \caption[Visualisation of water currents deviated by a rock]{A strong current is affected by a rock, visible by the deviation of sand (green) produced by smaller rocks. The flow is directly computed by the composition of three Kelvinlet objects assigned to the rock: a "scale Kelvinlet" (yellow) deflects the materials as an obstacle would; and two "twist Kelvinlets" (cyan) approximate the vortices of the flow, pushing the sand back behind the rock. Rightmost displays streamlines of CFD on a cylinder, matching approximatively our analytical solution. }
     \label{fig:env-obj-rock-with-kelvinlets}
 \end{figure}
 
@@ -1028,20 +1084,37 @@ Unfortunately, the Kelvinlet paradigm is not applicable to region-based \glosses
     \label{fig:env-obj-island-flowfield}
 \end{figure}
 
+\begin{figure}
+    \autofitgraphics[]{simu-barrier.png, simu-barrier-results.png}
+    \autofitcaptions[]{CFD ground truth, Our result}
+    % \autofitgraphics[]{simu-barrier-3D.png, simu-barrier.png, simu-barrier-results.png}
+    % \autofitcaptions[]{3D ground truth, 2D ground truth, Our result}
+    \label{fig:env-obj-barrier-flowfield}
+    \caption[Water flow for a reef]{3D fluid simulation over a reef. Our method approximates the 2D projection of this output, with the introduction of turbulences on the side of the reefs.}
+\end{figure}
 
-\section{User interactions}
+\begin{figure}
+    \autofitgraphics[]{islands-waters-no-flow.png, islands-waters-with-flow.png}
+    \autofitcaptions[]{\Glosses{EnvObj}, Resulting water flow field}
+    \caption[Water flow for an archipelago]{Archipelago with few islands, reefs and individual corals under an initial uniform water flow (going bottom to top) result in an analytical flow with each \gloss{EnvObj} composed of Kelvinlet operators. }
+    \label{fig:env-obj-archipelago-flowfield}
+\end{figure}
+
+\subsection{User interactions}
 \label{sec:env-obj-interaction}
 The user can guide the generation process. The use of simple shapes as \glosses{EnvObj} facilitates the edition of the simulation, as we can interactively add, remove or modify \glosses{EnvObj}, or focus the generation process in a restricted area. Interaction with the \glosses{EnvVal} is also provided as \glosses{GeoEvent}, that the user can invoke during the simulation. While the direct interactions on the \glosses{EnvObj} are instantaneous, the \glosses{GeoEvent} are active over a given duration.
 
-\subsection{Direct interactions with the \glosses{EnvObj}}
+\subsubsection{Direct interactions with the \glosses{EnvObj}}
 \label{sec:env-obj-manual-interaction}
 The interactive nature of our simulation enables the user to modify the state of the terrain by manipulating directly the \glosses{EnvObj} of the scene. We assume the modifications are applied between two iterations of the simulation.
 
 Translating an \gloss{EnvObj} is trivial, it simply requires evaluating the \gloss{FitnessFunc} of the \glosses{EnvObj} at a translated position to verify that the environment is still suitable for its survival.
 
-The deformation of \glosses{EnvObj} is applied on curve and region \glosses{EnvObj} by displacing directly the control points of the skeleton (\cref{fig:env-obj-user-interaction} deforming a canyon, and \cref{fig:env-obj-island-deformation} editing an island). Various methods are suitable for displacing a polygon, such as the use of Kelvinlets, cage deformation, displacement maps, or Gaussian influence. In the scope of this chapter, we will not cover the multiple aspects of curve and polygon deformation. However, as the closed or open geometry shape of the \gloss{Skeleton} changes, it needs to run again the \gloss{FittingFunc} optimisation through our Snake algorithm (\cref{sec:env-obj-generation-rules}).
+The deformation of \glosses{EnvObj} is applied on curve and region \glosses{EnvObj} by displacing directly the control points of the skeleton (\cref{fig:env-obj-user-interaction} deforming a canyon, and \cref{fig:env-obj-island-deformation} editing an island). 
+%Various methods are suitable for displacing a polygon, such as the use of Kelvinlets, cage deformation, displacement maps, or Gaussian influence. In the scope of this chapter, we will not cover the multiple aspects of curve and polygon deformation. 
+As the closed or open geometry shape of the \gloss{Skeleton} changes, we run again the \gloss{FittingFunc} optimisation through our Snake algorithm (\cref{sec:env-obj-generation-rules}).
 
-Locking the vertices from the deformed \gloss{Skeleton} edited manually by the user is achieved by cancelling the energy $\energy(\curve)_v$ from the Snake algorithm for this specific vertex $v$, disabling it from any displacement during the optimisation process. Finer control can be given by applying a coefficient on the energy gradient, such that the vertices are not locked but hindered.
+Locking the vertices from the deformed \gloss{Skeleton} edited manually by the user is achieved by cancelling the energy $\energy(\curve)_v$ from the Snake algorithm for this specific vertex $v$, disabling it from any displacement during the optimisation process. Finer control can be given by applying a coefficient on the energy gradient, such that the vertices are not locked but their displacement is only hindered.
 
 By modifying an \gloss{EnvObj}, \glosses{EnvVal} may change, which can result in the destruction of the now incompatible \glosses{EnvObj} in the scene (\cref{fig:env-obj-user-interaction}, middle). The removal of \gloss{EnvObj} is subject to chain reactions, often visible in nature. Reducing the reaction is achievable by alternating, until a steady state is reached again, a step in the environment update (\cref{sec:env-obj-materials}) and a step of \gloss{Skeleton} refinement for each \gloss{EnvObj}. As a counterbalance to the removal, each deleted \gloss{EnvObj} is reinserted if possible in the scene (\cref{fig:env-obj-user-interaction}, right) following the process described in \cref{sec:env-obj-generation-rules}.
 
@@ -1069,7 +1142,7 @@ Our water current simulation is modelled as a simple vector field. As such, the 
     \label{fig:env-obj-user-flow-effects}
 \end{figure}
 
-\subsection{Indirect interaction with \glosses{EnvObj}}
+\subsubsection{Indirect interaction with \glosses{EnvObj}}
 \label{sec:env-obj-events}
 A configuration file defines in advance the different \glosses{GeoEvent} that should be triggered during the simulation. 
 This enables the simulation to reproduce the geological evolution of real-world landscapes.
@@ -1077,7 +1150,7 @@ This enables the simulation to reproduce the geological evolution of real-world 
 Multiple \glosses{GeoEvent} can be triggered either as sudden or continuous environmental changes. These changes have a major impact on landscape morphology.
 We define \glosses{GeoEvent} with a starting point and an ending point, such that at any time of the simulation we compute the progress of the \gloss{GeoEvent} as $\tEvent \in [0, 1]$ and linearly interpolate the effects on \glosses{EnvVal}.
 
-\subsubsection{Water level events}
+\subsubsubsection{Water level events}
 Water level changes are key \glosses{GeoEvent} that shape underwater landscapes. As previously submerged \glosses{EnvObj} become elevated above the water level, flora and fauna terrain features dry and die. Deprived of the living part of the features, everything is more affected by terrestrial erosion. By updating the value of the depth $\depth$ evaluated in the \glosses{FitnessFunc}, any \gloss{EnvObj} that is sensitive to depth and altitude are automatically impacted, which may cause death (\cref{fig:env-obj-water-event}). The modification of the water level is defined as:
 \begin{align}
     \eqlabel{eq:env-obj-event-depth-changes}{Depth update under water-level events}
@@ -1091,7 +1164,7 @@ with $\Delta \depth_e$ the amount of water rising or lowering during a \gloss{Ge
     \label{fig:env-obj-water-event}
 \end{figure}
 
-\subsubsection{Subsidence and uplift events}
+\subsubsubsection{Subsidence and uplift events}
 Subsidence and uplift are the main \glosses{GeoEvent} that create or destroy islands in the long term, as presented in \cref{chap:coral-island}. These \glosses{GeoEvent} are simulated as a simple factor on the height field of the generated terrain (\cref{fig:env-obj-subsidence-event}). Subsidence is not always uniform across the terrain. As such, the user can provide a position $\q$ at which the subsidence is strongest, the amount of subsidence applied $\Delta \height_e$ and a standard deviation $\std$, from which we then compute, at any point in space and time of the simulation, the height of the terrain:
 \begin{align}
     \eqlabel{eq:env-obj-event-heightchanges}{Height update under subsidence/uplift}
@@ -1109,7 +1182,7 @@ The Gaussian analytic formulation guarantees continuity of the changes on the \g
     \label{fig:env-obj-subsidence-event}
 \end{figure}
 
-\subsubsection{Storm events}
+\subsubsubsection{Storm events}
 Storms are significant factors in the geomorphology of coral reefs \cite{VilaConcejo2016, Oron2023} and coasts \cite{Dominguez2005, Cowart2010}. Due to the extreme wind and wave velocities, coasts are highly eroded in a short time period and the more fragile corals near the water surface are broken, possibly causing breaches in the reefs and spreading polyps in the current's direction. While there are various factors at play to understand the appearance of storms and the hydrodynamics affecting them, we simplify the model of storms to a single epicentre $\q$ with a wind velocity $\windVelocity$ and a standard deviation $\std$ representing the spread around the epicentre (\cref{fig:env-obj-storm-event}). The computation of water currents is then given as:
 \begin{align}
     \eqlabel{eq:env-obj-events-water-changes}{Flow field with storm events}
@@ -1142,88 +1215,269 @@ Our framework can easily be extended as \gloss{GeoEvent} system remains similar 
 \end{algorithm}
 
 
+\subsection{Output}
+\label{sec:env-obj-output}
 
-\section{Results and discussion}
+The output of our system is a set of \glosses{EnvObj} stored as 2D skeletons in the plane. We deliberately stop at this sparse, symbolic level; meshing, texturing, and final rendering are left to downstream tools chosen by the end-user. For each object, we export its skeleton geometry, semantic class, and environment-modifier parameters, enough to drive terrain synthesis or placement of assets in a game engine or simulator. Figures in this chapter illustrate possible renderings generated with a mix of implicit surfaces and triangular meshes (\cref{fig:env-obj-assets}).
+
+
+
+
+
+\section{Results}
 \label{sec:env-obj-results}
-Our method provides a way to generate scenes at different scales. We demonstrate this capacity with the generation of a large scene of an island (\cref{fig:env-obj-teaser} and \cref{fig:env-obj-coral-island-scene}), after which we focused the generation process in a canyon (\cref{fig:env-obj-canyon-scene}), then a small-scale visualisation of coral colonies (\cref{fig:env-obj-coral-colonization-scene}).
-% In the examples, we rendered the \glosses{EnvObj} as an implicit tree or as individual meshes. The island, lagoons, reefs, canyons and sand ripples as implicit surfaces.
+
+We show that the method scales from islands down to coral colonies. The three examples cover different regimes: large-scale feedbacks between transport and terrain, mid-scale coupling between geology and biology, and fine-scale organisation driven by simple competition and species preferences.
+
+\subsection{Large-scale generation}
+
+We start with a single "Island" \gloss{EnvObj} that diffuse sand, and a uniform wind that sets a transport direction. Sand moves according to the advection-diffusion-reaction model: advection couples sand to water flow field, diffusion smooths local variations, and decay drives a steady state.
+
+As iterations proceed, sand drifts leeward where effective flow weakens, and it piles up into an elongated ridge along the island. We interpret that ridge as a "Beach". On its sheltered side, the flow falls below a threshold and a "Lagoon" is instantiated (\cref{fig:env-obj-iterative-island}).
 
 \begin{figure}
-    \autofitgraphics[]{2025-06-20__10-32-20_render_top_view.png, 2025-06-20__10-32-20_render_top_view-with-flow.png }
-    \caption[A canyon creates a water current in its direction.]{A canyon creates a water current in its direction.}
-    \label{fig:env-obj-canyon-flow}
-\end{figure}
-
-\begin{figure}
-    \autofitgraphics[]{2025-06-20__10-32-42_render_inside_view.png, 2025-06-20__10-33-11_render_inside_view-with-boulders.png, 2025-06-20__10-33-11_render_inside_view-with-shade.png, 2025-06-20__10-36-21_render_inside_view-with-sand.png}
-    \caption[Inside view of a canyon with an arch.]{Inside view of a canyon with an arch. The arch generates shade (red) and pebbles (green), which is a beneficial environment for the appearance of rocks, which will in turn spread sand.}
-    \label{fig:env-obj-canyon-inside-with-arch}
-\end{figure}
-
-\begin{figure}
-    \autofitgraphics[]{2025-06-20__10-36-21_render_top_view-with-sand.png, 2025-06-20__10-38-05_render_top_view-with-sand-small-decay.png, 2025-06-20__10-39-13_render_top_view-with-sand-no-water-transport.png}
-    \autofitgraphics[]{2025-06-20__10-40-44_render_top_view-with-sand-high-diffusion.png, 2025-06-20__10-42-22_render_top_view-with-sand-reverse-water-transport.png }
-    \caption[Influence of material parameters on their spread]{Influence of material parameters on their spread (sand generated by the rocks). From left to right, and top to bottom: normal sand parameters, low decay, no influence of water flow, large diffusivity, inverse water influence (spread upwind in the canyon).}
-    \label{fig:env-obj-material-diffusion-parameters}
-\end{figure}
-
-\begin{figure}
-    \autofitgraphics[]{2025-06-20__15-54-59_render_top_view-with-flow-with-sand.png, 2025-06-20__15-57-26_render_top_view-with-sand.png, 2025-06-20__15-58-34_render_top_view-with-sand.png, 2025-06-20__16-01-26_render_top_view-with-deadcoral.png,
-    2025-06-20__16-04-20_render_top_view-with-deadcoral.png}
-    \autofitgraphics[]{2025-06-20__15-54-59_input_label.png, 2025-06-20__15-54-59_input_label.png, 2025-06-20__15-57-26_input_label.png, 2025-06-20__15-58-34_input_label.png,
-    2025-06-20__16-04-20_input_label.png}
-    \caption[Iterative construction of an island under high wind force]{Iterative construction of an island under high wind force; the deposition of sand is affected by the wind, giving an elongated shape to the beach. The large presence of sand due to the beach creates a lagoon, and quickly coral colonies spread on the borders of the lagoon to avoid the sand. Coral reefs appear from the deposition of calcareous material from coral. Bottom: The label map used in \cref{chap:coral-island} can be extracted from the \glosses{EnvObj} of the scene.}
+    \autofitgraphics[]{2025-06-20__15-54-59_render_top_view-with-flow-with-sand.png, 2025-06-20__15-57-26_render_top_view-with-sand.png, 2025-06-20__15-58-34_render_top_view-with-sand.png, 2025-06-20__16-01-26_render_top_view-with-deadcoral.png, 2025-06-20__16-04-20_render_top_view-with-deadcoral.png}
+    \autofitgraphics[]{2025-06-20__15-54-59_input_label.png, 2025-06-20__15-54-59_input_label.png, 2025-06-20__15-57-26_input_label.png, 2025-06-20__15-58-34_input_label.png, 2025-06-20__16-04-20_input_label.png}
+    \caption[Iterative construction of an island under high wind force]{Iterative construction of an island under strong prevailing wind.
+    Sand is advected along the wind direction, forming an elongated beach ridge that shelters a low-energy lagoon.
+    Coral colonies subsequently develop along the lagoon rim where sedimentation is minimal.
+    Bottom: label map extracted from the \glosses{EnvObj} of the scene.}
     \label{fig:env-obj-iterative-island}
 \end{figure}
 
-In \cref{fig:env-obj-coral-island-scene}, a canyon scene is generated using our method. The water flow is affected by the curve of the canyon such that the currents are oriented in the direction of the curve's tangent. In this example, we force the position of arches to be inside the canyon. The arches deposit a material "rock deposit", which is the main element of the \gloss{FitnessFunc} of the Rock object. The "rock deposit" is slightly affected by water currents, but its mass makes it highly affected by gravity. As such, rocks will spawn underneath arches. In reality, an arch is often created as part of a large coral boulder that sees the calcareous bottom part detached by the water currents, often resulting in an arch surrounded by big rocks and smaller rocks from the erosion of the first rocks.
+Once the lagoon is present, we instantiate "Coral colonies". Their \gloss{FitnessFunc} combines a preference for moderate currents with an avoidance of sand concentration and large quantities of "Coral polyp"; the \gloss{FittingFunc} keeps them between water level $\Wlevel$ and 10m deep $\Wlevel - 10$ . Colonies deposit "Coral polyp" and "Dead coral", a calcareous material that allows the instantiation of a "Coral reef". The reef then acts as an obstacle, further calming the lagoon and closing the loop between morphology and ecology.
 
-As such, we define an \gloss{EnvObj} "Arch" with a \gloss{FitnessFunc} $\fitnessFunc_{arch}(\p) = 5 - d(canyon - \p) * \norm{\Water(\p)}$, an \gloss{EnvObj} "Rock" using $\fitnessFunc_{rock}(\p) = \material_{rock\_deposit}(\p)$ and Pebble using $\fitnessFunc_{pebble}(\p) = \material_{smaller\_rock\_deposit}(\p)$. Finally, sand ripples are simply described as curves appearing where there is a lot of sand available: $\fitnessFunc_{ripple}(\p) = \material_{sand}(\p)$.
+\subsection{Medium-scale generation}
 
-Following these simple rules, \cref{fig:env-obj-canyon-scene} shows the emergence of localised details in the scene.
+Here the substrate contains a noisy "hard bedrock" material with no diffusion nor decay (constantly present). The canyon is a curve-based \gloss{EnvObj} whose \gloss{FittingFunc} follows a path that minimises hard rock so it travels through softer corridors. Its water influence creates a flow lane along its path (\cref{fig:env-obj-canyon-flow}).
+
+\begin{figure}
+\autofitgraphics[]{2025-06-20__10-32-20_render_top_view.png, 2025-06-20__10-32-20_render_top_view-with-flow.png}
+\caption[A canyon creates a water current in its direction]{Water flow oriented along the canyon curve. The analytic flow field aligns currents with the canyon's skeleton direction.}
+\label{fig:env-obj-canyon-flow}
+\end{figure}
+
+"Arches" are point-based \glosses{EnvObj} with \gloss{FitnessFunc} maximised with current strength and bedrock abundance, making their seed placement in the canyon. The \gloss{FittingFunc} favours deeper spots, moving the seed placement in a local depth maximum, inside the canyon. An arch produces shade and deposits a "rock fragment" material. That deposit "Pebble" material, spawning "Rock" objects, which in turn act as sources for sand. Step by step, finer sediments build up along the canyon floor (\cref{fig:env-obj-canyon-scene}).
 
 \begin{figure}
     \autofitgraphics[]{Canyon2.png, Canyon3.png, Canyon4.png, Canyon5.png}
-    \caption[Evolution of a canyon scene at different iterations of the simulation]{Evolution of a canyon scene at different iterations of the simulation. The appearance of an arch causes the spawning of rocks, pebbles, and finally some deposition of sand at the bottom of the canyon, spawning ripples.}
+    \caption[Evolution of a canyon scene at different iterations of the simulation]{Evolution of a canyon scene at different iterations.
+    The formation of an arch triggers rock and pebble spawning, followed by sand deposition and ripple emergence at the canyon base.}
     \label{fig:env-obj-canyon-scene}
 \end{figure}
 
-% \subsection{Small-scale}
-% \label{sec:env-obj-small-scale}
-In this example we defined three different types of corals, coralA, coralB and coralC, to illustrate the possibility to model behaviours from the choice of \glosses{FitnessFunc}. Each of the coral types deposits a material "coral polyp" and "coral polyp A" ("coral polyp B" and "coral polyp C" respectively). By considering a \gloss{FitnessFunc} that minimises the ratio $\frac{\text{coral polyp}}{\text{coral polyp A}}$, we see an emergent behaviour of the three types of coral fighting for the space colonisation.
-\cref{fig:env-obj-coral-colonization-scene} shows the result of this simulation at three different iterations. At the border between two colonies, none of the colonies make progression due to the amount of coral polyp specific from the other colony.
+The result is a spawning cascade, with canyons allowing the instantiation of arches, which in turn generate rocks.
+% The result is layered and readable: arches at hard–soft interfaces under strong flow; rocks and pebbles beneath; sand ripples in low-energy pockets (\cref{fig:env-obj-canyon-inside-with-arch}).
 
 \begin{figure}
-    \autofitgraphics[]{focusArea.png, col0.png, col1.png, col2.png, col3.png}
-    \caption[Three colonies of coral restricted to an annulus fighting for space]{Three colonies of coral (red, blue, green) restricted to an annulus (leftmost, red has negative impact on the fitness function while green has positive impact) in the middle section of the terrain fighting for the space.}
-    \label{fig:env-obj-coral-colonization-scene}
+    \autofitgraphics[]{2025-06-20__10-32-42_render_inside_view.png, 2025-06-20__10-33-11_render_inside_view-with-boulders.png, 2025-06-20__10-33-11_render_inside_view-with-shade.png, 2025-06-20__10-36-21_render_inside_view-with-sand.png}
+    \caption[Inside view of a canyon with an arch.]{Inside view of a canyon with an arch.
+    The arch produces shade (red) and pebbles (green), creating favourable conditions for rocks and sand deposition.}
+    \label{fig:env-obj-canyon-inside-with-arch}
 \end{figure}
+
+We also vary the transport model to probe sensitivity (\cref{fig:env-obj-material-diffusion-parameters}). Lower decay spreads sand farther; high diffusivity blurs contrasts; removing or reversing the water-driven advection flips directionality but remains stable. The steady-state formulation gives predictable, controllable patterns.
+
+\begin{figure}
+    \autofitgraphics[]{2025-06-20__10-36-21_render_top_view-with-sand.png, 2025-06-20__10-38-05_render_top_view-with-sand-small-decay.png, 2025-06-20__10-39-13_render_top_view-with-sand-no-water-transport.png, 2025-06-20__10-40-44_render_top_view-with-sand-high-diffusion.png, 2025-06-20__10-42-22_render_top_view-with-sand-reverse-water-transport.png}
+    \caption[Influence of material parameters on their spread]{Influence of material parameters on sand distribution.
+    From left to right, and top to bottom: reference configuration, low decay, no water transport, high diffusivity, and reversed water flow.}
+    \label{fig:env-obj-material-diffusion-parameters}
+\end{figure}
+
+\subsection{Small-scale generation}
+
+We present two complementary setups that use region-based \glosses{EnvObj} and simple material feedback to produce self-organised patterns.
+
+
+Three generic coral colonies "Coral A", "Coral B", and "Coral C" are restricted to a user-drawn control field $\influence$ in the shape of an annulus. Each species deposits generic \gloss{EnvMat} "Polyp" and its own \gloss{EnvMat} "Polyp A", "Polyp B", or "Polyp C". The \gloss{FitnessFunc} $\fitnessFunc_A = \frac{\text{Polyp}}{\text{Polyp A}}$ depends only on these materials: self-material raises fitness; other species materials reduce it. Starting from random seeds, colonies expand until their fronts meet. At the border between two colonies, none of the colonies make progression due to the amount of coral polyp specific from the other colony (\cref{fig:env-obj-coral-colonization-scene}).
+
+\begin{figure}
+\autofitgraphics[]{focusArea.png, col0.png, col1.png, col2.png, col3.png}
+\caption[Three colonies of coral restricted to an annulus fighting for space]{Three colonies of coral (red, blue, green) restricted to an annulus (leftmost).
+The colonies expand until their borders meet, forming stable boundaries where no further progression occurs.}
+\label{fig:env-obj-coral-colonization-scene}
+\end{figure}
+
+In \cref{fig:env-obj-coral-layout} we assign ecological preferences to different coral types via their \gloss{FitnessFunc}: preferred depth band, a current range that balances supply and stress, a slope tolerance, and an aversion to sand. Each coral entity finds a place that fits the distribution of species presented in \cref{sec:state-of-the-art_biology}. 
 
 \begin{figure}
     \autofitgraphics{islands_with_different_coral_types.png}
-    \caption[Organic layout of coral species from generation rules]{Introducing penalities on water currents and terrain slope for different types of corals, we see naturally a layout emerging with branching corals (purple) in the back reef, foliose corals (cyan) mainly around the reef crest, and massive corals (brown) spreading from the back reef to the fore reef. }
+    \caption[Organic layout of coral species from generation rules]{Distribution of coral morphotypes from generation rules.
+    Branching corals (purple) dominate back reefs, foliose corals (cyan) the reef crest, and massive corals (brown) extend toward the fore reef.}
     \label{fig:env-obj-coral-layout}
 \end{figure}
 
-The proposed method aims to generate plausible landscapes using simplified versions of the evolution of an ecosystem and of the 3D representation. The biological realism of the result is highly correlated to the amount of simplification and assumptions, while the visual realism is completely dependent on the geometric functions used for the 3D modelling of the \glosses{EnvObj}. We propose a flexible generic approach for terrain generation where close collaboration with field experts and with graphists is needed to achieve optimal results. Adding notions of slope and sensibility to water currents in \cref{fig:env-obj-coral-layout} for different coral morphologies (massive, branching, foliose and table corals), each coral entity finds a place that fits the distribution of species presented in \cref{sec:state-of-the-art_biology}. 
 
-Most simulation algorithm's quality depends on the size of the time step used, but with the introduction of a decay rate in the \glosses{EnvMat} properties, we limit the influence of time steps by considering that steady states are reachable. The material deposition and absorption on point-based \glosses{EnvObj} can be seen as a Dirac function $\dirac$ centred at their position, resulting in the advantage that material displacement function can use the definition of the diffusion equation instead of the advection-diffusion-reaction equation. This equation allows us to evaluate the state of the material $\material$ without intermediate steps, but this is not applicable with curve- and region-based \glosses{EnvObj}.
+\midConclusion
+
+The proposed method aims to generate plausible landscapes using simplified versions of the evolution of an ecosystem and of the 3D representation. The biological realism of the result is highly correlated to the amount of simplification and assumptions, while the visual realism is completely dependent on the geometric functions used for the 3D modelling of the \glosses{EnvObj}. We propose a flexible generic approach for terrain generation where close collaboration with field experts and with graphists is needed to achieve optimal results.
+
+% Most simulation algorithm's quality depends on the size of the time step used, but with the introduction of a decay rate in the \glosses{EnvMat} properties, we limit the influence of time steps by considering that steady states are reachable. The material deposition and absorption on point-based \glosses{EnvObj} can be seen as a Dirac function $\dirac$ centred at their position, resulting in the advantage that material displacement function can use the definition of the diffusion equation instead of the advection-diffusion-reaction equation. This equation allows us to evaluate the state of the material $\material$ without intermediate steps, but this is not applicable with curve- and region-based \glosses{EnvObj}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \section{Results and discussion}
+% \label{sec:env-obj-results}
+% Our method provides a way to generate scenes at different scales. We demonstrate this capacity with the generation of a large scene of an island (\cref{fig:env-obj-teaser} and \cref{fig:env-obj-coral-island-scene}), after which we focused the generation process in a canyon (\cref{fig:env-obj-canyon-scene}), then a small-scale visualisation of coral colonies (\cref{fig:env-obj-coral-colonization-scene}).
+% % In the examples, we rendered the \glosses{EnvObj} as an implicit tree or as individual meshes. The island, lagoons, reefs, canyons and sand ripples as implicit surfaces.
+
+% \begin{figure}
+%     \autofitgraphics[]{2025-06-20__10-32-20_render_top_view.png, 2025-06-20__10-32-20_render_top_view-with-flow.png }
+%     \caption[A canyon creates a water current in its direction.]{A canyon creates a water current in its direction.}
+%     \label{fig:env-obj-canyon-flow}
+% \end{figure}
+
+% \begin{figure}
+%     \autofitgraphics[]{2025-06-20__10-32-42_render_inside_view.png, 2025-06-20__10-33-11_render_inside_view-with-boulders.png, 2025-06-20__10-33-11_render_inside_view-with-shade.png, 2025-06-20__10-36-21_render_inside_view-with-sand.png}
+%     \caption[Inside view of a canyon with an arch.]{Inside view of a canyon with an arch. The arch generates shade (red) and pebbles (green), which is a beneficial environment for the appearance of rocks, which will in turn spread sand.}
+%     \label{fig:env-obj-canyon-inside-with-arch}
+% \end{figure}
+
+% \begin{figure}
+%     \autofitgraphics[]{2025-06-20__10-36-21_render_top_view-with-sand.png, 2025-06-20__10-38-05_render_top_view-with-sand-small-decay.png, 2025-06-20__10-39-13_render_top_view-with-sand-no-water-transport.png}
+%     \autofitgraphics[]{2025-06-20__10-40-44_render_top_view-with-sand-high-diffusion.png, 2025-06-20__10-42-22_render_top_view-with-sand-reverse-water-transport.png }
+%     \caption[Influence of material parameters on their spread]{Influence of material parameters on their spread (sand generated by the rocks). From left to right, and top to bottom: normal sand parameters, low decay, no influence of water flow, large diffusivity, inverse water influence (spread upwind in the canyon).}
+%     \label{fig:env-obj-material-diffusion-parameters}
+% \end{figure}
+
+% \begin{figure}
+%     \autofitgraphics[]{2025-06-20__15-54-59_render_top_view-with-flow-with-sand.png, 2025-06-20__15-57-26_render_top_view-with-sand.png, 2025-06-20__15-58-34_render_top_view-with-sand.png, 2025-06-20__16-01-26_render_top_view-with-deadcoral.png,
+%     2025-06-20__16-04-20_render_top_view-with-deadcoral.png}
+%     \autofitgraphics[]{2025-06-20__15-54-59_input_label.png, 2025-06-20__15-54-59_input_label.png, 2025-06-20__15-57-26_input_label.png, 2025-06-20__15-58-34_input_label.png,
+%     2025-06-20__16-04-20_input_label.png}
+%     \caption[Iterative construction of an island under high wind force]{Iterative construction of an island under high wind force; the deposition of sand is affected by the wind, giving an elongated shape to the beach. The large presence of sand due to the beach creates a lagoon, and quickly coral colonies spread on the borders of the lagoon to avoid the sand. Coral reefs appear from the deposition of calcareous material from coral. Bottom: The label map used in \cref{chap:coral-island} can be extracted from the \glosses{EnvObj} of the scene.}
+%     \label{fig:env-obj-iterative-island}
+% \end{figure}
+
+% In \cref{fig:env-obj-coral-island-scene}, a canyon scene is generated using our method. The water flow is affected by the curve of the canyon such that the currents are oriented in the direction of the curve's tangent. In this example, we force the position of arches to be inside the canyon. The arches deposit a material "rock deposit", which is the main element of the \gloss{FitnessFunc} of the Rock object. The "rock deposit" is slightly affected by water currents, but its mass makes it highly affected by gravity. As such, rocks will spawn underneath arches. In reality, an arch is often created as part of a large coral boulder that sees the calcareous bottom part detached by the water currents, often resulting in an arch surrounded by big rocks and smaller rocks from the erosion of the first rocks.
+
+% As such, we define an \gloss{EnvObj} "Arch" with a \gloss{FitnessFunc} $\fitnessFunc_{arch}(\p) = 5 - d(canyon - \p) * \norm{\Water(\p)}$, an \gloss{EnvObj} "Rock" using $\fitnessFunc_{rock}(\p) = \material_{rock\_deposit}(\p)$ and Pebble using $\fitnessFunc_{pebble}(\p) = \material_{smaller\_rock\_deposit}(\p)$. Finally, sand ripples are simply described as curves appearing where there is a lot of sand available: $\fitnessFunc_{ripple}(\p) = \material_{sand}(\p)$.
+
+% Following these simple rules, \cref{fig:env-obj-canyon-scene} shows the emergence of localised details in the scene.
+
+% \begin{figure}
+%     \autofitgraphics[]{Canyon2.png, Canyon3.png, Canyon4.png, Canyon5.png}
+%     \caption[Evolution of a canyon scene at different iterations of the simulation]{Evolution of a canyon scene at different iterations of the simulation. The appearance of an arch causes the spawning of rocks, pebbles, and finally some deposition of sand at the bottom of the canyon, spawning ripples.}
+%     \label{fig:env-obj-canyon-scene}
+% \end{figure}
+
+% % \subsection{Small-scale}
+% % \label{sec:env-obj-small-scale}
+% In this example we defined three different types of corals, coralA, coralB and coralC, to illustrate the possibility to model behaviours from the choice of \glosses{FitnessFunc}. Each of the coral types deposits a material "coral polyp" and "coral polyp A" ("coral polyp B" and "coral polyp C" respectively). By considering a \gloss{FitnessFunc} that minimises the ratio $\frac{\text{coral polyp}}{\text{coral polyp A}}$, we see an emergent behaviour of the three types of coral fighting for the space colonisation.
+% \cref{fig:env-obj-coral-colonization-scene} shows the result of this simulation at three different iterations. At the border between two colonies, none of the colonies make progression due to the amount of coral polyp specific from the other colony.
+
+% \begin{figure}
+%     \autofitgraphics[]{focusArea.png, col0.png, col1.png, col2.png, col3.png}
+%     \caption[Three colonies of coral restricted to an annulus fighting for space]{Three colonies of coral (red, blue, green) restricted to an annulus (leftmost, red has negative impact on the fitness function while green has positive impact) in the middle section of the terrain fighting for the space.}
+%     \label{fig:env-obj-coral-colonization-scene}
+% \end{figure}
+
+% \begin{figure}
+%     \autofitgraphics{islands_with_different_coral_types.png}
+%     \caption[Organic layout of coral species from generation rules]{Introducing penalities on water currents and terrain slope for different types of corals, we see naturally a layout emerging with branching corals (purple) in the back reef, foliose corals (cyan) mainly around the reef crest, and massive corals (brown) spreading from the back reef to the fore reef. }
+%     \label{fig:env-obj-coral-layout}
+% \end{figure}
+
+% The proposed method aims to generate plausible landscapes using simplified versions of the evolution of an ecosystem and of the 3D representation. The biological realism of the result is highly correlated to the amount of simplification and assumptions, while the visual realism is completely dependent on the geometric functions used for the 3D modelling of the \glosses{EnvObj}. We propose a flexible generic approach for terrain generation where close collaboration with field experts and with graphists is needed to achieve optimal results. Adding notions of slope and sensibility to water currents in \cref{fig:env-obj-coral-layout} for different coral morphologies (massive, branching, foliose and table corals), each coral entity finds a place that fits the distribution of species presented in \cref{sec:state-of-the-art_biology}. 
+
+% Most simulation algorithm's quality depends on the size of the time step used, but with the introduction of a decay rate in the \glosses{EnvMat} properties, we limit the influence of time steps by considering that steady states are reachable. The material deposition and absorption on point-based \glosses{EnvObj} can be seen as a Dirac function $\dirac$ centred at their position, resulting in the advantage that material displacement function can use the definition of the diffusion equation instead of the advection-diffusion-reaction equation. This equation allows us to evaluate the state of the material $\material$ without intermediate steps, but this is not applicable with curve- and region-based \glosses{EnvObj}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \section{Conclusion}
 \label{sec:env-obj-conclusion}
-We proposed a method to generate terrains procedurally using sparse representations. This representation, the \glosses{EnvObj}, enables the introduction of expert knowledge by the means of the \glosses{FitnessFunc} that rule the \glosses{EnvObj} life cycle, but also to integrate the user in the loop during the generation process. We reduced the terrain resolution limitations by defining the environment objects as parametric features. Thanks to the sparse representation based on single points, curves and regions, we allow for direct manipulation of the \glosses{EnvObj} of the scene by the user which, thanks to the environment steady state consideration, also enables these interactions to be included in the automatic simulation process.
 
-Integrating environmental properties in the \gloss{FitnessFunc} of \glosses{EnvObj} allows the user to guide the generation through \glosses{GeoEvent}. Our method enables each \gloss{EnvObj} of the scene to influence the environment locally, reducing the need for computations while also retrieving \glosses{EnvVal} locally, which results in a parallelisable life-like simulation process. The genericity of the environment properties definitions should be sufficient for plausible generation of other landscape types as long as expert knowledge can be translated to \gloss{EnvObj}'s formalism.
+This chapter introduce a procedural terrain generation method grounded in a sparse and semantic representation of landscapes.
+This framework, centred on the \glosses{EnvObj}, provides a unified abstraction for terrain and ecosystem features through parametric points, curves, and regions.
+By embedding expert knowledge into the \glosses{FitnessFunc} and maintaining a steady-state formulation of the environment, our approach allows both automatic simulation and interactive user guidance, while preserving coherence across multiple scales.
+Each \gloss{EnvObj} locally modifies and queries environmental fields, enabling a computationally efficient yet lifelike synthesis of terrains and ecosystems.
 
-We limited our work to the use of 2D scalar fields as they are more easily differentiable, interpretable and lighter than volumetric representations. However, future works include using 3D representations of the terrain and the environment to generate 3D terrains, including cavities, sub-terrestrial areas and the interior of coral structures.
+Despite these strengths, several aspects of the current approach remain simplified and open research directions:
 
-While our semantic \gloss{EnvObj} framework introduced sparse, interactive primitives for ecosystem generation without restraining to a unique terrain representation, the underlying environmental fields remain constrained to 2D scalar fields. This simplification ensured efficiency and interpretability, but it prevents the representation of intrinsically three-dimensional features such as overhangs, caves, and porous reef structures. Moreover, terrains in the real world are rarely static: they evolve continuously under the action of water, wind, and other erosive agents. Extending procedural methods toward volumetric models and terrain-altering processes is therefore essential to reach higher realism, especially in underwater environments where bioerosion and hydrodynamics shape the seascape.
+\paragraph{Dimensional simplification. }
+Our framework relies on two-dimensional scalar and vector fields, which ensures efficiency and interpretability but restricts the representation to heightfield-like surfaces.
+Extending this model to volumetric environmental fields would enable the generation of more complex geological and biological structures such as caves, overhangs, and the internal architecture of coral reefs.
 
-The following chapter tackles this challenge by focusing on erosion simulation. We present a particle-based method that generalises detachment, transport, and deposition processes across both surfacic and volumetric representations, offering a flexible and efficient framework for integrating erosion into procedural terrain generation.
+\paragraph{Dynamic evolution.}
+The current formulation focuses on steady-state snapshots of plausible environments rather than on their continuous evolution.
+Incorporating dynamic processes including erosion, sediment transport, or biological growth, would bridge the gap between procedural generation and environmental simulation, allowing the depiction of terrains that change over time under natural forces.
 
-\begin{figure}[H]
-    \autofitgraphics{multiScene1 v2 final 1.png}
-    \caption[A simple coral reef island is generated using an island, a lagoon, reefs, coral polyps, beaches, trees and algae \glosses{EnvObj}]{A simple coral reef island is generated using an island, a lagoon, reefs, coral polyps, beaches, trees and algae \glosses{EnvObj}. Trees appear on beaches and algae grow in the lagoon's sand.}
-    \label{fig:env-obj-coral-island-scene}
-\end{figure}
+% Third, while the analytic flow formulation and simplified transport equations provide plausible hydrodynamic patterns, they remain approximations of physical processes.
+% Coupling these analytic methods with localised physics solvers or data-driven corrections could enhance realism in critical zones, such as coastal regions or areas affected by strong currents, without compromising interactivity.
+
+\paragraph{Shape optimisation and structural realism.}
+In the current implementation, the optimisation of \glosses{EnvObj} geometry is guided by target parameters such as a desired length or surface area, which ensures controllability but does not reflect biological or geomorphological growth patterns.
+Future work could investigate alternative approaches to structure generation, for instance by extracting medial-axis or skeleton structures from fitness fields to instantiate new objects, rather than relying solely on our Snake optimisation, or to be used as the initial shape for our Snake optimisation. 
+Such biologically inspired mechanisms could produce more natural shapes and spatial organisations.
+
+\paragraph{Direct interaction and deformation.}
+The deformation of curve and region \glosses{EnvObj} is currently achieved by directly displacing the control points of their skeletons, after which the \gloss{FittingFunc} optimisation is rerun.
+More advanced deformation models such as sharp Kelvinlets, cage-based deformation, or Gaussian influence fields, could improve the continuity of user edits, allowing intuitive reshaping while preserving physical and ecological constraints.
+
+\paragraph{Expert knowledge requirements.}
+The plausibility of the results currently depends on expert-defined parameters that require manual tuning.
+Future work could explore learning-based estimation or inverse modelling strategies to derive these parameters automatically from real data or target exemplars, thus improving generality and ease of use.
+
+% Finally, while our sparse, semantic representation facilitates intuitive editing, further developments should focus on integration and interoperability with existing authoring tools and simulation frameworks.
+% Representing \glosses{EnvObj} and \glosses{EnvVal} as standardised layers would enable collaboration between artists, scientists, and engineers, reinforcing the bridge between creative design and environmental modelling.
+
+\smallConclusion
+
+In summary, the \glosses{EnvObj} framework offers a semantic, sparse, and interactive foundation for procedural terrain and ecosystem generation.
+By combining rule-based reasoning with analytical field interactions, it achieves a balance between plausibility, control, and performance.
+Its current simplifications opens the way toward richer extensions that integrate volumetric representations, evolutionary processes, and data-driven calibration. 
+
+Because the framework does not explicitly model surface geometry, the resulting terrains can appear synthetic and lack fine-scale realism.
+The following chapter addresses this limitation by introducing an erosion simulation method based on particle simulation.
+This approach generalises detachment, transport, and deposition processes across both surfacic and volumetric domains, providing a flexible and efficient mechanism for integrating erosion into procedural terrain generation.
+
+% \section{Conclusion}
+% \label{sec:env-obj-conclusion}
+% We proposed a method to generate terrains procedurally using sparse representations. This representation, the \glosses{EnvObj}, enables the introduction of expert knowledge by the means of the \glosses{FitnessFunc} that rule the \glosses{EnvObj} life cycle, but also to integrate the user in the loop during the generation process. We reduced the terrain resolution limitations by defining the environment objects as parametric features. Thanks to the sparse representation based on single points, curves and regions, we allow for direct manipulation of the \glosses{EnvObj} of the scene by the user which, thanks to the environment steady state consideration, also enables these interactions to be included in the automatic simulation process.
+
+% Integrating environmental properties in the \gloss{FitnessFunc} of \glosses{EnvObj} allows the user to guide the generation through \glosses{GeoEvent}. Our method enables each \gloss{EnvObj} of the scene to influence the environment locally, reducing the need for computations while also retrieving \glosses{EnvVal} locally, which results in a parallelisable life-like simulation process. The genericity of the environment properties definitions should be sufficient for plausible generation of other landscape types as long as expert knowledge can be translated to \gloss{EnvObj}'s formalism.
+
+% We limited our work to the use of 2D scalar fields as they are more easily differentiable, interpretable and lighter than volumetric representations. However, future works include using 3D representations of the terrain and the environment to generate 3D terrains, including cavities, sub-terrestrial areas and the interior of coral structures.
+
+% While our semantic \gloss{EnvObj} framework introduced sparse, interactive primitives for ecosystem generation without restraining to a unique terrain representation, the underlying environmental fields remain constrained to 2D scalar fields. This simplification ensured efficiency and interpretability, but it prevents the representation of intrinsically three-dimensional features such as overhangs, caves, and porous reef structures. Moreover, terrains in the real world are rarely static: they evolve continuously under the action of water, wind, and other erosive agents. Extending procedural methods toward volumetric models and terrain-altering processes is therefore essential to reach higher realism, especially in underwater environments where bioerosion and hydrodynamics shape the seascape.
+
+% The following chapter tackles this challenge by focusing on erosion simulation. We present a particle-based method that generalises detachment, transport, and deposition processes across both surfacic and volumetric representations, offering a flexible and efficient framework for integrating erosion into procedural terrain generation.
+
+% \begin{figure}[H]
+%     \autofitgraphics{multiScene1 v2 final 1.png}
+%     \caption[A simple coral reef island is generated using an island, a lagoon, reefs, coral polyps, beaches, trees and algae \glosses{EnvObj}]{A simple coral reef island is generated using an island, a lagoon, reefs, coral polyps, beaches, trees and algae \glosses{EnvObj}. Trees appear on beaches and algae grow in the lagoon's sand.}
+%     \label{fig:env-obj-coral-island-scene}
+% \end{figure}
