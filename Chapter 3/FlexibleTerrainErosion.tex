@@ -238,10 +238,16 @@ Erosion occurs in three stages: material detachment, transport and deposition (r
 \subsection{Overview}
 
 \begin{figure}
-    \autofitgraphics{pipeline_with_terrain.pdf}
-    \caption[An iteration of the erosion pipeline]{An iteration of the erosion pipeline consist of an initial terrain onto which we simulate a particle system. The collisions are tracked and we model the detachment and deposition at each point, resulting in a final eroded terrain. }
+    \autofitgraphics{figure_pipeline.pdf}
+    \caption[Particle erosion's pipeline]{Our overall pipeline: our erosion process compute matter displacement of a terrain using an arbitrary representation as long as intersections between particles and the ground can be detected. An optional velocity ﬁeld, provided by the user, guides the particles trajectories. We propose surface alteration methods to apply the erosion to the terrain in a coherent way between possible representations. }
     \label{fig:erosion-pipeline-with-terrain}
 \end{figure}
+
+% \begin{figure}
+%     \autofitgraphics{pipeline_with_terrain.pdf}
+%     \caption[An iteration of the erosion pipeline]{An iteration of the erosion pipeline consist of an initial terrain onto which we simulate a particle system. The collisions are tracked and we model the detachment and deposition at each point, resulting in a final eroded terrain. }
+%     \label{fig:erosion-pipeline-with-terrain}
+% \end{figure}
 
 \zzcommand{\Terrain}{\mathcal{T}}
 \zzcommand{\Particles}{{P}}
@@ -570,6 +576,8 @@ Note that, for a 2.5D terrain, we can consider that half of the sphere surroundi
 
 \begin{figure}
     \autofitgraphics{a_erosion_deposition.pdf}
+    \setfitratios{1, 1, 1, 1}
+    \autofitcaptions[]{Height field, Layered model, Voxel grid, Implicit model}
     \caption[Erosion and deposition of a particle on different terrain representations]{Illustration of the material detachment in the (half-)sphere at contact point $C$ (cross) on different representations. (height field) When $\totalErosion < 0$, material detachment happens in the bottom scaled half-sphere of the particle's contact with the ground, while the deposition is applied on the upper half-sphere of volume when $\totalErosion > 0$. Unlike the height field, for 3D terrains detachment and deposition are applied in the full sphere around the contact point.}
     \label{fig:erosion-erosion-heightfield}
 \end{figure}
