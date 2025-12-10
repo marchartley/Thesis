@@ -20,7 +20,7 @@ The purpose of this chapter is to establish the common ground required for the r
 
 
 
-Procedural generation of environments is at the intersection of realism, speed, and user control. Achieving all three simultaneously remains an open challenge, particularly in the context of coral reef islands where terrain is co-constructed by geological processes, hydrodynamics, and living organisms. Understanding how existing approaches position themselves along this speed-realism-control triangle will provide a framework for situating our own contributions.
+Procedural generation of environments is at the intersection of realism, speed, and user control. Achieving all three simultaneously remains an open challenge, particularly in the context of coral reef islands where terrain is co-constructed by geological processes, hydrodynamics, and living organisms. Understanding how existing approaches position themselves along this speed-realism-control trifecta will provide a framework for situating our own contributions.
 
 A second cross-cutting issue is the choice of representation. From heightmaps to voxels and layered models, each structure affords specific strengths (efficiency, volumetric detail, analytic flexibility) but also imposes limitations (no overhangs, high memory cost, restricted editing). Because each contribution in this thesis relies on a different representation, a concise overview is needed upfront to avoid duplication later.
 
@@ -37,10 +37,10 @@ Together, these elements form the conceptual scaffolding for the rest of the doc
 \section{Procedural terrain generation}
 \label{sec:state-of-the-art_procedural-generation}
 
-Procedural generation consists of algorithmically creating content based on predefined rules, mathematical models, or data-driven methods, rather than authoring it manually. The key advantage include reducing storage needs (since content is generated on-the-fly), enabling rapid creation of large or varied content, and supporting both reproducibility and controlled variability. These benefits are especially valuable in terrain generation where large landscapes or seascape can be created from compact parameters sets where artists, researchers, or domain experts can iterate quickly towards a desired output through as few trials and errors as possible.
+Procedural generation consists of algorithmically creating content based on predefined rules, mathematical models, or data-driven methods, rather than authoring it manually. The key advantages include reducing storage needs (since content is generated on-the-fly), enabling rapid creation of large or varied content, and supporting both reproducibility and controlled variability. These benefits are especially valuable in terrain generation where large landscapes or seascape can be created from compact parameters sets where artists, researchers, or domain experts can iterate quickly towards a desired output through as few trials and errors as possible.
 
 \AltTextImage{
-The conceptual roots of procedural techniques in graphics trace back to fractal geometry (see \cref{fig:intro-fractal}) and noise functions (see \cref{fig:intro-noises}). Mandelbrot's work on fractals demonstrated how complex, self-similar structures can arise from simple rules and randomness, influencing landscape modelling approaches that mimic natural roughness and multi-scale detail \cite{Mandelbrot1983}. Perlin's introduction of gradient noise provided a practical mechanism to generate coherent pseudo-random patterns for textures and terrain features \cite{Perlin1985}. These foundational ideas underpin various terrain algorithms, where noise at multiple scales produces hills, valleys, and finer details.
+    The conceptual roots of procedural techniques in graphics trace back to fractal geometry (see \cref{fig:intro-fractal}) and noise functions (see \cref{fig:intro-noises}). Mandelbrot's work on fractals demonstrated how complex, self-similar structures can arise from simple rules and randomness, influencing landscape modelling approaches that mimic natural roughness and multi-scale detail \cite{Mandelbrot1983}. Perlin's introduction of gradient noise provided a practical mechanism to generate coherent pseudo-random patterns for textures and terrain features \cite{Perlin1985}. These foundational ideas underpin various terrain algorithms, where noise at multiple scales produces hills, valleys, and finer details.
 }{Snowflake5-Siertriangle11.jpg}{Fractal geometry: Sierpinski Triangle in Koch Snowflake, from Larry Riddle.}{fig:intro-fractal}{Fractal geometry}
 
 \AltTextImage{
@@ -83,9 +83,10 @@ Next section presents different terrain representations used for virtual environ
 \subsection{2.5D representations (Elevation models)}
 %---------------------------------------------------------------------
 
-\begin{figure}
-  \includegraphics[width=.8\linewidth]{elevation_representation.png}
-  \caption[Implicit and discrete elevation models]{Elevation models can be (left) implicit functions evaluated at any point, or (right) discrete samples augmented with interpolation to recover a continuous surface \cite{Galin2019}.}
+\begin{figure}[b]
+%   \includegraphics[width=.8\linewidth]{elevation_representation.png}
+    \includegraphics[width=.8\linewidth]{Terrain_representations/height_fields.pdf}
+  \caption[Function-based and discrete elevation models]{Elevation models can be (left) continuous functions evaluated at any point, or (right) discrete samples augmented with interpolation to recover a continuous surface \cite{Galin2019}.}
   \label{fig:erosion-elevation-representation}
 \end{figure}
 
@@ -94,8 +95,8 @@ Elevation models describe the terrain by a height field $h: \R^{2}  \to  \R$, as
 \begin{figure}
     \autofitgraphics[width=.5\linewidth]{Terrain_representations/heightmap_high-res_628x628.png}
     \autofitgraphics{Terrain_representations/heightmap_all-at-once.png}
-    \caption[Comparison of an implicit representation with discrete representations at different resolutions]{Top: an implicit height field can be ray-traced at any resolution. Bottom: discrete height fields (samples of the top
-    function) have fixed resolution: finer meshes approach the implicit surface, whereas down-sampling inevitably loses detail.}
+    \caption[Comparison of a function-based representation with discrete representations at different resolutions]{Top: a function-based height field can be ray-traced at any resolution. Bottom: discrete height fields (samples of the top
+    function) have fixed resolution: finer meshes approach the function-based surface, whereas down-sampling inevitably loses detail.}
     \label{fig:sota-representations-heights-resolutions}
 \end{figure}
 
@@ -106,14 +107,14 @@ Elevation models describe the terrain by a height field $h: \R^{2}  \to  \R$, as
 Discrete height fields, often called "heightmaps", store sampled elevations on a regular grid (\cref{fig:intro-multiple-representations}, top). Formally, they are a function $h_{ \text{d}}: \Z^{2} \to \R$ defined only on integer lattice points. To render or analyse the terrain at arbitrary positions we reconstruct a continuous surface $ \tilde{h}_{ \text{d}}: \R^{2} \to \R$ using interpolation (linear, bilinear, bicubic, ...) (\cref{fig:erosion-elevation-representation}, right). Their raster nature aligns with GPUs and with convolutional neural architectures such as those used in \cref{chap:coral-island}. Discrete grids scale to large terrains with modest memory footprint, but fixes the dimensions and resolution of the domain.
 
 %.....................................................................
-\subsubsection{Implicit height fields}
+\subsubsection{Function-based height fields}
 %.....................................................................
 \AltTextImage{
-    An implicit height field represents the terrain by a closed-form or procedural function $h_{ \text{i}}: \R^{2} \to \R$ that can be evaluated at any $(x,y)$ (\cref{fig:erosion-elevation-representation}, left). Because no samples are stored, the representation is compact and inherently multi-scale (in opposition of discrete height fields, as visible in \cref{fig:sota-representations-heights-resolutions}), and it supports analytic operations. % (derivatives, spectral synthesis, Booleans). 
-    These properties make it the backbone of the semantic terrain synthesis developed in \cref{chap:semantic-representation}. The drawback is runtime cost: densely evaluating a complex function over a large domain is computationally expensive, but allow "on-demand" evaluation.
+    A function-based height field represents the terrain by a closed-form function $h_{ \text{i}}: \R^{2} \to \R$ that can be evaluated at any $(x,y)$ (\cref{fig:erosion-elevation-representation}, left). Because no samples are stored, the representation is compact and inherently multi-scale (in opposition of discrete height fields, as visible in \cref{fig:sota-representations-heights-resolutions}), and it supports analytic operations. % (derivatives, spectral synthesis, Booleans). 
+    These properties make it the backbone of the semantic terrain synthesis developed in \cref{chap:semantic-representation}. The drawback is runtime cost: densely evaluating a complex function over a large domain is computationally expensive, but allows "on-demand" evaluation.
 }{primitives_representation.png}{Primitives composition tree, blending two hills together, then replacing a part of the surface with a river path \cite{Genevaux2015}.}{fig:erosion-primitives-representation}{Primitives composition}
 
-Beyond the construction-tree model of \cite{Genevaux2015} (\cref{fig:erosion-primitives-representation}), several other implicit 2.5D terrain representations are commonly employed: gradient-noise fractals (e.g., Perlin, Simplex or FBM) provide fast, tileable, and stochastic detail; spectral or analytic formulas (e.g., ridge-noise, domain warps or erosion kernels) enable semantically tuned landforms; feature-curve diffusion techniques allow users to define ridges and rivers via polylines which are then diffused into the height field; vector-primitive models blend geometric shapes like ellipsoids or plates directly into the terrain surface; and radial-basis-function (RBF) implicits fit a sparse set of control points with smooth Hermite interpolants for interactive editing .
+Beyond the construction-tree model of \cite{Genevaux2015} (\cref{fig:erosion-primitives-representation}), several other function-based 2.5D terrain representations are commonly employed: gradient-noise fractals (e.g., Perlin, Simplex or FBM \cite{Perlin1985,Ebert2003,Musgrave1989}) provide fast, tileable, and stochastic detail; spectral or analytic formulas (e.g., ridge-noise, domain warps or erosion kernels \cite{Reinhard2010}) enable semantically tuned landforms; feature-curve diffusion techniques allow users to define ridges and rivers via polylines which are then diffused into the height field \cite{Hnaidi2010,Genevaux2013}; vector-primitive models blend geometric shapes like ellipsoids or plates directly into the terrain surface \cite{Perche2025}; and radial-basis-function (RBF) implicits fit a sparse set of control points with smooth Hermite interpolants for interactive editing \cite{Patel2021}.
 
 These alternatives are surveyed in depth in \cref{chap:coral-island}' State-of-the-Art.
 
@@ -167,11 +168,11 @@ Storing a real-valued scalar per voxel enables implicit isosurfaces inside the g
 %.....................................................................
 \AltTextImage{
     % \cite{Benes2001} 
-    \citeName{Benes2001} introduced a layered-based terrain representation in which the landscape is discretized as a 2D grid of vertical material stacks, each composed of horizontal strata representing a single homogeneous material (e.g., water, sand, bedrock, ... presented in \cref{fig:intro-layers}) \cite{Benes2001}. The terrain surface is given by the height of the top layer in each stack. 
+    \citeName{Benes2001} introduced a layered-based terrain representation in which the landscape is discretised as a 2D grid of vertical material stacks, each composed of horizontal strata representing a single homogeneous material (e.g., water, sand, bedrock, ... presented in \cref{fig:intro-layers}) \cite{Benes2001}. The terrain surface is given by the height of the top layer in each stack. 
 }{Layer-representation.png}{Layer representation as described in \cite{Benes2001}. \cite{Peytavie2009b} allows air and water strata to be inserted between solid material strata. }{fig:intro-layers}{Layered terrain representation}
 
 \AltTextImage{
-    \citeName{Peytavie2009b} improved the structure in two critical ways \cite{Peytavie2009b}. First, they introduce an explicit air layer that may be inserted between solid strata to allow true 3D features such as caves, overhangs, and arches. Second, they couple this discrete stack data with a convolution-based implicit surface field $f(\p)$, defined as the normalised local volume fraction of solid material $\mathcal{V}_\mathcal{M}$ within a cubic kernel $\mathcal{V}_\Omega$. The zero-level set $\mathcal{V}_\mathcal{M} = \frac{1}{2} \mathcal{V}_\Omega$ is polygonized to form a smooth, editable surface mesh (see \cref{fig:intro-layers-hybrid}, using the empty volume $\mathcal{V}_\emptyset = \mathcal{V}_\Omega - \mathcal{V}_\mathcal{M}$). 
+    \citeName{Peytavie2009b} improved the structure in two critical ways \cite{Peytavie2009b}. First, they introduce an explicit air layer that may be inserted between solid strata to allow true 3D features such as caves, overhangs, and arches. Second, they couple this discrete stack data with a convolution-based implicit surface field $f(\p)$, defined as the normalised local volume fraction of solid material $\mathcal{V}_\mathcal{M}$ within a cubic kernel $\mathcal{V}_\Omega$. The zero-level set $\mathcal{V}_\mathcal{M} = \frac{1}{2} \mathcal{V}_\Omega$ is polygonised to form a smooth, editable surface mesh (see \cref{fig:intro-layers-hybrid}, using the empty volume $\mathcal{V}_\emptyset = \mathcal{V}_\Omega - \mathcal{V}_\mathcal{M}$). 
 }{Terrain_representations/Layer-representation-implicit.png}{The implicit volume (right, red) computed from layers-based terrain (left) is obtain by computing all points $\p$ for which a cubic kernel support (middle) contains more solid material $\mathcal{V}_\mathcal{M}$ than fluid material $\mathcal{V}_\emptyset$ in \cite{Peytavie2009b}.}{fig:intro-layers-hybrid}{Hybrid layered and implicit volumic representation}
 
 
@@ -200,7 +201,7 @@ Each developer uses specific strategies for each type of parameters as the needs
 
 Realism refers to the extent to which generated content accurately represents real-world characteristics, such as visual details, physical processes, and natural patterns. This is especially important in simulations, visualisations, and training environments where physical accuracy is critical. Techniques to enhance realism include physical simulations, which model erosion processes and the integration of expert knowledge from geological and ecological fields. However, achieving realism is challenging due to the complexity of detailed simulations and the need for specialised expertise, which may demand substantial computational resources and inputs. Usually, a realistic algorithm tends to have low user control and speed.
 
-On the other hand, speed is about the efficiency of content generation within acceptable time constraints. While no official categorisation has been set, we propose to describe levels of speed based on response time for generation:
+On the other hand, speed is about the efficiency of content generation within acceptable time constraints. While no official categorisation has been set, we use a similar classification as \cite{Galin2019} to describe levels of speed based on response time for generation:
 \begin{Itemize}
     \Item{} \textbf{Real-time:} less than 30 milliseconds, essential for interactive applications such as VR environments,
     \Item{} \textbf{Interactive:} under 3 seconds, suitable for user-driven customisation in games and simulations,
@@ -224,10 +225,10 @@ This section summarises key biological and ecological features of corals, focusi
     Coral polyps, illustrated in \cref{fig:intro-polyp}, are small soft-bodied marine invertebrates that secrete calcium carbonate (\ch{CaCO_3}) to build an external exoskeleton. Over time, successive secretion by many polyps produces the rigid framework of a reef. Symbiosis with zooxanthellae (photosynthetic algae) supplies most of the energy for calcification; this makes coral growth strongly light-dependent and tied to shallow, clear-water zones.
     
     From a terrain generation perspective, the \ch{CaCO_3} secretion underlies the elevation of reef structures and the light-dependence of the polyps implies depth-based constraints on where reef heights appear, relative to water level. Moreover, coral-built substrate produced by accumulated skeleton, or "dead coral", increases landscape resistance to erosion.
-}{polypanatomy.jpg}{Anatomy of a single polyp, ranging in size from one to three millimeters in diameter.}{fig:into-polyp}{Anatomy of a single polyp}
+}{polypanatomy.jpg}{Anatomy of a single polyp, ranging in size from one to three millimeters in diameter.}{fig:intro-polyp}{Anatomy of a single polyp}
 
 % \subsection{Coral colony morphologies and zonation}
-Coral colonies adopt varied growth forms adapted to local conditions (light, water motion, depth). Classifying coral species has been done using different criteria \cite{Kovacs2020}: by coverage \cite{Kuchler1986, Bauer2009, Purkis2019}, by dominant taxa \cite{Stoddart1969}, or by coral growth morphology \cite{Mumby1999,Goltenboth2006}. We use the classification of hard corals from \cite{Goltenboth2006} to describe five different coral morphologies and their typical properties in reefs: massive, branching, foliose, table and encrustring, which we detail in the following.
+Coral colonies adopt varied growth forms adapted to local conditions (light, water motion, depth). Classifying coral species has been done using different criteria \cite{Kovacs2020}: by coverage \cite{Kuchler1986, Bauer2009}, by dominant taxa \cite{Stoddart1969}, or by coral growth morphology \cite{Mumby1999,Goltenboth2006}. We use the classification of hard corals from \cite{Goltenboth2006} to describe five different coral morphologies and their typical properties in reefs: massive, branching, foliose, table and encrustring, which we detail in the following.
 
 \begin{Itemize}
     \AltTextImage{
@@ -286,7 +287,7 @@ Overall, from these behaviours, we consider that corals act as important dynamic
 
 
 \subsection{Coral reef formations shape}
-In his travel journal, Darwin outlines his atoll reef formation theory, proposing that Earth's crust movements under the oceans created atolls \cite{Darwin1842}. Darwin described a three-stage process in atoll formation: a fringing reef forms around a sinking volcanic island, evolving into a barrier reef, and finally an atoll reef as subsidence continues \cite{Hopley2014}. In this thesis, the term "coral reef island" refers to an island of volcanic or continental origin that is surrounded by coral reefs, rather than a low island formed from reef-derived sediments (as used by \cite{Masselink2020})
+In his travel journal, Darwin outlines his atoll reef formation theory, proposing that Earth's crust movements under the oceans created atolls \cite{Darwin1842}. Darwin described a three-stage process in atoll formation: a fringing reef forms around a sinking volcanic island, evolving into a barrier reef, and finally an atoll reef as subsidence continues \cite{Hopley2014}. In this thesis, the term "coral reef island" refers to an island of volcanic or continental origin that is surrounded by coral reefs, rather than a low island formed from reef-derived sediments (as used by \cite{Masselink2020}).
 
 \subsubsection{Fringing reefs}
 Fringing reefs are the most common and widespread coral reefs. They form narrow bands near the shore and are usually attached directly to land. Sometimes, they are separated by a shallow, narrow lagoon \cite{Kovacs2020}. Their coastal location makes them accessible but also exposes them to land- and sea-based stressors.

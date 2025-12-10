@@ -6,6 +6,9 @@ import os
 custom_commands_paths = ['./customizedCommands.tex', './glossary.tex']
 settings_json_path = os.path.expanduser('~/.config/VSCodium/User/settings.json')
 
+if not (os.path.exists(custom_commands_paths[0]) and os.path.exists(custom_commands_paths[1])):
+	exit(0)
+
 
 
 def extract_arguments(name, example_line):

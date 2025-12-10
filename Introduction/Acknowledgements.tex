@@ -1,0 +1,23 @@
+
+\makeatletter
+\newlength\epitextskip
+\pretocmd{\@epitext}{\em}{}{}
+\apptocmd{\@epitext}{\em}{}{}
+\patchcmd{\epigraph}{\@epitext{#1}\\}{\@epitext{#1}\\[\epitextskip]}{}{}
+\setlength{\epigraphwidth}{0.8\linewidth}
+\makeatother
+
+
+\chapter*{Remerciements}
+
+\epigraph{"Now, that's not a problem... because... we have decided to not worry about it."}{Matt Parker, 2019}
+\vspace*{\fill}
+
+Si tu lis ce texte, c'est que tu fais partie de tous ces gens que je remercie du fond du coeur.\\Alors merci à toi.
+
+Si tu ne fais pas partie de ces gens, je te remercie de lire ce manuscrit.\\Alors merci à toi.
+
+% \renewcommand{\epigraphflush}{flushleft}
+
+\vspace*{\fill}
+\epigraph{But then I figured, if I'm gonna have an equation which is good but not great, why not embrace that?}{still Matt Parker, 2020}
